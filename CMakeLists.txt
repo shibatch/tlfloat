@@ -22,7 +22,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 if(ENABLE_CUDA_TESTER)
   enable_language(CUDA)
-  set(CMAKE_CUDA_ARCHITECTURES 75)
+  set(CMAKE_CUDA_ARCHITECTURES 50)
 endif()
 
 # CMake configuration
