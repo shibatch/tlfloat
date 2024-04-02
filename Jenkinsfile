@@ -77,21 +77,19 @@ pipeline {
             	     }
                 }
 
-		/*
                 stage('x86_64 windows vs2022') {
             	     agent { label 'windows11 && vs2022' }
             	     steps {
 		     	 bat """
 			 call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
 			 if not %ERRORLEVEL% == 0 exit /b %ERRORLEVEL%
-			 call "winbuild-msvc.bat" -DENABLE_WIX=TRUE -DSUPPRESS_WIX_VALIDATION=TRUE
+			 call "winbuild-msvc.bat" -DCMAKE_BUILD_TYPE=Relase
 			 if not %ERRORLEVEL% == 0 exit /b %ERRORLEVEL%
 			 ctest -j 4 --output-on-failure
 			 exit /b %ERRORLEVEL%
 			 """
 		     }
 		}
-		*/
 
                 stage('x86_64 windows clang') {
             	     agent { label 'windows11 && vs2022' }

@@ -81,7 +81,10 @@ public:
     state = state * 6364136223846793005ULL + 1442695040888963407ULL;
     return uint32_t(state >> 32);
   }
-  uint64_t next64() { return next32() | (uint64_t(next32()) << 32); }
+  uint64_t next64() {
+    uint32_t u = next32();
+    return u | (uint64_t(next32()) << 32);
+  }
 };
 
 class CryptUtil {

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <cassert>
 
 #include "tlmath.hpp"
@@ -18,7 +19,6 @@ T rnd(shared_ptr<RNG> rng) {
   for(;;) {
     T f;
     rng->nextBytes((unsigned char *)&f, sizeof(f));
-    f = frexp(f, nullptr);
     if (finite(f)) return f;
   }
 }
@@ -35,9 +35,15 @@ void computeHash(const char *mes, T *r, T *x, FILE *fp=nullptr, int mode=0) {
     if (mode == 0) {
       sha256.append((void *)&f.m, sizeof(f.m));
     } else if (mode == 1) {
+      fwrite((void *)&x[i].m, sizeof(x[i].m), 1, fp);
       fwrite((void *)&f.m, sizeof(f.m), 1, fp);
     } else if (mode == 2) {
       T t = 0;
+      if (fread((void *)&t, sizeof(t), 1, fp) != 1 || t.m != x[i].m) {
+	cout << mes << " : arg does not match" << endl;
+	cout << "arg file : " << toHexString(t.m) << " : " << to_string(t, 75) << endl;
+	cout << "arg host : " << toHexString(x[i].m) << " : " << to_string(x[i], 75) << endl;
+      }
       if (fread((void *)&t, sizeof(t), 1, fp) != 1 || t.m != f.m) {
 	cout << mes << endl;
 	cout << "arg1   : " << to_string(x[i], 75) << endl;
@@ -122,15 +128,15 @@ template<typename T> static constexpr T nextafter_(const T &a1, const T &a2) { r
 int main(int argc, char **argv) {
   FILE *fp = nullptr;
   int mode = 0;
-  if (argc == 3) {
-    fp = fopen(argv[2], "r");
+  if (argc == 3 && strcmp(argv[1], "r") == 0) {
+    fp = fopen(argv[2], "rb");
     if (!fp) {
       cerr << "Could not open " << argv[2] << endl;
       exit(-1);
     }
     mode = 2;
-  } else if (argc == 4) {
-    fp = fopen(argv[2], "w");
+  } else if (argc == 3 && strcmp(argv[1], "w") == 0) {
+    fp = fopen(argv[2], "wb");
     if (!fp) {
       cerr << "Could not open " << argv[2] << endl;
       exit(-1);
@@ -490,6 +496,8 @@ int main(int argc, char **argv) {
       printf("OK\n");
     }
   }
+
+  if (fp) fclose(fp);
 
   return 0;
 }

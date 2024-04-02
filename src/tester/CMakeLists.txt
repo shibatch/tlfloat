@@ -34,7 +34,7 @@ endif()
 
 add_executable(test_tlfloat_hash test_tlfloat_hash.cpp)
 target_link_libraries(test_tlfloat_hash tlfloat)
-add_test(NAME test_tlfloat_hash COMMAND test_tlfloat_hash 336b7600e848965d7ce559743a1b83726f4d7b6e85ed276d41c9150b16c3b7cf)
+add_test(NAME test_tlfloat_hash COMMAND test_tlfloat_hash d8a2824266b51411d8cbeaca8596235a4f320aee71293a1651f6f458c5e82934)
 
 if (LIB_MPFR)
   add_executable(test_tlfloat_mpfr test_tlfloat_mpfr.cpp)

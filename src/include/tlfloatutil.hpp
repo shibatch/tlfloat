@@ -43,9 +43,10 @@ typedef tlfloat::detail::UnpackedFloat<tlfloat::BigUInt<9>, tlfloat::BigUInt<10>
 
 xfloat   xfpi(0x6487ed51U, 0, false, false, false, false);
 xdouble  xdpi(0x6487ed5110b4611aULL, 0, false, false, false, false);
-xquad    xqpi(tlfloat::BigUInt<7>((const uint64_t[]){0x62633145c06e0e69, 0x6487ed5110b4611aULL}), 0, false, false, false, false);
-xoctuple xopi(tlfloat::BigUInt<8>((const uint64_t[]){0x0105DF531D89CD91, 0x948127044533E63AULL, 0x62633145C06E0E68, 0x6487ED5110B4611AULL}), 0, false, false, false, false);
-
+uint64_t piqa[] = {0x62633145c06e0e69, 0x6487ed5110b4611aULL};
+xquad xqpi(tlfloat::BigUInt<7>(piqa), 0, false, false, false, false);
+uint64_t pioa[] = {0x0105DF531D89CD91ULL, 0x948127044533E63AULL, 0x62633145C06E0E68ULL, 0x6487ED5110B4611AULL};
+xoctuple xopi(tlfloat::BigUInt<8>(pioa), 0, false, false, false, false);
 #ifdef ENABLE_QUAD
 static_assert(sizeof(quad) == 16, "quad precision FP not supported");
 #else
