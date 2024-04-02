@@ -1,7 +1,11 @@
 #include <iostream>
 #include <cstdint>
 #include <cfloat>
+
+#if (defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)) || defined(__aarch64__)
 #define MPFR_WANT_FLOAT128
+#endif
+
 #include <mpfr.h>
 
 #define SUPPRESS_WARNINGS
@@ -60,7 +64,7 @@ static float rndf(shared_ptr<RNG> rng) {
       int32_t u;
       memcpy((void *)&u, (void *)&f, sizeof(u));
       u += rng->nextLT(5) - 2;
-      memcpy((void *)&f, (void *)&u, sizeof(u));
+      memcpy((void *)&f, (void *)&u, sizeof(f));
 
       return f;
     }
@@ -85,13 +89,14 @@ static double rndd(shared_ptr<RNG> rng) {
       int64_t u;
       memcpy((void *)&u, (void *)&f, sizeof(u));
       u += rng->nextLT(5) - 2;
-      memcpy((void *)&f, (void *)&u, sizeof(u));
+      memcpy((void *)&f, (void *)&u, sizeof(f));
 
       return f;
     }
   }
 }
 
+#ifdef ENABLE_QUAD
 static quad rndq(shared_ptr<RNG> rng) {
   if (rng->nextLT(32) != 0) {
     for(;;) {
@@ -110,12 +115,42 @@ static quad rndq(shared_ptr<RNG> rng) {
       BigInt<7> u;
       memcpy((void *)&u, (void *)&f, sizeof(u));
       u += rng->nextLT(5) - 2;
-      memcpy((void *)&f, (void *)&u, sizeof(u));
+      memcpy((void *)&f, (void *)&u, sizeof(f));
 
       return f;
     }
   }
 }
+
+typedef quad quad_;
+#else
+static Quad rndq(shared_ptr<RNG> rng) {
+  if (rng->nextLT(32) != 0) {
+    for(;;) {
+      Quad f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (finite(f)) return f;
+    }
+  } else {
+    for(;;) {
+      Quad f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (!finite(f)) continue;
+      if (-1 <= f && f <= 1) continue;
+      f = rint(f) * M_PIq_ / 2;
+
+      BigInt<7> u;
+      memcpy((void *)&u, (void *)&f, sizeof(u));
+      u += rng->nextLT(5) - 2;
+      memcpy((void *)&f, (void *)&u, sizeof(f));
+
+      return f;
+    }
+  }
+}
+
+typedef Quad quad_;
+#endif
 
 static Octuple rndo(shared_ptr<RNG> rng) {
   if (rng->nextLT(32) != 0) {
@@ -135,7 +170,7 @@ static Octuple rndo(shared_ptr<RNG> rng) {
       BigInt<8> u;
       memcpy((void *)&u, (void *)&f, sizeof(u));
       u += rng->nextLT(5) - 2;
-      memcpy((void *)&f, (void *)&u, sizeof(u));
+      memcpy((void *)&f, (void *)&u, sizeof(f));
 
       return f;
     }
@@ -1513,7 +1548,7 @@ int main(int argc, char **argv) {
     }
 
     if ((i & 31) == 0) {
-      quad x = rndq(rng), y = rndq(rng), z = rndq(rng);
+      quad_ x = rndq(rng), y = rndq(rng), z = rndq(rng);
 
       {
 	mpfr_set_default_prec(128);
@@ -1524,18 +1559,29 @@ int main(int argc, char **argv) {
 #if defined(TEST_QUAD) && defined(TEST_ARITH)
 	{
 	  auto xfr = (Quad(x) + Quad(y)).getUnpacked();
-	  quad r = (quad)Quad(xfr);
+	  quad_ r = (quad_)Quad(xfr);
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_add(mx, mx, my, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad add\n");
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << ", " << to_string(mx, 72) << " : " << to_string_d(Quad(c).getUnpacked()) << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << ", " << " : " << to_string_d(Quad(r).getUnpacked()) << endl;
 	    printf("ulp = %g\n", ulp);
 	    exit(-1);
@@ -1544,18 +1590,29 @@ int main(int argc, char **argv) {
 
 	{
 	  auto xfr = (Quad(x) * Quad(y)).getUnpacked();
-	  quad r = (quad)Quad(xfr);
+	  quad_ r = (quad_)Quad(xfr);
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_mul(mx, mx, my, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad mul\n");
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << ", " << to_string(mx, 72) << " : " << to_string_d(Quad(c).getUnpacked()) << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << " : " << to_string_d(Quad(r).getUnpacked()) << endl;
 	    printf("ulp = %g\n", ulp);
 	    exit(-1);
@@ -1564,18 +1621,29 @@ int main(int argc, char **argv) {
 
 	{
 	  auto xfr = (Quad(x) / Quad(y)).getUnpacked();
-	  quad r = (quad)Quad(xfr);
+	  quad_ r = (quad_)Quad(xfr);
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_div(mx, mx, my, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad div\n");
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << ", " << to_string(mx, 72) << " : " << to_string_d(Quad(c).getUnpacked()) << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << " : " << to_string_d(Quad(r).getUnpacked()) << endl;
 	    printf("ulp = %g\n", ulp);
 	    exit(-1);
@@ -1584,20 +1652,32 @@ int main(int argc, char **argv) {
 
 	{
 	  auto xfr = fma(Quad(x), Quad(y), Quad(z)).getUnpacked();
-	  quad r = (quad)Quad(xfr);
+	  quad_ r = (quad_)Quad(xfr);
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mz, z, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mz, z.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_fma(mx, mx, my, mz, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad fma\n");
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
 	    cout << "z = " << z << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << ", " << to_string(mx, 72) << " : " << to_string_d(Quad(c).getUnpacked()) << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << ", " << " : " << to_string_d(Quad(r).getUnpacked()) << endl;
 	    printf("ulp = %g\n", ulp);
 	    exit(-1);
@@ -1608,16 +1688,26 @@ int main(int argc, char **argv) {
 #if defined(TEST_QUAD) && defined(TEST_SQRT)
 	{
 	  auto xfr = sqrt(Quad(x)).getUnpacked();
-	  quad r = (quad)Quad(xfr);
+	  quad_ r = (quad_)Quad(xfr);
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_sqrt(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad sqrt\n");
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    printf("ulp = %g\n", ulp);
 	    exit(-1);
@@ -1626,18 +1716,29 @@ int main(int argc, char **argv) {
 
 	{
 	  auto xfr = hypot(Quad(x), Quad(y)).getUnpacked();
-	  quad r = (quad)Quad(xfr);
+	  quad_ r = (quad_)Quad(xfr);
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_hypot(mx, mx, my, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad hypot\n");
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    printf("ulp = %g\n", ulp);
 	    exit(-1);
@@ -1647,18 +1748,28 @@ int main(int argc, char **argv) {
 
 #if defined(TEST_QUAD) && defined(TEST_TRIG)
 	{
-	  quad r = (quad)sin(Quad(x));
+	  quad_ r = (quad_)sin(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_sin(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad sin\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1666,18 +1777,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)cos(Quad(x));
+	  quad_ r = (quad_)cos(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_cos(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad cos\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1685,18 +1806,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)tan(Quad(x));
+	  quad_ r = (quad_)tan(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_tan(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad tan\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1706,20 +1837,31 @@ int main(int argc, char **argv) {
 
 #if defined(TEST_QUAD) && defined(TEST_INVTRIG)
 	{
-	  quad r = (quad)atan2(Quad(y), Quad(x));
+	  quad_ r = (quad_)atan2(Quad(y), Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_atan2(mx, my, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad atan2\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1727,18 +1869,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)asin(Quad(x));
+	  quad_ r = (quad_)asin(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_asin(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad asin\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1746,18 +1898,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)acos(Quad(x));
+	  quad_ r = (quad_)acos(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_acos(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad acos\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1765,18 +1927,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)atan(Quad(x));
+	  quad_ r = (quad_)atan(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_atan(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad atan\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1786,18 +1958,28 @@ int main(int argc, char **argv) {
 
 #if defined(TEST_QUAD) && defined(TEST_EXP)
 	{
-	  quad r = (quad)exp(Quad(x));
+	  quad_ r = (quad_)exp(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_exp(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad exp\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1805,18 +1987,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)expm1(Quad(x));
+	  quad_ r = (quad_)expm1(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_expm1(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad expm1\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1824,18 +2016,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)exp2(Quad(x));
+	  quad_ r = (quad_)exp2(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_exp2(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad exp2\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1843,18 +2045,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)exp10(Quad(x));
+	  quad_ r = (quad_)exp10(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_exp10(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad exp10\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1864,18 +2076,28 @@ int main(int argc, char **argv) {
 
 #if defined(TEST_QUAD) && defined(TEST_LOG)
 	{
-	  quad r = (quad)log(Quad(x));
+	  quad_ r = (quad_)log(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_log(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad log\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1883,18 +2105,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)log1p(Quad(x));
+	  quad_ r = (quad_)log1p(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_log1p(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad log1p\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1902,18 +2134,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)log2(Quad(x));
+	  quad_ r = (quad_)log2(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_log2(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad log2\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1921,18 +2163,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)log10(Quad(x));
+	  quad_ r = (quad_)log10(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_log10(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad log10\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1942,20 +2194,31 @@ int main(int argc, char **argv) {
 
 #if defined(TEST_QUAD) && defined(TEST_POW)
 	{
-	  quad r = (quad)pow(Quad(y), Quad(x));
+	  quad_ r = (quad_)pow(Quad(y), Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_pow(mx, my, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad pow\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1965,20 +2228,31 @@ int main(int argc, char **argv) {
 
 #if defined(TEST_QUAD) && defined(TEST_MODREM)
 	{
-	  quad r = (quad)fmod(Quad(y), Quad(x));
+	  quad_ r = (quad_)fmod(Quad(y), Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_fmod(mx, my, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad fmod\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -1986,20 +2260,31 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)remainder(Quad(y), Quad(x));
+	  quad_ r = (quad_)remainder(Quad(y), Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_remainder(mx, my, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad remainder\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2009,18 +2294,28 @@ int main(int argc, char **argv) {
 
 #if defined(TEST_QUAD) && defined(TEST_CBRT)
 	{
-	  quad r = (quad)cbrt(Quad(x));
+	  quad_ r = (quad_)cbrt(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_cbrt(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad cbrt\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2030,18 +2325,28 @@ int main(int argc, char **argv) {
 
 #if defined(TEST_QUAD) && defined(TEST_HYP)
 	{
-	  quad r = (quad)sinh(Quad(x));
+	  quad_ r = (quad_)sinh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_sinh(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad sinh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2049,18 +2354,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)cosh(Quad(x));
+	  quad_ r = (quad_)cosh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_cosh(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad cosh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2068,18 +2383,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)tanh(Quad(x));
+	  quad_ r = (quad_)tanh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_tanh(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad tanh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2087,18 +2412,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)asinh(Quad(x));
+	  quad_ r = (quad_)asinh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_asinh(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad asinh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2106,18 +2441,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)acosh(Quad(x));
+	  quad_ r = (quad_)acosh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_acosh(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad acosh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2125,18 +2470,28 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)atanh(Quad(x));
+	  quad_ r = (quad_)atanh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_atanh(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.501) {
 	    printf("\nquad atanh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2146,18 +2501,28 @@ int main(int argc, char **argv) {
 
 #if defined(TEST_QUAD) && defined(TEST_MISC)
 	{
-	  quad r = (quad)fabs(Quad(x));
+	  quad_ r = (quad_)fabs(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_abs(mx, mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad fabs\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2165,19 +2530,30 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)copysign(Quad(x), Quad(y));
+	  quad_ r = (quad_)copysign(Quad(x), Quad(y));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_copysign(mx, mx, my, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
-	  if (ulp > 0.5 && !isnanq(y)) {
+	  if (ulp > 0.5 && y == y) {
 	    printf("\nquad copysign\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2185,19 +2561,30 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)fmax(Quad(x), Quad(y));
+	  quad_ r = (quad_)fmax(Quad(x), Quad(y));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_max(mx, mx, my, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad fmax\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2205,19 +2592,30 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)fmin(Quad(x), Quad(y));
+	  quad_ r = (quad_)fmin(Quad(x), Quad(y));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_min(mx, mx, my, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad fmin\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2225,19 +2623,30 @@ int main(int argc, char **argv) {
 	}
 
 	{
-	  quad r = (quad)fdim(Quad(x), Quad(y));
+	  quad_ r = (quad_)fdim(Quad(x), Quad(y));
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_dim(mx, mx, my, GMP_RNDN);
-	  quad c = mpfr_get_float128(mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, mx, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5) {
 	    printf("\nquad fdim\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    cout << "NG" << endl;
 	    exit(-1);
@@ -2246,19 +2655,29 @@ int main(int argc, char **argv) {
 
 	{
 	  Quad w;
-	  quad r = (quad)modf(Quad(x), &w);
+	  quad_ r = (quad_)modf(Quad(x), &w);
 	  uquad xfr = Quad(r).getUnpacked();
 
+#ifdef ENABLE_QUAD
 	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
 	  mpfr_modf(mx, my, mx, GMP_RNDN);
 	  double ci = mpfr_get_d(mx, GMP_RNDN);
-	  quad c = mpfr_get_float128(my, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(my, GMP_RNDN);
+#endif
 	  double ulp = countULP(xfr, my, uquad::floatmin(), uquad::floatmax());
 	  if (ulp > 0.5 || (!(isnan(w) && isnan(ci)) && double(w) != ci)) {
 	    printf("\nquad modf\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
 	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
 	    cout << "r = " << r << endl;
 	    printf("ci = %.8g\n", ci);
 	    cout << "NG" << endl;

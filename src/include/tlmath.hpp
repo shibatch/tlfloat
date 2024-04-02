@@ -528,6 +528,7 @@ namespace tlfloat {
       Unpacked_t q = Unpacked_t::castFromInt(1);
       if (r == 1) q = constCbrt2<Unpacked_t>();
       if (r == 2) q = constCbrt4<Unpacked_t>();
+
       q.exp += (e + eoffset * 3) / 3 - eoffset;
 
       if (d.sign) q.sign = !q.sign;

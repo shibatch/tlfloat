@@ -17,14 +17,14 @@ Original distribution site : https://github.com/shibatch/tlfloat
 * IEEE 754 compliant
   * Supports subnormal numbers, NaN, inf, and signed zero.
 
-* Supports a wide range or precisions
+* Supports a wide range of precisions
   * Half, float, double, quad, octuple
   * Returns correctly rounded results for arithmetic oprations, fma and sqrt
   * Returns 1-ulp precision results for other math.h functions
     * All functions, including trigonometric functions, return 1ulp-precision results for all input range
 
 * Portable
-  * Compatible with Linux, Windows, microcontrollers, wasm, CUDA (version 12)
+  * Compatible with Linux, Windows, microcontrollers, wasm, CUDA (version 12 or later)
 
 * Moderately optimized
   * Optimized for each architecture using intrinsics, etc.
@@ -64,7 +64,7 @@ Original distribution site : https://github.com/shibatch/tlfloat
   * Remaining math functions in math.h
   * BF16 support
   * Further optimization
-    * Benchmarking tools
+  * Benchmarking tools
 
 
 ### License

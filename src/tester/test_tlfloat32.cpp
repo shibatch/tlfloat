@@ -13,8 +13,6 @@ using namespace tlfloat;
 using namespace tlfloat::detail;
 
 typedef UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
-typedef UnpackedFloat<uint32_t, uint64_t, 0, 30> xfloat;
-xfloat xfpi(0x6487ed51U, 0, false, false, false, false);
 
 #define TEST_SQRT
 #define TEST_TRIG

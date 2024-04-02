@@ -30,8 +30,27 @@ typedef long double quad;
 #define M_PIq_ M_PIl
 #endif
 
+typedef tlfloat::detail::UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
+typedef tlfloat::detail::UnpackedFloat<uint64_t, tlfloat::BigUInt<7>, 11, 52> udouble;
+typedef tlfloat::detail::UnpackedFloat<tlfloat::BigUInt<7>, tlfloat::BigUInt<8>, 15, 112> uquad;
+typedef tlfloat::detail::UnpackedFloat<tlfloat::BigUInt<8>, tlfloat::BigUInt<9>, 19, 236> uoctuple;
+
+typedef tlfloat::detail::UnpackedFloat<uint32_t, uint64_t, 0, 30> xfloat;
+typedef tlfloat::detail::UnpackedFloat<uint64_t, tlfloat::BigUInt<7>, 0, 62> xdouble;
+typedef tlfloat::detail::UnpackedFloat<tlfloat::BigUInt<7>, tlfloat::BigUInt<8>, 0, 126> xquad;
+typedef tlfloat::detail::UnpackedFloat<tlfloat::BigUInt<8>, tlfloat::BigUInt<9>, 0, 254> xoctuple;
+typedef tlfloat::detail::UnpackedFloat<tlfloat::BigUInt<9>, tlfloat::BigUInt<10>, 0, 510> xsedecuple;
+
+xfloat   xfpi(0x6487ed51U, 0, false, false, false, false);
+xdouble  xdpi(0x6487ed5110b4611aULL, 0, false, false, false, false);
+xquad    xqpi(tlfloat::BigUInt<7>((const uint64_t[]){0x62633145c06e0e69, 0x6487ed5110b4611aULL}), 0, false, false, false, false);
+xoctuple xopi(tlfloat::BigUInt<8>((const uint64_t[]){0x0105DF531D89CD91, 0x948127044533E63AULL, 0x62633145C06E0E68, 0x6487ED5110B4611AULL}), 0, false, false, false, false);
+
 #ifdef ENABLE_QUAD
 static_assert(sizeof(quad) == 16, "quad precision FP not supported");
+#else
+typedef tlfloat::detail::UnpackedFloat<tlfloat::BigUInt<7>, tlfloat::BigUInt<8>, 0, 126> xquad;
+const tlfloat::Quad M_PIq_ = (tlfloat::Quad)xqpi.cast((tlfloat::detail::UnpackedFloat<tlfloat::BigUInt<7>, tlfloat::BigUInt<8>, 15, 112> *)0);
 #endif
 
 std::string toHexString(unsigned long long u64) {

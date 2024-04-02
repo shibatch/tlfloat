@@ -22,13 +22,13 @@ pipeline {
             	     }
                 }
 
-                stage('x86_64 linux clang-14') {
+                stage('x86_64 linux clang-18') {
             	     agent { label 'x86_64 && ubuntu22 && cuda' }
             	     steps {
 	    	     	 sh '''
-                	 echo "x86_64 clang-14 on" `hostname`
-			 export CC=clang-14
-			 export CXX=clang++-14
+                	 echo "x86_64 clang-18 on" `hostname`
+			 export CC=clang-18
+			 export CXX=clang++-18
 			 export CUDACXX=/opt/cuda-12.4/bin/nvcc
 			 rm -rf build
  			 mkdir build
