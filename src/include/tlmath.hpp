@@ -362,6 +362,7 @@ namespace tlfloat {
     static constexpr Unpacked_t expm1_(Unpacked_t d) {
       constexpr xarray<Unpacked_t, N+2> expCoef = genExpCoef<Unpacked_t, N+1>();
 
+      if (d.iszero) return d;
       if (d.exp > 28) return d.sign ? Unpacked_t::castFromInt(-1) : Unpacked_t::inf();
 
       int64_t q = rint(d * constRLN2<Unpacked_t>()).castToInt((int64_t *)nullptr);
@@ -491,7 +492,7 @@ namespace tlfloat {
       if (isnan(x)) return x;
       if (isnan(y)) return y;
       bool yisoddint = isint(y) && !iseven(y);
-      if (!signbit(y) && !iszero(y) && iszero(x) && yisoddint) return tlfloat_t::zero(signbit(y));
+      if (!signbit(y) && !iszero(y) && iszero(x) && yisoddint) return tlfloat_t::zero(signbit(x));
       if (iszero(x) && !signbit(y) && !iszero(y) && !yisoddint) return 0;
       if (isinf(y) && x == -1) return 1;
       bool absxlt1 = -1 < x && x < 1;

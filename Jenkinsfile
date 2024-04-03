@@ -83,7 +83,7 @@ pipeline {
 		     	 bat """
 			 call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
 			 if not %ERRORLEVEL% == 0 exit /b %ERRORLEVEL%
-			 call "winbuild-msvc.bat" -DCMAKE_BUILD_TYPE=Relase
+			 call "winbuild-msvc.bat" -DCMAKE_BUILD_TYPE=Release
 			 if not %ERRORLEVEL% == 0 exit /b %ERRORLEVEL%
 			 ctest -j 4 --output-on-failure
 			 exit /b %ERRORLEVEL%
@@ -97,7 +97,7 @@ pipeline {
 		     	 bat """
 			 call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
 			 if not %ERRORLEVEL% == 0 exit /b %ERRORLEVEL%
-			 call "winbuild-clang.bat"
+			 call "winbuild-clang.bat" -DCMAKE_BUILD_TYPE=Release
 			 if not %ERRORLEVEL% == 0 exit /b %ERRORLEVEL%
 			 ctest -j 4 --output-on-failure
 			 exit /b %ERRORLEVEL%

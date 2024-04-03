@@ -34,7 +34,7 @@ endif()
 
 add_executable(test_tlfloat_hash test_tlfloat_hash.cpp)
 target_link_libraries(test_tlfloat_hash tlfloat)
-add_test(NAME test_tlfloat_hash COMMAND test_tlfloat_hash d8a2824266b51411d8cbeaca8596235a4f320aee71293a1651f6f458c5e82934)
+add_test(NAME test_tlfloat_hash COMMAND test_tlfloat_hash 975ad94306bbd3b8ceb6a946403379cff54591b498edb56d5a587980d82a1488)
 
 if (LIB_MPFR)
   add_executable(test_tlfloat_mpfr test_tlfloat_mpfr.cpp)
@@ -51,6 +51,14 @@ if (LIB_MPFR)
       COMPONENT tester
       )
   endif()
+
+  add_executable(tester1 tester1.cpp)
+  target_link_libraries(tester1 ${LIB_MPFR})
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT WIN32)
+    target_link_libraries(tester1 quadmath)
+  endif()
+  target_compile_definitions(tester1 PRIVATE SUPPRESS_WARNINGS=1)
+  add_test(NAME tester1 COMMAND tester1)
 endif()
 
 #

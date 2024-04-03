@@ -196,7 +196,7 @@ quad mpfr_sqrt(quad a) {
 #endif
 
 template<typename Unpacked_t, typename Unpacked2_t>
-static double countULP(const Unpacked_t& ux, mpfr_t c, const Unpacked2_t& umin, const Unpacked2_t& umax) {
+static double countULP(const Unpacked_t& ux, mpfr_t c, const Unpacked2_t& umin, const Unpacked2_t& umax, bool checkSignedZero=false) {
   const int nbmant = umin.nbmant_();
   mpfr_t fra, frb, frc, frd, frmin, frmino2, frmax;
   mpfr_inits(fra, frb, frc, frd, frmin, frmino2, frmax, NULL);
@@ -212,6 +212,12 @@ static double countULP(const Unpacked_t& ux, mpfr_t c, const Unpacked2_t& umin, 
   if (ciszero && !ux.iszero) {
     mpfr_clears(fra, frb, frc, frd, frmin, frmino2, frmax, NULL);
     return 10000;
+  }
+  if (checkSignedZero && ciszero && ux.iszero) {
+    if (mpfr_signbit(c) != ux.sign) {
+      mpfr_clears(fra, frb, frc, frd, frmin, frmino2, frmax, NULL);
+      return 10002;
+    }
   }
   if (cisinf && ux.isinf && mpfr_signbit(c) == ux.sign) {
     mpfr_clears(fra, frb, frc, frd, frmin, frmino2, frmax, NULL);
