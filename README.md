@@ -20,8 +20,8 @@ Original distribution site : https://github.com/shibatch/tlfloat
 * Supports a wide range of precisions
   * Half, float, double, quad, octuple
   * Returns correctly rounded results for arithmetic oprations, fma and sqrt
-  * Returns 1-ulp precision results for other math.h functions
-    * All functions, including trigonometric functions, return 1ulp-precision results for all input range
+  * Returns 1-ulp accuracy results for other math.h functions
+    * All functions, including trigonometric functions, return 1ulp-accuracy results for all input range
 
 * Portable
   * Compatible with Linux, Windows, microcontrollers, wasm, CUDA (version 12 or later)

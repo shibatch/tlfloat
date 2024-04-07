@@ -124,10 +124,10 @@ int main(int argc, char **argv) {
 
   if (argc > 1) {
     xsedecuple x(argv[1]);
-    snprint(buf, sizeof(buf), x, 'a', 0, 0);
+    snprint(buf, sizeof(buf), x, 'a', 0, -1);
     cout << "\"" << buf << "\",  // " << to_double(x) << endl;
     x.mant &= ~((BigUInt<9>(1) << 250) - 1);
-    snprint(buf, sizeof(buf), x, 'a', 0, 0);
+    snprint(buf, sizeof(buf), x, 'a', 0, -1);
     cout << "\"" << buf << "\",  // " << to_double(x) << endl;
     return 0;
   }
@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
     for(int i=0;i<coef.n();i++) {
       auto o = coef.e[i];
       o.mant &= ~((BigUInt<9>(1) << 250) - 1);
-      snprint(buf, sizeof(buf), o, 'a', 0, 0);
+      snprint(buf, sizeof(buf), o, 'a', 0, -1);
       cout << "      \"" << buf << "\",  // " << to_double(o) << endl;
     }
 
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
     for(int i=0;i<coef.n();i++) {
       auto o = coef.e[i];
       o.mant &= ~((BigUInt<9>(1) << 250) - 1);
-      snprint(buf, sizeof(buf), o, 'a', 0, 0);
+      snprint(buf, sizeof(buf), o, 'a', 0, -1);
       cout << "      \"" << buf << "\",  // " << to_double(o) << endl;
     }
 
@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
     for(int i=0;i<coef.n();i++) {
       auto o = coef.e[i];
       o.mant &= ~((BigUInt<9>(1) << 250) - 1);
-      snprint(buf, sizeof(buf), o, 'a', 0, 0);
+      snprint(buf, sizeof(buf), o, 'a', 0, -1);
       cout << "      \"" << buf << "\",  // " << to_double(o) << endl;
     }
 
@@ -194,7 +194,7 @@ int main(int argc, char **argv) {
     for(int i=0;i<coef.n();i++) {
       auto o = coef.e[i];
       o.mant &= ~((BigUInt<9>(1) << 250) - 1);
-      snprint(buf, sizeof(buf), o, 'a', 0, 0);
+      snprint(buf, sizeof(buf), o, 'a', 0, -1);
       cout << "      \"" << buf << "\",  // " << to_double(o) << endl;
     }
 
@@ -211,7 +211,7 @@ int main(int argc, char **argv) {
     for(int i=0;i<coef.n();i++) {
       auto o = coef.e[i];
       o.mant &= ~((BigUInt<9>(1) << 250) - 1);
-      snprint(buf, sizeof(buf), o, 'a', 0, 0);
+      snprint(buf, sizeof(buf), o, 'a', 0, -1);
       cout << "      \"" << buf << "\",  // " << to_double(o) << endl;
     }
 
@@ -228,7 +228,7 @@ int main(int argc, char **argv) {
     for(int i=0;i<coef.n();i++) {
       auto o = coef.e[i];
       o.mant &= ~((BigUInt<9>(1) << 250) - 1);
-      snprint(buf, sizeof(buf), o, 'a', 0, 0);
+      snprint(buf, sizeof(buf), o, 'a', 0, -1);
       cout << "      \"" << buf << "\",  // " << to_double(o) << endl;
     }
 
@@ -245,7 +245,7 @@ int main(int argc, char **argv) {
     for(int i=0;i<coef.n();i++) {
       auto o = coef.e[i];
       o.mant &= ~((BigUInt<9>(1) << 250) - 1);
-      snprint(buf, sizeof(buf), o, 'a', 0, 0);
+      snprint(buf, sizeof(buf), o, 'a', 0, -1);
       cout << "      \"" << buf << "\",  // " << to_double(o) << endl;
     }
 

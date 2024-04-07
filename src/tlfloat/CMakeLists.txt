@@ -1,10 +1,10 @@
-add_library(tlfloat bigint.cpp)
+add_library(tlfloat bigint.cpp capi.cpp)
 target_compile_definitions(tlfloat PRIVATE SUPPRESS_WARNINGS=1)
 set(INCLUDEDIR "${CMAKE_SOURCE_DIR}/src/include")
 set_target_properties(tlfloat PROPERTIES
   VERSION ${TLFLOAT_VERSION}
   SOVERSION ${TLFLOAT_SOVERSION}
-  PUBLIC_HEADER "${INCLUDEDIR}/bigint.hpp;${INCLUDEDIR}/rpitab.hpp;${INCLUDEDIR}/suppress.hpp;${INCLUDEDIR}/tlfloat.hpp;${INCLUDEDIR}/tlmath.hpp;${INCLUDEDIR}/tlmathcoef.hpp"
+  PUBLIC_HEADER "${INCLUDEDIR}/bigint.hpp;${INCLUDEDIR}/rpitab.hpp;${INCLUDEDIR}/suppress.hpp;${INCLUDEDIR}/tlfloat.hpp;${INCLUDEDIR}/tlmath.hpp;${INCLUDEDIR}/tlmathcoef.hpp;${INCLUDEDIR}/tlfloat.h"
   )
 
 install(

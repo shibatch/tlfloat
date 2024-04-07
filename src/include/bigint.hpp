@@ -218,7 +218,44 @@ namespace tlfloat {
       return z;
     }
 #endif
-  }
+
+    template<typename T>
+    class SafeArray {
+      T* bufPtr;
+      const int64_t bufSize;
+      T dummyElm = 0;
+    public:
+      SafeArray(T* const bufPtr_, const int64_t bufSize_) :
+	bufPtr(bufPtr_), bufSize(bufSize_) {}
+
+      T operator[](int64_t pos) const {
+	if (0 <= pos && pos < bufSize) return bufPtr[pos];
+	return 0;
+      }
+
+      T& operator[](int64_t pos) {
+	if (0 <= pos && pos < bufSize) return bufPtr[pos];
+	return dummyElm;
+      }
+
+      void strcpyFrom(int64_t pos, const T *p) {
+	if (pos < 0) return;
+	while(pos < bufSize-1 && *p != 0) bufPtr[pos++] = *p++;
+	if (pos < bufSize) bufPtr[pos] = 0;
+      }
+
+      void memmove(int64_t pos, const T *p, int64_t size) {
+	if (!(0 <= pos && pos + size < bufSize)) return;
+	memcpy(&bufPtr[pos], p, size * sizeof(T));
+      }
+
+      void memmove(int64_t dpos, int64_t spos, int64_t size) {
+	if (!(0 <= dpos && dpos + size < bufSize)) return;
+	if (!(0 <= spos && spos + size < bufSize)) return;
+	::memmove(&bufPtr[dpos], &bufPtr[spos], size * sizeof(T));
+      }
+    };
+  } // namespace detail
 
   template<int N> class BigUInt {
     static_assert(N >= 7, "N must be 7 or larger");
@@ -729,24 +766,6 @@ namespace tlfloat {
       low = r.low; high = r.high;
     }
 
-    NOINLINE char *print(char *const buf, unsigned radix=10) const {
-      static const char digits[] = "0123456789abcdef";
-      if (radix > 16) { buf[0] = '\0'; return nullptr; }
-      if (isZero()) { buf[0] = '0'; buf[1] = '\0'; return buf+1; }
-      BigUInt u = *this, rec = BigUInt(radix).reciprocal();
-      char *p = buf;
-      while(!u.isZero()) {
-	BigUInt r;
-	u = u.divmod(radix, rec, &r);
-	*p++ = digits[unsigned(r)];
-      }
-      for(char *q = buf, *r = p-1;q < r;q++, r--) {
-	char c = *q; *q = *r; *r = c;
-      }
-      *p = '\0';
-      return p;
-    }
-
     class Montgomery {
       BigUInt<N> ninv(BigUInt<N> n) {
 	BigUInt<N> nr(1);
@@ -1147,12 +1166,88 @@ namespace tlfloat {
       if (sign) u = -u;
     }
 
-    NOINLINE char *print(char *const buf, unsigned radix=10) const {
-      if (radix == 10) {
-	char *p = buf;
-	if (u.msb()) { *p++ = '-'; return (-u).print(p, 10); }
+    NOINLINE static int snprint(char *cbuf, size_t bufsize, BigInt<N> value, char typespec = 'd',
+				int width = 0, int precision = -1, int base = 10, int nbits = 1 << N,
+				bool flag_sign = false, bool flag_blank = false, bool flag_alt = false,
+				bool flag_left = false, bool flag_zero = false, bool flag_upper = false,
+				bool flag_unsigned = false, bool flag_ptr = false, const char *prefix = "") {
+      detail::SafeArray<char> buf(cbuf, bufsize);
+
+      if (width > (int)bufsize) width = bufsize;
+
+      if (nbits < (1 << N)) {
+	bool signbit = value < 0;
+	value &= (BigUInt<N>(1) << nbits) - 1;
+	if (!flag_unsigned && signbit) value |= ~BigUInt<N>(0) & ~((BigUInt<N>(1) << nbits) - 1);
       }
-      return u.print(buf, radix);
+
+      int sign = 0;
+      if (!flag_unsigned) {
+	if (value < 0) {
+	  value = -value;
+	  sign = '-';
+	} else if (flag_sign) {
+	  sign = '+';
+	} else if (flag_blank) {
+	  sign = ' ';
+	}
+      }
+
+      int64_t idx = bufsize-1;
+      const char *digits = flag_upper ? "0123456789ABCDEF" : "0123456789abcdef";
+      int length = 0;
+
+      if (flag_ptr && value == 0) {
+	buf.memmove(idx-5, "(nil)", 5);
+	idx -= 5;
+      } else {
+	if (flag_unsigned) {
+	  BigUInt<N> u = value;
+	  do {
+	    buf[--idx] = digits[int(u % base)];
+	    u /= base;
+	  } while(u > 0);
+	} else {
+	  BigInt<N> v = value;
+	  do {
+	    buf[--idx] = digits[int(v % base)];
+	    v /= base;
+	  } while(v > 0);
+	}
+	if (precision == 0 && value == 0) idx++;
+	length = bufsize-1 - idx;
+
+	for(int i = precision-length;i > 0;i--) buf[--idx] = '0';
+
+	if (sign) buf[--idx] = sign;
+
+	if (flag_alt) {
+	  if (!(base == 8 && buf[idx] == '0') && !(base != 8 && value == 0)) {
+	    int prefixlen = strlen(prefix);
+	    buf.memmove(idx - prefixlen, prefix, prefixlen);
+	    idx -= prefixlen;
+	  }
+	}
+      }
+
+      length = bufsize-1 - idx;
+
+      if (!flag_left) {
+	for(int i=0;i<width-length;i++) buf[--idx] = ' ';
+	length = bufsize-1 - idx;
+      }
+
+      buf.memmove(0, idx, length);
+
+      if (flag_left) {
+	idx = length;
+	for(int i=0;i<width-length;i++) buf[idx++] = ' ';
+	length = idx;
+      }
+
+      buf[length] = '\0';
+
+      return length;
     }
   };
 }
@@ -1174,16 +1269,16 @@ namespace tlfloat {
   template<int N>
   std::string to_string(const BigUInt<N>& u) {
     std::vector<char> s((1 << N)/3 + 3);
-    u.print(s.data());
+    BigInt<N>::snprint(s.data(), s.size(), BigInt<N>(u), 'u');
     return std::string(s.data());
   }
 
   template<int N> static std::ostream& operator<<(std::ostream &os, const BigUInt<N>& u) { return os << to_string(u); }
 
   template<int N>
-  std::string to_string(const BigInt<N>& u) {
+  std::string to_string(const BigInt<N>& i) {
     std::vector<char> s((1 << N)/3 + 3);
-    u.print(s.data());
+    BigInt<N>::snprint(s.data(), s.size(), i, 'd');
     return std::string(s.data());
   }
 

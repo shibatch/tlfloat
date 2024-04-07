@@ -1,6 +1,8 @@
 #ifndef __TLFLOAT_HPP_INCLUDED__
 #define __TLFLOAT_HPP_INCLUDED__
 
+#include <cstdio>
+
 #include "bigint.hpp"
 
 namespace tlfloat {
@@ -519,7 +521,7 @@ namespace tlfloat {
 	exp(exp_), mant(mant_), sign(sign_), iszero(iszero_), isinf(isinf_), isnan(isnan_) {
       }
 
-      constexpr UnpackedFloat(const char *ptr) {
+      constexpr UnpackedFloat(const char *ptr, const char **endptr=nullptr) {
 	while(xisspace(*ptr)) ptr++;
 
 	bool positive = true;
@@ -529,8 +531,8 @@ namespace tlfloat {
 	  ptr++;
 	}
 
-	if (xstrcasecmp(ptr, "nan") == 0) { *this = nan(); return; }
-	if (xstrcasecmp(ptr, "inf") == 0) { *this = inf(!positive); return; }
+	if (xstrcasecmp(ptr, "nan") == 0) { *this = nan();          if (endptr) { *endptr = ptr + 3; } return; }
+	if (xstrcasecmp(ptr, "inf") == 0) { *this = inf(!positive); if (endptr) { *endptr = ptr + 3; } return; }
 
 	if (*ptr == '0' && (*(ptr+1) == 'x' || *(ptr+1) == 'X')) {
 	  ptr += 2;
@@ -603,6 +605,8 @@ namespace tlfloat {
 	    exp = 0;
 	  }
 
+	  if (endptr) *endptr = ptr;
+
 	  return;
 	} 
 
@@ -621,7 +625,7 @@ namespace tlfloat {
 	    continue;
 	  }
 	  if (c == 'e' || c == 'E') {
-	    e += xstrtoll(&ptr[i+1]);
+	    e += xstrtoll(&ptr[i+1], &ptr);
 	    break;
 	  }
 	}
@@ -629,6 +633,8 @@ namespace tlfloat {
 	n *= UnpackedFloat::exp10i(e);
 	if (!positive) n = -n;
 	*this = n;
+
+	if (endptr) *endptr = ptr;
       }
 
       template<typename floattype, std::enable_if_t<!std::is_pointer_v<floattype>, int> = 0>
@@ -940,18 +946,21 @@ namespace tlfloat {
 	return ret;
       }
 
-      NOINLINE friend int snprint(char *buf, const size_t bufsize,
+      NOINLINE friend int snprint(char *cbuf, const size_t bufsize,
 			 UnpackedFloat arg, char typespec, int width = 0, int precision = 6,
 			 bool flag_sign = false, bool flag_blank = false, bool flag_alt = false,
 			 bool flag_left = false, bool flag_zero = false, bool flag_upper = false) {
 	if (bufsize == 0) return 0;
-	if (bufsize == 1) { *buf = '\0'; return 0; }
+	if (bufsize == 1) { *cbuf = '\0'; return 0; }
 	if (typespec != 'e' && typespec != 'f' && typespec != 'g' && typespec != 'a') return 0;
+
+	detail::SafeArray<char> buf(cbuf, bufsize);
+
 	if (width > (long)bufsize) width = bufsize;
 
-	char *ptr = buf;
+	int64_t idx = 0;
 	char prefix = 0;
-	int length = 0, flag_rtz = 0;
+	int length = 0, flag_rtz = 0, mainpos = 0;
 
 	if (arg.sign) {
 	  arg.sign = 0;
@@ -965,14 +974,14 @@ namespace tlfloat {
 	UnpackedFloat value = arg;
 
 	if (value.isnan) {
-	  if (prefix) *ptr++ = prefix;
-	  strncpy(ptr, flag_upper ? "NAN" : "nan", buf + bufsize - ptr);
-	  ptr += 3;
+	  if (prefix) buf[idx++] = prefix;
+	  buf.strcpyFrom(idx, flag_upper ? "NAN" : "nan");
+	  idx += 3;
 	  flag_zero = false;
 	} else if (value.isinf) {
-	  if (prefix) *ptr++ = prefix;
-	  strncpy(ptr, flag_upper ? "INF" : "inf", buf + bufsize - ptr);
-	  ptr += 3;
+	  if (prefix) buf[idx++] = prefix;
+	  buf.strcpyFrom(idx, flag_upper ? "INF" : "inf");
+	  idx += 3;
 	  flag_zero = false;
 	} else if (typespec != 'a') {
 	  if (precision < 0) precision = 6;
@@ -1012,125 +1021,103 @@ namespace tlfloat {
 
 	  bool flag_dp = precision > 0 || flag_alt;
 
-	  if (prefix) *ptr++ = prefix;
+	  if (prefix) buf[idx++] = prefix;
 
 	  if (e2 < 0) {
-	    *ptr++ = '0';
+	    buf[idx++] = '0';
 	  } else {
 	    for(;e2>=0;e2--) {
 	      int digit = value.castToInt((int *)nullptr);
 	      if (value < castFromInt(digit)) digit--;
-	      if (ptr - buf >= (std::ptrdiff_t)bufsize-1) { *ptr = '\0'; return -1; }
-	      *ptr++ = digit + '0';
+	      buf[idx++] = digit + '0';
 	      value = (value - castFromInt(digit)) * castFromInt(10);
 	    }
 	  }
 
-	  if (flag_dp) {
-	    if (ptr - buf >= (std::ptrdiff_t)bufsize-1) { *ptr = '\0'; return -1; }
-	    *ptr++ = '.';
-	  }
+	  if (flag_dp) buf[idx++] = '.';
 
-	  for(e2++;e2 < 0 && precision > 0;precision--, e2++) {
-	    if (ptr - buf >= (std::ptrdiff_t)bufsize-1) { *ptr = '\0'; return -1; }
-	    *ptr++ = '0';
-	  }
+	  for(e2++;e2 < 0 && precision > 0;precision--, e2++) buf[idx++] = '0';
 
 	  while (precision-- > 0) {
 	    int digit = value.castToInt((int *)nullptr);
 	    if (value < castFromInt(digit)) digit--;
-	    if (ptr - buf >= (std::ptrdiff_t)bufsize-1) { *ptr = '\0'; return -1; }
-	    *ptr++ = digit + '0';
+	    buf[idx++] = digit + '0';
 	    value = (value - castFromInt(digit)) * castFromInt(10);
 	  }
 
 	  if (flag_rtz && flag_dp) {
-	    while(ptr[-1] == '0') *(--ptr) = 0;
-	    assert(ptr > buf);
-	    if (ptr[-1] == '.') *(--ptr) = 0;
+	    while(buf[idx-1] == '0') buf[--idx] = '\0';
+	    if (buf[idx-1] == '.') buf[--idx] = '\0';
 	  }
 
 	  if (flag_exp || (typespec == 'e' && exp != 0)) {
-	    if (ptr - buf >= (std::ptrdiff_t)bufsize-8) { *ptr = '\0'; return -1; }
-	    *ptr++ = flag_upper ? 'E' : 'e';
+	    buf[idx++] = flag_upper ? 'E' : 'e';
 	    if (exp < 0){
-	      *ptr++ = '-'; exp = -exp;
+	      buf[idx++] = '-'; exp = -exp;
 	    } else {
-	      *ptr++ = '+';
+	      buf[idx++] = '+';
 	    }
-	    if (exp >= 10000) {
-	      *ptr++ = exp / 10000 + '0';
-	      exp %= 10000;
-	      *ptr++ = exp / 1000 + '0';
-	      exp %= 1000;
-	      *ptr++ = exp / 100 + '0';
-	      exp %= 100;
-	    } else if (exp >= 1000) {
-	      *ptr++ = exp / 1000 + '0';
-	      exp %= 1000;
-	      *ptr++ = exp / 100 + '0';
-	      exp %= 100;
-	    } else if (exp >= 100) {
-	      *ptr++ = exp / 100 + '0';
-	      exp %= 100;
-	    }
-	    *ptr++ = exp / 10 + '0';
-	    *ptr++ = exp % 10 + '0';
+
+	    char str[32];
+	    snprintf(str, sizeof(buf), "%02d", exp);
+	    buf.strcpyFrom(idx, str);
+	    idx += strlen(str);
 	  }
 	} else {
-	  const char *bufend = buf + bufsize;
-
-	  if (precision > 0 && precision < nbmant/4+1) {
-	    int s = (nbmant/4+1 - precision) * 4 - 3;
+	  if (precision >= 0 && precision < nbmant/4+1) {
+	    int s = (nbmant/4 - precision) * 4 - 1;
 	    if (s < nbmant && s >= 0) value.mant += ((mant_t)1) << s;
 	  }
 
-	  if (prefix) *ptr++ = prefix;
+	  if (bit(value.mant, nbmant + 1)) { value.mant >>= 1; value.exp++; }
 
-	  ptr += snprintf(ptr, bufend - ptr, flag_upper ? "0X" :"0x");
-	  ptr += snprintf(ptr, bufend - ptr, value.iszero ? "0" : "1");
+	  if (prefix) buf[idx++] = prefix;
+
+	  buf.strcpyFrom(idx, flag_upper ? "0X" :"0x");
+	  idx += 2;
+	  mainpos = idx;
+	  buf.strcpyFrom(idx, value.iszero ? "0" : "1");
+	  idx += 1;
 
 	  mant_t m = value.mant << (sizeof(mant_t)*8 - nbmant);
 
-	  if (!(m == 0 && precision <= 0)) ptr += snprintf(ptr, bufend - ptr, ".");
+	  if ((!(m == 0 && precision < 0) && precision != 0) || flag_alt) buf.strcpyFrom(idx++, ".");
 
 	  const char *digits = flag_upper ? "0123456789ABCDEF" : "0123456789abcdef";
 
-	  const size_t niter = precision > 0 ? precision : 0;
-	  for(unsigned i=0;(niter == 0 && m != 0) || i < niter;i++) {
-	    ptr += snprintf(ptr, bufend - ptr, "%c", digits[(unsigned)((m >> (sizeof(mant_t)*8 - 4)) & 0xf)]);
+	  const int niter = precision >= 0 ? precision : -1;
+	  for(int i=0;(niter < 0 && m != 0) || i < niter;i++) {
+	    buf[idx++] = digits[(unsigned)((m >> (sizeof(mant_t)*8 - 4)) & 0xf)];
 	    m <<= 4;
 	  }
 
 	  int exp = value.ilogb();
 	  if (value.iszero) exp = 0;
 
-	  ptr += snprintf(ptr, bufend - ptr, "%c%+d", flag_upper ? 'P' : 'p', exp);
+	  char str[32];
+	  snprintf(str, sizeof(buf), "%c%+d", flag_upper ? 'P' : 'p', exp);
+	  buf.strcpyFrom(idx, str);
+	  idx += strlen(str);
 	}
 
-	*ptr = 0;
+	buf[idx] = '\0';
+	length = idx;
 
-	length = ptr - buf;
-	ptr = buf;
+	if (!flag_zero) mainpos = 0;
 
 	if (!flag_left && length < width) {
-	  int i;
 	  int nPad = width - length;
-	  for(i=width; i>=nPad; i--) {
-	    ptr[i] = ptr[i-nPad];
-	  }
-	  i = prefix != 0 && flag_zero;
-	  while (nPad--) {
-	    ptr[i++] = flag_zero ? '0' : ' ';
-	  }
+	  for(int i=width; i-nPad >= mainpos; i--) buf[i] = buf[i-nPad];
+
+	  int i = mainpos;
+	  if (prefix != 0 && flag_zero && typespec != 'a') i++;
+	  while (nPad-- > 0) buf[i++] = flag_zero ? '0' : ' ';
 	  length = width;
 	}
 
 	if (flag_left) {
-	  while (length < width) {
-	    ptr[length++] = ' ';
-	  }
-	  ptr[length] = '\0';
+	  while (length < width) buf[length++] = ' ';
+	  buf[length] = '\0';
 	}
 
 	return length;
@@ -1214,8 +1201,8 @@ namespace tlfloat {
       return std::bit_cast<fptype>(m);
     }
 
-    constexpr TLFloat(const char *ptr) {
-      *this = TLFloat(xUnpacked_t(ptr).cast((Unpacked_t *)nullptr));
+    constexpr TLFloat(const char *ptr, const char **endptr=nullptr) {
+      *this = TLFloat(xUnpacked_t(ptr, endptr).cast((Unpacked_t *)nullptr));
     }
 
     explicit constexpr operator Unpacked_t() const { return Unpacked_t(m); }
