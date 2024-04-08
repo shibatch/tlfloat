@@ -1,6 +1,7 @@
 #include <cstdio>
 
 #include "tlmath.hpp"
+#include "tlfloat.h"
 
 using namespace std;
 using namespace tlfloat;
@@ -68,7 +69,7 @@ int main(int argc, char **argv) {
 
   //
 
-  snprint(buf, sizeof(buf), AGM<Double>(2), 'g', 0, 15);
+  tlfloat_snprintf(buf, sizeof(buf), "%64_.15g", AGM<Double>(2));
   printf("Double (AGM)     : %s\n", buf);
 
   if (strncmp(buf, "3.141592653589", 14) != 0) {
@@ -88,7 +89,7 @@ int main(int argc, char **argv) {
 
   //
 
-  snprint(buf, sizeof(buf), AGM<Quad>(2), 'g', 0, 35);
+  tlfloat_snprintf(buf, sizeof(buf), "%128_.35g", AGM<Quad>(2));
   printf("Quad (AGM)       : %s\n", buf);
 
   if (strncmp(buf, "3.14159265358979323846264338327950", 34) != 0) {
@@ -108,7 +109,7 @@ int main(int argc, char **argv) {
 
   //
 
-  snprint(buf, sizeof(buf), AGM<Octuple>(3), 'g', 0, 71);
+  tlfloat_snprintf(buf, sizeof(buf), "%256_.71g", AGM<Octuple>(3));
   printf("Octuple (AGM)    : %s\n", buf);
 
   if (strncmp(buf, "3.14159265358979323846264338327950288419716939937510582097494459230781", 70) != 0) {

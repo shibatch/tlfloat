@@ -2,6 +2,7 @@
 #include <cctype>
 #include <cstdarg>
 
+#define NO_LIBSTDCXX
 #include "tlmath.hpp"
 
 #ifdef SUPPRESS_WARNINGS
@@ -175,7 +176,8 @@ namespace {
 	    switch(nbits) {
 	    case 16: {
 	      Half value = std::bit_cast<Half>(va_arg(ap, tlfloat_half));
-	      int ret = snprint(xbuf, xbufsize, value, *fmt, width, precision, 
+	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
+	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
 	      if (ret < 0) { errorflag = 1; break; }
 	      outlen += (*consumer)(xbuf, strlen(xbuf), arg);
@@ -184,7 +186,8 @@ namespace {
 	    }
 	    case 32: {
 	      Float value = std::bit_cast<Float>(va_arg(ap, tlfloat_float));
-	      int ret = snprint(xbuf, xbufsize, value, *fmt, width, precision, 
+	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
+	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
 	      if (ret < 0) { errorflag = 1; break; }
 	      outlen += (*consumer)(xbuf, strlen(xbuf), arg);
@@ -193,7 +196,8 @@ namespace {
 	    }
 	    case 64: {
 	      Double value = std::bit_cast<Double>(va_arg(ap, tlfloat_double));
-	      int ret = snprint(xbuf, xbufsize, value, *fmt, width, precision, 
+	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
+	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
 	      if (ret < 0) { errorflag = 1; break; }
 	      outlen += (*consumer)(xbuf, strlen(xbuf), arg);
@@ -202,7 +206,8 @@ namespace {
 	    }
 	    case 128: {
 	      Quad value = std::bit_cast<Quad>(va_arg(ap, tlfloat_quad));
-	      int ret = snprint(xbuf, xbufsize, value, *fmt, width, precision, 
+	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
+	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
 	      if (ret < 0) { errorflag = 1; break; }
 	      outlen += (*consumer)(xbuf, strlen(xbuf), arg);
@@ -211,7 +216,8 @@ namespace {
 	    }
 	    case 256: {
 	      Octuple value = std::bit_cast<Octuple>(va_arg(ap, tlfloat_octuple));
-	      int ret = snprint(xbuf, xbufsize, value, *fmt, width, precision, 
+	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
+	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
 	      if (ret < 0) { errorflag = 1; break; }
 	      outlen += (*consumer)(xbuf, strlen(xbuf), arg);
@@ -232,7 +238,7 @@ namespace {
 	    case 'l': va_arg(ap, long int); break;
 	    case 'j': va_arg(ap, intmax_t); break;
 	    case 'z': va_arg(ap, size_t); break;
-	    case 't': va_arg(ap, ptrdiff_t); break;
+	    case 't': va_arg(ap, std::ptrdiff_t); break;
 	    case 'l' + 256*'l': va_arg(ap, long long int); break;
 	    default: errorflag = 1; break;
 	    }
@@ -370,7 +376,7 @@ namespace {
 
     arg->buf[arg->pos] = '\0';
 
-    return p;
+    return size;
   }
 } // namespace
 

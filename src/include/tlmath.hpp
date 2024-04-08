@@ -5,6 +5,12 @@
 #include "tlmathcoef.hpp"
 #include "rpitab.hpp"
 
+#ifdef __clang_major__
+#if __clang_major__ < 17
+#warning Unsupported clang version
+#endif
+#endif
+
 namespace tlfloat {
   namespace detail {
     typedef UnpackedFloat<uint16_t, uint32_t, 0, 14> xhalf;

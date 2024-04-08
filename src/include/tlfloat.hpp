@@ -21,6 +21,15 @@ namespace tlfloat {
       }
     }
 
+    static constexpr int xstrncasecmp(const char *p, const char *q, size_t n) {
+      for(;n>0;n--) {
+	if (*p == '\0' && *q == '\0') return 0;
+	if (xtolower(*p) != xtolower(*q)) return *p > *q ? 1 : -1;
+	p++; q++;
+      }
+      return 0;
+    }
+
     static constexpr long long xstrtoll(const char *p, const char **endptr=nullptr) {
       bool negative = false;
       long long r = 0;
@@ -531,8 +540,8 @@ namespace tlfloat {
 	  ptr++;
 	}
 
-	if (xstrcasecmp(ptr, "nan") == 0) { *this = nan();          if (endptr) { *endptr = ptr + 3; } return; }
-	if (xstrcasecmp(ptr, "inf") == 0) { *this = inf(!positive); if (endptr) { *endptr = ptr + 3; } return; }
+	if (xstrncasecmp(ptr, "nan", 3) == 0) { *this = nan();          if (endptr) { *endptr = ptr + 3; } return; }
+	if (xstrncasecmp(ptr, "inf", 3) == 0) { *this = inf(!positive); if (endptr) { *endptr = ptr + 3; } return; }
 
 	if (*ptr == '0' && (*(ptr+1) == 'x' || *(ptr+1) == 'X')) {
 	  ptr += 2;
@@ -619,7 +628,10 @@ namespace tlfloat {
 	  if (c == '\0') break;
 	  if (c == '.' && !bp) { bp = true; continue; }
 	  if ('0' <= c && c <= '9') {
-	    if (n.exp > expoffset() + nbmant) continue;
+	    if (n.exp > expoffset() + nbmant) {
+	      if (!bp) e++;
+	      continue;
+	    }
 	    n = fma(n, castFromInt(10), castFromInt(c - '0'));
 	    if (bp) e--;
 	    continue;
@@ -988,7 +1000,7 @@ namespace tlfloat {
 	  if (precision > (long)bufsize/2 - 10) precision = bufsize/2 - 10;
 	  if (typespec == 'g' && precision > 0) precision--;
 
-	  UnpackedFloat rounder = ldexp_(UnpackedFloat::exp10i(-precision), -1);
+	  UnpackedFloat rounder = value.iszero ? UnpackedFloat::zero() : ldexp_(UnpackedFloat::exp10i(-precision), -1);
 
 	  if (typespec == 'f') value += rounder;
 
@@ -1005,6 +1017,9 @@ namespace tlfloat {
 	  if (value >= castFromInt(10)) {
 	    value /= castFromInt(10);
 	    exp++;
+	  } else if (!value.iszero && value < castFromInt(1)) {
+	    value *= castFromInt(10);
+	    exp--;
 	  }
 
 	  if (typespec == 'g') {
@@ -1052,6 +1067,7 @@ namespace tlfloat {
 
 	  if (flag_exp || (typespec == 'e' && exp != 0)) {
 	    buf[idx++] = flag_upper ? 'E' : 'e';
+	    if (arg.iszero) exp = 0;
 	    if (exp < 0){
 	      buf[idx++] = '-'; exp = -exp;
 	    } else {
@@ -1064,12 +1080,11 @@ namespace tlfloat {
 	    idx += strlen(str);
 	  }
 	} else {
-	  if (precision >= 0 && precision < nbmant/4+1) {
-	    int s = (nbmant/4 - precision) * 4 - 1;
+	  if (!value.iszero && precision >= 0 && precision < nbmant/4+1) {
+	    int s = nbmant - precision*4 - 1;
 	    if (s < nbmant && s >= 0) value.mant += ((mant_t)1) << s;
+	    if (bit(value.mant, nbmant + 1)) { value.mant >>= 1; value.exp++; }
 	  }
-
-	  if (bit(value.mant, nbmant + 1)) { value.mant >>= 1; value.exp++; }
 
 	  if (prefix) buf[idx++] = prefix;
 

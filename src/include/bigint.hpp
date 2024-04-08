@@ -1259,10 +1259,17 @@ namespace tlfloat {
 #include <string>
 
 namespace tlfloat {
-  std::string toHexString(const uint64_t u);
-  std::string toHexString(uint32_t x);
-  std::string toHexString(uint16_t x);
-  std::string toHexString(const BigUInt<6> &u);
+  inline std::string toHexString(const uint64_t u) {
+    char buf[17];
+    snprintf(buf, 17, "%016llx", (unsigned long long)u);
+    return std::string(buf);
+  }
+  inline std::string toHexString(uint32_t x) { return toHexString(uint64_t(x)); }
+  inline std::string toHexString(uint16_t x) { return toHexString(uint64_t(x)); }
+  inline std::string toHexString(const BigUInt<6> &u) { return toHexString(u.u64); }
+
+  inline std::ostream& operator<<(std::ostream &os, const BigUInt<6>& u) { return os << u.u64; }
+
   template<int N> static std::string toHexString(const BigUInt<N>& u) { return toHexString(u.high) + toHexString(u.low); }
   template<int N> static std::string toHexString(const BigInt<N>& u) { return toHexString(u.u); }
 

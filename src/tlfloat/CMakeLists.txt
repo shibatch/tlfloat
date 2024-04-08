@@ -1,4 +1,4 @@
-add_library(tlfloat bigint.cpp capi.cpp)
+add_library(tlfloat capi.cpp)
 target_compile_definitions(tlfloat PRIVATE SUPPRESS_WARNINGS=1)
 set(INCLUDEDIR "${CMAKE_SOURCE_DIR}/src/include")
 set_target_properties(tlfloat PROPERTIES
