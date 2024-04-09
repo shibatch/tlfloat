@@ -2,32 +2,14 @@
 #include <cctype>
 #include <cstdarg>
 
-#define NO_LIBSTDCXX
-#include "tlmath.hpp"
-
 #ifdef SUPPRESS_WARNINGS
 #include "suppress.hpp"
 #endif
 
-typedef struct { uint64_t e[1 << 0]; } tlfloat_bigint6;
-typedef struct { uint64_t e[1 << 1]; } tlfloat_bigint7;
-typedef struct { uint64_t e[1 << 2]; } tlfloat_bigint8;
-typedef struct { uint64_t e[1 << 3]; } tlfloat_bigint9;
-typedef struct { uint64_t e[1 << 4]; } tlfloat_bigint10;
+#define NO_LIBSTDCXX
+#include "tlmath.hpp"
 
-typedef struct { uint16_t e;         } tlfloat_half;
-typedef struct { uint32_t e;         } tlfloat_float;
-typedef struct { uint64_t e[1 << 0]; } tlfloat_double;
-typedef struct { uint64_t e[1 << 1]; } tlfloat_quad;
-typedef struct { uint64_t e[1 << 2]; } tlfloat_octuple;
-
-#if defined(__x86_64__) && defined(__GNUC__)
-typedef __float128 tlfloat_float128;
-#elif defined(__aarch64__) && defined(__GNUC__)
-typedef long double tlfloat_float128;
-#else
-typedef struct { uint64_t e[2]; } tlfloat_float128;
-#endif
+#include "tlfloat.h"
 
 using namespace tlfloat;
 
@@ -127,14 +109,11 @@ namespace {
 
       // Read size prefix
 
-      bool flag_quad = false, flag_ptrquad = false, subfmt_processed = false;
+      bool flag_quad = false, subfmt_processed = false;
       int size_prefix = 0;
 
       if (*fmt == 'Q') {
 	flag_quad = true;
-	fmt++;
-      } else if (*fmt == 'P') {
-	flag_ptrquad = true;
 	fmt++;
       } else {
 	int pl = 0;
@@ -161,10 +140,12 @@ namespace {
       case 'e': case 'f': case 'g': case 'a':
 	{
 	  if (nbits == 0) {
-	    if (flag_quad || flag_ptrquad) {
-	      tlfloat_float128 value = flag_quad ? va_arg(ap, tlfloat_float128) : *(tlfloat_float128 *)va_arg(ap, tlfloat_float128 *);
-	      snprint(xbuf, xbufsize, Quad(value), *fmt, width, precision, 
-		      flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
+	    if (flag_quad) {
+	      Quad value = std::bit_cast<Quad>(va_arg(ap, tlfloat_quad));
+	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
+	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
+				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
+	      if (ret < 0) { errorflag = 1; break; }
 	      outlen += (*consumer)(xbuf, strlen(xbuf), arg);
 	      subfmt_processed = true;
 	    } else if (size_prefix == 0) { // double and long double
@@ -175,7 +156,8 @@ namespace {
 	  } else {
 	    switch(nbits) {
 	    case 16: {
-	      Half value = std::bit_cast<Half>(va_arg(ap, tlfloat_half));
+	      typedef struct { uint16_t e; } arg_t;
+	      Half value = std::bit_cast<Half>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -185,7 +167,8 @@ namespace {
 	      break;
 	    }
 	    case 32: {
-	      Float value = std::bit_cast<Float>(va_arg(ap, tlfloat_float));
+	      typedef struct { uint32_t e; } arg_t;
+	      Float value = std::bit_cast<Float>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -195,7 +178,8 @@ namespace {
 	      break;
 	    }
 	    case 64: {
-	      Double value = std::bit_cast<Double>(va_arg(ap, tlfloat_double));
+	      typedef struct { uint64_t e[1]; } arg_t;
+	      Double value = std::bit_cast<Double>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -205,7 +189,8 @@ namespace {
 	      break;
 	    }
 	    case 128: {
-	      Quad value = std::bit_cast<Quad>(va_arg(ap, tlfloat_quad));
+	      typedef struct { uint64_t e[2]; } arg_t;
+	      Quad value = std::bit_cast<Quad>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -215,7 +200,8 @@ namespace {
 	      break;
 	    }
 	    case 256: {
-	      Octuple value = std::bit_cast<Octuple>(va_arg(ap, tlfloat_octuple));
+	      typedef struct { uint64_t e[4]; } arg_t;
+	      Octuple value = std::bit_cast<Octuple>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);

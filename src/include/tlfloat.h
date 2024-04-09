@@ -3,10 +3,17 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdarg.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+  typedef struct { uint64_t e[1 << 0]; } tlfloat_bigint6;
+  typedef struct { uint64_t e[1 << 1]; } tlfloat_bigint7;
+  typedef struct { uint64_t e[1 << 2]; } tlfloat_bigint8;
+  typedef struct { uint64_t e[1 << 3]; } tlfloat_bigint9;
+  typedef struct { uint64_t e[1 << 4]; } tlfloat_bigint10;
 
 #if defined(__LDBL_MANT_DIG__)
 #if __LDBL_MANT_DIG__ == 113
@@ -15,27 +22,14 @@ extern "C" {
 #endif
 
 #if defined(__x86_64__) && defined(__GNUC__)
-  typedef __float128 tlfloat_float128;
+  typedef __float128 tlfloat_quad;
 #elif defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)
-  typedef long double tlfloat_float128;
+  typedef long double tlfloat_quad;
 #else
-  typedef struct { uint64_t e[2]; } tlfloat_float128;
+  typedef struct { uint64_t e[2]; } tlfloat_quad;
 #endif
 
-  typedef struct { uint64_t e[2]; } tlfloat_quad;
   typedef struct { uint64_t e[4]; } tlfloat_octuple;
-
-  static inline tlfloat_float128 tlfloat_cast_f128_q(tlfloat_quad q) {
-    tlfloat_float128 f;
-    memcpy(&f, &q, sizeof(f));
-    return f;
-  }
-
-  static inline tlfloat_quad tlfloat_cast_q_f128(tlfloat_float128 f) {
-    tlfloat_quad q;
-    memcpy(&q, &f, sizeof(q));
-    return q;
-  }
 
   //
 
@@ -175,6 +169,23 @@ extern "C" {
   double tlfloat_remainder(const double x, const double y);
   tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloat_quad y);
   tlfloat_octuple tlfloat_remaindero(const tlfloat_octuple x, const tlfloat_octuple y);
+
+#ifdef TLFLOAT_LIBQUADMATH_EMULATION
+  static inline tlfloat_quad strtoflt128(const char *s, const char **sp) {
+    return tlfloat_strtoq(s, sp);
+  }
+
+  static inline int quadmath_snprintf(char *str, size_t size, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = tlfloat_vsnprintf(str, size, fmt, ap);
+    va_end(ap);
+    return ret;
+  }
+
+  static inline tlfloat_quad sinq(const tlfloat_quad x) { return tlfloat_sinq(x); }
+#endif
+
 #ifdef __cplusplus
 } // extern "C" {
 #endif

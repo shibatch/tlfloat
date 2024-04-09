@@ -625,7 +625,10 @@ namespace tlfloat {
 
 	for(unsigned i=0;;i++) {
 	  char c = ptr[i];
-	  if (c == '\0') break;
+	  if (c == '\0') {
+	    ptr += i;
+	    break;
+	  }
 	  if (c == '.' && !bp) { bp = true; continue; }
 	  if ('0' <= c && c <= '9') {
 	    if (n.exp > expoffset() + nbmant) {
