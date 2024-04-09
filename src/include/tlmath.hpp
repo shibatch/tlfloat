@@ -5,7 +5,7 @@
 #include "tlmathcoef.hpp"
 #include "rpitab.hpp"
 
-#ifdef __clang_major__
+#if defined(__clang_major__) && !defined(_MSC_VER)
 #if __clang_major__ < 17
 #warning Unsupported clang version
 #endif
