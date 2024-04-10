@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 
   //
 
-  tlfloat_snprintf(buf, sizeof(buf), "%64_.15g", AGM<Double>(2));
+  tlfloat_snprintf(buf, sizeof(buf), "%.15_64g", AGM<Double>(2));
   printf("Double (AGM)     : %s\n", buf);
 
   if (strncmp(buf, "3.141592653589", 14) != 0) {
@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
 
   //
 
-  tlfloat_snprintf(buf, sizeof(buf), "%128_.35g", AGM<Quad>(2));
+  tlfloat_snprintf(buf, sizeof(buf), "%.35_128g", AGM<Quad>(2));
   printf("Quad (AGM)       : %s\n", buf);
 
   if (strncmp(buf, "3.14159265358979323846264338327950", 34) != 0) {
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 
   //
 
-  tlfloat_snprintf(buf, sizeof(buf), "%256_.71g", AGM<Octuple>(3));
+  tlfloat_snprintf(buf, sizeof(buf), "%.71_256g", AGM<Octuple>(3));
   printf("Octuple (AGM)    : %s\n", buf);
 
   if (strncmp(buf, "3.14159265358979323846264338327950288419716939937510582097494459230781", 70) != 0) {

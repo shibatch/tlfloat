@@ -31,6 +31,25 @@ int xstrcmp(const char *p, const char *q, int prec) {
   }
 }
 
+void doTest(const char *fmt, ...) {
+  static char strt[1024], strc[1024];
+
+  va_list ap;
+
+  va_start(ap, fmt);
+  int rett = tlfloat_vsnprintf(strt, sizeof(strt), fmt, ap);
+  va_end(ap);
+
+  va_start(ap, fmt);
+  int retc = vsnprintf(strc, sizeof(strc), fmt, ap);
+  va_end(ap);
+
+  if (rett != retc || strcmp(strt, strc) != 0) {
+    printf("%s : c=[%s] t=[%s] retc=%d rett=%d\n", fmt, strc, strt, retc, rett);
+    exit(-1);
+  }
+}
+
 template<typename T>
 void testem(double val, int cmpprec=10) {
   const char *types[] = { "e", "f", "g", "a" };
@@ -54,13 +73,13 @@ void testem(double val, int cmpprec=10) {
 	      lc0 = snprintf(corr0, 100, fmt, val);
 	      lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr));
 
-	      snprintf(fmt, 100, "%%%d_%s%s%s%s%s%s",
-		       nbits,
+	      snprintf(fmt, 100, "%%%s%s%s%s%s_%d%s",
 		       alt ? "#" : "", 
 		       zero ? "0" : "", 
 		       left ? "-" : "", 
 		       blank ? " " : "", 
 		       sign ? "+" : "",
+		       nbits,
 		       types[i]);
 	      lt = tlfloat_snprintf(test, 100, fmt, T(val));
 
@@ -74,6 +93,7 @@ void testem(double val, int cmpprec=10) {
 
 	      for(unsigned w=0;w<sizeof(test_widths)/sizeof(int);w++) {
 		int width = test_widths[w];
+
 		snprintf(fmt, 100, "%%%s%s%s%s%s%d.%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 
@@ -84,15 +104,43 @@ void testem(double val, int cmpprec=10) {
 		lc0 = snprintf(corr0, 100, fmt, val);
 		lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr));
 
-		snprintf(fmt, 100, "%%%d_%s%s%s%s%s%d.%s",
-			 nbits,
+		snprintf(fmt, 100, "%%%s%s%s%s%s%d._%d%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 
 			 left ? "-" : "", 
 			 blank ? " " : "", 
 			 sign ? "+" : "",
-			 width, types[i]);
+			 width, nbits, types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, T(val));
+
+		if( (lt != lc0 && lt != lc1) ||
+		    (xstrcmp(test, corr0, cmpprec) != 0 && xstrcmp(test, corr1, cmpprec) != 0) ||
+		    (strtod(corr0, NULL) != tlfloat_strtod(corr0, NULL) && strstr(corr0, "nan") == NULL) ) {
+		  printf("%s : c0=[%s] c1=[%s] t=[%s] lc0=%d lc1=%d lt=%d %g %g <%016llx>\n", fmt, corr0, corr1, test, lc0, lc1, lt, 
+			 strtod(corr0, NULL), (double)tlfloat_strtod(corr0, NULL), std::bit_cast<unsigned long long>(val));
+		  exit(-1);
+		}
+
+		//
+
+		snprintf(fmt, 100, "%%%s%s%s%s%s*.%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 types[i]);
+		lc0 = snprintf(corr0, 100, fmt, val, width);
+		lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr), width);
+
+		snprintf(fmt, 100, "%%%s%s%s%s%s*._%d%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 nbits, types[i]);
+		lt = tlfloat_snprintf(test, 100, fmt, T(val), width);
 
 		if( (lt != lc0 && lt != lc1) ||
 		    (xstrcmp(test, corr0, cmpprec) != 0 && xstrcmp(test, corr1, cmpprec) != 0) ||
@@ -107,6 +155,7 @@ void testem(double val, int cmpprec=10) {
 		int prec = test_precs[p];
 		for(unsigned w=0;w<sizeof(test_widths)/sizeof(int);w++) {
 		  int width = test_widths[w];
+
 		  snprintf(fmt, 100, "%%%s%s%s%s%s%d.%d%s",
 			   alt ? "#" : "", 
 			   zero ? "0" : "", 
@@ -117,15 +166,43 @@ void testem(double val, int cmpprec=10) {
 		  lc0 = snprintf(corr0, 100, fmt, val);
 		  lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr));
 
-		  snprintf(fmt, 100, "%%%d_%s%s%s%s%s%d.%d%s",
-			   nbits,
+		  snprintf(fmt, 100, "%%%s%s%s%s%s%d.%d_%d%s",
 			   alt ? "#" : "", 
 			   zero ? "0" : "", 
 			   left ? "-" : "", 
 			   blank ? " " : "", 
 			   sign ? "+" : "",
-			   width, prec, types[i]);
+			   width, prec, nbits, types[i]);
 		  lt = tlfloat_snprintf(test, 100, fmt, T(val));
+
+		  if( (lt != lc0 && lt != lc1) ||
+		      (xstrcmp(test, corr0, cmpprec) != 0 && xstrcmp(test, corr1, cmpprec) != 0) ||
+		      (strtod(corr0, NULL) != tlfloat_strtod(corr0, NULL) && strstr(corr0, "nan") == NULL) ) {
+		    printf("%s : c0=[%s] c1=[%s] t=[%s] lc0=%d lc1=%d lt=%d %g %g <%016llx>\n", fmt, corr0, corr1, test, lc0, lc1, lt, 
+			   strtod(corr0, NULL), (double)tlfloat_strtod(corr0, NULL), std::bit_cast<unsigned long long>(val));
+		    exit(-1);
+		  }
+
+		  //
+
+		  snprintf(fmt, 100, "%%%s%s%s%s%s*.*%s",
+			   alt ? "#" : "", 
+			   zero ? "0" : "", 
+			   left ? "-" : "", 
+			   blank ? " " : "", 
+			   sign ? "+" : "",
+			   types[i]);
+		  lc0 = snprintf(corr0, 100, fmt, val, width, prec);
+		  lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr), width, prec);
+
+		  snprintf(fmt, 100, "%%%s%s%s%s%s*.*_%d%s",
+			   alt ? "#" : "", 
+			   zero ? "0" : "", 
+			   left ? "-" : "", 
+			   blank ? " " : "", 
+			   sign ? "+" : "",
+			   nbits, types[i]);
+		  lt = tlfloat_snprintf(test, 100, fmt, T(val), width, prec);
 
 		  if( (lt != lc0 && lt != lc1) ||
 		      (xstrcmp(test, corr0, cmpprec) != 0 && xstrcmp(test, corr1, cmpprec) != 0) ||
@@ -146,15 +223,43 @@ void testem(double val, int cmpprec=10) {
 		lc0 = snprintf(corr0, 100, fmt, val);
 		lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr));
 
-		snprintf(fmt, 100, "%%%d_%s%s%s%s%s.%d%s",
-			 nbits,
+		snprintf(fmt, 100, "%%%s%s%s%s%s.%d_%d%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 
 			 left ? "-" : "", 
 			 blank ? " " : "", 
 			 sign ? "+" : "",
-			 prec, types[i]);
+			 prec, nbits, types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, T(val));
+
+		if( (lt != lc0 && lt != lc1) ||
+		    (xstrcmp(test, corr0, cmpprec) != 0 && xstrcmp(test, corr1, cmpprec) != 0) ||
+		    (strtod(corr0, NULL) != tlfloat_strtod(corr0, NULL) && strstr(corr0, "nan") == NULL) ) {
+		  printf("%s : c0=[%s] c1=[%s] t=[%s] lc0=%d lc1=%d lt=%d %g %g <%016llx>\n", fmt, corr0, corr1, test, lc0, lc1, lt, 
+			 strtod(corr0, NULL), (double)tlfloat_strtod(corr0, NULL), std::bit_cast<unsigned long long>(val));
+		  exit(-1);
+		}
+
+		//
+
+		snprintf(fmt, 100, "%%%s%s%s%s%s.*%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 types[i]);
+		lc0 = snprintf(corr0, 100, fmt, val, prec);
+		lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr), prec);
+
+		snprintf(fmt, 100, "%%%s%s%s%s%s.*_%d%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 nbits, types[i]);
+		lt = tlfloat_snprintf(test, 100, fmt, T(val), prec);
 
 		if( (lt != lc0 && lt != lc1) ||
 		    (xstrcmp(test, corr0, cmpprec) != 0 && xstrcmp(test, corr1, cmpprec) != 0) ||
@@ -191,7 +296,7 @@ void testem32(int32_t val) {
 		       types[i]);
 	      snprintf(corr, 100, fmt, val);
 
-	      snprintf(fmt, 100, "%%32_%s%s%s%s%s%s",
+	      snprintf(fmt, 100, "%%%s%s%s%s%s_32%s",
 		       alt ? "#" : "", 
 		       zero ? "0" : "", 
 		       left ? "-" : "", 
@@ -216,7 +321,7 @@ void testem32(int32_t val) {
 			 width, types[i]);
 		snprintf(corr, 100, fmt, val);
 
-		snprintf(fmt, 100, "%%32_%s%s%s%s%s%d.%s",
+		snprintf(fmt, 100, "%%%s%s%s%s%s%d._32%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 
 			 left ? "-" : "", 
@@ -243,7 +348,7 @@ void testem32(int32_t val) {
 			   width, prec, types[i]);
 		  snprintf(corr, 100, fmt, val);
 
-		  snprintf(fmt, 100, "%%32_%s%s%s%s%s%d.%d%s",
+		  snprintf(fmt, 100, "%%%s%s%s%s%s%d.%d_32%s",
 			    alt ? "#" : "", 
 			    zero ? "0" : "", 
 			    left ? "-" : "", 
@@ -267,7 +372,7 @@ void testem32(int32_t val) {
 			 prec, types[i]);
 		snprintf(corr, 100, fmt, val);
 
-		snprintf(fmt, 100, "%%32_%s%s%s%s%s.%d%s",
+		snprintf(fmt, 100, "%%%s%s%s%s%s.%d_32%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 
 			 left ? "-" : "", 
@@ -291,6 +396,7 @@ void testem32(int32_t val) {
 
 void testem64(int64_t val) {
   const char *types[] = { "lld", "llu", "llx", "llo" };
+  const char *types2[] = { "d", "u", "x", "o" };
   for(int i=0;i<4;i++) {
     for(int alt=0;alt<2;alt++) {
       for(int zero=0;zero<2;zero++) {
@@ -308,13 +414,13 @@ void testem64(int64_t val) {
 		       types[i]);
 	      snprintf(corr, 98, fmt, val);
 
-	      snprintf(fmt, 90, "%%64_%s%s%s%s%s%s",
+	      snprintf(fmt, 90, "%%%s%s%s%s%s_64%s",
 		       alt ? "#" : "", 
 		       zero ? "0" : "", 
 		       left ? "-" : "", 
 		       blank ? " " : "", 
 		       sign ? "+" : "",
-		       types[i]);
+		       types2[i]);
 	      tlfloat_snprintf(test, 98, fmt, val);
 
 	      if(strcmp(test,corr) != 0) {
@@ -332,13 +438,13 @@ void testem64(int64_t val) {
 			 width, types[i]);
 		snprintf(corr, 98, fmt, val);
 
-		snprintf(fmt, 90, "%%64_%s%s%s%s%s%d.%s",
+		snprintf(fmt, 90, "%%%s%s%s%s%s%d._64%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 
 			 left ? "-" : "", 
 			 blank ? " " : "", 
 			 sign ? "+" : "",
-			 width, types[i]);
+			 width, types2[i]);
 		tlfloat_snprintf(test, 98, fmt, val);
 
 		if(strcmp(test,corr) != 0) {
@@ -359,13 +465,13 @@ void testem64(int64_t val) {
 			   width, prec, types[i]);
 		  snprintf(corr, 98, fmt, val);
 
-		  snprintf(fmt, 90, "%%64_%s%s%s%s%s%d.%d%s",
+		  snprintf(fmt, 90, "%%%s%s%s%s%s%d.%d_64%s",
 			    alt ? "#" : "", 
 			    zero ? "0" : "", 
 			    left ? "-" : "", 
 			    blank ? " " : "", 
 			    sign ? "+" : "",
-			    width, prec, types[i]);
+			    width, prec, types2[i]);
 		  tlfloat_snprintf(test, 98, fmt, val);
 
 		  if(strcmp(test,corr) != 0) {
@@ -383,13 +489,13 @@ void testem64(int64_t val) {
 			 prec, types[i]);
 		snprintf(corr, 98, fmt, val);
 
-		snprintf(fmt, 90, "%%64_%s%s%s%s%s.%d%s",
+		snprintf(fmt, 90, "%%%s%s%s%s%s.%d_64%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 
 			 left ? "-" : "", 
 			 blank ? " " : "", 
 			 sign ? "+" : "",
-			 prec, types[i]);
+			 prec, types2[i]);
 		tlfloat_snprintf(test, 98, fmt, val);
 
 		if(strcmp(test,corr) != 0) {
@@ -408,6 +514,35 @@ void testem64(int64_t val) {
 using namespace std;
 
 int main(int argc, char **argv) {
+  int var;
+  doTest("head %d [%*g] [%.*g] [%*.*g] %d tail", 123, 100.1234567, 8, 101.1234567, 7, 102.1234567, 11, 9, 321);
+  doTest("head %.8d %hhd %hd %d %ld %lld %jd %zd %td %.4d tail",
+	 123, (signed char)1, (short int)2, (int)3, (long int)4, (long long int)5, (intmax_t)6, (size_t)7, (ptrdiff_t) 8, 321);
+  doTest("head %.8d %hhd %hd %d %ld %lld %jd %zd %td %.4d tail",
+	 -123, (signed char)-1, (short int)-2, (int)-3, (long int)-4, (long long int)-5, (intmax_t)-6, (size_t)7, (ptrdiff_t)-8, -321);
+  doTest("head %10.8d %hhi %hi %i %li %lli %ji %zi %ti %8.5d tail",
+	 123, (signed char)1, (short int)2, (int)3, (long int)4, (long long int)5, (intmax_t)6, (size_t)7, (ptrdiff_t) 8, 321);
+  doTest("head %10.8d %hhi %hi %i %li %lli %ji %zi %ti %8.5d tail",
+	 -123, (signed char)-1, (short int)-2, (int)-3, (long int)-4, (long long int)-5, (intmax_t)-6, (size_t)7, (ptrdiff_t)-8, -321);
+  doTest("head %-10d %hhx %hx %x %lx %llx %jx %zx %tx %-10.9d tail",
+	 123, (unsigned char)1, (short unsigned)2, (unsigned)3, (long unsigned)4, (long long unsigned)5, (uintmax_t)6, (size_t)7, (ptrdiff_t) 8, 321);
+  doTest("head %+10d %hhX %hX %X %lX %llX %jX %zX %tX %+10.9d tail",
+	 123, (unsigned char)1, (short unsigned)2, (unsigned)3, (long unsigned)4, (long long unsigned)5, (uintmax_t)6, (size_t)7, (ptrdiff_t) 8, 321);
+  doTest("head %d %hhu %hu %u %lu %llu %ju %zu %tu %d tail",
+	 123, (unsigned char)1, (short unsigned)2, (unsigned)3, (long unsigned)4, (long long unsigned)5, (uintmax_t)6, (size_t)7, (ptrdiff_t) 8, 321);
+  doTest("head %d %hho %ho %o %lo %llo %jo %zo %to %d tail",
+	 123, (unsigned char)1, (short unsigned)2, (unsigned)3, (long unsigned)4, (long long unsigned)5, (uintmax_t)6, (size_t)7, (ptrdiff_t) 8, 321);
+  doTest("head %d %f %F %e %E %g %G %a %A %d tail",
+	 123, 0.11, 0.21, 0.31, 0.41, 0.51, 0.61, 0.71, 0.81, 321);
+  doTest("head %d %f %F %e %E %g %G %a %A %d tail",
+	 -123, -0.11, -0.21, -0.31, -0.41, -0.51, -0.61, -0.71, -0.81, -321);
+  doTest("head %d %Lf %LF %Le %LE %Lg %LG %La %LA %d tail",
+	 123, 0.11L, 0.21L, 0.31L, 0.41L, 0.51L, 0.61L, 0.71L, 0.81L, 321);
+  doTest("head %d %Lf %LF %Le %LE %Lg %LG %La %LA %d tail",
+	 -123, -0.11L, -0.21L, -0.31L, -0.41L, -0.51L, -0.61L, -0.71L, -0.81L, -321);
+  doTest("head %d %c %s %p %p %d tail", 123, 111, "string", NULL, &var, 321);
+  doTest("head %d %c %s %p %p %d tail", -123, 111, "string", NULL, &var, -321);
+
   testem32(0);
   for(int i=0;i<31;i++) {
     testem32(+1 << i);
@@ -515,6 +650,8 @@ int main(int argc, char **argv) {
   testem<Octuple>(-1e-120);
   testem<Octuple>(+1.234567890123456789e-120);
   testem<Octuple>(-1.234567890123456789e-120);
+
+  cout << "Octuple OK" << endl;
 
   cout << "OK" << endl;
 

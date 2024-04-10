@@ -63,10 +63,10 @@ int main(int argc, char **argv) {
   checkStr(buf, "0.1", "strtold");
 #endif
 
-  tlfloat_snprintf(buf, sizeof(buf), "%256_.8g", tlfloat_strtoo("0.1", NULL));
+  tlfloat_snprintf(buf, sizeof(buf), "%.8_256g", tlfloat_strtoo("0.1", NULL));
   checkStr(buf, "0.1", "strtoo");
 
-  tlfloat_snprintf(buf, sizeof(buf), "%256_.8g", tlfloat_sino(tlfloat_strtoo("0.1", NULL)));
+  tlfloat_snprintf(buf, sizeof(buf), "%.8_256g", tlfloat_sino(tlfloat_strtoo("0.1", NULL)));
   checkStr(buf, "0.099833417", "sino");
 
   printf("OK\n");
