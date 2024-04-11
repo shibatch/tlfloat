@@ -130,8 +130,8 @@ void testem(double val, int cmpprec=10) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 types[i]);
-		lc0 = snprintf(corr0, 100, fmt, val, width);
-		lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr), width);
+		lc0 = snprintf(corr0, 100, fmt, width, val);
+		lc1 = snprintf(corr1, 100, fmt, width, strtod(corr0, nullptr));
 
 		snprintf(fmt, 100, "%%%s%s%s%s%s*._%d%s",
 			 alt ? "#" : "", 
@@ -140,7 +140,7 @@ void testem(double val, int cmpprec=10) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 nbits, types[i]);
-		lt = tlfloat_snprintf(test, 100, fmt, T(val), width);
+		lt = tlfloat_snprintf(test, 100, fmt, width, T(val));
 
 		if( (lt != lc0 && lt != lc1) ||
 		    (xstrcmp(test, corr0, cmpprec) != 0 && xstrcmp(test, corr1, cmpprec) != 0) ||
@@ -192,8 +192,8 @@ void testem(double val, int cmpprec=10) {
 			   blank ? " " : "", 
 			   sign ? "+" : "",
 			   types[i]);
-		  lc0 = snprintf(corr0, 100, fmt, val, width, prec);
-		  lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr), width, prec);
+		  lc0 = snprintf(corr0, 100, fmt, width, prec, val);
+		  lc1 = snprintf(corr1, 100, fmt, width, prec, strtod(corr0, nullptr));
 
 		  snprintf(fmt, 100, "%%%s%s%s%s%s*.*_%d%s",
 			   alt ? "#" : "", 
@@ -202,7 +202,7 @@ void testem(double val, int cmpprec=10) {
 			   blank ? " " : "", 
 			   sign ? "+" : "",
 			   nbits, types[i]);
-		  lt = tlfloat_snprintf(test, 100, fmt, T(val), width, prec);
+		  lt = tlfloat_snprintf(test, 100, fmt, width, prec, T(val));
 
 		  if( (lt != lc0 && lt != lc1) ||
 		      (xstrcmp(test, corr0, cmpprec) != 0 && xstrcmp(test, corr1, cmpprec) != 0) ||
@@ -249,8 +249,8 @@ void testem(double val, int cmpprec=10) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 types[i]);
-		lc0 = snprintf(corr0, 100, fmt, val, prec);
-		lc1 = snprintf(corr1, 100, fmt, strtod(corr0, nullptr), prec);
+		lc0 = snprintf(corr0, 100, fmt, prec, val);
+		lc1 = snprintf(corr1, 100, fmt, prec, strtod(corr0, nullptr));
 
 		snprintf(fmt, 100, "%%%s%s%s%s%s.*_%d%s",
 			 alt ? "#" : "", 
@@ -259,7 +259,7 @@ void testem(double val, int cmpprec=10) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 nbits, types[i]);
-		lt = tlfloat_snprintf(test, 100, fmt, T(val), prec);
+		lt = tlfloat_snprintf(test, 100, fmt, prec, T(val));
 
 		if( (lt != lc0 && lt != lc1) ||
 		    (xstrcmp(test, corr0, cmpprec) != 0 && xstrcmp(test, corr1, cmpprec) != 0) ||
@@ -310,8 +310,11 @@ void testem32(int32_t val) {
 		exit(-1);
 	      }
 
+	      //
+
 	      for(unsigned w=0;w<sizeof(test_widths)/sizeof(int);w++) {
 		int width = test_widths[w];
+
 		snprintf(fmt, 100, "%%%s%s%s%s%s%d.%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 
@@ -334,11 +337,37 @@ void testem32(int32_t val) {
 		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
 		  exit(-1);
 		}
+
+		//
+
+		snprintf(fmt, 100, "%%%s%s%s%s%s*.%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 types[i]);
+		snprintf(corr, 100, fmt, width, val);
+
+		snprintf(fmt, 100, "%%%s%s%s%s%s*._32%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 types[i]);
+		tlfloat_snprintf(test, 100, fmt, width, val);
+
+		if(strcmp(test,corr) != 0) {
+		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
+		  exit(-1);
+		}
 	      }
 
 	      for(int prec=4;prec<=12;prec += 1) {
 		for(unsigned w=0;w<sizeof(test_widths)/sizeof(int);w++) {
 		  int width = test_widths[w];
+
 		  snprintf(fmt, 100, "%%%s%s%s%s%s%d.%d%s",
 			   alt ? "#" : "", 
 			   zero ? "0" : "", 
@@ -356,6 +385,31 @@ void testem32(int32_t val) {
 			    sign ? "+" : "",
 			    width, prec, types[i]);
 		  tlfloat_snprintf(test, 100, fmt, val);
+
+		  if(strcmp(test,corr) != 0) {
+		    printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
+		    exit(-1);
+		  }
+
+		  //
+
+		  snprintf(fmt, 100, "%%%s%s%s%s%s*.*%s",
+			   alt ? "#" : "", 
+			   zero ? "0" : "", 
+			   left ? "-" : "", 
+			   blank ? " " : "", 
+			   sign ? "+" : "",
+			   types[i]);
+		  snprintf(corr, 100, fmt, width, prec, val);
+
+		  snprintf(fmt, 100, "%%%s%s%s%s%s*.*_32%s",
+			    alt ? "#" : "", 
+			    zero ? "0" : "", 
+			    left ? "-" : "", 
+			    blank ? " " : "", 
+			    sign ? "+" : "",
+			    types[i]);
+		  tlfloat_snprintf(test, 100, fmt, width, prec, val);
 
 		  if(strcmp(test,corr) != 0) {
 		    printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
@@ -380,6 +434,31 @@ void testem32(int32_t val) {
 			 sign ? "+" : "",
 			 prec, types[i]);
 		tlfloat_snprintf(test, 100, fmt, val);
+
+		if(strcmp(test,corr) != 0) {
+		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
+		  exit(-1);
+		}
+
+		//
+
+		snprintf(fmt, 100, "%%%s%s%s%s%s.*%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 types[i]);
+		snprintf(corr, 100, fmt, prec, val);
+
+		snprintf(fmt, 100, "%%%s%s%s%s%s.*_32%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 types[i]);
+		tlfloat_snprintf(test, 100, fmt, prec, val);
 
 		if(strcmp(test,corr) != 0) {
 		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
@@ -515,7 +594,9 @@ using namespace std;
 
 int main(int argc, char **argv) {
   int var;
-  doTest("head %d [%*g] [%.*g] [%*.*g] %d tail", 123, 100.1234567, 8, 101.1234567, 7, 102.1234567, 11, 9, 321);
+  doTest("head %d [%*g] [%.*g] [%*.*g] %d tail", 123, 8, 100.1234567, 7, 101.1234567, 11, 9, 102.1234567, 321);
+  doTest("head %d [%*d] [%.*d] [%*.*d] %d tail", 123, 8, 100, 7, 101, 11, 9, 102, 321);
+  doTest("head %d [%*s] [%.*s] [%*.*s] %d tail", 123, 8, "abc", 7, "def", 11, 9, "ghi", 321);
   doTest("head %.8d %hhd %hd %d %ld %lld %jd %zd %td %.4d tail",
 	 123, (signed char)1, (short int)2, (int)3, (long int)4, (long long int)5, (intmax_t)6, (size_t)7, (ptrdiff_t) 8, 321);
   doTest("head %.8d %hhd %hd %d %ld %lld %jd %zd %td %.4d tail",

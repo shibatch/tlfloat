@@ -14,13 +14,6 @@
 using namespace tlfloat;
 
 namespace {
-  static detail::xpair<int, int> readWidthPrecFromArg(bool readWidthFromArg, bool readPrecFromArg, int w, int p, va_list ap) {
-    detail::xpair<int, int> ret(w, p);
-    if (readWidthFromArg) ret.first = va_arg(ap, int);
-    if (readPrecFromArg) ret.second = va_arg(ap, int);
-    return ret;
-  }
-
   static int xvprintf(size_t (*consumer)(const char *ptr, size_t size, void *arg), void *arg, const char *fmt, va_list ap) {
     const int xbufsize = 5000;
     char *xbuf = (char *)malloc(xbufsize+10);
@@ -130,6 +123,14 @@ namespace {
       va_list ap2;
       va_copy(ap2, ap);
 
+      if (readWidthFromArg) width = va_arg(ap, int);
+      if (width < 0) {
+	width = -width;
+	flag_left = true;
+      }
+
+      if (readPrecFromArg) precision = va_arg(ap, int);
+
       switch(*fmt) {
       case 'E': case 'F': case 'G': case 'A':
 	flag_upper = true;
@@ -139,8 +140,6 @@ namespace {
 	  if (nbits == 0) {
 	    if (flag_quad) {
 	      Quad value = std::bit_cast<Quad>(va_arg(ap, tlfloat_quad));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -157,8 +156,6 @@ namespace {
 	    case 16: {
 	      typedef struct { uint16_t e; } arg_t;
 	      Half value = std::bit_cast<Half>(va_arg(ap, arg_t));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -170,8 +167,6 @@ namespace {
 	    case 32: {
 	      typedef struct { uint32_t e; } arg_t;
 	      Float value = std::bit_cast<Float>(va_arg(ap, arg_t));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -183,8 +178,6 @@ namespace {
 	    case 64: {
 	      typedef struct { uint64_t e[1]; } arg_t;
 	      Double value = std::bit_cast<Double>(va_arg(ap, arg_t));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -196,8 +189,6 @@ namespace {
 	    case 128: {
 	      typedef struct { uint64_t e[2]; } arg_t;
 	      Quad value = std::bit_cast<Quad>(va_arg(ap, arg_t));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -209,8 +200,6 @@ namespace {
 	    case 256: {
 	      typedef struct { uint64_t e[4]; } arg_t;
 	      Octuple value = std::bit_cast<Octuple>(va_arg(ap, arg_t));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -250,8 +239,6 @@ namespace {
 	    switch(nbits) {
 	    case 8: case 16: case 32: case 64: {
 	      int64_t value = nbits == 64 ? va_arg(ap, int64_t) : va_arg(ap, int);
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      int ret = BigInt<7>::snprint(xbuf, xbufsize, BigInt<7>(value), tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -261,8 +248,6 @@ namespace {
 	    }
 	    case 128: {
 	      BigInt<7> value = std::bit_cast<BigInt<7>>(va_arg(ap, tlfloat_bigint7));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      int ret = BigInt<7>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -272,8 +257,6 @@ namespace {
 	    }
 	    case 256: {
 	      BigInt<8> value = std::bit_cast<BigInt<8>>(va_arg(ap, tlfloat_bigint8));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      int ret = BigInt<8>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -283,8 +266,6 @@ namespace {
 	    }
 	    case 512: {
 	      BigInt<9> value = std::bit_cast<BigInt<9>>(va_arg(ap, tlfloat_bigint9));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      int ret = BigInt<9>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -294,8 +275,6 @@ namespace {
 	    }
 	    case 1024: {
 	      BigInt<10> value = std::bit_cast<BigInt<10>>(va_arg(ap, tlfloat_bigint10));
-	      auto a = readWidthPrecFromArg(readWidthFromArg, readPrecFromArg, width, precision, ap);
-	      width = a.first; precision = a.second;
 	      int ret = BigInt<10>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					    flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -344,8 +323,6 @@ namespace {
 	subfmt[fmt - subfmtstart + 1] = 0;
 	int ret = ::vsnprintf(xbuf, xbufsize, subfmt, ap2);
 	free(subfmt);
-	if (readWidthFromArg) va_arg(ap, int);
-	if (readPrecFromArg) va_arg(ap, int);
 	if (ret < 0) { errorflag = 1; break; }
 	outlen += (*consumer)(xbuf, strlen(xbuf), arg);
       }
