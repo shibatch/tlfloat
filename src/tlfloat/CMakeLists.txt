@@ -1,6 +1,6 @@
 add_library(tlfloat capi.cpp)
 target_compile_definitions(tlfloat PRIVATE SUPPRESS_WARNINGS=1)
-set(INCLUDEDIR "${CMAKE_SOURCE_DIR}/src/include")
+set(INCLUDEDIR "${PROJECT_SOURCE_DIR}/src/include")
 set_target_properties(tlfloat PROPERTIES
   VERSION ${TLFLOAT_VERSION}
   SOVERSION ${TLFLOAT_SOVERSION}

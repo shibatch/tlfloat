@@ -34,7 +34,7 @@ endif()
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 
-include_directories("${CMAKE_SOURCE_DIR}/src/include")
+include_directories("${PROJECT_SOURCE_DIR}/src/include")
 
 set(TMPDIR "${CMAKE_BINARY_DIR}/tmp")
 file(MAKE_DIRECTORY "${TMPDIR}")

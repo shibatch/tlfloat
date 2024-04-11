@@ -1175,6 +1175,8 @@ namespace tlfloat {
 
       if (width > (int)bufsize) width = bufsize;
 
+      if (typespec == 'u' || typespec == 'o' || typespec == 'x' || typespec == 'X') flag_unsigned = true;
+
       if (nbits < (1 << N)) {
 	bool signbit = value < 0;
 	value &= (BigUInt<N>(1) << nbits) - 1;
