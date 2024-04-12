@@ -4,6 +4,7 @@ option(ENABLE_VALGRIND "Enable testing with valgrind" ON)
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_CUDA_TESTER "Build CUDA tester" OFF)
 option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
+option(ENABLE_DOXYGEN "Enable generating documents with Doxygen" OFF)
 
 #
 
@@ -149,6 +150,29 @@ endif()
 
 if (NOT "${LC_CMAKE_BUILD_TYPE}" STREQUAL "release")
   add_compile_definitions(DEBUG=1)
+endif()
+
+# Setting up Doxygen
+
+if (ENABLE_DOXYGEN AND NOT WIN32)
+  find_package(Doxygen)
+
+  if (DOXYGEN_FOUND)
+    configure_file("${PROJECT_SOURCE_DIR}/doxygen.conf.in" "${CMAKE_BINARY_DIR}/doxygen.conf" @ONLY)
+
+    add_custom_target(doc_doxygen ALL
+      COMMAND "${DOXYGEN_EXECUTABLE}" "${CMAKE_BINARY_DIR}/doxygen.conf"
+      WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+      VERBATIM
+      )
+
+    install(
+      DIRECTORY "${CMAKE_BINARY_DIR}/doc_doxygen/"
+      DESTINATION "${INSTALL_PREFIX}doc_doxygen"
+      MESSAGE_NEVER
+      COMPONENT tlfloat_Documentation
+      )
+  endif()
 endif()
 
 #

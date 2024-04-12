@@ -255,7 +255,11 @@ namespace tlfloat {
 	::memmove(&bufPtr[dpos], &bufPtr[spos], size * sizeof(T));
       }
     };
+
+    template<typename mant_t, typename longmant_t, int nbexp, int nbmant> class UnpackedFloat;
   } // namespace detail
+
+  template<typename Unpacked_t> class TLFloat;
 
   template<int N> class BigUInt {
     static_assert(N >= 7, "N must be 7 or larger");
@@ -268,6 +272,7 @@ namespace tlfloat {
 
     constexpr BigUInt(const BigUInt<N-1>& h, const BigUInt<N-1>& l) : low(l), high(h) {}
 
+  private:
     template<int..., int K = N, std::enable_if_t<(K >= 10), int> = 0>
     static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
       static_assert(sizeof(BigUInt) == (sizeof(uint64_t) << (N - 6)), "Class memory layout");
@@ -372,7 +377,6 @@ namespace tlfloat {
       s.second = rh.second;
       return s;
     }
-    constexpr bool msb() const { return high.msb(); }
 
     constexpr BigUInt mulhi(const BigUInt& rhs) const {
       BigUInt ll = mul(low , rhs.low), lh = mul(low , rhs.high);
@@ -380,6 +384,7 @@ namespace tlfloat {
       BigUInt m = hl + ll.high + lh.low, hh = mul(high, rhs.high);
       return hh + m.high + lh.high;
     }
+
     constexpr BigUInt mulhiAprx(const BigUInt& rhs) const {
       BigUInt hh = mul(high, rhs.high);
       BigUInt<N-1> lh = low.mulhiAprx(rhs.high), hl = high.mulhiAprx(rhs.low);
@@ -395,8 +400,11 @@ namespace tlfloat {
       return y + y;
     }
 
+  public:
     template<int> friend class BigUInt;
     template<int> friend class BigInt;
+    template<typename mant_t, typename longmant_t, int nbexp, int nbmant> friend class detail::UnpackedFloat;
+    template<typename Unpacked_t> friend class TLFloat;
 
     constexpr BigUInt() = default;
 
@@ -479,6 +487,7 @@ namespace tlfloat {
     constexpr unsigned ilogbp1() const { return (1U << N) - clz(); }
     constexpr bool isZero() const { return low.isZero() && high.isZero(); }
     constexpr bool isAllOne() const { return low.isAllOne() && high.isAllOne(); }
+    constexpr bool msb() const { return high.msb(); }
     constexpr uint64_t getWord(unsigned idx) const {
       return idx >= (1 << (N-7)) ? high.getWord(idx - (1 << (N-7))) : low.getWord(idx);
     }
@@ -817,6 +826,7 @@ namespace tlfloat {
   public:
     uint64_t u64 = 0;
 
+  private:
     constexpr detail::xpair<BigUInt<6>, bool> inc() const {
       detail::xpair<BigUInt<6>, bool> s = { 0, false };
       s.first = u64 + 1;
@@ -843,7 +853,6 @@ namespace tlfloat {
       s.second = ub.second;
       return s;
     }
-    constexpr bool msb() const { return u64 >> 63; }
 
     constexpr BigUInt<6> reciprocalAprx() const {
       BigUInt<6> x(((~0ULL) / (u64 >> 32)) << 31);
@@ -853,6 +862,7 @@ namespace tlfloat {
     constexpr BigUInt<6> mulhi(const BigUInt<6>& rhs) const { return detail::mul128(u64, rhs.u64).first; }
     constexpr BigUInt<6> mulhiAprx(const BigUInt<6>& rhs) const { return mulhi(rhs); }
 
+  public:
     template<int> friend class BigUInt;
     template<int> friend class BigInt;
 
@@ -860,6 +870,7 @@ namespace tlfloat {
 
     constexpr bool isZero() const { return u64 == 0; }
     constexpr bool isAllOne() const { return u64 == ~uint64_t(0); }
+    constexpr bool msb() const { return u64 >> 63; }
     constexpr uint64_t getWord(unsigned idx) const { return u64; }
     constexpr void setWord(unsigned idx, uint64_t u) { u64 = u; }
 
