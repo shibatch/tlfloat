@@ -3,6 +3,8 @@
 
 Original distribution site : https://github.com/shibatch/tlfloat
 
+Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
+
 
 ### Features
 
