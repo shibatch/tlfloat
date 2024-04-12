@@ -171,11 +171,11 @@ extern "C" {
   tlfloat_octuple tlfloat_remaindero(const tlfloat_octuple x, const tlfloat_octuple y);
 
 #ifdef TLFLOAT_LIBQUADMATH_EMULATION
-  inline tlfloat_quad strtoflt128(const char *s, const char **sp) {
+  static inline tlfloat_quad strtoflt128(const char *s, const char **sp) {
     return tlfloat_strtoq(s, sp);
   }
 
-  inline int quadmath_snprintf(char *str, size_t size, const char *fmt, ...) {
+  static inline int quadmath_snprintf(char *str, size_t size, const char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     int ret = tlfloat_vsnprintf(str, size, fmt, ap);
@@ -183,7 +183,7 @@ extern "C" {
     return ret;
   }
 
-  inline tlfloat_quad sinq(const tlfloat_quad x) { return tlfloat_sinq(x); }
+  static inline tlfloat_quad sinq(const tlfloat_quad x) { return tlfloat_sinq(x); }
 #endif
 
 #ifdef __cplusplus
