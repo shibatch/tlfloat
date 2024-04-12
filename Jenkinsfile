@@ -6,7 +6,10 @@ pipeline {
             parallel {
                 stage('x86_64 linux gcc-11') {
             	     agent { label 'x86_64 && ubuntu22' }
+                     options { skipDefaultCheckout() }
             	     steps {
+                         cleanWs()
+                         checkout scm
 	    	     	 sh '''
                 	 echo "x86_64 gcc-11 on" `hostname`
 			 export CC=gcc-11
@@ -24,7 +27,10 @@ pipeline {
 
                 stage('x86_64 linux clang-18') {
             	     agent { label 'x86_64 && ubuntu22 && cuda' }
+                     options { skipDefaultCheckout() }
             	     steps {
+                         cleanWs()
+                         checkout scm
 	    	     	 sh '''
                 	 echo "x86_64 clang-18 on" `hostname`
 			 export CC=clang-18
@@ -43,7 +49,10 @@ pipeline {
 
                 stage('aarch64 linux gcc-11') {
             	     agent { label 'aarch64 && ubuntu22' }
+                     options { skipDefaultCheckout() }
             	     steps {
+                         cleanWs()
+                         checkout scm
 	    	     	 sh '''
                 	 echo "aarch64 gcc-11 on" `hostname`
 			 export CC=gcc-11
@@ -61,7 +70,10 @@ pipeline {
 
                 stage('aarch64 linux clang-17') {
             	     agent { label 'aarch64 && ubuntu23' }
+                     options { skipDefaultCheckout() }
             	     steps {
+                         cleanWs()
+                         checkout scm
 	    	     	 sh '''
                 	 echo "aarch64 clang-17 on" `hostname`
 			 export CC=clang-17
@@ -79,7 +91,10 @@ pipeline {
 
                 stage('x86_64 windows vs2022') {
             	     agent { label 'windows11 && vs2022' }
+                     options { skipDefaultCheckout() }
             	     steps {
+                         cleanWs()
+                         checkout scm
 		     	 bat """
 			 call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
 			 if not %ERRORLEVEL% == 0 exit /b %ERRORLEVEL%
@@ -93,7 +108,10 @@ pipeline {
 
                 stage('x86_64 windows clang') {
             	     agent { label 'windows11 && vs2022' }
+                     options { skipDefaultCheckout() }
             	     steps {
+                         cleanWs()
+                         checkout scm
 		     	 bat """
 			 call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
 			 if not %ERRORLEVEL% == 0 exit /b %ERRORLEVEL%
