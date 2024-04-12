@@ -5,7 +5,7 @@
 #endif
 #include <mpfr.h>
 
-#include <tlmath.hpp>
+#include <tlfloat/tlmath.hpp>
 #include <tlfloatutil.hpp>
 #include <auxiliary.hpp>
 

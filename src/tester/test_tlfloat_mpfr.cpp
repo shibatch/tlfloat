@@ -10,7 +10,7 @@
 
 #define SUPPRESS_WARNINGS
 
-#include "tlmath.hpp"
+#include "tlfloat/tlmath.hpp"
 #include "tlfloatutil.hpp"
 #include "auxiliary.hpp"
 

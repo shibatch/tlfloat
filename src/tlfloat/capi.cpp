@@ -7,9 +7,9 @@
 #endif
 
 #define NO_LIBSTDCXX
-#include "tlmath.hpp"
+#include "tlfloat/tlmath.hpp"
 
-#include "tlfloat.h"
+#include "tlfloat/tlfloat.h"
 
 using namespace tlfloat;
 

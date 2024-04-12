@@ -1,9 +1,9 @@
 #ifndef __TLMATH_HPP_INCLUDED__
 #define __TLMATH_HPP_INCLUDED__
 
-#include "tlfloat.hpp"
-#include "tlmathcoef.hpp"
-#include "rpitab.hpp"
+#include "tlfloat/tlfloat.hpp"
+#include "tlfloat/tlmathcoef.hpp"
+#include "tlfloat/rpitab.hpp"
 
 #if defined(__clang_major__) && !defined(_MSC_VER)
 #if __clang_major__ < 17

@@ -5,7 +5,7 @@
 
 #define SUPPRESS_WARNINGS
 
-#include "tlmath.hpp"
+#include "tlfloat/tlmath.hpp"
 #include "tlfloatutil.hpp"
 
 using namespace std;

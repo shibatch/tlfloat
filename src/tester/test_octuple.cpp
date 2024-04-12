@@ -1,7 +1,7 @@
 #include <cstdio>
 
-#include "tlmath.hpp"
-#include "tlfloat.h"
+#include "tlfloat/tlmath.hpp"
+#include "tlfloat/tlfloat.h"
 
 using namespace std;
 using namespace tlfloat;

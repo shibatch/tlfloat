@@ -8,7 +8,7 @@
 #define TLFLOAT_LIBQUADMATH_EMULATION
 #endif
 
-#include "tlfloat.h"
+#include "tlfloat/tlfloat.h"
 
 void checkStr(const char *p, const char *q, const char *mes) {
   if (strcmp(p, q) != 0) {

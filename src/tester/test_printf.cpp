@@ -5,8 +5,8 @@
 #include <cstdarg>
 #include <cctype>
 
-#include "tlfloat.hpp"
-#include "tlfloat.h"
+#include "tlfloat/tlfloat.hpp"
+#include "tlfloat/tlfloat.h"
 
 using namespace tlfloat;
 
