@@ -25,7 +25,7 @@ ALWAYS_DETAILED_SEC    = YES
 INLINE_INHERITED_MEMB  = NO
 FULL_PATH_NAMES        = YES
 STRIP_FROM_PATH        = @CMAKE_SOURCE_DIR@
-STRIP_FROM_INC_PATH    = @CMAKE_SOURCE_DIR@
+STRIP_FROM_INC_PATH    = @CMAKE_SOURCE_DIR@/src/include
 SHORT_NAMES            = NO
 JAVADOC_AUTOBRIEF      = NO
 JAVADOC_BANNER         = NO
@@ -110,7 +110,7 @@ FILE_PATTERNS          = *.cpp \
 RECURSIVE              = YES
 EXCLUDE                =
 EXCLUDE_SYMLINKS       = NO
-EXCLUDE_PATTERNS       = test*
+EXCLUDE_PATTERNS       = test* */util/* auxiliary.hpp suppress.hpp tlfloatutil.hpp tlmathcoef.hpp rpitab.hpp
 EXCLUDE_SYMBOLS        = *::detail yarray LCG64 RNG PSHA2_256_Internal CryptUtil tlfloat_bigint* \
 		         BigUInt*<*6*> *toHexString to_string_d \
 			 TLFloat*::getUnpacked

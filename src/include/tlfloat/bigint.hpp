@@ -50,6 +50,7 @@
 #endif // #ifdef _MSC_VER
 #endif // #ifndef DISABLE_ARCH_OPTIMIZATION
 
+/// TLFloat library defines all C++ classes and functions in tlfloat namespace
 namespace tlfloat {
   namespace detail {
     template<typename T, int N>

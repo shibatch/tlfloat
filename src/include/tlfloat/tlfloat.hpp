@@ -1143,6 +1143,11 @@ namespace tlfloat {
     }; // class UnpackedFloat
   } // namespace detail
 
+  /**
+   * This is a template class that represents a generic IEEE 754 floating-point number.
+   * By adjusting the template parameters, it can represent an IEEE 754 floating-point number of any precision.
+   * The data size and data structure of the objects are the same as the corresponding floating-point numbers.
+   */
   template<typename Unpacked_t>
   class TLFloat {
     template<typename> friend class TLFloat;
@@ -1251,17 +1256,26 @@ namespace tlfloat {
 
     constexpr TLFloat operator+() const { return TLFloat(*this); }
 
+    /** This function performs addition of two floating point numbers. This function returns correctly rounded results. */
     constexpr TLFloat operator+(const TLFloat& rhs) const { return getUnpacked() + rhs.getUnpacked(); }
+
+    /** This function performs subtraction of floating point numbers. This function returns correctly rounded results. */
     constexpr TLFloat operator-(const TLFloat& rhs) const { return getUnpacked() - rhs.getUnpacked(); }
+
+    /** This function performs multiplication of two floating point numbers. This function returns correctly rounded results. */
     constexpr TLFloat operator*(const TLFloat& rhs) const { return getUnpacked() * rhs.getUnpacked(); }
+
+    /** This function performs division of floating point numbers. This function returns correctly rounded results. */
     constexpr TLFloat operator/(const TLFloat& rhs) const { return getUnpacked() / rhs.getUnpacked(); }
 
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat fabs(const TLFloat& u) {
       TLFloat n(u);
       n.m &= ~(mant_t(1) << (sizeof(mant_t)*8-1));
       return n;
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat copysign(const TLFloat& x, const TLFloat& y) {
       TLFloat n(x);
       n.m &= ~(mant_t(1) << (sizeof(mant_t)*8-1));
@@ -1269,23 +1283,33 @@ namespace tlfloat {
       return n;
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat fmax(const TLFloat& x, const TLFloat& y) {
       return isnan(y) ? x : (x > y ? x : y);
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat fmin(const TLFloat& x, const TLFloat& y) {
       return isnan(y) ? x : (x < y ? x : y);
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat fdim(const TLFloat& x, const TLFloat& y) {
       TLFloat ret = x - y;
       if (ret < 0 || x == y) ret = 0;
       return ret;
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. */
     friend constexpr bool isnan(const TLFloat& u) { return u.getUnpacked().isnan; }
+
+    /** This function has the same functionality as the corresponding function in math.h. */
     friend constexpr bool isinf(const TLFloat& u) { return u.getUnpacked().isinf; }
+
+    /** This function has the same functionality as the corresponding function in math.h. */
     friend constexpr bool finite(const TLFloat& u) { return !(isnan(u) || isinf(u)); }
+
+    /** This function has the same functionality as the corresponding function in math.h. */
     friend constexpr bool signbit(const TLFloat& u) {
       TLFloat n(u);
       return Unpacked_t::bit(n.m, sizeof(mant_t) * 8 - 1);
@@ -1294,15 +1318,27 @@ namespace tlfloat {
     friend constexpr bool isint(const TLFloat& u) { return isint(u.getUnpacked()); }
     friend constexpr bool iseven(const TLFloat& u) { return iseven(u.getUnpacked()); }
 
+    /** This function performs the fused multiply-add operation of floating point numbers. This function returns correctly rounded results. */
     friend constexpr TLFloat fma(const TLFloat& x, const TLFloat& y, const TLFloat& z) {
       return Unpacked_t::fma(x.getUnpacked(), y.getUnpacked(), z.getUnpacked());
     }
 
+    /** This function performs ordered comparison of two floating point numbers. */
     constexpr bool operator==(const TLFloat& rhs) const { return getUnpacked() == rhs.getUnpacked(); }
+
+    /** This function performs ordered comparison of two floating point numbers. */
     constexpr bool operator!=(const TLFloat& rhs) const { return getUnpacked() != rhs.getUnpacked(); }
+
+    /** This function performs ordered comparison of two floating point numbers. */
     constexpr bool operator> (const TLFloat& rhs) const { return getUnpacked() >  rhs.getUnpacked(); }
+
+    /** This function performs ordered comparison of two floating point numbers. */
     constexpr bool operator< (const TLFloat& rhs) const { return getUnpacked() <  rhs.getUnpacked(); }
+
+    /** This function performs ordered comparison of two floating point numbers. */
     constexpr bool operator>=(const TLFloat& rhs) const { return getUnpacked() >= rhs.getUnpacked(); }
+
+    /** This function performs ordered comparison of two floating point numbers. */
     constexpr bool operator<=(const TLFloat& rhs) const { return getUnpacked() <= rhs.getUnpacked(); }
 
     //
@@ -1375,6 +1411,7 @@ namespace tlfloat {
 
     //
 
+    /** This function has the same functionality as the corresponding function in math.h. */
     friend constexpr int32_t ilogb(const TLFloat& f) {
       auto u = f.getUnpacked();
       if (u.isinf) return 2147483647;
@@ -1395,18 +1432,21 @@ namespace tlfloat {
       return detail::xpair<TLFloat, int> { (TLFloat)p.first.cast((Unpacked_t *)0), p.second };
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. */
     friend constexpr TLFloat frexp(const TLFloat& f, int *exp) {
       auto p = frexp_(f.getUnpacked().cast((xUnpacked_t *)0));
       if (exp) *exp = p.second;
       return (TLFloat)p.first.cast((Unpacked_t *)0);
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. */
     friend constexpr TLFloat ldexp(const TLFloat& f, int exp) {
       return (TLFloat)ldexp_(f.getUnpacked().cast((xUnpacked_t *)0), exp).cast((Unpacked_t *)0);
     }
 
     static constexpr TLFloat exp10i(int a) { return TLFloat(Unpacked_t::exp10i(a)); }
 
+    /** This function finds the square root of a floating point number. This function returns correctly rounded results. */
     friend constexpr TLFloat sqrt(const TLFloat& d) {
       if (d < 0) return nan();
       if (isinf(d) || isnan(d)) return d;
@@ -1415,6 +1455,7 @@ namespace tlfloat {
       return TLFloat(sqrt_(d.getUnpacked()));
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
     friend constexpr TLFloat hypot(const TLFloat& x, const TLFloat& y) {
       auto xx = x.getUnpacked().cast((xUnpacked_t *)0);
       auto yy = y.getUnpacked().cast((xUnpacked_t *)0);
@@ -1423,12 +1464,22 @@ namespace tlfloat {
       return sqrt_(xx * xx + yy * yy).cast((Unpacked_t *)0);
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat trunc(const TLFloat& d) { return (TLFloat)trunc(d.getUnpacked()); }
+
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat floor(const TLFloat& d) { return (TLFloat)floor(d.getUnpacked()); }
+
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat ceil (const TLFloat& d) { return (TLFloat)ceil (d.getUnpacked()); }
+
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat round(const TLFloat& d) { return (TLFloat)round(d.getUnpacked()); }
+
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat rint (const TLFloat& d) { return (TLFloat)rint (d.getUnpacked()); }
 
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat modf(const TLFloat& x, TLFloat* iptr) {
       if (isnan(x) || iszero(x)) { *iptr = x; return x; }
       if (isinf(x)) { *iptr = x; return zero(signbit(x)); }
@@ -1437,6 +1488,7 @@ namespace tlfloat {
       return x - i;
     }
 
+    /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
     friend constexpr TLFloat nextafter(const TLFloat& x, const TLFloat& y) {
       if (isnan(x)) return x;
       if (isnan(y)) return y;
@@ -1455,14 +1507,6 @@ namespace tlfloat {
       }
       return r;
     }
-
-    //
-
-    typedef TLFloat<uhalf> Half;
-    typedef TLFloat<ufloat> Float;
-    typedef TLFloat<udouble> Double;
-    typedef TLFloat<uquad> Quad;
-    typedef TLFloat<uoctuple> Octuple;
   }; // class TLFloat
 
   //
@@ -1503,10 +1547,10 @@ namespace tlfloat {
 
   //
 
-  typedef TLFloat<detail::UnpackedFloat<uint16_t, uint32_t, 5, 10>> Half;
-  typedef TLFloat<detail::UnpackedFloat<uint32_t, uint64_t, 8, 23>> Float;
-  typedef TLFloat<detail::UnpackedFloat<uint64_t, BigUInt<7>, 11, 52>> Double;
-  typedef TLFloat<detail::UnpackedFloat<BigUInt<7>, BigUInt<8>, 15, 112>> Quad;
-  typedef TLFloat<detail::UnpackedFloat<BigUInt<8>, BigUInt<9>, 19, 236>> Octuple;
+  typedef TLFloat<detail::UnpackedFloat<uint16_t, uint32_t, 5, 10>> Half; ///< This class represents a half-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
+  typedef TLFloat<detail::UnpackedFloat<uint32_t, uint64_t, 8, 23>> Float; ///< This class represents a single-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
+  typedef TLFloat<detail::UnpackedFloat<uint64_t, BigUInt<7>, 11, 52>> Double; ///< This class represents a double-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
+  typedef TLFloat<detail::UnpackedFloat<BigUInt<7>, BigUInt<8>, 15, 112>> Quad; ///< This class represents a quadruple-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
+  typedef TLFloat<detail::UnpackedFloat<BigUInt<8>, BigUInt<9>, 19, 236>> Octuple; ///< This class represents a octuple-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
 } // namespace tlfloat
 #endif // #ifndef __TLFLOAT_HPP_INCLUDED__
