@@ -435,7 +435,7 @@ extern "C" {
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
-  static inline tlfloat_quad fmaq(const tlfloat_quad x, const tlfloat_quad y, const tlfloat_quad y) { return tlfloat_fmaq(x, y, z); }
+  static inline tlfloat_quad fmaq(const tlfloat_quad x, const tlfloat_quad y, const tlfloat_quad z) { return tlfloat_fmaq(x, y, z); }
 
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
