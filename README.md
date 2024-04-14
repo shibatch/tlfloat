@@ -42,7 +42,13 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
   * fabs, copysign, fmax, fmin, fdim
   * ldexp, frexp, modf, nextafter
   * isnan, isinf, finite, signbit
+
 * I/O functions
+  * Conversion to/from C strings
+  * printf-family functions
+
+* libquadmath emulation
+  * Most of libquadmath functions can be used with x86_64 clang
 
 * The library provides BigInt template classes in addition to the FP classes
   * It provides operations for integers of artibrary length (2^N bits)
@@ -56,10 +62,9 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
 * This software is currently at the alpha development stage, and thus there may be major changes to the API.
 
 * The following features will be added in future releases
-  * Proper documentation
-  * Add testers for certain unimplemented items
-    * Testers for I/O functions
-  * Complete printf functionality
+  * Further documentation
+  * More testing
+    * Add testers for I/O functions
   * C API / pre-C++20 API
   * Interoperability with SLEEF
   * Big endian support
