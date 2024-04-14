@@ -132,6 +132,134 @@ extern "C" {
   //
 
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_fabsf(const float x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_fabs(const double x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_quad tlfloat_fabsq(const tlfloat_quad x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_octuple tlfloat_fabso(const tlfloat_octuple x);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_copysignf(const float x, const float y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_copysign(const double x, const double y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_quad tlfloat_copysignq(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_octuple tlfloat_copysigno(const tlfloat_octuple x, const tlfloat_octuple y);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_fmaxf(const float x, const float y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_fmax(const double x, const double y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_quad tlfloat_fmaxq(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_octuple tlfloat_fmaxo(const tlfloat_octuple x, const tlfloat_octuple y);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_fminf(const float x, const float y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_fmin(const double x, const double y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_quad tlfloat_fminq(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_octuple tlfloat_fmino(const tlfloat_octuple x, const tlfloat_octuple y);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_fdimf(const float x, const float y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_fdim(const double x, const double y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_quad tlfloat_fdimq(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_octuple tlfloat_fdimo(const tlfloat_octuple x, const tlfloat_octuple y);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_ldexpf(const float x, const int y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_ldexp(const double x, const int y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_quad tlfloat_ldexpq(const tlfloat_quad x, const int y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_octuple tlfloat_ldexpo(const tlfloat_octuple x, const int y);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_frexpf(const float x, int *y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_frexp(const double x, int *y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_quad tlfloat_frexpq(const tlfloat_quad x, int *y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_octuple tlfloat_frexpo(const tlfloat_octuple x, int *y);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_modff(const float x, float *y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_modf(const double x, double *y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_quad tlfloat_modfq(const tlfloat_quad x, tlfloat_quad *y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_octuple tlfloat_modfo(const tlfloat_octuple x, tlfloat_octuple *y);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_nextafterf(const float x, const float y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_nextafter(const double x, const double y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_quad tlfloat_nextafterq(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  tlfloat_octuple tlfloat_nextaftero(const tlfloat_octuple x, const tlfloat_octuple y);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_ilogbf(const float x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_ilogb(const double x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_ilogbq(const tlfloat_quad x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_ilogbo(const tlfloat_octuple x);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_isnanf(const float x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_isnan(const double x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_isnanq(const tlfloat_quad x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_isnano(const tlfloat_octuple x);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_isinff(const float x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_isinf(const double x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_isinfq(const tlfloat_quad x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_isinfo(const tlfloat_octuple x);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_finitef(const float x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_finite(const double x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_finiteq(const tlfloat_quad x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_finiteo(const tlfloat_octuple x);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_signbitf(const float x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_signbit(const double x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_signbitq(const tlfloat_quad x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_signbito(const tlfloat_octuple x);
+
+  //
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   float tlfloat_hypotf(const float x, const float y);
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   double tlfloat_hypot(const double x, const double y);
@@ -441,6 +569,76 @@ extern "C" {
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
   static inline tlfloat_quad sqrtq(const tlfloat_quad x) { return tlfloat_sqrtq(x); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad fabsq(const tlfloat_quad x) { return tlfloat_fabsq(x); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad copysignq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_copysignq(x, y); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad fmaxq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_fmaxq(x, y); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad fminq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_fminq(x, y); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad fdimq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_fdimq(x, y); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad ldexpq(const tlfloat_quad x, const int y) { return tlfloat_ldexpq(x, y); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad frexpq(const tlfloat_quad x, int *y) { return tlfloat_frexpq(x, y); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad modfq(const tlfloat_quad x, tlfloat_quad *y) { return tlfloat_modfq(x, y); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad nextafterq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_nextafterq(x, y); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline int ilogbq(const tlfloat_quad x) { return tlfloat_ilogbq(x); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline int isnanq(const tlfloat_quad x) { return tlfloat_isnanq(x); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline int isinfq(const tlfloat_quad x) { return tlfloat_isinfq(x); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline int finiteq(const tlfloat_quad x) { return tlfloat_finiteq(x); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline int signbitq(const tlfloat_quad x) { return tlfloat_signbitq(x); }
 
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.

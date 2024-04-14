@@ -473,6 +473,98 @@ extern "C" {
 
   //
 
+  float tlfloat_fabsf(const float x) { return (float)fabs(Float(x)); }
+  double tlfloat_fabs(const double x) { return (double)fabs(Double(x)); }
+  tlfloat_quad tlfloat_fabsq(const tlfloat_quad x) { return (tlfloat_quad)fabs(Quad(x)); }
+  tlfloat_octuple tlfloat_fabso(const tlfloat_octuple x) { return (tlfloat_octuple)fabs(Octuple(x)); }
+
+  float tlfloat_copysignf(const float x, const float y) { return (float)copysign(Float(x), Float(y)); }
+  double tlfloat_copysign(const double x, const double y) { return (double)copysign(Double(x), Double(y)); }
+  tlfloat_quad tlfloat_copysignq(const tlfloat_quad x, const tlfloat_quad y) { return (tlfloat_quad)copysign(Quad(x), Quad(y)); }
+  tlfloat_octuple tlfloat_copysigno(const tlfloat_octuple x, const tlfloat_octuple y) { return (tlfloat_octuple)copysign(Octuple(x), Octuple(y)); }
+
+  float tlfloat_fmaxf(const float x, const float y) { return (float)fmax(Float(x), Float(y)); }
+  double tlfloat_fmax(const double x, const double y) { return (double)fmax(Double(x), Double(y)); }
+  tlfloat_quad tlfloat_fmaxq(const tlfloat_quad x, const tlfloat_quad y) { return (tlfloat_quad)fmax(Quad(x), Quad(y)); }
+  tlfloat_octuple tlfloat_fmaxo(const tlfloat_octuple x, const tlfloat_octuple y) { return (tlfloat_octuple)fmax(Octuple(x), Octuple(y)); }
+
+  float tlfloat_fminf(const float x, const float y) { return (float)fmin(Float(x), Float(y)); }
+  double tlfloat_fmin(const double x, const double y) { return (double)fmin(Double(x), Double(y)); }
+  tlfloat_quad tlfloat_fminq(const tlfloat_quad x, const tlfloat_quad y) { return (tlfloat_quad)fmin(Quad(x), Quad(y)); }
+  tlfloat_octuple tlfloat_fmino(const tlfloat_octuple x, const tlfloat_octuple y) { return (tlfloat_octuple)fmin(Octuple(x), Octuple(y)); }
+
+  float tlfloat_fdimf(const float x, const float y) { return (float)fdim(Float(x), Float(y)); }
+  double tlfloat_fdim(const double x, const double y) { return (double)fdim(Double(x), Double(y)); }
+  tlfloat_quad tlfloat_fdimq(const tlfloat_quad x, const tlfloat_quad y) { return (tlfloat_quad)fdim(Quad(x), Quad(y)); }
+  tlfloat_octuple tlfloat_fdimo(const tlfloat_octuple x, const tlfloat_octuple y) { return (tlfloat_octuple)fdim(Octuple(x), Octuple(y)); }
+
+  float tlfloat_ldexpf(const float x, const int y) { return (float)ldexp(Float(x), y); }
+  double tlfloat_ldexp(const double x, const int y) { return (double)ldexp(Double(x), y); }
+  tlfloat_quad tlfloat_ldexpq(const tlfloat_quad x, const int y) { return (tlfloat_quad)ldexp(Quad(x), y); }
+  tlfloat_octuple tlfloat_ldexpo(const tlfloat_octuple x, const int y) { return (tlfloat_octuple)ldexp(Octuple(x), y); }
+
+  float tlfloat_frexpf(const float x, int *y) { return (float)frexp(Float(x), y); }
+  double tlfloat_frexp(const double x, int *y) { return (double)frexp(Double(x), y); }
+  tlfloat_quad tlfloat_frexpq(const tlfloat_quad x, int *y) { return (tlfloat_quad)frexp(Quad(x), y); }
+  tlfloat_octuple tlfloat_frexpo(const tlfloat_octuple x, int *y) { return (tlfloat_octuple)frexp(Octuple(x), y); }
+
+  float tlfloat_modff(const float x, float *y) {
+    Float z;
+    float r = (float)modf(Float(x), &z);
+    *y = (float)z;
+    return r;
+  }
+  double tlfloat_modf(const double x, double *y) {
+    Double z;
+    double r = (double)modf(Double(x), &z);
+    *y = (double)z;
+    return r;
+  }
+  tlfloat_quad tlfloat_modfq(const tlfloat_quad x, tlfloat_quad *y) {
+    Quad z;
+    tlfloat_quad r = (tlfloat_quad)modf(Quad(x), &z);
+    *y = (tlfloat_quad)z;
+    return r;
+  }
+  tlfloat_octuple tlfloat_modfo(const tlfloat_octuple x, tlfloat_octuple *y) {
+    Octuple z;
+    tlfloat_octuple r = (tlfloat_octuple)modf(Octuple(x), &z);
+    *y = (tlfloat_octuple)z;
+    return r;
+  }
+
+  float tlfloat_nextafterf(const float x, const float y) { return (float)nextafter(Float(x), Float(y)); }
+  double tlfloat_nextafter(const double x, const double y) { return (double)nextafter(Double(x), Double(y)); }
+  tlfloat_quad tlfloat_nextafterq(const tlfloat_quad x, const tlfloat_quad y) { return (tlfloat_quad)nextafter(Quad(x), Quad(y)); }
+  tlfloat_octuple tlfloat_nextaftero(const tlfloat_octuple x, const tlfloat_octuple y) { return (tlfloat_octuple)nextafter(Octuple(x), Octuple(y)); }
+
+  int tlfloat_ilogbf(const float x) { return ilogb(Float(x)); }
+  int tlfloat_ilogb(const double x) { return ilogb(Double(x)); }
+  int tlfloat_ilogbq(const tlfloat_quad x) { return ilogb(Quad(x)); }
+  int tlfloat_ilogbo(const tlfloat_octuple x) { return ilogb(Octuple(x)); }
+
+  int tlfloat_isnanf(const float x) { return isnan(Float(x)); }
+  int tlfloat_isnan(const double x) { return isnan(Double(x)); }
+  int tlfloat_isnanq(const tlfloat_quad x) { return isnan(Quad(x)); }
+  int tlfloat_isnano(const tlfloat_octuple x) { return isnan(Octuple(x)); }
+
+  int tlfloat_isinff(const float x) { return isinf(Float(x)); }
+  int tlfloat_isinf(const double x) { return isinf(Double(x)); }
+  int tlfloat_isinfq(const tlfloat_quad x) { return isinf(Quad(x)); }
+  int tlfloat_isinfo(const tlfloat_octuple x) { return isinf(Octuple(x)); }
+
+  int tlfloat_finitef(const float x) { return finite(Float(x)); }
+  int tlfloat_finite(const double x) { return finite(Double(x)); }
+  int tlfloat_finiteq(const tlfloat_quad x) { return finite(Quad(x)); }
+  int tlfloat_finiteo(const tlfloat_octuple x) { return finite(Octuple(x)); }
+
+  int tlfloat_signbitf(const float x) { return signbit(Float(x)); }
+  int tlfloat_signbit(const double x) { return signbit(Double(x)); }
+  int tlfloat_signbitq(const tlfloat_quad x) { return signbit(Quad(x)); }
+  int tlfloat_signbito(const tlfloat_octuple x) { return signbit(Octuple(x)); }
+
+  //
+
   float tlfloat_hypotf(const float x, const float y) { return (float)hypot(Float(x), Float(y)); }
   double tlfloat_hypot(const double x, const double y) { return (double)hypot(Double(x), Double(y)); }
   tlfloat_quad tlfloat_hypotq(const tlfloat_quad x, const tlfloat_quad y) { return (tlfloat_quad)hypot(Quad(x), Quad(y)); }
@@ -502,6 +594,8 @@ extern "C" {
   double tlfloat_rint(const double x) { return (double)rint(Double(x)); }
   tlfloat_quad tlfloat_rintq(const tlfloat_quad x) { return (tlfloat_quad)rint(Quad(x)); }
   tlfloat_octuple tlfloat_rinto(const tlfloat_octuple x) { return (tlfloat_octuple)rint(Octuple(x)); }
+
+  //
 
   float tlfloat_sinf(const float x) { return (float)sin(Float(x)); }
   double tlfloat_sin(const double x) { return (double)sin(Double(x)); }

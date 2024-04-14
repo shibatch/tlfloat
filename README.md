@@ -17,7 +17,7 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
   * Works without libc++
 
 * IEEE 754 compliant
-  * Supports subnormal numbers, NaN, inf, and signed zero.
+  * Supports subnormal numbers, NaN, inf, and signed zero
 
 * Supports a wide range of precisions
   * Half, float, double, quad, octuple
@@ -27,6 +27,10 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
 
 * Portable
   * Compatible with Linux, Windows, microcontrollers, wasm, CUDA (version 12 or later)
+  * Constexpr functions can be called from CUDA devices with --expt-relaxed-constexpr compiler option
+
+* C language API / libquadmath emulation
+  * Most of libquadmath functions can be used with x86_64 clang
 
 * Moderately optimized
   * Optimized for each architecture using intrinsics, etc.
@@ -47,9 +51,6 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
   * Conversion to/from C strings
   * printf-family functions
 
-* libquadmath emulation
-  * Most of libquadmath functions can be used with x86_64 clang
-
 * The library provides BigInt template classes in addition to the FP classes
   * It provides operations for integers of artibrary length (2^N bits)
   * They can be used in the similar way to the ordinary int/uint types
@@ -59,13 +60,13 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
 
 ### Development status
 
-* This software is currently at the alpha development stage, and thus there may be major changes to the API.
+* This software is currently at the alpha development stage
 
 * The following features will be added in future releases
   * Further documentation
   * More testing
-    * Add testers for I/O functions
-  * C API / pre-C++20 API
+    * Add more testers for I/O functions
+  * Pre-C++20 API
   * Interoperability with SLEEF
   * Big endian support
   * Remaining math functions in math.h
