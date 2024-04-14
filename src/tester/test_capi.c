@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 
   //
 
-  __float128 q0 = strtoflt128("0.123", NULL), q1 = strtoflt128("1.234", NULL), q2 = strtoflt128("-0.345", NULL);
+  tlfloat_quad q0 = strtoflt128("0.123", NULL), q1 = strtoflt128("1.234", NULL), q2 = strtoflt128("-0.345", NULL);
   tlfloat_octuple o0 = tlfloat_strtoo("0.123", NULL), o1 = tlfloat_strtoo("1.234", NULL), o2 = tlfloat_strtoo("-0.345", NULL);
 
   quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", fmaq(q0, q1, q2));
