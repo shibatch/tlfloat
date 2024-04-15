@@ -58,6 +58,54 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
   * These classes are internally used to implement the TLFloat FP classes
 
 
+
+### How to build
+
+1. Check out the source code from our GitHub repository :
+`git clone https://github.com/shibatch/tlfloat`
+
+2. Make a separate directory to create an out-of-source build :
+`cd tlfloat && mkdir build && cd build`
+
+3. Run cmake to configure the project :
+`cmake .. -DCMAKE_INSTALL_PREFIX=../../install`
+
+4. Run make to build and install the project :
+`make && make install`
+
+
+
+### Compiling hello world example
+
+Below is a simple C++ source code utilizing TLFloat.
+
+```
+#include <iostream>
+#include <tlfloat/tlmath.hpp>
+
+using namespace tlfloat;
+
+Octuple machin() {
+  return 4 * (4 * atan(1 / Octuple(5)) - atan(1 / Octuple(239)));
+}
+
+int main(int argc, char **argv) {
+  std::cout << to_string(machin(), 70) << std::endl;
+}
+```
+
+To compile this source code, use the following command.
+
+`g++ -std=c++20 -I./install/include hello.cpp`
+
+You have to specify C++20 standard. Note that you do not need to link any library in this example. This program computes PI in octuple precision and shows it.
+
+```
+$ ./a.out
+3.141592653589793238462643383279502884197169399375105820974944592307816
+```
+
+
 ### Development status
 
 * This software is currently at the alpha development stage

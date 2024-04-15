@@ -1282,13 +1282,15 @@ namespace tlfloat {
   };
 }
 
-#ifndef NO_LIBSTDCXX
+#if defined(DOXYGEN) || !defined(NO_LIBSTDCXX)
 
 #include <iostream>
 #include <vector>
 #include <string>
 
 namespace tlfloat {
+
+#ifndef DOXYGEN
   inline std::string toHexString(const uint64_t u) {
     char buf[17];
     snprintf(buf, 17, "%016llx", (unsigned long long)u);
@@ -1298,10 +1300,11 @@ namespace tlfloat {
   inline std::string toHexString(uint16_t x) { return toHexString(uint64_t(x)); }
   inline std::string toHexString(const BigUInt<6> &u) { return toHexString(u.u64); }
 
-  inline std::ostream& operator<<(std::ostream &os, const BigUInt<6>& u) { return os << u.u64; }
-
   template<int N> static std::string toHexString(const BigUInt<N>& u) { return toHexString(u.high) + toHexString(u.low); }
   template<int N> static std::string toHexString(const BigInt<N>& u) { return toHexString(u.u); }
+#endif
+
+  inline std::ostream& operator<<(std::ostream &os, const BigUInt<6>& u) { return os << u.u64; }
 
   template<int N>
   std::string to_string(const BigUInt<N>& u) {
@@ -1321,5 +1324,5 @@ namespace tlfloat {
 
   template<int N> static std::ostream& operator<<(std::ostream &os, const BigInt<N>& u) { return os << to_string(u); }
 }
-#endif // #ifndef NO_LIBSTDCXX
+#endif // #if defined(DOXYGEN) || !defined(NO_LIBSTDCXX)
 #endif // #ifndef __BIGINT_HPP_INCLUDED__

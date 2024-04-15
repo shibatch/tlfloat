@@ -113,7 +113,7 @@ EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = test* */util/* auxiliary.hpp suppress.hpp tlfloatutil.hpp tlmathcoef.hpp rpitab.hpp
 EXCLUDE_SYMBOLS        = *::detail yarray LCG64 RNG PSHA2_256_Internal CryptUtil tlfloat_bigint* \
 		         BigUInt*<*6*> *toHexString to_string_d \
-			 TLFloat*::getUnpacked
+			 TLFloat*::getUnpacked detail::UnpackedFloat
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO
@@ -244,7 +244,7 @@ EXPAND_ONLY_PREDEF     = NO
 SEARCH_INCLUDES        = YES
 INCLUDE_PATH           =
 INCLUDE_FILE_PATTERNS  =
-PREDEFINED             = TLFLOAT_LIBQUADMATH_EMULATION ENABLE_UINT128
+PREDEFINED             = TLFLOAT_LIBQUADMATH_EMULATION ENABLE_UINT128 DOXYGEN
 EXPAND_AS_DEFINED      = 
 SKIP_FUNCTION_MACROS   = YES
 TAGFILES               =

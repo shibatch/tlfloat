@@ -1252,7 +1252,7 @@ namespace tlfloat {
     constexpr TLFloat(const detail::UnpackedFloat<mant_t_, longmant_t_, nbexp_, nbmant_> &tf) :
       m(mant_t(tf.cast((Unpacked_t *)0))) {}
 
-    /** Cast from any TLFloat class */
+    /** Cast from an instance of any TLFloat class */
     template<typename srctftype>
     constexpr TLFloat(const TLFloat<srctftype>& s) :
       TLFloat(s.getUnpacked().cast((const Unpacked_t *)nullptr)) {}
@@ -1292,6 +1292,7 @@ namespace tlfloat {
       }
     }
 
+    /** Any non-integer object can be bitcast to a TLFloat type of the same size */
     template<typename fptype,
       std::enable_if_t<(sizeof(fptype)==sizeof(mant_t) && (std::is_floating_point_v<fptype> || (!std::is_pointer_v<fptype> && !std::is_integral_v<fptype>))), int> = 0>
     constexpr TLFloat(const fptype& s) {
@@ -1305,6 +1306,7 @@ namespace tlfloat {
       return std::bit_cast<fptype>(m);
     }
 
+    /** This works like strtod */
     constexpr TLFloat(const char *ptr, const char **endptr=nullptr) {
       *this = TLFloat(xUnpacked_t(ptr, endptr).cast((Unpacked_t *)nullptr));
     }
@@ -1592,7 +1594,8 @@ namespace tlfloat {
 
   //
 
-#ifndef NO_LIBSTDCXX
+#if defined(DOXYGEN) || !defined(NO_LIBSTDCXX)
+#ifndef DOXYGEN
   template<typename mant_t, typename longmant_t, int nbexp, int nbmant>
   static std::string to_string_d(const detail::UnpackedFloat<mant_t, longmant_t, nbexp, nbmant> &uf) {
     std::string s;
@@ -1609,6 +1612,15 @@ namespace tlfloat {
   }
 
   template<typename Unpacked_t>
+  static std::string to_string(Unpacked_t u, int d=6) {
+    std::vector<char> buf(1000);
+    snprint(buf.data(), buf.size(), u, 'g', 0, d, false, false, false, false, false, false);
+    return std::string(buf.data());
+  }
+#endif
+
+  /** This works like sprintf(str, "%.6g", *this) where the precision can be specified with d */
+  template<typename Unpacked_t>
   static std::string to_string(TLFloat<Unpacked_t> a, int d=6) {
     std::vector<char> buf(1000);
     snprint(buf.data(), buf.size(), a.getUnpacked(), 'g', 0, d, false, false, false, false, false, false);
@@ -1617,14 +1629,7 @@ namespace tlfloat {
 
   template<typename Unpacked_t>
   static std::ostream& operator<<(std::ostream &os, const TLFloat<Unpacked_t>& u) { return os << to_string(u); }
-
-  template<typename Unpacked_t>
-  static std::string to_string(Unpacked_t u, int d=6) {
-    std::vector<char> buf(1000);
-    snprint(buf.data(), buf.size(), u, 'g', 0, d, false, false, false, false, false, false);
-    return std::string(buf.data());
-  }
-#endif // #ifndef NO_LIBSTDCXX
+#endif // #if defined(DOXYGEN) || !defined(NO_LIBSTDCXX)
 
   //
 
