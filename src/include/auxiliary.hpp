@@ -3,6 +3,7 @@
 #include <ctime>
 
 using namespace std;
+using namespace tlfloat;
 
 class RNG {
   uint64_t res0 = 0, res1 = 0;
@@ -317,3 +318,46 @@ public:
     }
   }
 };
+
+#ifdef COMPILER_SUPPORTS_INT128
+typedef __int128_t INT128;
+typedef __uint128_t UINT128;
+
+void print(char *const buf, UINT128 u) {
+  if (u == 0) { buf[0] = '0'; buf[1] = '\0'; return; }
+  char *p = buf;
+  while(u != 0) {
+    *p++ = "0123456789" [u % 10];
+    u /= 10;
+  }
+  for(char *q = buf, *r = p-1;q < r;q++, r--) {
+    char c = *q; *q = *r; *r = c;
+  }
+  *p = '\0';
+}
+
+string to_string(UINT128 value) {
+  vector<char> s((1 << 7)/3 + 2);
+  print(s.data(), value);
+  return string(s.data());
+}
+
+string to_string(INT128 value) {
+  vector<char> s((1 << 7)/3 + 2);
+  print(s.data(), value >= 0 ? value : -value);
+  return (value >= 0 ? "" : "-") + string(s.data());
+}
+
+ostream& operator<<(ostream &os, INT128 value) { return os << to_string(value); }
+ostream& operator<<(ostream &os, UINT128 value) { return os << to_string(value); }
+
+bool equal(__int128_t b0, BigInt<7> i0) {
+  bool b = int64_t(b0 >> 64) == int64_t(i0 >> 64) &&
+    int64_t(b0 & ~uint64_t(0)) == int64_t(i0 & BigUInt<7>(~uint64_t(0)));
+  if (!b) {
+    cerr << "int128 : " << b0 << endl;
+    cerr << "bigint : " << i0 << endl;
+  }
+  return b;
+}
+#endif

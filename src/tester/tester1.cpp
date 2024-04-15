@@ -20,16 +20,16 @@ template<typename T> T values[N] = {
   T::nan(),
   T::inf(false),
   T::inf(true),
-  T::floatmin(false),
-  nextafter(T::floatmin(false), 1),
-  nextafter(nextafter(T::floatmin(false), 1), 1),
-  nextafter(nextafter(nextafter(T::floatmin(false), 1), 1), 1),
-  nextafter(nextafter(nextafter(nextafter(T::floatmin(false), 1), 1), 1), 1),
-  T::floatmin(true),
-  nextafter(T::floatmin(true), -1),
-  nextafter(nextafter(T::floatmin(true), -1), -1),
-  nextafter(nextafter(nextafter(T::floatmin(true), -1), -1), -1),
-  nextafter(nextafter(nextafter(nextafter(T::floatmin(true), -1), -1), -1), -1),
+  T::floatdenormmin(false),
+  nextafter(T::floatdenormmin(false), 1),
+  nextafter(nextafter(T::floatdenormmin(false), 1), 1),
+  nextafter(nextafter(nextafter(T::floatdenormmin(false), 1), 1), 1),
+  nextafter(nextafter(nextafter(nextafter(T::floatdenormmin(false), 1), 1), 1), 1),
+  T::floatdenormmin(true),
+  nextafter(T::floatdenormmin(true), -1),
+  nextafter(nextafter(T::floatdenormmin(true), -1), -1),
+  nextafter(nextafter(nextafter(T::floatdenormmin(true), -1), -1), -1),
+  nextafter(nextafter(nextafter(nextafter(T::floatdenormmin(true), -1), -1), -1), -1),
   T::floatmax(false),
   nextafter(T::floatmax(false), 0),
   nextafter(nextafter(T::floatmax(false), 0), 0),
@@ -121,7 +121,7 @@ void doTest(const char *mes, T a1, mpfr_t &mr, mpfr_t &ma1) {
 
   mpfr_set_unpacked(ma1, a1.getUnpacked(), GMP_RNDN);
   mpfrFunc(mr, ma1, GMP_RNDN);
-  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatmin(), Unpacked_t::floatmax(), true);
+  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
 
   if (ulp <= 1.0) return;
 
@@ -139,7 +139,7 @@ void doTest(const char *mes, T a1, mpfr_t &mr, mpfr_t &ma1) {
 
   mpfr_set_unpacked(ma1, a1.getUnpacked(), GMP_RNDN);
   mpfrFunc(mr, ma1);
-  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatmin(), Unpacked_t::floatmax(), true);
+  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
 
   if (ulp <= 1.0) return;
 
@@ -159,7 +159,7 @@ void doTest(const char *mes, T a1, T a2, mpfr_t &mr, mpfr_t &ma1, mpfr_t &ma2, b
   mpfr_set_unpacked(ma1, a1.getUnpacked(), GMP_RNDN);
   mpfr_set_unpacked(ma2, a2.getUnpacked(), GMP_RNDN);
   mpfrFunc(mr, ma1, ma2, GMP_RNDN);
-  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatmin(), Unpacked_t::floatmax(), true);
+  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
 
   if (ulp <= 1.0) return;
 
@@ -181,7 +181,7 @@ void doTest(const char *mes, T a1, T a2, T a3, mpfr_t &mr, mpfr_t &ma1, mpfr_t &
   mpfr_set_unpacked(ma2, a2.getUnpacked(), GMP_RNDN);
   mpfr_set_unpacked(ma3, a3.getUnpacked(), GMP_RNDN);
   mpfrFunc(mr, ma1, ma2, ma3, GMP_RNDN);
-  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatmin(), Unpacked_t::floatmax(), true);
+  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
 
   if (ulp <= 1.0) return;
 

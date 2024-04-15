@@ -438,6 +438,14 @@ namespace tlfloat {
     constexpr explicit operator signed char() const { return uint64_t(low); }
     constexpr explicit operator char() const { return uint64_t(low); }
 
+#ifdef ENABLE_UINT128
+    constexpr BigUInt(__uint128_t u) : low(uint64_t(u & 0xffffffffffffffffULL)), high(uint64_t(u >> 64)) {}
+    constexpr explicit operator __uint128_t() const { return (__uint128_t(high) << 64) + low; }
+
+    constexpr BigUInt(__int128_t u) : BigUInt(__uint128_t(u)) {}
+    constexpr explicit operator __int128_t() const { return __uint128_t(*this); }
+#endif
+
     constexpr BigUInt(const BigUInt& m) = default;
     constexpr BigUInt(const BigUInt<N+1>& h) : low(h.low.low), high(h.low.high) {}
 
@@ -952,6 +960,14 @@ namespace tlfloat {
     constexpr explicit operator unsigned short int() const { return int64_t(*this); }
     constexpr explicit operator unsigned char() const { return int64_t(*this); }
     constexpr explicit operator bool() const { return !u.isZero(); }
+
+#ifdef ENABLE_UINT128
+    constexpr BigInt(__int128_t u) : BigInt(BigUInt<N>(__uint128_t(u))) {}
+    constexpr explicit operator __int128_t() const { return (__int128_t)BigUInt<N>(*this); }
+
+    constexpr BigInt(__uint128_t u) : BigInt(BigUInt<N>(u)) {}
+    constexpr explicit operator __uint128_t() const { return (__uint128_t)BigUInt<N>(*this); }
+#endif
 
     constexpr BigInt(const BigUInt<N>& up) : u(up) {}
 

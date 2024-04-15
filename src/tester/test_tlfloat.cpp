@@ -114,10 +114,9 @@ int main(int argc, char **argv) {
 
   if (niter == 0) {
 #if defined(__GNUC__)
-    cout << "Testing continuously " << __DATE__ << " " << __TIME__ << endl;
-#else
-    cout << "Testing continuously" << endl;
+    cout << "Build " << __DATE__ << " " << __TIME__ << endl;
 #endif
+    cout << "Testing continuously" << endl;
   }
 
   typedef UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
@@ -400,6 +399,24 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
+#ifdef COMPILER_SUPPORTS_INT128
+    if (f1 >= 0 && f1 < ldexp(1, 128) && tlf1.castToInt((const BigUInt<7> *)nullptr) != UINT128(float(tlf1))) {
+      cout << "f1 : " << f1  << " : " << to_string_d(ufloat(f1)) << endl;
+      cout << "u128t: " << tlf1.castToInt((const BigUInt<7> *)nullptr) << endl;
+      cout << "u128c: " << UINT128(float(tlf1)) << endl;
+      cout << "NG" << endl;
+      exit(-1);
+    }
+
+    if (f1 >= -ldexp(1, 127) && f1 < ldexp(1, 127) && tlf1.castToInt((const BigInt<7> *)nullptr) != INT128(float(tlf1))) {
+      cout << "f1 : " << f1  << " : " << to_string_d(ufloat(f1)) << endl;
+      cout << "s128t: " << tlf1.castToInt((const BigInt<7> *)nullptr) << endl;
+      cout << "s128c: " << INT128(float(tlf1)) << endl;
+      cout << "NG" << endl;
+      exit(-1);
+    }
+#endif
+
     //
 
     double d4t = double(udouble::addsub(tld1, tld2, false));
@@ -486,8 +503,8 @@ int main(int argc, char **argv) {
     }
 
     if (d1 >= -ldexp(1, 15) && d1 < ldexp(1, 15) && tld1.castToInt((const int16_t *)nullptr) != int16_t(double(tld1))) {
-      cout << "d1 : " << f1  << " : " << to_string_d(udouble(d1)) << endl;
-      cout << "sst: " << tlf1.castToInt((const int16_t *)nullptr) << endl;
+      cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
+      cout << "sst: " << tld1.castToInt((const int16_t *)nullptr) << endl;
       cout << "ssc: " << int16_t(double(tld1)) << endl;
       cout << "NG" << endl;
       exit(-1);
@@ -502,28 +519,46 @@ int main(int argc, char **argv) {
     }
 
     if (d1 >= -ldexp(1, 31) && d1 < ldexp(1, 31) && tld1.castToInt((const int32_t *)nullptr) != int32_t(double(tld1))) {
-      cout << "d1 : " << f1  << " : " << to_string_d(udouble(d1)) << endl;
-      cout << "sit: " << tlf1.castToInt((const int32_t *)nullptr) << endl;
+      cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
+      cout << "sit: " << tld1.castToInt((const int32_t *)nullptr) << endl;
       cout << "sic: " << int32_t(double(tld1)) << endl;
       cout << "NG" << endl;
       exit(-1);
     }
 
     if (d1 >= 0 && d1 < ldexp(1, 64) && tld1.castToInt((const uint64_t *)nullptr) != uint64_t(double(tld1))) {
-      cout << "d1 : " << f1  << " : " << to_string_d(udouble(d1)) << endl;
-      cout << "ult: " << tlf1.castToInt((const uint64_t *)nullptr) << endl;
+      cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
+      cout << "ult: " << tld1.castToInt((const uint64_t *)nullptr) << endl;
       cout << "ulc: " << uint64_t(double(tld1)) << endl;
       cout << "NG" << endl;
       exit(-1);
     }
 
     if (d1 >= -ldexp(1, 63) && d1 < ldexp(1, 63) && tld1.castToInt((const int64_t *)nullptr) != int64_t(double(tld1))) {
-      cout << "d1 : " << f1  << " : " << to_string_d(udouble(d1)) << endl;
-      cout << "slt: " << tlf1.castToInt((const int64_t *)nullptr) << endl;
+      cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
+      cout << "slt: " << tld1.castToInt((const int64_t *)nullptr) << endl;
       cout << "slc: " << int64_t(double(tld1)) << endl;
       cout << "NG" << endl;
       exit(-1);
     }
+
+#ifdef COMPILER_SUPPORTS_INT128
+    if (d1 >= 0 && d1 < ldexp(1, 128) && tld1.castToInt((const BigUInt<7> *)nullptr) != UINT128(double(tld1))) {
+      cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
+      cout << "u128t: " << tld1.castToInt((const BigUInt<7> *)nullptr) << endl;
+      cout << "u128c: " << UINT128(double(tld1)) << endl;
+      cout << "NG" << endl;
+      exit(-1);
+    }
+
+    if (d1 >= -ldexp(1, 127) && d1 < ldexp(1, 127) && tld1.castToInt((const BigInt<7> *)nullptr) != INT128(double(tld1))) {
+      cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
+      cout << "s128t: " << tld1.castToInt((const BigInt<7> *)nullptr) << endl;
+      cout << "s128c: " << INT128(double(tld1)) << endl;
+      cout << "NG" << endl;
+      exit(-1);
+    }
+#endif
 
     if ((tld1 == tld2) != (d1 == d2)) {
       cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1 )) << endl;
@@ -710,6 +745,24 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
+#ifdef COMPILER_SUPPORTS_INT128
+    if (q1 >= 0 && q1 < ldexp(1, 128) && tlq1.castToInt((const BigUInt<7> *)nullptr) != UINT128(quad(tlq1))) {
+      cout << "q1 : " << q1  << " : " << to_string_d(uquad(q1)) << endl;
+      cout << "u128t: " << tlq1.castToInt((const BigUInt<7> *)nullptr) << endl;
+      cout << "u128c: " << UINT128(quad(tlq1)) << endl;
+      cout << "NG" << endl;
+      exit(-1);
+    }
+
+    if (q1 >= -ldexp(1, 127) && q1 < ldexp(1, 127) && tlq1.castToInt((const BigInt<7> *)nullptr) != INT128(quad(tlq1))) {
+      cout << "q1 : " << q1  << " : " << to_string_d(uquad(q1)) << endl;
+      cout << "s128t: " << tlq1.castToInt((const BigInt<7> *)nullptr) << endl;
+      cout << "s128c: " << INT128(quad(tlq1)) << endl;
+      cout << "NG" << endl;
+      exit(-1);
+    }
+#endif
+
     //
 
     quad q4t = quad(uquad::addsub(tlq1, tlq2, false));
@@ -769,54 +822,6 @@ int main(int argc, char **argv) {
       cout << "q3: " << q3  << " : " << to_string_d(uquad(q3 )) << endl;
       cout << "ft: " << d8t << " : " << to_string_d(uquad(q8t)) << endl;
       cout << "fc: " << d8c << " : " << to_string_d(uquad(q8c)) << endl;
-      cout << "NG" << endl;
-      exit(-1);
-    }
-
-    if (q1 >= 0 && q1 < ldexp(1, 16) && tlq1.castToInt((const uint16_t *)nullptr) != uint16_t(quad(tlq1))) {
-      cout << "q1 : " << q1  << " : " << to_string_d(uquad(q1)) << endl;
-      cout << "ust: " << tlq1.castToInt((const uint16_t *)nullptr) << endl;
-      cout << "usc: " << uint16_t(quad(tlq1)) << endl;
-      cout << "NG" << endl;
-      exit(-1);
-    }
-
-    if (q1 >= -ldexp(1, 15) && q1 < ldexp(1, 15) && tlq1.castToInt((const int16_t *)nullptr) != int16_t(quad(tlq1))) {
-      cout << "q1 : " << q1  << " : " << to_string_d(uquad(q1)) << endl;
-      cout << "sst: " << tlq1.castToInt((const int16_t *)nullptr) << endl;
-      cout << "ssc: " << int16_t(quad(tlq1)) << endl;
-      cout << "NG" << endl;
-      exit(-1);
-    }
-
-    if (q1 >= 0 && q1 < ldexp(1, 32) && tlq1.castToInt((const uint32_t *)nullptr) != uint32_t(quad(tlq1))) {
-      cout << "q1 : " << q1  << " : " << to_string_d(uquad(q1)) << endl;
-      cout << "uit: " << tlq1.castToInt((const uint32_t *)nullptr) << endl;
-      cout << "uic: " << uint32_t(quad(tlq1)) << endl;
-      cout << "NG" << endl;
-      exit(-1);
-    }
-
-    if (q1 >= -ldexp(1, 31) && q1 < ldexp(1, 31) && tlq1.castToInt((const int32_t *)nullptr) != int32_t(quad(tlq1))) {
-      cout << "q1 : " << q1  << " : " << to_string_d(uquad(q1)) << endl;
-      cout << "sit: " << tlq1.castToInt((const int32_t *)nullptr) << endl;
-      cout << "sic: " << int32_t(quad(tlq1)) << endl;
-      cout << "NG" << endl;
-      exit(-1);
-    }
-
-    if (q1 >= 0 && q1 < ldexp(1, 64) && tlq1.castToInt((const uint64_t *)nullptr) != uint64_t(quad(tlq1))) {
-      cout << "q1 : " << q1  << " : " << to_string_d(uquad(q1)) << endl;
-      cout << "ult: " << tlq1.castToInt((const uint64_t *)nullptr) << endl;
-      cout << "ulc: " << uint64_t(quad(tlq1)) << endl;
-      cout << "NG" << endl;
-      exit(-1);
-    }
-
-    if (q1 >= -ldexp(1, 63) && q1 < ldexp(1, 63) && tlq1.castToInt((const int64_t *)nullptr) != int64_t(quad(tlq1))) {
-      cout << "q1 : " << q1  << " : " << to_string_d(uquad(q1)) << endl;
-      cout << "slt: " << tlq1.castToInt((const int64_t *)nullptr) << endl;
-      cout << "slc: " << int64_t(quad(tlq1)) << endl;
       cout << "NG" << endl;
       exit(-1);
     }
@@ -1285,6 +1290,52 @@ int main(int argc, char **argv) {
       }
 #endif
     }
+
+#ifdef COMPILER_SUPPORTS_INT128
+    {
+      INT128 i128;
+      rng->nextBytes((unsigned char *)&i128, sizeof(i128));
+
+      ufloat uf = ufloat::castFromInt(i128);
+      if (!cmpf(float(uf), float(i128))) {
+	cout << "float i128 " << i128 << endl;
+      }
+
+      udouble ud = udouble::castFromInt(i128);
+      if (!cmpd(double(ud), double(i128))) {
+	cout << "double i128 " << i128 << endl;
+      }
+
+#ifdef ENABLE_QUAD
+      uquad uq = uquad::castFromInt(i128);
+      if (!cmpd(quad(uq), quad(i128))) {
+	cout << "quad i128 " << i128 << endl;
+      }
+#endif
+    }
+
+    {
+      UINT128 u128;
+      rng->nextBytes((unsigned char *)&u128, sizeof(u128));
+
+      ufloat uf = ufloat::castFromInt(u128);
+      if (!cmpf(float(uf), float(u128))) {
+	cout << "float u128 " << u128 << endl;
+      }
+
+      udouble ud = udouble::castFromInt(u128);
+      if (!cmpd(double(ud), double(u128))) {
+	cout << "double u128 " << u128 << endl;
+      }
+
+#ifdef ENABLE_QUAD
+      uquad uq = uquad::castFromInt(u128);
+      if (!cmpd(quad(uq), quad(u128))) {
+	cout << "quad u128 " << u128 << endl;
+      }
+#endif
+    }
+#endif // #ifdef COMPILER_SUPPORTS_INT128
   }
 
   cout << "OK" << endl;

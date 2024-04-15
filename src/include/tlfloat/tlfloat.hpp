@@ -250,7 +250,7 @@ namespace tlfloat {
 	return UnpackedFloat(mant_t(1) << nbmant, (1 << nbexp) - 2, sign, false, true, false);
       }
 
-      static constexpr UnpackedFloat floatmin(bool sign = false) {
+      static constexpr UnpackedFloat floatdenormmin(bool sign = false) {
 	return UnpackedFloat(mant_t(1), 0, sign, false, false, false);
       }
 
@@ -712,9 +712,8 @@ namespace tlfloat {
 	}
       }
 
-      template<typename dsttype>
+      template<typename dsttype, std::enable_if_t<(std::is_integral_v<dsttype> && sizeof(dsttype) <= 8), int> = 0>
       constexpr dsttype castToInt(const dsttype *ptr) const {
-	static_assert(std::is_integral_v<dsttype>);
 	if (exp - expoffset() < -1) return 0;
 	if constexpr (std::is_unsigned_v<dsttype>) {
 	  if (sign && !iszero) return ~dsttype(0);
@@ -730,9 +729,27 @@ namespace tlfloat {
 	}
       }
 
-      template<typename srctype>
+      template<int N>
+      constexpr BigInt<N> castToInt(const BigInt<N> *ptr) const {
+	if (exp - expoffset() < -1) return 0;
+	if (exp - expoffset() >= int(sizeof(BigInt<N>)*8-2))
+	  return BigInt<N>(BigInt<N>(1) << (sizeof(BigInt<N>)*8-1));
+	int s = nbmant - (exp - expoffset() + 1);
+	BigInt<N> r = s > 0 ? BigInt<N>(mant >> s) : (BigInt<N>(mant) << -s);
+	return sign ? -r : r;
+      }
+
+      template<int N>
+      constexpr BigUInt<N> castToInt(const BigUInt<N> *ptr) const {
+	if (exp - expoffset() < -1) return 0;
+	if (sign && !iszero) return ~BigUInt<N>(0);
+	if (exp - expoffset() >= int(sizeof(BigUInt<N>)*8-1)) return ~BigUInt<N>(0);
+	int s = nbmant - (exp - expoffset() + 1);
+	return BigUInt<N>(s > 0 ? (mant >> s) : (BigUInt<N>(mant) << -s));
+      }
+
+      template<typename srctype, std::enable_if_t<(std::is_integral_v<srctype> && sizeof(srctype) <= 8), int> = 0>
       static constexpr UnpackedFloat castFromInt(srctype src) {
-	static_assert(std::is_integral_v<srctype>);
 	if (src == 0) return zero();
 	bool sign = false;
 	uint64_t v = src;
@@ -755,6 +772,61 @@ namespace tlfloat {
 	u >>= sizeof(mant_t) * 8;
 	return UnpackedFloat(mant_t(u), x + expoffset() - 2, sign, u == 0, false, false);
       }
+
+      template<int N>
+      static constexpr UnpackedFloat castFromInt(BigInt<N> src) {
+	if (src == 0) return zero();
+	bool sign = src < 0;
+	BigUInt<N> v = sign ? -src : src;
+	int x = sizeof(v) * 8 - clz(v);
+	int s = nbmant - (x - 1) + int(sizeof(mant_t)) * 8;
+	bool sb = false;
+	longmant_t u = 0;
+	if (s >= 0) {
+	  u = longmant_t(v) << s;
+	} else {
+	  sb = (((longmant_t(1) << (-s)) - 1) & v) != 0;
+	  u = longmant_t(v >> -s);
+	}
+	u += (((u >> (sizeof(mant_t) * 8)) & 1) || sb) + (longmant_t(1) << (sizeof(mant_t) * 8 - 1)) - 1;
+	if (bit(u, nbmant + sizeof(mant_t) * 8 + 1)) { u >>= 1; x++; }
+	u >>= sizeof(mant_t) * 8;
+	return UnpackedFloat(mant_t(u), x + expoffset() - 2, sign, u == 0, false, false);
+      }
+
+      template<int N>
+      static constexpr UnpackedFloat castFromInt(BigUInt<N> src) {
+	if (src == 0) return zero();
+	BigUInt<N> v = src;
+	int x = sizeof(v) * 8 - clz(v);
+	int s = nbmant - (x - 1) + int(sizeof(mant_t)) * 8;
+	bool sb = false;
+	longmant_t u = 0;
+	if (s >= 0) {
+	  u = longmant_t(v) << s;
+	} else {
+	  sb = (((longmant_t(1) << (-s)) - 1) & v) != 0;
+	  u = longmant_t(v >> -s);
+	}
+	u += (((u >> (sizeof(mant_t) * 8)) & 1) || sb) + (longmant_t(1) << (sizeof(mant_t) * 8 - 1)) - 1;
+	if (bit(u, nbmant + sizeof(mant_t) * 8 + 1)) { u >>= 1; x++; }
+	u >>= sizeof(mant_t) * 8;
+	return UnpackedFloat(mant_t(u), x + expoffset() - 2, false, u == 0, false, false);
+      }
+
+#ifdef ENABLE_UINT128
+      template<typename dsttype, std::enable_if_t<(std::is_same_v<dsttype, __int128_t>), int> = 0>
+      constexpr dsttype castToInt(const dsttype *ptr) const { return __int128_t(castToInt((BigInt<7> *)0)); }
+
+      template<typename dsttype, std::enable_if_t<(std::is_same_v<dsttype, __uint128_t>), int> = 0>
+      constexpr dsttype castToInt(const dsttype *ptr) const { return __uint128_t(castToInt((BigUInt<7> *)0)); }
+
+      template<typename srctype, std::enable_if_t<(std::is_same_v<srctype, __int128_t>), int> = 0>
+      static constexpr UnpackedFloat castFromInt(srctype src) { return castFromInt(BigInt<7>(src)); }
+
+      template<typename srctype, std::enable_if_t<(std::is_same_v<srctype, __uint128_t>), int> = 0>
+      static constexpr UnpackedFloat castFromInt(srctype src) { return castFromInt(BigUInt<7>(src)); }
+#endif
 
       friend constexpr UnpackedFloat trunc(const UnpackedFloat &f) {
 	if (f.iszero || f.isinf || f.isnan) return f;
@@ -1166,7 +1238,7 @@ namespace tlfloat {
 
     static constexpr TLFloat nan() { return Unpacked_t::nan(); }
     static constexpr TLFloat inf(bool sign=false) { return Unpacked_t::inf(sign); }
-    static constexpr TLFloat floatmin(bool sign=false) { return Unpacked_t::floatmin(sign); }
+    static constexpr TLFloat floatdenormmin(bool sign=false) { return Unpacked_t::floatdenormmin(sign); }
     static constexpr TLFloat floatmax(bool sign=false) { return Unpacked_t::floatmax(sign); }
     static constexpr TLFloat zero(bool sign=false) { return Unpacked_t::zero(sign); }
 
@@ -1180,18 +1252,27 @@ namespace tlfloat {
     constexpr TLFloat(const detail::UnpackedFloat<mant_t_, longmant_t_, nbexp_, nbmant_> &tf) :
       m(mant_t(tf.cast((Unpacked_t *)0))) {}
 
+    /** Cast from any TLFloat class */
     template<typename srctftype>
     constexpr TLFloat(const TLFloat<srctftype>& s) :
       TLFloat(s.getUnpacked().cast((const Unpacked_t *)nullptr)) {}
 
+    /** Cast from any primitive integer type */
     template<typename inttype, std::enable_if_t<(std::is_integral_v<inttype> && !std::is_pointer_v<inttype>), int> = 0>
     constexpr TLFloat(const inttype x) :
       TLFloat(Unpacked_t::castFromInt(x)) {}
 
+    /** Cast to any primitive integer type */
     template<typename inttype, std::enable_if_t<(std::is_integral_v<inttype> && !std::is_pointer_v<inttype>), int> = 0>
     constexpr operator inttype() const {
       return getUnpacked().castToInt((const inttype *)nullptr);
     }
+
+    template<int N> constexpr TLFloat(const BigInt <N> x) : TLFloat(Unpacked_t::castFromInt(x)) {}
+    template<int N> constexpr TLFloat(const BigUInt<N> x) : TLFloat(Unpacked_t::castFromInt(x)) {}
+
+    template<int N> constexpr operator BigInt <N>() const { return getUnpacked().castToInt((const BigInt <N> *)nullptr); }
+    template<int N> constexpr operator BigUInt<N>() const { return getUnpacked().castToInt((const BigUInt<N> *)nullptr); }
 
     constexpr TLFloat(const double d) {
       if constexpr (sizeof(mant_t) == sizeof(double)) {
