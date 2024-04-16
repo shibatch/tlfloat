@@ -398,13 +398,12 @@ namespace tlfloat {
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
     constexpr BigUInt(T u) : low(u), high(uint64_t(0)) {}
 
-#if !defined(__CUDA_ARCH__)
     /** Cast from any primitive signed integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
-    constexpr BigUInt(T i) : BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-int64_t(i)) + 1) : uint64_t(i)) {}
-#else
-    constexpr BigUInt(long long int i) :
-      BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-i) + 1) : uint64_t(i)) {}
+    constexpr BigUInt(T i) : BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-i) + 1) : uint64_t(i)) {}
+
+#ifdef __CUDA_ARCH__
+    constexpr BigUInt(long long int i) : BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-i) + 1) : uint64_t(i)) {}
     constexpr BigUInt(long int i) : BigUInt((long long int)(i)) {}
     constexpr BigUInt(int i) : BigUInt((long long int)(i)) {}
     constexpr BigUInt(short int i) : BigUInt((long long int)(i)) {}

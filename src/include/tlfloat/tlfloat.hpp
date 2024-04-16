@@ -815,17 +815,10 @@ namespace tlfloat {
       }
 
 #ifdef ENABLE_UINT128
-      template<typename dsttype, std::enable_if_t<(std::is_same_v<dsttype, __int128_t>), int> = 0>
-      constexpr dsttype castToInt(const dsttype *ptr) const { return __int128_t(castToInt((BigInt<7> *)0)); }
-
-      template<typename dsttype, std::enable_if_t<(std::is_same_v<dsttype, __uint128_t>), int> = 0>
-      constexpr dsttype castToInt(const dsttype *ptr) const { return __uint128_t(castToInt((BigUInt<7> *)0)); }
-
-      template<typename srctype, std::enable_if_t<(std::is_same_v<srctype, __int128_t>), int> = 0>
-      static constexpr UnpackedFloat castFromInt(srctype src) { return castFromInt(BigInt<7>(src)); }
-
-      template<typename srctype, std::enable_if_t<(std::is_same_v<srctype, __uint128_t>), int> = 0>
-      static constexpr UnpackedFloat castFromInt(srctype src) { return castFromInt(BigUInt<7>(src)); }
+      constexpr __int128_t  castToInt(const __int128_t  *ptr) const { return __int128_t (castToInt((BigInt<7>  *)0)); }
+      constexpr __uint128_t castToInt(const __uint128_t *ptr) const { return __uint128_t(castToInt((BigUInt<7> *)0)); }
+      static constexpr UnpackedFloat castFromInt(__int128_t  src) { return castFromInt(BigInt <7>(src)); }
+      static constexpr UnpackedFloat castFromInt(__uint128_t src) { return castFromInt(BigUInt<7>(src)); }
 #endif
 
       friend constexpr UnpackedFloat trunc(const UnpackedFloat &f) {
@@ -1258,12 +1251,12 @@ namespace tlfloat {
       TLFloat(s.getUnpacked().cast((const Unpacked_t *)nullptr)) {}
 
     /** Cast from any primitive integer type */
-    template<typename inttype, std::enable_if_t<(std::is_integral_v<inttype> && !std::is_pointer_v<inttype>), int> = 0>
+    template<typename inttype, std::enable_if_t<(std::is_integral_v<inttype>), int> = 0>
     constexpr TLFloat(const inttype x) :
       TLFloat(Unpacked_t::castFromInt(x)) {}
 
     /** Cast to any primitive integer type */
-    template<typename inttype, std::enable_if_t<(std::is_integral_v<inttype> && !std::is_pointer_v<inttype>), int> = 0>
+    template<typename inttype, std::enable_if_t<(std::is_integral_v<inttype>), int> = 0>
     constexpr operator inttype() const {
       return getUnpacked().castToInt((const inttype *)nullptr);
     }
