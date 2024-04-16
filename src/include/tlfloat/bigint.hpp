@@ -71,7 +71,6 @@ namespace tlfloat {
     }
 
 #if defined(ENABLE_X86INTRIN)
-
     static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
 	xpair<uint64_t, bool> ret(0, false);
@@ -97,7 +96,6 @@ namespace tlfloat {
 	return xpair<uint64_t, bool>((al & 0xffffffff) | (ah << 32), (ah >> 32) != 0);
       }
     }
-
 #elif defined(ENABLE_UINT128)
     static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       __uint128_t a = __uint128_t(lhs) + rhs + cin;
@@ -400,9 +398,19 @@ namespace tlfloat {
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
     constexpr BigUInt(T u) : low(u), high(uint64_t(0)) {}
 
+#if !defined(__CUDA_ARCH__)
     /** Cast from any primitive signed integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
-    constexpr BigUInt(T i) : BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-i) + 1) : uint64_t(i)) {}
+    constexpr BigUInt(T i) : BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-int64_t(i)) + 1) : uint64_t(i)) {}
+#else
+    constexpr BigUInt(long long int i) :
+      BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-i) + 1) : uint64_t(i)) {}
+    constexpr BigUInt(long int i) : BigUInt((long long int)(i)) {}
+    constexpr BigUInt(int i) : BigUInt((long long int)(i)) {}
+    constexpr BigUInt(short int i) : BigUInt((long long int)(i)) {}
+    constexpr BigUInt(signed char i) : BigUInt((long long int)(i)) {}
+    constexpr BigUInt(char i) : BigUInt((long long int)(i)) {}
+#endif
 
     /** Cast to any primitive unsigned integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
