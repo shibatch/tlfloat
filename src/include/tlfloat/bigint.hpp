@@ -248,6 +248,11 @@ namespace tlfloat {
 
   template<typename Unpacked_t> class TLFloat;
 
+  /**
+   * This is a template class that represents an arbitrary precision unsigned integer.
+   * The number of bits in the number is (1 << N), where N >= 7.
+   * The data size and data structure of the object are the same as the corresponding number.
+   */
   template<int N> class BigUInt {
     static_assert(N >= 7, "N must be 7 or larger");
     static_assert(sizeof(unsigned long long int) == 8, "unsigned long long int must be 64-bit");
@@ -391,17 +396,23 @@ namespace tlfloat {
 
     constexpr BigUInt() = default;
 
+    /** Cast from any primitive unsigned integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
     constexpr BigUInt(T u) : low(u), high(uint64_t(0)) {}
 
+    /** Cast from any primitive signed integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
     constexpr BigUInt(T i) : BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-i) + 1) : uint64_t(i)) {}
 
-    template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
+    /** Cast to any primitive unsigned integer */
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
     constexpr explicit operator T() const { return T(uint64_t(low)); }
 
-    template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
+    /** Cast to any primitive signed integer */
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
     constexpr explicit operator T() const { return uint64_t(low); }
+
+    constexpr explicit operator bool() const { return !isZero(); }
 
 #ifdef ENABLE_UINT128
     constexpr BigUInt(__uint128_t u) : low(uint64_t(u & 0xffffffffffffffffULL)), high(uint64_t(u >> 64)) {}
@@ -524,6 +535,7 @@ namespace tlfloat {
       return m;
     }
 
+    /** This method returns ((1 << N) / *this) */
     constexpr BigUInt reciprocal() const {
       unsigned z = clz();
       BigUInt t0 = (*this << z).reciprocalAprx();
@@ -682,6 +694,7 @@ namespace tlfloat {
 
     //
 
+    /** This method performs division and modulo at a time. Give rhs.reciprocal() as the second argument */
     constexpr BigUInt divmod(const BigUInt& rhs, const BigUInt& recip, BigUInt* mod) const {
       if (rhs == 1) { *mod = 0; return *this; }
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
@@ -690,6 +703,7 @@ namespace tlfloat {
       return q;
     }
 
+    /** This method performs division and modulo at a time. Give rhs.reciprocal() as the second argument */
     constexpr detail::xpair<BigUInt, BigUInt> divmod(const BigUInt& rhs, const BigUInt& recip) const {
       if (rhs == 1) detail::xpair<BigUInt, BigUInt>(*this, 0);
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
@@ -889,6 +903,11 @@ namespace tlfloat {
     constexpr BigUInt(const BigUInt<7>& h) : BigUInt(h.low) {}
   };
 
+  /**
+   * This is a template class that represents an arbitrary precision signed integer.
+   * The number of bits in the number is (1 << N), where N >= 7.
+   * The data size and data structure of the object are the same as the corresponding number.
+   */
   template<int N> class BigInt {
     static_assert(N >= 7, "N must be 7 or larger");
     BigUInt<N> u = 0;
@@ -898,15 +917,19 @@ namespace tlfloat {
   public:
     constexpr BigInt() = default;
 
+    /** Cast from any primitive signed integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
     constexpr BigInt(T i) : u(i < 0 ? -BigUInt<N>(uint64_t(-i)) : BigUInt<N>(uint64_t(i))) {}
 
+    /** Cast from any primitive unsigned integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
     constexpr BigInt(T u) : u(BigUInt<N>(u)) {}
 
+    /** Cast to any primitive signed integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
     constexpr explicit operator T() const { return T(u.getWord(0)); }
 
+    /** Cast to any primitive unsigned integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
     constexpr explicit operator T() const { return int64_t(*this); }
 
