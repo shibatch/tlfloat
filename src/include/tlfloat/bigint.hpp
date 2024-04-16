@@ -72,19 +72,6 @@ namespace tlfloat {
 
 #if defined(ENABLE_X86INTRIN)
 
-#if __cplusplus < 202002L && !defined(_MSC_VER)
-    static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs, bool enable=true) {
-      xpair<uint64_t, bool> ret(0, false);
-      if (enable) ret.second = _addcarry_u64(cin, lhs, rhs, (long long unsigned *)&ret.first);
-      return ret;
-    }
-
-    static constexpr xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs, bool enable=true) {
-      xpair<uint64_t, bool> ret(0, false);
-      if (enable) ret.second = _subborrow_u64(cin, lhs, rhs, (long long unsigned *)&ret.first);
-      return ret;
-    }
-#else
     static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
 	xpair<uint64_t, bool> ret(0, false);
@@ -110,7 +97,6 @@ namespace tlfloat {
 	return xpair<uint64_t, bool>((al & 0xffffffff) | (ah << 32), (ah >> 32) != 0);
       }
     }
-#endif // #if __cplusplus < 202002L
 
 #elif defined(ENABLE_UINT128)
     static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
@@ -277,9 +263,7 @@ namespace tlfloat {
     template<int..., int K = N, std::enable_if_t<(K >= 10), int> = 0>
     static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
       static_assert(sizeof(BigUInt) == (sizeof(uint64_t) << (N - 6)), "Class memory layout");
-#if __cplusplus >= 202002L || defined(_MSC_VER)
       if (std::is_constant_evaluated()) return BigUInt(lhs.mulhi(rhs), lhs * rhs);
-#endif
       if (lhs.isZero() || rhs.isZero()) return BigUInt(0);
       if (lhs.isAllOne() && rhs.isAllOne()) return BigUInt(~BigUInt<N-1>(1), BigUInt<N-1>(1));
       auto x0tx1 = lhs.high.adc(lhs.low, false), y0ty1 = rhs.high.adc(rhs.low, false);
@@ -305,9 +289,7 @@ namespace tlfloat {
     template<int..., int K = N, std::enable_if_t<(K == 8 || K == 9), int> = 0>
     static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
       static_assert(sizeof(BigUInt) == (sizeof(uint64_t) << (N - 6)), "Class memory layout");
-#if __cplusplus >= 202002L || defined(_MSC_VER)
       if (std::is_constant_evaluated()) return BigUInt(lhs.mulhi(rhs), lhs * rhs);
-#endif
       BigUInt ret(0);
       uint64_t *plhs = (uint64_t *)&lhs, *prhs = (uint64_t *)&rhs, *pret = (uint64_t *)&ret;
       uint64_t ah = 0, am = 0, al = 0;
@@ -409,34 +391,17 @@ namespace tlfloat {
 
     constexpr BigUInt() = default;
 
-    constexpr BigUInt(unsigned long long int u) : low(u), high(uint64_t(0)) {}
-    constexpr BigUInt(unsigned long int u) : low(u), high(uint64_t(0)) {}
-    constexpr BigUInt(unsigned int u) : low(u), high(uint64_t(0)) {}
-    constexpr BigUInt(unsigned short int u) : low(u), high(uint64_t(0)) {}
-    constexpr BigUInt(unsigned char u) : low(u), high(uint64_t(0)) {}
-    constexpr BigUInt(bool u) : low(u), high(uint64_t(0)) {}
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
+    constexpr BigUInt(T u) : low(u), high(uint64_t(0)) {}
 
-    constexpr explicit operator unsigned long long int() const { return (unsigned long long)uint64_t(low); }
-    constexpr explicit operator unsigned long int() const { return (unsigned long)uint64_t(low); }
-    constexpr explicit operator unsigned int() const { return (unsigned int)uint64_t(low); }
-    constexpr explicit operator unsigned short() const { return (unsigned short)uint64_t(low); }
-    constexpr explicit operator unsigned char() const { return (unsigned char)uint64_t(low); }
-    constexpr explicit operator bool() const { return !isZero(); }
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
+    constexpr BigUInt(T i) : BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-i) + 1) : uint64_t(i)) {}
 
-    constexpr BigUInt(long long int i) :
-      BigUInt(i < 0 ? (~BigUInt(0) - uint64_t(-i) + 1) : uint64_t(i)) {}
-    constexpr BigUInt(long int i) : BigUInt((long long int)(i)) {}
-    constexpr BigUInt(int i) : BigUInt((long long int)(i)) {}
-    constexpr BigUInt(short int i) : BigUInt((long long int)(i)) {}
-    constexpr BigUInt(signed char i) : BigUInt((long long int)(i)) {}
-    constexpr BigUInt(char i) : BigUInt((long long int)(i)) {}
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
+    constexpr explicit operator T() const { return T(uint64_t(low)); }
 
-    constexpr explicit operator long long int() const { return uint64_t(low); }
-    constexpr explicit operator long int() const { return uint64_t(low); }
-    constexpr explicit operator int() const { return uint64_t(low); }
-    constexpr explicit operator short int() const { return uint64_t(low); }
-    constexpr explicit operator signed char() const { return uint64_t(low); }
-    constexpr explicit operator char() const { return uint64_t(low); }
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
+    constexpr explicit operator T() const { return uint64_t(low); }
 
 #ifdef ENABLE_UINT128
     constexpr BigUInt(__uint128_t u) : low(uint64_t(u & 0xffffffffffffffffULL)), high(uint64_t(u >> 64)) {}
@@ -933,32 +898,18 @@ namespace tlfloat {
   public:
     constexpr BigInt() = default;
 
-    constexpr BigInt(long long int i) : u(i < 0 ? -BigUInt<N>(uint64_t(-i)) : BigUInt<N>(uint64_t(i))) {}
-    constexpr BigInt(long int i) : BigInt((long long int)(i)) {}
-    constexpr BigInt(int i) : BigInt((long long int)(i)) {}
-    constexpr BigInt(short int i) : BigInt((long long int)(i)) {}
-    constexpr BigInt(signed char i) : BigInt((long long int)(i)) {}
-    constexpr BigInt(char i) : BigInt((long long int)(i)) {}
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
+    constexpr BigInt(T i) : u(i < 0 ? -BigUInt<N>(uint64_t(-i)) : BigUInt<N>(uint64_t(i))) {}
 
-    constexpr explicit operator long long int() const { return (long long int)(u.getWord(0)); }
-    constexpr explicit operator long int() const { return (long int)(u.getWord(0)); }
-    constexpr explicit operator int() const { return (int)(u.getWord(0)); }
-    constexpr explicit operator short int() const { return (short int)(u.getWord(0)); }
-    constexpr explicit operator signed char() const { return (signed char)(u.getWord(0)); }
-    constexpr explicit operator char() const { return (char)(u.getWord(0)); }
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
+    constexpr BigInt(T u) : u(BigUInt<N>(u)) {}
 
-    constexpr BigInt(unsigned long long u) : u(BigUInt<N>(u)) {}
-    constexpr BigInt(unsigned long u) : u(BigUInt<N>(u)) {}
-    constexpr BigInt(unsigned int u) : u(BigUInt<N>(u)) {}
-    constexpr BigInt(unsigned short u) : u(BigUInt<N>(u)) {}
-    constexpr BigInt(unsigned char u) : u(BigUInt<N>(u)) {}
-    constexpr BigInt(bool u) : u(BigUInt<N>(u)) {}
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
+    constexpr explicit operator T() const { return T(u.getWord(0)); }
 
-    constexpr explicit operator unsigned long long int() const { return int64_t(*this); }
-    constexpr explicit operator unsigned long int() const { return int64_t(*this); }
-    constexpr explicit operator unsigned int() const { return int64_t(*this); }
-    constexpr explicit operator unsigned short int() const { return int64_t(*this); }
-    constexpr explicit operator unsigned char() const { return int64_t(*this); }
+    template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
+    constexpr explicit operator T() const { return int64_t(*this); }
+
     constexpr explicit operator bool() const { return !u.isZero(); }
 
 #ifdef ENABLE_UINT128

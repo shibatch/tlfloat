@@ -55,7 +55,7 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
   * It provides operations for integers of artibrary length (2^N bits)
   * They can be used in the similar way to the ordinary int/uint types
   * Data formats are the same as ordinary int/uint
-  * These classes are internally used to implement the TLFloat FP classes
+  * These classes are internally used to implement the FP classes in TLFloat
 
 
 
@@ -98,12 +98,60 @@ To compile this source code, use the following command.
 
 `g++ -std=c++20 -I./install/include hello.cpp`
 
-You have to specify C++20 standard. Note that you do not need to link any library in this example. This program computes PI in octuple precision and shows it.
+You have to specify C++20 standard. Note that you do not need to link
+any library in this example. This program computes PI in octuple
+precision and shows it.
 
 ```
 $ ./a.out
 3.141592653589793238462643383279502884197169399375105820974944592307816
 ```
+
+### Libquadmath emulation
+
+In gcc/g++ on x86_64 architecture, libquadmath provides math functions
+for quadruple precision floating point numbers.  However, this library
+is not available with clang or Visual Studio.  By using the
+libquadmath emulation feature of TLFloat library, it is possible to
+use most of the features of libquadmath with clang and Visual Studio.
+
+Below is a simple C source code utilizing this feature.
+
+```
+#include <stdio.h>
+#include <stdlib.h>
+
+#define TLFLOAT_LIBQUADMATH_EMULATION
+#include "tlfloat/tlfloat.h"
+
+int main(int argc, char **argv) {
+  if (argc < 3) exit(-1);
+
+  __float128 q1 = strtoflt128(argv[1], NULL);
+  __float128 q2 = strtoflt128(argv[2], NULL);
+
+  char str[256];
+  quadmath_snprintf(str, sizeof(str), "%.30Qg", powq(q1, q2));
+  puts(str);
+}
+```
+
+To compile this source code, use the following command.
+
+`clang quad.c -I./install/include -L./install/lib -ltlfloat -lm`
+
+Below is an example of executing this program.
+
+```
+$ ./a.out 1.234 2.345
+1.63732181977903314975233575019
+```
+
+In order to use the libquadmath emulation feature, define
+TLFLOAT_LIBQUADMATH_EMULATION macro and include tlfloat/tlfloat.h
+instead of quadmath.h, and link with -ltlfloat -lm. If you need
+portability, replace __float128 with tlfloat_quad.
+
 
 
 ### Development status
