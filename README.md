@@ -5,6 +5,19 @@ Original distribution site : https://github.com/shibatch/tlfloat
 
 Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
 
+### Introduction
+
+This library implements C++ classes with which half, single, double,
+quadruple and octuple precision IEEE 754 floating point numbers can be
+operated.
+
+Internally, these classes are implemented as class templates on top of
+arbitrary-precision integer class templates, which are also included
+in the library, so that the templates are expanded as arbitrary
+precision floating-point operations by just changing the template
+parameters, rather than implementing each floating-point operation for
+each precision.
+
 
 ### Features
 
@@ -14,13 +27,13 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
     * Completely inlinable functions
     * The functions can be evaluated at compile time
   * No malloc required
-  * Works without libc++
+  * Works without libstdc++
 
 * IEEE 754 compliant
   * Supports subnormal numbers, NaN, inf, and signed zero
 
 * Supports a wide range of precisions
-  * Half, float, double, quad, octuple
+  * Half, float, double, quad, and octuple precisions
   * Returns correctly rounded results for arithmetic oprations, fma and sqrt
   * Returns 1-ulp accuracy results for other math.h functions
     * All functions, including trigonometric functions, return 1ulp-accuracy results for all input range
@@ -47,7 +60,7 @@ Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
   * ldexp, frexp, modf, nextafter
   * isnan, isinf, finite, signbit
 
-* I/O functions
+* Implements I/O functions
   * Conversion to/from C strings
   * printf-family functions
 

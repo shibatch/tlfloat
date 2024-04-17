@@ -1,7 +1,7 @@
 if (COMPILER_SUPPORTS_INT128)
   add_executable(test_bigint3 test_bigint3.cpp)
   target_link_libraries(test_bigint3 tlfloat)
-  target_compile_definitions(test_bigint3 PRIVATE COMPILER_SUPPORTS_INT128=1)
+  target_compile_definitions(test_bigint3 PRIVATE TLFLOAT_COMPILER_SUPPORTS_INT128=1)
   add_test(NAME test_bigint3 COMMAND test_bigint3)
 endif()
 
@@ -13,7 +13,7 @@ endif()
 
 add_executable(test_bigint2 test_bigint2.cpp)
 target_link_libraries(test_bigint2 tlfloat)
-target_compile_definitions(test_bigint2 PRIVATE SUPPRESS_WARNINGS=1)
+target_compile_definitions(test_bigint2 PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
 add_test(NAME test_bigint2 COMMAND test_bigint2)
 
 if(ENABLE_CUDA_TESTER)
@@ -29,9 +29,9 @@ if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "
   target_link_libraries(test_tlfloat quadmath)
 endif()
 if (COMPILER_SUPPORTS_INT128)
-  target_compile_definitions(test_tlfloat PRIVATE COMPILER_SUPPORTS_INT128=1)
+  target_compile_definitions(test_tlfloat PRIVATE TLFLOAT_COMPILER_SUPPORTS_INT128=1)
 endif()
-target_compile_definitions(test_tlfloat PRIVATE SUPPRESS_WARNINGS=1)
+target_compile_definitions(test_tlfloat PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
 add_test(NAME test_tlfloat COMMAND test_tlfloat)
 
 if (INSTALL_CONTINUOUS_TESTERS)
@@ -67,7 +67,7 @@ if (LIB_MPFR)
   if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT WIN32)
     target_link_libraries(tester1 quadmath)
   endif()
-  target_compile_definitions(tester1 PRIVATE SUPPRESS_WARNINGS=1)
+  target_compile_definitions(tester1 PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
   add_test(NAME tester1 COMMAND tester1)
 endif()
 
@@ -118,7 +118,7 @@ endif()
 #
 
 add_library(test_octuple_obj OBJECT test_octuple.cpp)
-target_compile_definitions(test_octuple_obj PRIVATE NO_LIBSTDCXX=1)
+target_compile_definitions(test_octuple_obj PRIVATE TLFLOAT_NO_LIBSTDCXX=1)
 set_target_properties(test_octuple_obj PROPERTIES LINKER_LANGUAGE C)
 
 add_executable(test_octuple test_octuple_dummy.c)

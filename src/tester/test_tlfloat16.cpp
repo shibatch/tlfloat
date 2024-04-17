@@ -3,7 +3,7 @@
 #include <mpfr.h>
 #include <arm_fp16.h>
 
-#define SUPPRESS_WARNINGS
+#define TLFLOAT_SUPPRESS_WARNINGS
 
 #include "tlfloat/tlmath.hpp"
 #include "tlfloatutil.hpp"

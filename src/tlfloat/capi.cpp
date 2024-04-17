@@ -2,11 +2,11 @@
 #include <cctype>
 #include <cstdarg>
 
-#ifdef SUPPRESS_WARNINGS
+#ifdef TLFLOAT_SUPPRESS_WARNINGS
 #include "suppress.hpp"
 #endif
 
-#define NO_LIBSTDCXX
+#define TLFLOAT_NO_LIBSTDCXX
 #include "tlfloat/tlmath.hpp"
 
 #include "tlfloat/tlfloat.h"

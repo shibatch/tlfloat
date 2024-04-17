@@ -209,7 +209,7 @@ namespace tlfloat {
 	return u == 0 ? 64 : clz64(u);
       }
 
-#ifdef ENABLE_GNUC_CLZ
+#ifdef TLFLOAT_ENABLE_GNUC_CLZ
       static constexpr unsigned clz(uint32_t u) {
 	return u == 0 ? 32 : __builtin_clz(u);
       }
@@ -814,7 +814,7 @@ namespace tlfloat {
 	return UnpackedFloat(mant_t(u), x + expoffset() - 2, false, u == 0, false, false);
       }
 
-#ifdef ENABLE_UINT128
+#ifdef TLFLOAT_ENABLE_UINT128
       constexpr __int128_t  castToInt(const __int128_t  *ptr) const { return __int128_t (castToInt((BigInt<7>  *)0)); }
       constexpr __uint128_t castToInt(const __uint128_t *ptr) const { return __uint128_t(castToInt((BigUInt<7> *)0)); }
       static constexpr UnpackedFloat castFromInt(__int128_t  src) { return castFromInt(BigInt <7>(src)); }
@@ -1026,10 +1026,10 @@ namespace tlfloat {
 	return ret;
       }
 
-      NOINLINE friend int snprint(char *cbuf, const size_t bufsize,
-			 UnpackedFloat arg, char typespec, int width = 0, int precision = 6,
-			 bool flag_sign = false, bool flag_blank = false, bool flag_alt = false,
-			 bool flag_left = false, bool flag_zero = false, bool flag_upper = false) {
+      TLFLOAT_NOINLINE friend int snprint(char *cbuf, const size_t bufsize,
+					  UnpackedFloat arg, char typespec, int width = 0, int precision = 6,
+					  bool flag_sign = false, bool flag_blank = false, bool flag_alt = false,
+					  bool flag_left = false, bool flag_zero = false, bool flag_upper = false) {
 	if (bufsize == 0) return 0;
 	if (bufsize == 1) { *cbuf = '\0'; return 0; }
 	if (typespec != 'e' && typespec != 'f' && typespec != 'g' && typespec != 'a') return 0;
@@ -1587,7 +1587,7 @@ namespace tlfloat {
 
   //
 
-#if defined(DOXYGEN) || !defined(NO_LIBSTDCXX)
+#if defined(DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 #ifndef DOXYGEN
   template<typename mant_t, typename longmant_t, int nbexp, int nbmant>
   static std::string to_string_d(const detail::UnpackedFloat<mant_t, longmant_t, nbexp, nbmant> &uf) {
@@ -1622,7 +1622,7 @@ namespace tlfloat {
 
   template<typename Unpacked_t>
   static std::ostream& operator<<(std::ostream &os, const TLFloat<Unpacked_t>& u) { return os << to_string(u); }
-#endif // #if defined(DOXYGEN) || !defined(NO_LIBSTDCXX)
+#endif // #if defined(DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 
   //
 

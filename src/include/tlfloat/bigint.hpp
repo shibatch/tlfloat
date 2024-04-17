@@ -7,33 +7,33 @@
 #include <cstring>
 #include <cassert>
 
-#ifdef SUPPRESS_WARNINGS
+#ifdef TLFLOAT_SUPPRESS_WARNINGS
 #include "suppress.hpp"
 #endif
 
-#define NOINLINE
+#define TLFLOAT_NOINLINE
 
-#ifndef DISABLE_ARCH_OPTIMIZATION
+#ifndef TLFLOAT_DISABLE_ARCH_OPTIMIZATION
 #if defined(__GNUC__) || defined(__clang__)
 
 #if defined(__x86_64__) && !defined(__CUDA_ARCH__)
 #include <x86intrin.h>
-#define ENABLE_X86INTRIN
+#define TLFLOAT_ENABLE_X86INTRIN
 #endif
 
 #if defined(__SIZEOF_INT128__) && !defined(__CUDA_ARCH__)
-#define ENABLE_UINT128
+#define TLFLOAT_ENABLE_UINT128
 #endif
 
 #if !defined(__CUDA_ARCH__)
-#define ENABLE_GNUC_CLZ
+#define TLFLOAT_ENABLE_GNUC_CLZ
 #else
-#define ENABLE_CUDA_UMUL64HI
-#define ENABLE_CUDA_CLZ
+#define TLFLOAT_ENABLE_CUDA_UMUL64HI
+#define TLFLOAT_ENABLE_CUDA_CLZ
 #endif
 
-#undef NOINLINE
-#define NOINLINE __attribute__((noinline))
+#undef TLFLOAT_NOINLINE
+#define TLFLOAT_NOINLINE __attribute__((noinline))
 #endif // #if defined(__GNUC__) || defined(__clang__)
 
 #ifdef _MSC_VER
@@ -41,14 +41,14 @@
 
 #if defined(_M_X64)
 #include <intrin.h>
-#define ENABLE_X86INTRIN
+#define TLFLOAT_ENABLE_X86INTRIN
 #endif // #if defined(_M_X64)
 
-#define ENABLE_VCUMUL128
-#define ENABLE_VCBITSCANREVERSE
+#define TLFLOAT_ENABLE_VCUMUL128
+#define TLFLOAT_ENABLE_VCBITSCANREVERSE
 #endif // #if !defined(__CUDA_ARCH__)
 #endif // #ifdef _MSC_VER
-#endif // #ifndef DISABLE_ARCH_OPTIMIZATION
+#endif // #ifndef TLFLOAT_DISABLE_ARCH_OPTIMIZATION
 
 /// TLFloat library defines all C++ classes and functions in tlfloat namespace
 namespace tlfloat {
@@ -70,7 +70,7 @@ namespace tlfloat {
       return p - s;
     }
 
-#if defined(ENABLE_X86INTRIN)
+#if defined(TLFLOAT_ENABLE_X86INTRIN)
     static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
 	xpair<uint64_t, bool> ret(0, false);
@@ -96,7 +96,7 @@ namespace tlfloat {
 	return xpair<uint64_t, bool>((al & 0xffffffff) | (ah << 32), (ah >> 32) != 0);
       }
     }
-#elif defined(ENABLE_UINT128)
+#elif defined(TLFLOAT_ENABLE_UINT128)
     static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       __uint128_t a = __uint128_t(lhs) + rhs + cin;
       return xpair<uint64_t, bool>(uint64_t(a), (a >> 64) != 0);
@@ -122,7 +122,7 @@ namespace tlfloat {
     }
 #endif
 
-#ifdef ENABLE_VCUMUL128
+#ifdef TLFLOAT_ENABLE_VCUMUL128
     static constexpr xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
 	xpair<uint64_t, uint64_t> ret(0, 0);
@@ -134,12 +134,12 @@ namespace tlfloat {
       uint64_t m = ah * bl + ((al * bl) >> 32) + ((al * bh) & 0xffffffff);
       return xpair<uint64_t, uint64_t> (ah * bh + (m >> 32) + ((al * bh) >> 32), lhs * rhs);
     }
-#elif defined(ENABLE_UINT128)
+#elif defined(TLFLOAT_ENABLE_UINT128)
     static constexpr xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       __uint128_t m = lhs * __uint128_t(rhs);
       return xpair<uint64_t, uint64_t>(uint64_t(m >> 64), uint64_t(m));
     }
-#elif defined(ENABLE_CUDA_UMUL64HI)
+#elif defined(TLFLOAT_ENABLE_CUDA_UMUL64HI)
     static constexpr xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
 	return xpair<uint64_t, uint64_t>(__umul64hi(lhs, rhs), lhs * rhs);
@@ -158,7 +158,7 @@ namespace tlfloat {
     }
 #endif
 
-#ifdef ENABLE_VCBITSCANREVERSE
+#ifdef TLFLOAT_ENABLE_VCBITSCANREVERSE
     static constexpr unsigned clz64(uint64_t u) {
       if (!std::is_constant_evaluated()) {
 	unsigned long idx = 0;
@@ -175,9 +175,9 @@ namespace tlfloat {
 	return z;
       }
     }
-#elif defined(ENABLE_GNUC_CLZ)
+#elif defined(TLFLOAT_ENABLE_GNUC_CLZ)
     static constexpr unsigned clz64(uint64_t u) { return u == 0 ? 64 : __builtin_clzl(u); }
-#elif defined(ENABLE_CUDA_CLZ)
+#elif defined(TLFLOAT_ENABLE_CUDA_CLZ)
     static constexpr unsigned clz64(uint64_t u) {
       if (!std::is_constant_evaluated()) return __clzll(u);
       unsigned z = 0;
@@ -412,7 +412,7 @@ namespace tlfloat {
 
     constexpr explicit operator bool() const { return !isZero(); }
 
-#ifdef ENABLE_UINT128
+#ifdef TLFLOAT_ENABLE_UINT128
     constexpr BigUInt(__uint128_t u) : low(uint64_t(u & 0xffffffffffffffffULL)), high(uint64_t(u >> 64)) {}
     constexpr explicit operator __uint128_t() const { return (__uint128_t(high) << 64) + low; }
 
@@ -933,7 +933,7 @@ namespace tlfloat {
 
     constexpr explicit operator bool() const { return !u.isZero(); }
 
-#ifdef ENABLE_UINT128
+#ifdef TLFLOAT_ENABLE_UINT128
     constexpr BigInt(__int128_t u) : BigInt(BigUInt<N>(__uint128_t(u))) {}
     constexpr explicit operator __int128_t() const { return (__int128_t)BigUInt<N>(*this); }
 
@@ -1166,11 +1166,11 @@ namespace tlfloat {
       if (sign) u = -u;
     }
 
-    NOINLINE static int snprint(char *cbuf, size_t bufsize, BigInt<N> value, char typespec = 'd',
-				int width = 0, int precision = -1, int base = 10, int nbits = 1 << N,
-				bool flag_sign = false, bool flag_blank = false, bool flag_alt = false,
-				bool flag_left = false, bool flag_zero = false, bool flag_upper = false,
-				bool flag_unsigned = false, bool flag_ptr = false, const char *prefix = "") {
+    TLFLOAT_NOINLINE static int snprint(char *cbuf, size_t bufsize, BigInt<N> value, char typespec = 'd',
+					int width = 0, int precision = -1, int base = 10, int nbits = 1 << N,
+					bool flag_sign = false, bool flag_blank = false, bool flag_alt = false,
+					bool flag_left = false, bool flag_zero = false, bool flag_upper = false,
+					bool flag_unsigned = false, bool flag_ptr = false, const char *prefix = "") {
       detail::SafeArray<char> buf(cbuf, bufsize);
 
       if (width > (int)bufsize) width = bufsize;
@@ -1254,7 +1254,7 @@ namespace tlfloat {
   };
 }
 
-#if defined(DOXYGEN) || !defined(NO_LIBSTDCXX)
+#if defined(DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 
 #include <iostream>
 #include <vector>
@@ -1296,5 +1296,5 @@ namespace tlfloat {
 
   template<int N> static std::ostream& operator<<(std::ostream &os, const BigInt<N>& u) { return os << to_string(u); }
 }
-#endif // #if defined(DOXYGEN) || !defined(NO_LIBSTDCXX)
+#endif // #if defined(DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 #endif // #ifndef __BIGINT_HPP_INCLUDED__

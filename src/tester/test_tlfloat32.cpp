@@ -3,7 +3,7 @@
 #define MPFR_WANT_FLOAT128
 #include <mpfr.h>
 
-#define SUPPRESS_WARNINGS
+#define TLFLOAT_SUPPRESS_WARNINGS
 
 #include "tlfloat/tlmath.hpp"
 #include "tlfloatutil.hpp"
