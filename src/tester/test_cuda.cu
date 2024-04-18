@@ -6,7 +6,7 @@
 #include <cassert>
 
 #include "tlfloat/tlmath.hpp"
-#include "auxiliary.hpp"
+#include "testerutil.hpp"
 
 using namespace std;
 using namespace tlfloat;
@@ -206,26 +206,54 @@ int main(int argc, char **argv) {
   Half *zh = (Half *)cudaMallocManaged_(N*sizeof(Half));
   Half *rh = (Half *)cudaMallocManaged_(N*sizeof(Half));
 
-  for (int i = 0; i < N; i++) {
-    xo[i] = rnd<Octuple>(rng);
-    yo[i] = rnd<Octuple>(rng);
-    zo[i] = rnd<Octuple>(rng);
+  {
+    vector<Octuple> v;
+    v = genTestValues<Octuple>(N, rng);
+    for(int i=0;i<N;i++) xo[i] = v[i];
+    v = genTestValues<Octuple>(N, rng);
+    for(int i=0;i<N;i++) yo[i] = v[i];
+    v = genTestValues<Octuple>(N, rng);
+    for(int i=0;i<N;i++) zo[i] = v[i];
+  }
 
-    xq[i] = rnd<Quad>(rng);
-    yq[i] = rnd<Quad>(rng);
-    zq[i] = rnd<Quad>(rng);
+  {
+    vector<Quad> v;
+    v = genTestValues<Quad>(N, rng);
+    for(int i=0;i<N;i++) xq[i] = v[i];
+    v = genTestValues<Quad>(N, rng);
+    for(int i=0;i<N;i++) yq[i] = v[i];
+    v = genTestValues<Quad>(N, rng);
+    for(int i=0;i<N;i++) zq[i] = v[i];
+  }
 
-    xd[i] = rnd<Double>(rng);
-    yd[i] = rnd<Double>(rng);
-    zd[i] = rnd<Double>(rng);
+  {
+    vector<Double> v;
+    v = genTestValues<Double>(N, rng);
+    for(int i=0;i<N;i++) xd[i] = v[i];
+    v = genTestValues<Double>(N, rng);
+    for(int i=0;i<N;i++) yd[i] = v[i];
+    v = genTestValues<Double>(N, rng);
+    for(int i=0;i<N;i++) zd[i] = v[i];
+  }
 
-    xf[i] = rnd<Float>(rng);
-    yf[i] = rnd<Float>(rng);
-    zf[i] = rnd<Float>(rng);
+  {
+    vector<Float> v;
+    v = genTestValues<Float>(N, rng);
+    for(int i=0;i<N;i++) xf[i] = v[i];
+    v = genTestValues<Float>(N, rng);
+    for(int i=0;i<N;i++) yf[i] = v[i];
+    v = genTestValues<Float>(N, rng);
+    for(int i=0;i<N;i++) zf[i] = v[i];
+  }
 
-    xh[i] = rnd<Half>(rng);
-    yh[i] = rnd<Half>(rng);
-    zh[i] = rnd<Half>(rng);
+  {
+    vector<Float> v;
+    v = genTestValues<Float>(N, rng);
+    for(int i=0;i<N;i++) xh[i] = v[i];
+    v = genTestValues<Float>(N, rng);
+    for(int i=0;i<N;i++) yh[i] = v[i];
+    v = genTestValues<Float>(N, rng);
+    for(int i=0;i<N;i++) zh[i] = v[i];
   }
 
   doTest<Octuple, fabs_>("Octuple fabs", ro, xo);

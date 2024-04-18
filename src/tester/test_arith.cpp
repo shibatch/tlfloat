@@ -6,8 +6,12 @@
 #include <cstring>
 #include <cmath>
 
+#if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#include <quadmath.h>
+#endif
+
 #include "tlfloat/tlfloat.hpp"
-#include "tlfloatutil.hpp"
+#include "testerutil.hpp"
 
 using namespace std;
 using namespace tlfloat;

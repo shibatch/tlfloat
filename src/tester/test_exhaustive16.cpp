@@ -6,7 +6,7 @@
 #define TLFLOAT_SUPPRESS_WARNINGS
 
 #include "tlfloat/tlmath.hpp"
-#include "tlfloatutil.hpp"
+#include "testerutil.hpp"
 
 using namespace std;
 using namespace tlfloat;

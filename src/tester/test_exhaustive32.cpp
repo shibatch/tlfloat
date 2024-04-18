@@ -1,12 +1,17 @@
 #include <iostream>
 #include <cstdint>
+
+#if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#include <quadmath.h>
+#endif
+
 #define MPFR_WANT_FLOAT128
 #include <mpfr.h>
 
 #define TLFLOAT_SUPPRESS_WARNINGS
 
 #include "tlfloat/tlmath.hpp"
-#include "tlfloatutil.hpp"
+#include "testerutil.hpp"
 
 using namespace std;
 using namespace tlfloat;

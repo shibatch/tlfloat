@@ -1,84 +1,19 @@
 #include <iostream>
 
+#if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#include <quadmath.h>
+#endif
+
 #if (defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)) || defined(__aarch64__)
 #define MPFR_WANT_FLOAT128
 #endif
 #include <mpfr.h>
 
 #include <tlfloat/tlmath.hpp>
-#include <tlfloatutil.hpp>
+#include <testerutil.hpp>
 
 using namespace std;
 using namespace tlfloat;
-
-const int N = 64;
-
-template<typename T> T values[N] = {
-  T("+0.0"),
-  T("-0.0"),
-  T::nan(),
-  T::inf(false),
-  T::inf(true),
-  T::floatdenormmin(false),
-  nextafter(T::floatdenormmin(false), 1),
-  nextafter(nextafter(T::floatdenormmin(false), 1), 1),
-  nextafter(nextafter(nextafter(T::floatdenormmin(false), 1), 1), 1),
-  nextafter(nextafter(nextafter(nextafter(T::floatdenormmin(false), 1), 1), 1), 1),
-  T::floatdenormmin(true),
-  nextafter(T::floatdenormmin(true), -1),
-  nextafter(nextafter(T::floatdenormmin(true), -1), -1),
-  nextafter(nextafter(nextafter(T::floatdenormmin(true), -1), -1), -1),
-  nextafter(nextafter(nextafter(nextafter(T::floatdenormmin(true), -1), -1), -1), -1),
-  T::floatmax(false),
-  nextafter(T::floatmax(false), 0),
-  nextafter(nextafter(T::floatmax(false), 0), 0),
-  nextafter(nextafter(nextafter(T::floatmax(false), 0), 0), 0),
-  nextafter(nextafter(nextafter(nextafter(T::floatmax(false), 0), 0), 0), 0),
-  T::floatmax(true),
-  nextafter(T::floatmax(true), 0),
-  nextafter(nextafter(T::floatmax(true), 0), 0),
-  nextafter(nextafter(nextafter(T::floatmax(true), 0), 0), 0),
-  nextafter(nextafter(nextafter(nextafter(T::floatmax(true), 0), 0), 0), 0),
-  T("+0.25"),
-  T("-0.25"),
-  T("+0.5"),
-  T("-0.5"),
-  T("+1.0"),
-  T("-1.0"),
-  T("+1.5"),
-  T("-1.5"),
-  T("+2.0"),
-  T("-2.0"),
-  T("+2.5"),
-  T("-2.5"),
-  T("+3.0"),
-  T("-3.0"),
-  T("+4.0"),
-  T("-4.0"),
-  T("+100.0"),
-  T("-100.0"),
-  T("+100.5"),
-  T("-100.5"),
-  T("+101.0"),
-  T("-101.0"),
-  T("+102.0"),
-  T("-102.0"),
-  T("+103.0"),
-  T("-103.0"),
-  T("+1.234"),
-  T("-1.234"),
-  T("+1.234e+10"),
-  T("-1.234e+10"),
-  T("+1.234e+30"),
-  T("-1.234e+30"),
-  T("+1.234e-10"),
-  T("-1.234e-10"),
-  T("+1.234e-30"),
-  T("-1.234e-30"),
-  T("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170676"),
-  T("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170676e+30"),
-  T("2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274"),
-};
 
 template<typename T>
 using Func1 = T (*)(const T&);
@@ -193,247 +128,260 @@ void doTest(const char *mes, T a1, T a2, T a3, mpfr_t &mr, mpfr_t &ma1, mpfr_t &
 }
 
 int main(int argc, char **argv) {
+  int n = 100;
+  if (argc >= 2) n = atoi(argv[1]);
+
   mpfr_set_default_prec(256);
 
   mpfr_t mr, ma1, ma2, ma3;
   mpfr_inits(mr, ma1, ma2, ma3, NULL);
 
+  auto rng = createPreferredRNG();
+
+  vector<Half> hvalues = genTestValues<Half>(n, rng);
+  vector<Float> fvalues = genTestValues<Float>(n, rng);
+  vector<Double> dvalues = genTestValues<Double>(n, rng);
+  vector<Quad> qvalues = genTestValues<Quad>(n, rng);
+  vector<Octuple> ovalues = genTestValues<Octuple>(n, rng);
+
+  int N = hvalues.size();
+
   for(int index0 = 0;index0 < N;index0++) {
-    doTest<Half, fabs_, mpfr_abs>("Half fabs", values<Half>[index0], mr, ma1);
-    doTest<Float, fabs_, mpfr_abs>("Float fabs", values<Float>[index0], mr, ma1);
-    doTest<Double, fabs_, mpfr_abs>("Double fabs", values<Double>[index0], mr, ma1);
-    doTest<Quad, fabs_, mpfr_abs>("Quad fabs", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, fabs_, mpfr_abs>("Octuple fabs", values<Octuple>[index0], mr, ma1);
+    doTest<Half, fabs_, mpfr_abs>("Half fabs", hvalues[index0], mr, ma1);
+    doTest<Float, fabs_, mpfr_abs>("Float fabs", fvalues[index0], mr, ma1);
+    doTest<Double, fabs_, mpfr_abs>("Double fabs", dvalues[index0], mr, ma1);
+    doTest<Quad, fabs_, mpfr_abs>("Quad fabs", qvalues[index0], mr, ma1);
+    doTest<Octuple, fabs_, mpfr_abs>("Octuple fabs", ovalues[index0], mr, ma1);
 
-    doTest<Half, sqrt_, mpfr_sqrt>("Half sqrt", values<Half>[index0], mr, ma1);
-    doTest<Float, sqrt_, mpfr_sqrt>("Float sqrt", values<Float>[index0], mr, ma1);
-    doTest<Double, sqrt_, mpfr_sqrt>("Double sqrt", values<Double>[index0], mr, ma1);
-    doTest<Quad, sqrt_, mpfr_sqrt>("Quad sqrt", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, sqrt_, mpfr_sqrt>("Octuple sqrt", values<Octuple>[index0], mr, ma1);
+    doTest<Half, sqrt_, mpfr_sqrt>("Half sqrt", hvalues[index0], mr, ma1);
+    doTest<Float, sqrt_, mpfr_sqrt>("Float sqrt", fvalues[index0], mr, ma1);
+    doTest<Double, sqrt_, mpfr_sqrt>("Double sqrt", dvalues[index0], mr, ma1);
+    doTest<Quad, sqrt_, mpfr_sqrt>("Quad sqrt", qvalues[index0], mr, ma1);
+    doTest<Octuple, sqrt_, mpfr_sqrt>("Octuple sqrt", ovalues[index0], mr, ma1);
 
-    doTest<Half, trunc_, mpfr_trunc>("Half trunc", values<Half>[index0], mr, ma1);
-    doTest<Float, trunc_, mpfr_trunc>("Float trunc", values<Float>[index0], mr, ma1);
-    doTest<Double, trunc_, mpfr_trunc>("Double trunc", values<Double>[index0], mr, ma1);
-    doTest<Quad, trunc_, mpfr_trunc>("Quad trunc", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, trunc_, mpfr_trunc>("Octuple trunc", values<Octuple>[index0], mr, ma1);
+    doTest<Half, trunc_, mpfr_trunc>("Half trunc", hvalues[index0], mr, ma1);
+    doTest<Float, trunc_, mpfr_trunc>("Float trunc", fvalues[index0], mr, ma1);
+    doTest<Double, trunc_, mpfr_trunc>("Double trunc", dvalues[index0], mr, ma1);
+    doTest<Quad, trunc_, mpfr_trunc>("Quad trunc", qvalues[index0], mr, ma1);
+    doTest<Octuple, trunc_, mpfr_trunc>("Octuple trunc", ovalues[index0], mr, ma1);
 
-    doTest<Half, floor_, mpfr_floor>("Half floor", values<Half>[index0], mr, ma1);
-    doTest<Float, floor_, mpfr_floor>("Float floor", values<Float>[index0], mr, ma1);
-    doTest<Double, floor_, mpfr_floor>("Double floor", values<Double>[index0], mr, ma1);
-    doTest<Quad, floor_, mpfr_floor>("Quad floor", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, floor_, mpfr_floor>("Octuple floor", values<Octuple>[index0], mr, ma1);
+    doTest<Half, floor_, mpfr_floor>("Half floor", hvalues[index0], mr, ma1);
+    doTest<Float, floor_, mpfr_floor>("Float floor", fvalues[index0], mr, ma1);
+    doTest<Double, floor_, mpfr_floor>("Double floor", dvalues[index0], mr, ma1);
+    doTest<Quad, floor_, mpfr_floor>("Quad floor", qvalues[index0], mr, ma1);
+    doTest<Octuple, floor_, mpfr_floor>("Octuple floor", ovalues[index0], mr, ma1);
 
-    doTest<Half, ceil_, mpfr_ceil>("Half ceil", values<Half>[index0], mr, ma1);
-    doTest<Float, ceil_, mpfr_ceil>("Float ceil", values<Float>[index0], mr, ma1);
-    doTest<Double, ceil_, mpfr_ceil>("Double ceil", values<Double>[index0], mr, ma1);
-    doTest<Quad, ceil_, mpfr_ceil>("Quad ceil", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, ceil_, mpfr_ceil>("Octuple ceil", values<Octuple>[index0], mr, ma1);
+    doTest<Half, ceil_, mpfr_ceil>("Half ceil", hvalues[index0], mr, ma1);
+    doTest<Float, ceil_, mpfr_ceil>("Float ceil", fvalues[index0], mr, ma1);
+    doTest<Double, ceil_, mpfr_ceil>("Double ceil", dvalues[index0], mr, ma1);
+    doTest<Quad, ceil_, mpfr_ceil>("Quad ceil", qvalues[index0], mr, ma1);
+    doTest<Octuple, ceil_, mpfr_ceil>("Octuple ceil", ovalues[index0], mr, ma1);
 
-    doTest<Half, round_, mpfr_round>("Half round", values<Half>[index0], mr, ma1);
-    doTest<Float, round_, mpfr_round>("Float round", values<Float>[index0], mr, ma1);
-    doTest<Double, round_, mpfr_round>("Double round", values<Double>[index0], mr, ma1);
-    doTest<Quad, round_, mpfr_round>("Quad round", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, round_, mpfr_round>("Octuple round", values<Octuple>[index0], mr, ma1);
+    doTest<Half, round_, mpfr_round>("Half round", hvalues[index0], mr, ma1);
+    doTest<Float, round_, mpfr_round>("Float round", fvalues[index0], mr, ma1);
+    doTest<Double, round_, mpfr_round>("Double round", dvalues[index0], mr, ma1);
+    doTest<Quad, round_, mpfr_round>("Quad round", qvalues[index0], mr, ma1);
+    doTest<Octuple, round_, mpfr_round>("Octuple round", ovalues[index0], mr, ma1);
 
-    doTest<Half, rint_, mpfr_rint>("Half rint", values<Half>[index0], mr, ma1);
-    doTest<Float, rint_, mpfr_rint>("Float rint", values<Float>[index0], mr, ma1);
-    doTest<Double, rint_, mpfr_rint>("Double rint", values<Double>[index0], mr, ma1);
-    doTest<Quad, rint_, mpfr_rint>("Quad rint", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, rint_, mpfr_rint>("Octuple rint", values<Octuple>[index0], mr, ma1);
+    doTest<Half, rint_, mpfr_rint>("Half rint", hvalues[index0], mr, ma1);
+    doTest<Float, rint_, mpfr_rint>("Float rint", fvalues[index0], mr, ma1);
+    doTest<Double, rint_, mpfr_rint>("Double rint", dvalues[index0], mr, ma1);
+    doTest<Quad, rint_, mpfr_rint>("Quad rint", qvalues[index0], mr, ma1);
+    doTest<Octuple, rint_, mpfr_rint>("Octuple rint", ovalues[index0], mr, ma1);
 
-    doTest<Half, sin, mpfr_sin>("Half sin", values<Half>[index0], mr, ma1);
-    doTest<Float, sin, mpfr_sin>("Float sin", values<Float>[index0], mr, ma1);
-    doTest<Double, sin, mpfr_sin>("Double sin", values<Double>[index0], mr, ma1);
-    doTest<Quad, sin, mpfr_sin>("Quad sin", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, sin, mpfr_sin>("Octuple sin", values<Octuple>[index0], mr, ma1);
+    doTest<Half, sin, mpfr_sin>("Half sin", hvalues[index0], mr, ma1);
+    doTest<Float, sin, mpfr_sin>("Float sin", fvalues[index0], mr, ma1);
+    doTest<Double, sin, mpfr_sin>("Double sin", dvalues[index0], mr, ma1);
+    doTest<Quad, sin, mpfr_sin>("Quad sin", qvalues[index0], mr, ma1);
+    doTest<Octuple, sin, mpfr_sin>("Octuple sin", ovalues[index0], mr, ma1);
 
-    doTest<Half, cos, mpfr_cos>("Half cos", values<Half>[index0], mr, ma1);
-    doTest<Float, cos, mpfr_cos>("Float cos", values<Float>[index0], mr, ma1);
-    doTest<Double, cos, mpfr_cos>("Double cos", values<Double>[index0], mr, ma1);
-    doTest<Quad, cos, mpfr_cos>("Quad cos", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, cos, mpfr_cos>("Octuple cos", values<Octuple>[index0], mr, ma1);
+    doTest<Half, cos, mpfr_cos>("Half cos", hvalues[index0], mr, ma1);
+    doTest<Float, cos, mpfr_cos>("Float cos", fvalues[index0], mr, ma1);
+    doTest<Double, cos, mpfr_cos>("Double cos", dvalues[index0], mr, ma1);
+    doTest<Quad, cos, mpfr_cos>("Quad cos", qvalues[index0], mr, ma1);
+    doTest<Octuple, cos, mpfr_cos>("Octuple cos", ovalues[index0], mr, ma1);
 
-    doTest<Half, tan, mpfr_tan>("Half tan", values<Half>[index0], mr, ma1);
-    doTest<Float, tan, mpfr_tan>("Float tan", values<Float>[index0], mr, ma1);
-    doTest<Double, tan, mpfr_tan>("Double tan", values<Double>[index0], mr, ma1);
-    doTest<Quad, tan, mpfr_tan>("Quad tan", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, tan, mpfr_tan>("Octuple tan", values<Octuple>[index0], mr, ma1);
+    doTest<Half, tan, mpfr_tan>("Half tan", hvalues[index0], mr, ma1);
+    doTest<Float, tan, mpfr_tan>("Float tan", fvalues[index0], mr, ma1);
+    doTest<Double, tan, mpfr_tan>("Double tan", dvalues[index0], mr, ma1);
+    doTest<Quad, tan, mpfr_tan>("Quad tan", qvalues[index0], mr, ma1);
+    doTest<Octuple, tan, mpfr_tan>("Octuple tan", ovalues[index0], mr, ma1);
 
-    doTest<Half, asin, mpfr_asin>("Half asin", values<Half>[index0], mr, ma1);
-    doTest<Float, asin, mpfr_asin>("Float asin", values<Float>[index0], mr, ma1);
-    doTest<Double, asin, mpfr_asin>("Double asin", values<Double>[index0], mr, ma1);
-    doTest<Quad, asin, mpfr_asin>("Quad asin", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, asin, mpfr_asin>("Octuple asin", values<Octuple>[index0], mr, ma1);
+    doTest<Half, asin, mpfr_asin>("Half asin", hvalues[index0], mr, ma1);
+    doTest<Float, asin, mpfr_asin>("Float asin", fvalues[index0], mr, ma1);
+    doTest<Double, asin, mpfr_asin>("Double asin", dvalues[index0], mr, ma1);
+    doTest<Quad, asin, mpfr_asin>("Quad asin", qvalues[index0], mr, ma1);
+    doTest<Octuple, asin, mpfr_asin>("Octuple asin", ovalues[index0], mr, ma1);
 
-    doTest<Half, acos, mpfr_acos>("Half acos", values<Half>[index0], mr, ma1);
-    doTest<Float, acos, mpfr_acos>("Float acos", values<Float>[index0], mr, ma1);
-    doTest<Double, acos, mpfr_acos>("Double acos", values<Double>[index0], mr, ma1);
-    doTest<Quad, acos, mpfr_acos>("Quad acos", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, acos, mpfr_acos>("Octuple acos", values<Octuple>[index0], mr, ma1);
+    doTest<Half, acos, mpfr_acos>("Half acos", hvalues[index0], mr, ma1);
+    doTest<Float, acos, mpfr_acos>("Float acos", fvalues[index0], mr, ma1);
+    doTest<Double, acos, mpfr_acos>("Double acos", dvalues[index0], mr, ma1);
+    doTest<Quad, acos, mpfr_acos>("Quad acos", qvalues[index0], mr, ma1);
+    doTest<Octuple, acos, mpfr_acos>("Octuple acos", ovalues[index0], mr, ma1);
 
-    doTest<Half, atan, mpfr_atan>("Half atan", values<Half>[index0], mr, ma1);
-    doTest<Float, atan, mpfr_atan>("Float atan", values<Float>[index0], mr, ma1);
-    doTest<Double, atan, mpfr_atan>("Double atan", values<Double>[index0], mr, ma1);
-    doTest<Quad, atan, mpfr_atan>("Quad atan", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, atan, mpfr_atan>("Octuple atan", values<Octuple>[index0], mr, ma1);
+    doTest<Half, atan, mpfr_atan>("Half atan", hvalues[index0], mr, ma1);
+    doTest<Float, atan, mpfr_atan>("Float atan", fvalues[index0], mr, ma1);
+    doTest<Double, atan, mpfr_atan>("Double atan", dvalues[index0], mr, ma1);
+    doTest<Quad, atan, mpfr_atan>("Quad atan", qvalues[index0], mr, ma1);
+    doTest<Octuple, atan, mpfr_atan>("Octuple atan", ovalues[index0], mr, ma1);
 
-    doTest<Half, log, mpfr_log>("Half log", values<Half>[index0], mr, ma1);
-    doTest<Float, log, mpfr_log>("Float log", values<Float>[index0], mr, ma1);
-    doTest<Double, log, mpfr_log>("Double log", values<Double>[index0], mr, ma1);
-    doTest<Quad, log, mpfr_log>("Quad log", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, log, mpfr_log>("Octuple log", values<Octuple>[index0], mr, ma1);
+    doTest<Half, log, mpfr_log>("Half log", hvalues[index0], mr, ma1);
+    doTest<Float, log, mpfr_log>("Float log", fvalues[index0], mr, ma1);
+    doTest<Double, log, mpfr_log>("Double log", dvalues[index0], mr, ma1);
+    doTest<Quad, log, mpfr_log>("Quad log", qvalues[index0], mr, ma1);
+    doTest<Octuple, log, mpfr_log>("Octuple log", ovalues[index0], mr, ma1);
 
-    doTest<Half, log2, mpfr_log2>("Half log2", values<Half>[index0], mr, ma1);
-    doTest<Float, log2, mpfr_log2>("Float log2", values<Float>[index0], mr, ma1);
-    doTest<Double, log2, mpfr_log2>("Double log2", values<Double>[index0], mr, ma1);
-    doTest<Quad, log2, mpfr_log2>("Quad log2", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, log2, mpfr_log2>("Octuple log2", values<Octuple>[index0], mr, ma1);
+    doTest<Half, log2, mpfr_log2>("Half log2", hvalues[index0], mr, ma1);
+    doTest<Float, log2, mpfr_log2>("Float log2", fvalues[index0], mr, ma1);
+    doTest<Double, log2, mpfr_log2>("Double log2", dvalues[index0], mr, ma1);
+    doTest<Quad, log2, mpfr_log2>("Quad log2", qvalues[index0], mr, ma1);
+    doTest<Octuple, log2, mpfr_log2>("Octuple log2", ovalues[index0], mr, ma1);
 
-    doTest<Half, log10, mpfr_log10>("Half log10", values<Half>[index0], mr, ma1);
-    doTest<Float, log10, mpfr_log10>("Float log10", values<Float>[index0], mr, ma1);
-    doTest<Double, log10, mpfr_log10>("Double log10", values<Double>[index0], mr, ma1);
-    doTest<Quad, log10, mpfr_log10>("Quad log10", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, log10, mpfr_log10>("Octuple log10", values<Octuple>[index0], mr, ma1);
+    doTest<Half, log10, mpfr_log10>("Half log10", hvalues[index0], mr, ma1);
+    doTest<Float, log10, mpfr_log10>("Float log10", fvalues[index0], mr, ma1);
+    doTest<Double, log10, mpfr_log10>("Double log10", dvalues[index0], mr, ma1);
+    doTest<Quad, log10, mpfr_log10>("Quad log10", qvalues[index0], mr, ma1);
+    doTest<Octuple, log10, mpfr_log10>("Octuple log10", ovalues[index0], mr, ma1);
 
-    doTest<Half, log1p, mpfr_log1p>("Half log1p", values<Half>[index0], mr, ma1);
-    doTest<Float, log1p, mpfr_log1p>("Float log1p", values<Float>[index0], mr, ma1);
-    doTest<Double, log1p, mpfr_log1p>("Double log1p", values<Double>[index0], mr, ma1);
-    doTest<Quad, log1p, mpfr_log1p>("Quad log1p", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, log1p, mpfr_log1p>("Octuple log1p", values<Octuple>[index0], mr, ma1);
+    doTest<Half, log1p, mpfr_log1p>("Half log1p", hvalues[index0], mr, ma1);
+    doTest<Float, log1p, mpfr_log1p>("Float log1p", fvalues[index0], mr, ma1);
+    doTest<Double, log1p, mpfr_log1p>("Double log1p", dvalues[index0], mr, ma1);
+    doTest<Quad, log1p, mpfr_log1p>("Quad log1p", qvalues[index0], mr, ma1);
+    doTest<Octuple, log1p, mpfr_log1p>("Octuple log1p", ovalues[index0], mr, ma1);
 
-    doTest<Half, exp, mpfr_exp>("Half exp", values<Half>[index0], mr, ma1);
-    doTest<Float, exp, mpfr_exp>("Float exp", values<Float>[index0], mr, ma1);
-    doTest<Double, exp, mpfr_exp>("Double exp", values<Double>[index0], mr, ma1);
-    doTest<Quad, exp, mpfr_exp>("Quad exp", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, exp, mpfr_exp>("Octuple exp", values<Octuple>[index0], mr, ma1);
+    doTest<Half, exp, mpfr_exp>("Half exp", hvalues[index0], mr, ma1);
+    doTest<Float, exp, mpfr_exp>("Float exp", fvalues[index0], mr, ma1);
+    doTest<Double, exp, mpfr_exp>("Double exp", dvalues[index0], mr, ma1);
+    doTest<Quad, exp, mpfr_exp>("Quad exp", qvalues[index0], mr, ma1);
+    doTest<Octuple, exp, mpfr_exp>("Octuple exp", ovalues[index0], mr, ma1);
 
-    doTest<Half, exp2, mpfr_exp2>("Half exp2", values<Half>[index0], mr, ma1);
-    doTest<Float, exp2, mpfr_exp2>("Float exp2", values<Float>[index0], mr, ma1);
-    doTest<Double, exp2, mpfr_exp2>("Double exp2", values<Double>[index0], mr, ma1);
-    doTest<Quad, exp2, mpfr_exp2>("Quad exp2", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, exp2, mpfr_exp2>("Octuple exp2", values<Octuple>[index0], mr, ma1);
+    doTest<Half, exp2, mpfr_exp2>("Half exp2", hvalues[index0], mr, ma1);
+    doTest<Float, exp2, mpfr_exp2>("Float exp2", fvalues[index0], mr, ma1);
+    doTest<Double, exp2, mpfr_exp2>("Double exp2", dvalues[index0], mr, ma1);
+    doTest<Quad, exp2, mpfr_exp2>("Quad exp2", qvalues[index0], mr, ma1);
+    doTest<Octuple, exp2, mpfr_exp2>("Octuple exp2", ovalues[index0], mr, ma1);
 
-    doTest<Half, exp10, mpfr_exp10>("Half exp10", values<Half>[index0], mr, ma1);
-    doTest<Float, exp10, mpfr_exp10>("Float exp10", values<Float>[index0], mr, ma1);
-    doTest<Double, exp10, mpfr_exp10>("Double exp10", values<Double>[index0], mr, ma1);
-    doTest<Quad, exp10, mpfr_exp10>("Quad exp10", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, exp10, mpfr_exp10>("Octuple exp10", values<Octuple>[index0], mr, ma1);
+    doTest<Half, exp10, mpfr_exp10>("Half exp10", hvalues[index0], mr, ma1);
+    doTest<Float, exp10, mpfr_exp10>("Float exp10", fvalues[index0], mr, ma1);
+    doTest<Double, exp10, mpfr_exp10>("Double exp10", dvalues[index0], mr, ma1);
+    doTest<Quad, exp10, mpfr_exp10>("Quad exp10", qvalues[index0], mr, ma1);
+    doTest<Octuple, exp10, mpfr_exp10>("Octuple exp10", ovalues[index0], mr, ma1);
 
-    doTest<Half, expm1, mpfr_expm1>("Half expm1", values<Half>[index0], mr, ma1);
-    doTest<Float, expm1, mpfr_expm1>("Float expm1", values<Float>[index0], mr, ma1);
-    doTest<Double, expm1, mpfr_expm1>("Double expm1", values<Double>[index0], mr, ma1);
-    doTest<Quad, expm1, mpfr_expm1>("Quad expm1", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, expm1, mpfr_expm1>("Octuple expm1", values<Octuple>[index0], mr, ma1);
+    doTest<Half, expm1, mpfr_expm1>("Half expm1", hvalues[index0], mr, ma1);
+    doTest<Float, expm1, mpfr_expm1>("Float expm1", fvalues[index0], mr, ma1);
+    doTest<Double, expm1, mpfr_expm1>("Double expm1", dvalues[index0], mr, ma1);
+    doTest<Quad, expm1, mpfr_expm1>("Quad expm1", qvalues[index0], mr, ma1);
+    doTest<Octuple, expm1, mpfr_expm1>("Octuple expm1", ovalues[index0], mr, ma1);
 
-    doTest<Half, sinh, mpfr_sinh>("Half sinh", values<Half>[index0], mr, ma1);
-    doTest<Float, sinh, mpfr_sinh>("Float sinh", values<Float>[index0], mr, ma1);
-    doTest<Double, sinh, mpfr_sinh>("Double sinh", values<Double>[index0], mr, ma1);
-    doTest<Quad, sinh, mpfr_sinh>("Quad sinh", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, sinh, mpfr_sinh>("Octuple sinh", values<Octuple>[index0], mr, ma1);
+    doTest<Half, sinh, mpfr_sinh>("Half sinh", hvalues[index0], mr, ma1);
+    doTest<Float, sinh, mpfr_sinh>("Float sinh", fvalues[index0], mr, ma1);
+    doTest<Double, sinh, mpfr_sinh>("Double sinh", dvalues[index0], mr, ma1);
+    doTest<Quad, sinh, mpfr_sinh>("Quad sinh", qvalues[index0], mr, ma1);
+    doTest<Octuple, sinh, mpfr_sinh>("Octuple sinh", ovalues[index0], mr, ma1);
 
-    doTest<Half, cosh, mpfr_cosh>("Half cosh", values<Half>[index0], mr, ma1);
-    doTest<Float, cosh, mpfr_cosh>("Float cosh", values<Float>[index0], mr, ma1);
-    doTest<Double, cosh, mpfr_cosh>("Double cosh", values<Double>[index0], mr, ma1);
-    doTest<Quad, cosh, mpfr_cosh>("Quad cosh", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, cosh, mpfr_cosh>("Octuple cosh", values<Octuple>[index0], mr, ma1);
+    doTest<Half, cosh, mpfr_cosh>("Half cosh", hvalues[index0], mr, ma1);
+    doTest<Float, cosh, mpfr_cosh>("Float cosh", fvalues[index0], mr, ma1);
+    doTest<Double, cosh, mpfr_cosh>("Double cosh", dvalues[index0], mr, ma1);
+    doTest<Quad, cosh, mpfr_cosh>("Quad cosh", qvalues[index0], mr, ma1);
+    doTest<Octuple, cosh, mpfr_cosh>("Octuple cosh", ovalues[index0], mr, ma1);
 
-    doTest<Half, tanh, mpfr_tanh>("Half tanh", values<Half>[index0], mr, ma1);
-    doTest<Float, tanh, mpfr_tanh>("Float tanh", values<Float>[index0], mr, ma1);
-    doTest<Double, tanh, mpfr_tanh>("Double tanh", values<Double>[index0], mr, ma1);
-    doTest<Quad, tanh, mpfr_tanh>("Quad tanh", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, tanh, mpfr_tanh>("Octuple tanh", values<Octuple>[index0], mr, ma1);
+    doTest<Half, tanh, mpfr_tanh>("Half tanh", hvalues[index0], mr, ma1);
+    doTest<Float, tanh, mpfr_tanh>("Float tanh", fvalues[index0], mr, ma1);
+    doTest<Double, tanh, mpfr_tanh>("Double tanh", dvalues[index0], mr, ma1);
+    doTest<Quad, tanh, mpfr_tanh>("Quad tanh", qvalues[index0], mr, ma1);
+    doTest<Octuple, tanh, mpfr_tanh>("Octuple tanh", ovalues[index0], mr, ma1);
 
-    doTest<Half, asinh, mpfr_asinh>("Half asinh", values<Half>[index0], mr, ma1);
-    doTest<Float, asinh, mpfr_asinh>("Float asinh", values<Float>[index0], mr, ma1);
-    doTest<Double, asinh, mpfr_asinh>("Double asinh", values<Double>[index0], mr, ma1);
-    doTest<Quad, asinh, mpfr_asinh>("Quad asinh", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, asinh, mpfr_asinh>("Octuple asinh", values<Octuple>[index0], mr, ma1);
+    doTest<Half, asinh, mpfr_asinh>("Half asinh", hvalues[index0], mr, ma1);
+    doTest<Float, asinh, mpfr_asinh>("Float asinh", fvalues[index0], mr, ma1);
+    doTest<Double, asinh, mpfr_asinh>("Double asinh", dvalues[index0], mr, ma1);
+    doTest<Quad, asinh, mpfr_asinh>("Quad asinh", qvalues[index0], mr, ma1);
+    doTest<Octuple, asinh, mpfr_asinh>("Octuple asinh", ovalues[index0], mr, ma1);
 
-    doTest<Half, acosh, mpfr_acosh>("Half acosh", values<Half>[index0], mr, ma1);
-    doTest<Float, acosh, mpfr_acosh>("Float acosh", values<Float>[index0], mr, ma1);
-    doTest<Double, acosh, mpfr_acosh>("Double acosh", values<Double>[index0], mr, ma1);
-    doTest<Quad, acosh, mpfr_acosh>("Quad acosh", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, acosh, mpfr_acosh>("Octuple acosh", values<Octuple>[index0], mr, ma1);
+    doTest<Half, acosh, mpfr_acosh>("Half acosh", hvalues[index0], mr, ma1);
+    doTest<Float, acosh, mpfr_acosh>("Float acosh", fvalues[index0], mr, ma1);
+    doTest<Double, acosh, mpfr_acosh>("Double acosh", dvalues[index0], mr, ma1);
+    doTest<Quad, acosh, mpfr_acosh>("Quad acosh", qvalues[index0], mr, ma1);
+    doTest<Octuple, acosh, mpfr_acosh>("Octuple acosh", ovalues[index0], mr, ma1);
 
-    doTest<Half, atanh, mpfr_atanh>("Half atanh", values<Half>[index0], mr, ma1);
-    doTest<Float, atanh, mpfr_atanh>("Float atanh", values<Float>[index0], mr, ma1);
-    doTest<Double, atanh, mpfr_atanh>("Double atanh", values<Double>[index0], mr, ma1);
-    doTest<Quad, atanh, mpfr_atanh>("Quad atanh", values<Quad>[index0], mr, ma1);
-    doTest<Octuple, atanh, mpfr_atanh>("Octuple atanh", values<Octuple>[index0], mr, ma1);
+    doTest<Half, atanh, mpfr_atanh>("Half atanh", hvalues[index0], mr, ma1);
+    doTest<Float, atanh, mpfr_atanh>("Float atanh", fvalues[index0], mr, ma1);
+    doTest<Double, atanh, mpfr_atanh>("Double atanh", dvalues[index0], mr, ma1);
+    doTest<Quad, atanh, mpfr_atanh>("Quad atanh", qvalues[index0], mr, ma1);
+    doTest<Octuple, atanh, mpfr_atanh>("Octuple atanh", ovalues[index0], mr, ma1);
 
     for(int index1 = 0;index1 < N;index1++) {
-      doTest<Half, copysign_, mpfr_copysign>("Half copysign", values<Half>[index0], values<Half>[index1], mr, ma1, ma2, true);
-      doTest<Float, copysign_, mpfr_copysign>("Float copysign", values<Float>[index0], values<Float>[index1], mr, ma1, ma2, true);
-      doTest<Double, copysign_, mpfr_copysign>("Double copysign", values<Double>[index0], values<Double>[index1], mr, ma1, ma2, true);
-      doTest<Quad, copysign_, mpfr_copysign>("Quad copysign", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2, true);
-      doTest<Octuple, copysign_, mpfr_copysign>("Octuple copysign", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2, true);
+      doTest<Half, copysign_, mpfr_copysign>("Half copysign", hvalues[index0], hvalues[index1], mr, ma1, ma2, true);
+      doTest<Float, copysign_, mpfr_copysign>("Float copysign", fvalues[index0], fvalues[index1], mr, ma1, ma2, true);
+      doTest<Double, copysign_, mpfr_copysign>("Double copysign", dvalues[index0], dvalues[index1], mr, ma1, ma2, true);
+      doTest<Quad, copysign_, mpfr_copysign>("Quad copysign", qvalues[index0], qvalues[index1], mr, ma1, ma2, true);
+      doTest<Octuple, copysign_, mpfr_copysign>("Octuple copysign", ovalues[index0], ovalues[index1], mr, ma1, ma2, true);
 
-      doTest<Half, fdim_, mpfr_dim>("Half fdim", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, fdim_, mpfr_dim>("Float fdim", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, fdim_, mpfr_dim>("Double fdim", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, fdim_, mpfr_dim>("Quad fdim", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, fdim_, mpfr_dim>("Octuple fdim", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, fdim_, mpfr_dim>("Half fdim", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, fdim_, mpfr_dim>("Float fdim", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, fdim_, mpfr_dim>("Double fdim", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, fdim_, mpfr_dim>("Quad fdim", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, fdim_, mpfr_dim>("Octuple fdim", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
-      doTest<Half, add_, mpfr_add>("Half add", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, add_, mpfr_add>("Float add", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, add_, mpfr_add>("Double add", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, add_, mpfr_add>("Quad add", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, add_, mpfr_add>("Octuple add", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, add_, mpfr_add>("Half add", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, add_, mpfr_add>("Float add", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, add_, mpfr_add>("Double add", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, add_, mpfr_add>("Quad add", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, add_, mpfr_add>("Octuple add", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
-      doTest<Half, sub_, mpfr_sub>("Half sub", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, sub_, mpfr_sub>("Float sub", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, sub_, mpfr_sub>("Double sub", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, sub_, mpfr_sub>("Quad sub", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, sub_, mpfr_sub>("Octuple sub", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, sub_, mpfr_sub>("Half sub", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, sub_, mpfr_sub>("Float sub", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, sub_, mpfr_sub>("Double sub", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, sub_, mpfr_sub>("Quad sub", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, sub_, mpfr_sub>("Octuple sub", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
-      doTest<Half, mul_, mpfr_mul>("Half mul", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, mul_, mpfr_mul>("Float mul", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, mul_, mpfr_mul>("Double mul", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, mul_, mpfr_mul>("Quad mul", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, mul_, mpfr_mul>("Octuple mul", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, mul_, mpfr_mul>("Half mul", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, mul_, mpfr_mul>("Float mul", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, mul_, mpfr_mul>("Double mul", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, mul_, mpfr_mul>("Quad mul", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, mul_, mpfr_mul>("Octuple mul", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
-      doTest<Half, div_, mpfr_div>("Half div", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, div_, mpfr_div>("Float div", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, div_, mpfr_div>("Double div", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, div_, mpfr_div>("Quad div", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, div_, mpfr_div>("Octuple div", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, div_, mpfr_div>("Half div", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, div_, mpfr_div>("Float div", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, div_, mpfr_div>("Double div", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, div_, mpfr_div>("Quad div", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, div_, mpfr_div>("Octuple div", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
-      doTest<Half, hypot_, mpfr_hypot>("Half hypot", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, hypot_, mpfr_hypot>("Float hypot", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, hypot_, mpfr_hypot>("Double hypot", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, hypot_, mpfr_hypot>("Quad hypot", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, hypot_, mpfr_hypot>("Octuple hypot", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, hypot_, mpfr_hypot>("Half hypot", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, hypot_, mpfr_hypot>("Float hypot", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, hypot_, mpfr_hypot>("Double hypot", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, hypot_, mpfr_hypot>("Quad hypot", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, hypot_, mpfr_hypot>("Octuple hypot", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
-      doTest<Half, atan2, mpfr_atan2>("Half atan2", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, atan2, mpfr_atan2>("Float atan2", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, atan2, mpfr_atan2>("Double atan2", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, atan2, mpfr_atan2>("Quad atan2", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, atan2, mpfr_atan2>("Octuple atan2", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, atan2, mpfr_atan2>("Half atan2", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, atan2, mpfr_atan2>("Float atan2", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, atan2, mpfr_atan2>("Double atan2", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, atan2, mpfr_atan2>("Quad atan2", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, atan2, mpfr_atan2>("Octuple atan2", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
-      doTest<Half, pow, mpfr_pow>("Half pow", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, pow, mpfr_pow>("Float pow", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, pow, mpfr_pow>("Double pow", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, pow, mpfr_pow>("Quad pow", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, pow, mpfr_pow>("Octuple pow", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, pow, mpfr_pow>("Half pow", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, pow, mpfr_pow>("Float pow", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, pow, mpfr_pow>("Double pow", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, pow, mpfr_pow>("Quad pow", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, pow, mpfr_pow>("Octuple pow", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
-      doTest<Half, fmod, mpfr_fmod>("Half fmod", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, fmod, mpfr_fmod>("Float fmod", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, fmod, mpfr_fmod>("Double fmod", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, fmod, mpfr_fmod>("Quad fmod", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, fmod, mpfr_fmod>("Octuple fmod", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, fmod, mpfr_fmod>("Half fmod", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, fmod, mpfr_fmod>("Float fmod", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, fmod, mpfr_fmod>("Double fmod", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, fmod, mpfr_fmod>("Quad fmod", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, fmod, mpfr_fmod>("Octuple fmod", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
-      doTest<Half, remainder, mpfr_remainder>("Half remainder", values<Half>[index0], values<Half>[index1], mr, ma1, ma2);
-      doTest<Float, remainder, mpfr_remainder>("Float remainder", values<Float>[index0], values<Float>[index1], mr, ma1, ma2);
-      doTest<Double, remainder, mpfr_remainder>("Double remainder", values<Double>[index0], values<Double>[index1], mr, ma1, ma2);
-      doTest<Quad, remainder, mpfr_remainder>("Quad remainder", values<Quad>[index0], values<Quad>[index1], mr, ma1, ma2);
-      doTest<Octuple, remainder, mpfr_remainder>("Octuple remainder", values<Octuple>[index0], values<Octuple>[index1], mr, ma1, ma2);
+      doTest<Half, remainder, mpfr_remainder>("Half remainder", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, remainder, mpfr_remainder>("Float remainder", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, remainder, mpfr_remainder>("Double remainder", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, remainder, mpfr_remainder>("Quad remainder", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, remainder, mpfr_remainder>("Octuple remainder", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
       for(int index2 = 0;index2 < N;index2++) {
-	doTest<Half, fma_, mpfr_fma>("Half fma", values<Half>[index0], values<Half>[index1], values<Half>[index2], mr, ma1, ma2, ma3);
-	doTest<Float, fma_, mpfr_fma>("Float fma", values<Float>[index0], values<Float>[index1], values<Float>[index2], mr, ma1, ma2, ma3);
-	doTest<Double, fma_, mpfr_fma>("Double fma", values<Double>[index0], values<Double>[index1], values<Double>[index2], mr, ma1, ma2, ma3);
-	doTest<Quad, fma_, mpfr_fma>("Quad fma", values<Quad>[index0], values<Quad>[index1], values<Quad>[index2], mr, ma1, ma2, ma3);
-	doTest<Octuple, fma_, mpfr_fma>("Octuple fma", values<Octuple>[index0], values<Octuple>[index1], values<Octuple>[index2], mr, ma1, ma2, ma3);
+	doTest<Half, fma_, mpfr_fma>("Half fma", hvalues[index0], hvalues[index1], hvalues[index2], mr, ma1, ma2, ma3);
+	doTest<Float, fma_, mpfr_fma>("Float fma", fvalues[index0], fvalues[index1], fvalues[index2], mr, ma1, ma2, ma3);
+	doTest<Double, fma_, mpfr_fma>("Double fma", dvalues[index0], dvalues[index1], dvalues[index2], mr, ma1, ma2, ma3);
+	doTest<Quad, fma_, mpfr_fma>("Quad fma", qvalues[index0], qvalues[index1], qvalues[index2], mr, ma1, ma2, ma3);
+	doTest<Octuple, fma_, mpfr_fma>("Octuple fma", ovalues[index0], ovalues[index1], ovalues[index2], mr, ma1, ma2, ma3);
       }
     }
   }

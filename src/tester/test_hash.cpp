@@ -5,7 +5,7 @@
 #include <cassert>
 
 #include "tlfloat/tlmath.hpp"
-#include "auxiliary.hpp"
+#include "testerutil.hpp"
 
 using namespace std;
 using namespace tlfloat;

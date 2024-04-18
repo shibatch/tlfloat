@@ -2,6 +2,10 @@
 #include <cstdint>
 #include <cfloat>
 
+#if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#include <quadmath.h>
+#endif
+
 #if (defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)) || defined(__aarch64__)
 #define MPFR_WANT_FLOAT128
 #endif
@@ -11,7 +15,7 @@
 #define TLFLOAT_SUPPRESS_WARNINGS
 
 #include "tlfloat/tlmath.hpp"
-#include "tlfloatutil.hpp"
+#include "testerutil.hpp"
 
 using namespace std;
 using namespace tlfloat;

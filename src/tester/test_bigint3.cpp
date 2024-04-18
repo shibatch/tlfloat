@@ -13,7 +13,7 @@
 #define TLFLOAT_SUPPRESS_WARNINGS
 
 #include "tlfloat/bigint.hpp"
-#include "auxiliary.hpp"
+#include "testerutil.hpp"
 
 using namespace std;
 using namespace tlfloat;

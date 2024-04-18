@@ -5,7 +5,7 @@
 #include <cstdio>
 
 #include "tlfloat/bigint.hpp"
-#include "auxiliary.hpp"
+#include "testerutil.hpp"
 
 #define N 9
 
