@@ -7,11 +7,32 @@
 #include <cstring>
 #include <cassert>
 
+#include "tlfloat/tlfloatversion.hpp"
+
 #ifdef TLFLOAT_SUPPRESS_WARNINGS
 #include "suppress.hpp"
 #endif
 
+#if defined(TLFLOAT_DOXYGEN)
+/** All architecture-specific optimizations (e.g., use of intrinsic functions) are disabled if this macro is defined */
+#define TLFLOAT_DISABLE_ARCH_OPTIMIZATION
+
+/** Functions that require libstdc++ will be disabled if this macro is defined */
+#define TLFLOAT_NO_LIBSTDCXX
+
+/** TLFLOAT_VERSION_MAJOR is the major version of TLFloat library */
+#define TLFLOAT_VERSION_MAJOR
+
+/** TLFLOAT_VERSION_MAJOR is the minor version of TLFloat library */
+#define TLFLOAT_VERSION_MINOR
+
+/** TLFLOAT_VERSION_MAJOR is the patch level of TLFloat library */
+#define TLFLOAT_VERSION_PATCHLEVEL
+#endif
+
+/*! \cond NO_DOCUMENTATION_WITH_DOXYGEN */
 #define TLFLOAT_NOINLINE
+/*! \endcond */
 
 #ifndef TLFLOAT_DISABLE_ARCH_OPTIMIZATION
 #if defined(__GNUC__) || defined(__clang__)
@@ -1254,7 +1275,7 @@ namespace tlfloat {
   };
 }
 
-#if defined(DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
+#if defined(TLFLOAT_DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 
 #include <iostream>
 #include <vector>
@@ -1262,7 +1283,7 @@ namespace tlfloat {
 
 namespace tlfloat {
 
-#ifndef DOXYGEN
+#ifndef TLFLOAT_DOXYGEN
   inline std::string toHexString(const uint64_t u) {
     char buf[17];
     snprintf(buf, 17, "%016llx", (unsigned long long)u);
@@ -1296,5 +1317,5 @@ namespace tlfloat {
 
   template<int N> static std::ostream& operator<<(std::ostream &os, const BigInt<N>& u) { return os << to_string(u); }
 }
-#endif // #if defined(DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
+#endif // #if defined(TLFLOAT_DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 #endif // #ifndef __BIGINT_HPP_INCLUDED__

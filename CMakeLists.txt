@@ -16,6 +16,9 @@ set(TLFLOAT_VERSION_PATCHLEVEL 0)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCHLEVEL})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
+configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/tlfloatversion.hpp.in"
+  "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatversion.hpp" @ONLY)
+
 #
 
 enable_language(CXX)
@@ -36,6 +39,7 @@ set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 
 include_directories("${PROJECT_SOURCE_DIR}/src/include")
+include_directories("${PROJECT_BINARY_DIR}/include")
 
 set(TMPDIR "${CMAKE_BINARY_DIR}/tmp")
 file(MAKE_DIRECTORY "${TMPDIR}")

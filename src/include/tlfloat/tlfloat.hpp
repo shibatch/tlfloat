@@ -1229,10 +1229,19 @@ namespace tlfloat {
   public:
     mant_t m = 0;
 
+    /** Returns NaN */
     static constexpr TLFloat nan() { return Unpacked_t::nan(); }
+
+    /** Returns infinity of the given sign */
     static constexpr TLFloat inf(bool sign=false) { return Unpacked_t::inf(sign); }
+
+    /** Returns the minimum representative number of the given sign */
     static constexpr TLFloat floatdenormmin(bool sign=false) { return Unpacked_t::floatdenormmin(sign); }
+
+    /** Returns the maximum representative number of the given sign */
     static constexpr TLFloat floatmax(bool sign=false) { return Unpacked_t::floatmax(sign); }
+
+    /** Returns zero of the given sign */
     static constexpr TLFloat zero(bool sign=false) { return Unpacked_t::zero(sign); }
 
     constexpr TLFloat() = default;
@@ -1285,7 +1294,7 @@ namespace tlfloat {
       }
     }
 
-    /** Any non-integer object can be bitcast to a TLFloat type of the same size */
+    /** Any non-integer object is bitcast to a TLFloat type of the same size with this constructor */
     template<typename fptype,
       std::enable_if_t<(sizeof(fptype)==sizeof(mant_t) && (std::is_floating_point_v<fptype> || (!std::is_pointer_v<fptype> && !std::is_integral_v<fptype>))), int> = 0>
     constexpr TLFloat(const fptype& s) {
@@ -1520,6 +1529,7 @@ namespace tlfloat {
       return (TLFloat)ldexp_(f.getUnpacked().cast((xUnpacked_t *)0), exp).cast((Unpacked_t *)0);
     }
 
+    /** Returns 10^a */
     static constexpr TLFloat exp10i(int a) { return TLFloat(Unpacked_t::exp10i(a)); }
 
     /** This function finds the square root of a floating point number. This function returns correctly rounded results. */
@@ -1587,8 +1597,8 @@ namespace tlfloat {
 
   //
 
-#if defined(DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
-#ifndef DOXYGEN
+#if defined(TLFLOAT_DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
+#ifndef TLFLOAT_DOXYGEN
   template<typename mant_t, typename longmant_t, int nbexp, int nbmant>
   static std::string to_string_d(const detail::UnpackedFloat<mant_t, longmant_t, nbexp, nbmant> &uf) {
     std::string s;
@@ -1622,7 +1632,7 @@ namespace tlfloat {
 
   template<typename Unpacked_t>
   static std::ostream& operator<<(std::ostream &os, const TLFloat<Unpacked_t>& u) { return os << to_string(u); }
-#endif // #if defined(DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
+#endif // #if defined(TLFLOAT_DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 
   //
 

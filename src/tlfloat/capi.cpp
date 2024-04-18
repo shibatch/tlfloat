@@ -365,6 +365,10 @@ namespace {
 } // namespace
 
 extern "C" {
+  uint64_t tlfloat_version() {
+    return TLFLOAT_VERSION_MAJOR * 1000000ULL + TLFLOAT_VERSION_MINOR * 1000ULL + TLFLOAT_VERSION_PATCHLEVEL;
+  }
+
   int tlfloat_vfprintf(FILE *fp, const char *fmt, va_list ap) {
     stream_consumer_t arg = { fp };
     return xvprintf(stream_consumer, &arg, fmt, ap);

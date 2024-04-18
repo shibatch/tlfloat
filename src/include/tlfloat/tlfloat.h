@@ -5,6 +5,12 @@
 #include <string.h>
 #include <stdarg.h>
 
+#if defined(TLFLOAT_DOXYGEN)
+/** Calls to libquadmath functions are replaced to the corresponding
+    calls to tlfloat functions if this macro is defined */
+#define TLFLOAT_LIBQUADMATH_EMULATION
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -38,6 +44,9 @@ extern "C" {
 
   //
 
+  /** This function returns TLFLOAT_VERSION_MAJOR * 1000000ULL + TLFLOAT_VERSION_MINOR * 1000ULL + TLFLOAT_VERSION_PATCHLEVEL */
+  uint64_t tlfloat_version();
+
   /** The tlfloat_printf family of functions has the functionality to produce output of numbers of the types defined in TLFloat library, 
    * in addition to the functionality of the standard printf family of functions.
    * To output a number of type defined in TLFloat library,
@@ -45,10 +54,20 @@ extern "C" {
    * For example, use '\%_256g' to output an octuple-precision FP number, and '\%_128d' to output a 128-bit signed integer.
    * Q modifier can also be used to output a quadruple-precision FP number. */
   int tlfloat_printf(const char *fmt, ...);
+
+  /** See explanation for tlfloat_printf() */
   int tlfloat_fprintf(FILE *fp, const char *fmt, ...);
+
+  /** See explanation for tlfloat_printf() */
   int tlfloat_snprintf(char *str, size_t size, const char *fmt, ...);
+
+  /** See explanation for tlfloat_printf() */
   int tlfloat_vprintf(const char *fmt, va_list ap);
+
+  /** See explanation for tlfloat_printf() */
   int tlfloat_vfprintf(FILE *fp, const char *fmt, va_list ap);
+
+  /** See explanation for tlfloat_printf() */
   int tlfloat_vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 
   /** The tlfloat_strtod family of functions provides functionality equivalent to the standard strtod family of functions,
@@ -60,55 +79,86 @@ extern "C" {
 
   //
 
+  /** This function casts a quadruple-precision FP number to a double-precision FP number. Link with -ltlfloat. */
   double tlfloat_cast_d_q(const tlfloat_quad x         );
+  /** This function casts a octuple-precision FP number to a double-precision FP number. Link with -ltlfloat. */
   double tlfloat_cast_d_o(const tlfloat_octuple x      );
 
+  /** This function casts a double-precision FP number to a quadruple-precision FP number. Link with -ltlfloat. */
   tlfloat_quad tlfloat_cast_q_d(const double x         );
+  /** This function casts a octuple-precision FP number to a quadruple-precision FP number. Link with -ltlfloat. */
   tlfloat_quad tlfloat_cast_q_o(const tlfloat_octuple x);
 
+  /** This function casts a double-precision FP number to a octuple-precision FP number. Link with -ltlfloat. */
   tlfloat_octuple tlfloat_cast_o_d(const double x      );
+  /** This function casts a quadruple-precision FP number to a octuple-precision FP number. Link with -ltlfloat. */
   tlfloat_octuple tlfloat_cast_o_q(const tlfloat_quad x);
 
+  /** This function casts a quadruple-precision FP number to a 64-bit signed integer. Link with -ltlfloat. */
   int64_t tlfloat_cast_i64_q(const tlfloat_quad x);
+  /** This function casts a 64-bit signed integer to a quadruple-precision FP number. Link with -ltlfloat. */
   tlfloat_quad tlfloat_cast_q_i64(const int64_t x);
 
+  /** This function casts a octuple-precision FP number to a 64-bit signed integer. Link with -ltlfloat. */
   int64_t tlfloat_cast_i64_o(const tlfloat_octuple x);
+  /** This function casts a 64-bit signed integer to a octuple-precision FP number. Link with -ltlfloat. */
   tlfloat_octuple tlfloat_cast_o_i64(const int64_t x);
 
+  /** This function casts a quadruple-precision FP number to a 64-bit unsigned integer. Link with -ltlfloat. */
   uint64_t tlfloat_cast_u64_q(const tlfloat_quad x);
+  /** This function casts a 64-bit unsigned integer to a quadruple-precision FP number. Link with -ltlfloat. */
   tlfloat_quad tlfloat_cast_q_u64(const uint64_t x);
 
+  /** This function casts a octuple-precision FP number to a 64-bit unsigned integer. Link with -ltlfloat. */
   uint64_t tlfloat_cast_u64_o(const tlfloat_octuple x);
+  /** This function casts a 64-bit unsigned integer to a octuple-precision FP number. Link with -ltlfloat. */
   tlfloat_octuple tlfloat_cast_o_u64(const uint64_t x);
 
   //
 
+  /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_eq_q_q (const tlfloat_quad x, const tlfloat_quad y);
+  /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_neq_q_q(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_lt_q_q (const tlfloat_quad x, const tlfloat_quad y);
+  /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_le_q_q (const tlfloat_quad x, const tlfloat_quad y);
+  /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_gt_q_q (const tlfloat_quad x, const tlfloat_quad y);
+  /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_ge_q_q (const tlfloat_quad x, const tlfloat_quad y);
 
+  /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_eq_o_o (const tlfloat_octuple x, const tlfloat_octuple y);
+  /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_neq_o_o(const tlfloat_octuple x, const tlfloat_octuple y);
+  /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_lt_o_o (const tlfloat_octuple x, const tlfloat_octuple y);
+  /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_le_o_o (const tlfloat_octuple x, const tlfloat_octuple y);
+  /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_gt_o_o (const tlfloat_octuple x, const tlfloat_octuple y);
+  /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
   int tlfloat_ge_o_o (const tlfloat_octuple x, const tlfloat_octuple y);
 
   //
 
+  /** This function performs addition of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad tlfloat_addq(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function performs addition of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple tlfloat_addo(const tlfloat_octuple x, const tlfloat_octuple y);
-
+  /** This function performs subtraction of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad tlfloat_subq(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function performs subtraction of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple tlfloat_subo(const tlfloat_octuple x, const tlfloat_octuple y);
-
+  /** This function performs multiplication of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad tlfloat_mulq(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function performs multiplication of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple tlfloat_mulo(const tlfloat_octuple x, const tlfloat_octuple y);
-
+  /** This function performs division of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad tlfloat_divq(const tlfloat_quad x, const tlfloat_quad y);
+  /** This function performs division of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple tlfloat_divo(const tlfloat_octuple x, const tlfloat_octuple y);
 
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */

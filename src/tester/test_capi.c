@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "tlfloat/tlfloatversion.hpp"
+
 #if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
 #include <quadmath.h>
 #define TRUE_LIBQUADMATH
@@ -32,6 +34,11 @@ void checkInt(const int u, const int v, const char *mes) {
 char buf0[1000], buf1[1000];
 
 int main(int argc, char **argv) {
+  if (tlfloat_version() != TLFLOAT_VERSION_MAJOR * 1000000ULL + TLFLOAT_VERSION_MINOR * 1000ULL + TLFLOAT_VERSION_PATCHLEVEL) {
+    printf("NG : tlfloat_version()\n");
+    exit(-1);
+  }
+
   const char *endptr = NULL, *oneTenth = "0.1";
 
   tlfloat_snprintf(buf0, sizeof(buf0), "%.8g", tlfloat_strtod(oneTenth, &endptr));
