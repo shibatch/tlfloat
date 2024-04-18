@@ -1,4 +1,6 @@
 #include <string>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #include "auxiliary.hpp"
 
@@ -267,7 +269,7 @@ float rndf(shared_ptr<RNG> rng) {
     for(;;) {
       float f;
       rng->nextBytes((unsigned char *)&f, sizeof(f));
-      if (!finitef(f)) continue;
+      if (!isfinite(f)) continue;
       if (-1 <= f && f <= 1) continue;
       f = rintf(f) * M_PI / 2;
 
@@ -300,7 +302,7 @@ double rndd(shared_ptr<RNG> rng) {
     for(;;) {
       float f;
       rng->nextBytes((unsigned char *)&f, sizeof(f));
-      if (!finitef(f)) continue;
+      if (!isfinite(f)) continue;
       if (-1 <= f && f <= 1) continue;
       f = rintf(f) * M_PI / 2;
 
