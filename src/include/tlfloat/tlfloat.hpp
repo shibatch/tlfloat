@@ -1209,9 +1209,12 @@ namespace tlfloat {
   } // namespace detail
 
   /**
-   * This is a template class that represents a generic IEEE 754 floating-point number.
-   * By adjusting the template parameters, it can represent an IEEE 754 floating-point number of any precision.
-   * The data size and data structure of the object are the same as the corresponding floating-point number.
+   * This is a trivially copyable template class that represents a
+   * generic IEEE 754 floating-point number. By adjusting the template
+   * parameters, it can represent an IEEE 754 floating-point number of
+   * any precision. The data size and data structure of the object are
+   * the same as the corresponding floating-point number represented
+   * in the IEEE 754 format.
    */
   template<typename Unpacked_t>
   class TLFloat {

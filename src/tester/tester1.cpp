@@ -7,7 +7,6 @@
 
 #include <tlfloat/tlmath.hpp>
 #include <tlfloatutil.hpp>
-#include <auxiliary.hpp>
 
 using namespace std;
 using namespace tlfloat;

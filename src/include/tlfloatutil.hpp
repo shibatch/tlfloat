@@ -1,5 +1,7 @@
 #include <string>
 
+#include "auxiliary.hpp"
+
 #if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
 #define ENABLE_QUAD
 #include <quadmath.h>
@@ -47,6 +49,9 @@ uint64_t piqa[] = {0x62633145c06e0e69, 0x6487ed5110b4611aULL};
 xquad xqpi(tlfloat::BigUInt<7>(piqa), 0, false, false, false, false);
 uint64_t pioa[] = {0x0105DF531D89CD91ULL, 0x948127044533E63AULL, 0x62633145C06E0E68ULL, 0x6487ED5110B4611AULL};
 xoctuple xopi(tlfloat::BigUInt<8>(pioa), 0, false, false, false, false);
+
+static const Octuple M_PIo_ = (Octuple)xopi.cast((const uoctuple *)nullptr);
+
 #ifdef ENABLE_QUAD
 static_assert(sizeof(quad) == 16, "quad precision FP not supported");
 #else
@@ -248,3 +253,155 @@ static double countULP(const Unpacked_t& ux, mpfr_t c, const Unpacked2_t& umin, 
   return u;
 }
 #endif
+
+float rndf(shared_ptr<RNG> rng) {
+  uint64_t r = rng->nextLT(1000);
+
+  if (r == 0) {
+    static float a[] = { +0.0f, -0.0f, (float)+INFINITY, (float)-INFINITY, (float)NAN,
+      +1.4013e-45f, +2.8026e-45f, +4.2039e-45f, +5.60519e-45f, +7.00649e-4f,
+      -1.4013e-45f, -2.8026e-45f, -4.2039e-45f, -5.60519e-45f, -7.00649e-4f,
+    };
+    return a[rng->nextLT(sizeof(a)/sizeof(float))];
+  } else if (r < 32) {
+    for(;;) {
+      float f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (!finitef(f)) continue;
+      if (-1 <= f && f <= 1) continue;
+      f = rintf(f) * M_PI / 2;
+
+      int32_t u;
+      memcpy((void *)&u, (void *)&f, sizeof(u));
+      u += int(rng->nextLT(5)) - 2;
+      memcpy((void *)&f, (void *)&u, sizeof(f));
+
+      return f;
+    }
+  } else {
+    for(;;) {
+      float f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (isfinite(f)) return f;
+    }
+  }
+}
+
+double rndd(shared_ptr<RNG> rng) {
+  uint64_t r = rng->nextLT(1000);
+
+  if (r == 0) {
+    static double a[] = { +0.0, -0.0, +INFINITY, -INFINITY, NAN,
+      +4.94066e-324, +9.88131e-324, +1.4822e-323, +1.97626e-323, +2.47033e-323,
+      -4.94066e-324, -9.88131e-324, -1.4822e-323, -1.97626e-323, -2.47033e-323,
+    };
+    return a[rng->nextLT(sizeof(a)/sizeof(double))];
+  } else if (r < 32) {
+    for(;;) {
+      float f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (!finitef(f)) continue;
+      if (-1 <= f && f <= 1) continue;
+      f = rintf(f) * M_PI / 2;
+
+      int32_t u;
+      memcpy((void *)&u, (void *)&f, sizeof(u));
+      u += int(rng->nextLT(5)) - 2;
+      memcpy((void *)&f, (void *)&u, sizeof(f));
+
+      return f;
+    }
+  } else {
+    for(;;) {
+      double f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (isfinite(f)) return f;
+    }
+  }
+}
+
+Quad rndq_(shared_ptr<RNG> rng) {
+  uint64_t r = rng->nextLT(1000);
+
+  if (r == 0) {
+    Quad pm = Quad::floatdenormmin(), nm = -pm;
+    Quad po = 1, no = -1;
+    static Quad a[] = { +0.0, -0.0, +INFINITY, -INFINITY, NAN,
+      pm, nextafter(pm, po), nextafter(nextafter(pm, po), po),
+      nextafter(nextafter(nextafter(pm, po), po), po), 
+      nextafter(nextafter(nextafter(nextafter(pm, po), po), po), po),
+      nm, nextafter(nm, no), nextafter(nextafter(nm, no), no),
+      nextafter(nextafter(nextafter(nm, no), no), no), 
+      nextafter(nextafter(nextafter(nextafter(nm, no), no), no), no),
+    };
+    return a[rng->nextLT(sizeof(a)/sizeof(Quad))];
+  } else if (r < 32) {
+    for(;;) {
+      Quad f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (!finite(f)) continue;
+      if (-1 <= f && f <= 1) continue;
+      f = rint(f) * M_PIo_ / 2;
+
+      BigInt<7> u;
+      memcpy((void *)&u, (void *)&f, sizeof(u));
+      u += int(rng->nextLT(5)) - 2;
+      memcpy((void *)&f, (void *)&u, sizeof(f));
+
+      return f;
+    }
+  } else {
+    for(;;) {
+      Quad f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (finite(f)) return f;
+    }
+  }
+}
+
+#ifdef ENABLE_QUAD
+quad rndq(shared_ptr<RNG> rng) { return (quad)rndq_(rng); }
+typedef quad quad_;
+#else
+Quad rndq(shared_ptr<RNG> rng) { return rndq_(rng); }
+typedef Quad quad_;
+#endif
+
+Octuple rndo(shared_ptr<RNG> rng) {
+  uint64_t r = rng->nextLT(1000);
+
+  if (r == 0) {
+    Octuple pm = Octuple::floatdenormmin(), nm = -pm;
+    Octuple po = 1, no = -1;
+    static Octuple a[] = { +0.0, -0.0, +INFINITY, -INFINITY, NAN,
+      pm, nextafter(pm, po), nextafter(nextafter(pm, po), po),
+      nextafter(nextafter(nextafter(pm, po), po), po), 
+      nextafter(nextafter(nextafter(nextafter(pm, po), po), po), po),
+      nm, nextafter(nm, no), nextafter(nextafter(nm, no), no),
+      nextafter(nextafter(nextafter(nm, no), no), no), 
+      nextafter(nextafter(nextafter(nextafter(nm, no), no), no), no),
+    };
+    return a[rng->nextLT(sizeof(a)/sizeof(Octuple))];
+  } else if (r < 32) {
+    for(;;) {
+      Octuple f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (!finite(f)) continue;
+      if (-1 <= f && f <= 1) continue;
+      f = rint(f) * M_PIo_ / 2;
+
+      BigInt<8> u;
+      memcpy((void *)&u, (void *)&f, sizeof(u));
+      u += int(rng->nextLT(5)) - 2;
+      memcpy((void *)&f, (void *)&u, sizeof(f));
+
+      return f;
+    }
+  } else {
+    for(;;) {
+      Octuple f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (finite(f)) return f;
+    }
+  }
+}

@@ -268,9 +268,10 @@ namespace tlfloat {
   template<typename Unpacked_t> class TLFloat;
 
   /**
-   * This is a template class that represents an arbitrary precision unsigned integer.
-   * The number of bits in the number is (1 << N), where N >= 7.
-   * The data size and data structure of the object are the same as the corresponding number.
+   * This is a trivially copyable template class that represents an
+   * arbitrary precision unsigned integer. It can represent an
+   * unsigned integer less than 2^N. The data size of an object is N
+   * bits, where N must be 7 or greater.
    */
   template<int N> class BigUInt {
     static_assert(N >= 7, "N must be 7 or larger");
@@ -923,9 +924,10 @@ namespace tlfloat {
   };
 
   /**
-   * This is a template class that represents an arbitrary precision signed integer.
-   * The number of bits in the number is (1 << N), where N >= 7.
-   * The data size and data structure of the object are the same as the corresponding number.
+   * This is a trivially copyable template class that represents an
+   * arbitrary precision signed integer. It can represent an integer
+   * between -(2^(N-1)) and 2^(N-1)-1. The data size of an object is
+   * N bits, where N must be 7 or greater.
    */
   template<int N> class BigInt {
     static_assert(N >= 7, "N must be 7 or larger");

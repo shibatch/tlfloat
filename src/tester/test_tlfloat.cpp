@@ -8,7 +8,6 @@
 
 #include "tlfloat/tlfloat.hpp"
 #include "tlfloatutil.hpp"
-#include "auxiliary.hpp"
 
 using namespace std;
 using namespace tlfloat;
@@ -18,22 +17,6 @@ static_assert(is_trivially_copyable_v<Float> == true);
 static_assert(is_trivially_copyable_v<Double> == true);
 static_assert(is_trivially_copyable_v<Quad> == true);
 static_assert(is_trivially_copyable_v<Octuple> == true);
-
-static float rndf(shared_ptr<RNG> rng) {
-  if (rng->nextLT(1000) == 0) {
-    static float a[] = { +0.0f, -0.0f, (float)+INFINITY, (float)-INFINITY, (float)NAN,
-      +1.4013e-45f, +2.8026e-45f, +4.2039e-45f, +5.60519e-45f, +7.00649e-4f,
-      -1.4013e-45f, -2.8026e-45f, -4.2039e-45f, -5.60519e-45f, -7.00649e-4f,
-    };
-    return a[rng->nextLT(15)];
-  } else {
-    for(;;) {
-      float f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
-      if (isfinite(f)) return f;
-    }
-  }
-}
 
 static bool cmpf(float x, float y, int t=0) {
   if (isnan(x) && isnan(y)) return true;
@@ -45,22 +28,6 @@ static bool cmpf(float x, float y, int t=0) {
 
   int d = int(int32_t(u) - int32_t(v));
   return -t <= d && d <= t;
-}
-
-static double rndd(shared_ptr<RNG> rng) {
-  if (rng->nextLT(1000) == 0) {
-    static double a[] = { +0.0, -0.0, +INFINITY, -INFINITY, NAN,
-      +4.94066e-324, +9.88131e-324, +1.4822e-323, +1.97626e-323, +2.47033e-323,
-      -4.94066e-324, -9.88131e-324, -1.4822e-323, -1.97626e-323, +2.47033e-323,
-    };
-    return a[rng->nextLT(15)];
-  } else {
-    for(;;) {
-      double f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
-      if (isfinite(f)) return f;
-    }
-  }
 }
 
 static bool cmpd(double x, double y, int t=0) {
@@ -76,24 +43,6 @@ static bool cmpd(double x, double y, int t=0) {
 }
 
 #ifdef ENABLE_QUAD
-static quad rndq(shared_ptr<RNG> rng) {
-  if (rng->nextLT(1000) == 0) {
-    static const quad q1k = (quad)(0x1p-1024), q4k = q1k * q1k * q1k * q1k;
-    static const quad q16k = q4k * q4k * q4k * q4k, qmin = q16k * 0x1p-110;
-    static quad a[] = { +0.0, -0.0, +INFINITY, -INFINITY, NAN,
-      +qmin * 1, +qmin * 2, +qmin * 3, +qmin * 4, +qmin * 5,
-      -qmin * 1, -qmin * 2, -qmin * 3, -qmin * 4, -qmin * 5,
-    };
-    return a[rng->nextLT(15)];
-  } else {
-    for(;;) {
-      quad f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
-      if (finiteq(f)) return f;
-    }
-  }
-}
-
 static bool cmpq(quad x, quad y, int t=0) {
   if (isnanq(x) && isnanq(y)) return true;
   BigUInt<7> u, v;
