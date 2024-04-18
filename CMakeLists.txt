@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 option(ENABLE_VALGRIND "Enable testing with valgrind" ON)
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
-option(ENABLE_CUDA_TESTER "Build CUDA tester" OFF)
+option(ENABLE_CUDA_TEST "Build CUDA tester" OFF)
 option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
 option(ENABLE_DOXYGEN "Enable generating documents with Doxygen" OFF)
 
@@ -24,7 +24,7 @@ configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/tlfloatversion.hpp.in"
 enable_language(CXX)
 set(CMAKE_CXX_STANDARD 20)
 
-if(ENABLE_CUDA_TESTER)
+if(ENABLE_CUDA_TEST)
   enable_language(CUDA)
   set(CMAKE_CUDA_ARCHITECTURES 50)
 endif()

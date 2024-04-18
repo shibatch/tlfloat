@@ -16,47 +16,47 @@ target_link_libraries(test_bigint2 tlfloat)
 target_compile_definitions(test_bigint2 PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
 add_test(NAME test_bigint2 COMMAND test_bigint2)
 
-if(ENABLE_CUDA_TESTER)
-  add_executable(test_tlfloat_cuda test_tlfloat_cuda.cu)
-  target_link_libraries(test_tlfloat_cuda tlfloat)
-  target_compile_options(test_tlfloat_cuda PRIVATE "--maxrregcount;128;--expt-relaxed-constexpr;--std;c++20")
-  add_test(NAME test_tlfloat_cuda COMMAND test_tlfloat_cuda)
+if(ENABLE_CUDA_TEST)
+  add_executable(test_cuda test_cuda.cu)
+  target_link_libraries(test_cuda tlfloat)
+  target_compile_options(test_cuda PRIVATE "--maxrregcount;128;--expt-relaxed-constexpr;--std;c++20")
+  add_test(NAME test_cuda COMMAND test_cuda)
 endif()
 
-add_executable(test_tlfloat test_tlfloat.cpp)
-target_link_libraries(test_tlfloat tlfloat)
+add_executable(test_arith test_arith.cpp)
+target_link_libraries(test_arith tlfloat)
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT WIN32)
-  target_link_libraries(test_tlfloat quadmath)
+  target_link_libraries(test_arith quadmath)
 endif()
 if (COMPILER_SUPPORTS_INT128)
-  target_compile_definitions(test_tlfloat PRIVATE TLFLOAT_COMPILER_SUPPORTS_INT128=1)
+  target_compile_definitions(test_arith PRIVATE TLFLOAT_COMPILER_SUPPORTS_INT128=1)
 endif()
-target_compile_definitions(test_tlfloat PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
-add_test(NAME test_tlfloat COMMAND test_tlfloat)
+target_compile_definitions(test_arith PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
+add_test(NAME test_arith COMMAND test_arith)
 
 if (INSTALL_CONTINUOUS_TESTERS)
   install(
-    TARGETS test_tlfloat
+    TARGETS test_arith
     DESTINATION "${INSTALL_BINDIR}"
     COMPONENT tester
     )
 endif()
 
-add_executable(test_tlfloat_hash test_tlfloat_hash.cpp)
-target_link_libraries(test_tlfloat_hash tlfloat)
-add_test(NAME test_tlfloat_hash COMMAND test_tlfloat_hash 975ad94306bbd3b8ceb6a946403379cff54591b498edb56d5a587980d82a1488)
+add_executable(test_hash test_hash.cpp)
+target_link_libraries(test_hash tlfloat)
+add_test(NAME test_hash COMMAND test_hash 975ad94306bbd3b8ceb6a946403379cff54591b498edb56d5a587980d82a1488)
 
 if (LIB_MPFR)
-  add_executable(test_tlfloat_mpfr test_tlfloat_mpfr.cpp)
-  target_link_libraries(test_tlfloat_mpfr tlfloat ${LIB_MPFR})
+  add_executable(test_mpfr test_mpfr.cpp)
+  target_link_libraries(test_mpfr tlfloat ${LIB_MPFR})
   if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT WIN32)
-    target_link_libraries(test_tlfloat_mpfr quadmath)
+    target_link_libraries(test_mpfr quadmath)
   endif()
-  add_test(NAME test_tlfloat_mpfr COMMAND test_tlfloat_mpfr)
+  add_test(NAME test_mpfr COMMAND test_mpfr)
 
   if (INSTALL_CONTINUOUS_TESTERS)
     install(
-      TARGETS test_tlfloat_mpfr
+      TARGETS test_mpfr
       DESTINATION "${INSTALL_BINDIR}"
       COMPONENT tester
       )
@@ -74,20 +74,20 @@ endif()
 #
 
 if (LIB_MPFR AND (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)"))
-  add_executable(test_tlfloat32 test_tlfloat32.cpp)
-  target_link_libraries(test_tlfloat32 ${LIB_MPFR})
+  add_executable(test_exhaustive32 test_exhaustive32.cpp)
+  target_link_libraries(test_exhaustive32 ${LIB_MPFR})
   if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT WIN32)
-    target_link_libraries(test_tlfloat32 quadmath)
+    target_link_libraries(test_exhaustive32 quadmath)
   endif()
   if (OpenMP_CXX_FOUND)
-    target_compile_options(test_tlfloat32 PRIVATE ${OpenMP_CXX_FLAGS})
-    target_link_options(test_tlfloat32 PRIVATE ${OpenMP_CXX_FLAGS})
-    target_include_directories(test_tlfloat32 PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
+    target_compile_options(test_exhaustive32 PRIVATE ${OpenMP_CXX_FLAGS})
+    target_link_options(test_exhaustive32 PRIVATE ${OpenMP_CXX_FLAGS})
+    target_include_directories(test_exhaustive32 PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
   endif()
 
   if (INSTALL_CONTINUOUS_TESTERS)
     install(
-      TARGETS test_tlfloat32
+      TARGETS test_exhaustive32
       DESTINATION "${INSTALL_BINDIR}"
       COMPONENT tester
       )
@@ -97,18 +97,18 @@ endif()
 #
 
 if (COMPILER_SUPPORTS_FP16 AND LIB_MPFR)
-  add_executable(test_tlfloat16 test_tlfloat16.cpp)
-  target_link_libraries(test_tlfloat16 tlfloat ${LIB_MPFR})
-  target_compile_options(test_tlfloat16 PRIVATE "-march=armv8.2-a+fp16")
+  add_executable(test_exhaustive16 test_exhaustive16.cpp)
+  target_link_libraries(test_exhaustive16 tlfloat ${LIB_MPFR})
+  target_compile_options(test_exhaustive16 PRIVATE "-march=armv8.2-a+fp16")
   if (OpenMP_CXX_FOUND)
-    target_compile_options(test_tlfloat16 PRIVATE ${OpenMP_CXX_FLAGS})
-    target_link_options(test_tlfloat16 PRIVATE ${OpenMP_CXX_FLAGS})
-    target_include_directories(test_tlfloat16 PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
+    target_compile_options(test_exhaustive16 PRIVATE ${OpenMP_CXX_FLAGS})
+    target_link_options(test_exhaustive16 PRIVATE ${OpenMP_CXX_FLAGS})
+    target_include_directories(test_exhaustive16 PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
   endif()
 
   if (INSTALL_CONTINUOUS_TESTERS)
     install(
-      TARGETS test_tlfloat16
+      TARGETS test_exhaustive16
       DESTINATION "${INSTALL_BINDIR}"
       COMPONENT tester
       )

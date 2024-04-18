@@ -192,4 +192,9 @@ http://www.boost.org/LICENSE_1_0.txt.
 
 Contributions to this project are accepted under the same license.
 
+The fact that this software is released under an open source license
+only means that you can use the current version of the software for
+free. If you want this software to be maintained, you need to
+financially support the project.
+
 Copyright Naoki Shibata 2024.
