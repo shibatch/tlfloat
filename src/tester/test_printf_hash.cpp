@@ -1,5 +1,6 @@
 #include <iostream>
 #include <bit>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <cstdarg>
@@ -11,6 +12,7 @@
 
 using namespace tlfloat;
 
+FILE *fp = nullptr;
 auto sha256 = PSHA2_256_Internal();
 
 static const int test_widths[] = { -1, 0, 1, 2, 3, 4, 6, 8, 12, 16, 20, 32 };
@@ -27,6 +29,7 @@ void doTest(const char *fmt, ...) {
 
   sha256.append((void *)&rett, sizeof(rett));
   sha256.append((void *)strt, strlen(strt)+1);
+  if (fp) { fwrite((void *)strt, strlen(strt), 1, fp); fputc((int)'\n', fp); }
 }
 
 template<typename T>
@@ -54,6 +57,7 @@ void testem(double val, int cmpprec=10) {
 
 	      sha256.append((void *)&lt, sizeof(lt));
 	      sha256.append((void *)test, strlen(test)+1);
+	      if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
 	      for(unsigned w=0;w<sizeof(test_widths)/sizeof(int);w++) {
 		int width = test_widths[w];
@@ -69,6 +73,7 @@ void testem(double val, int cmpprec=10) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
 		//
 
@@ -83,6 +88,7 @@ void testem(double val, int cmpprec=10) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
 
 	      for(unsigned p=0;p<sizeof(test_precs)/sizeof(int);p++) {
@@ -101,6 +107,7 @@ void testem(double val, int cmpprec=10) {
 
 		  sha256.append((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
+		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
 		  //
 
@@ -115,6 +122,7 @@ void testem(double val, int cmpprec=10) {
 
 		  sha256.append((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
+		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 		}
 
 		snprintf(fmt, 100, "%%%s%s%s%s%s.%d_%d%s",
@@ -128,6 +136,7 @@ void testem(double val, int cmpprec=10) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
 		//
 
@@ -142,6 +151,7 @@ void testem(double val, int cmpprec=10) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
 	    }
 	  }
@@ -173,6 +183,7 @@ void testem32(int32_t val) {
 
 	      sha256.append((void *)&lt, sizeof(lt));
 	      sha256.append((void *)test, strlen(test)+1);
+	      if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
 	      //
 
@@ -190,6 +201,7 @@ void testem32(int32_t val) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
 		//
 
@@ -204,6 +216,7 @@ void testem32(int32_t val) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
 
 	      for(int prec=4;prec<=12;prec += 1) {
@@ -221,6 +234,7 @@ void testem32(int32_t val) {
 
 		  sha256.append((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
+		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
 		  //
 
@@ -235,6 +249,7 @@ void testem32(int32_t val) {
 
 		  sha256.append((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
+		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 		}
 
 		snprintf(fmt, 100, "%%%s%s%s%s%s.%d_32%s",
@@ -248,6 +263,7 @@ void testem32(int32_t val) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
 		//
 
@@ -262,6 +278,7 @@ void testem32(int32_t val) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
 	    }
 	  }
@@ -293,6 +310,7 @@ void testem64(int64_t val) {
 
 	      sha256.append((void *)&lt, sizeof(lt));
 	      sha256.append((void *)test, strlen(test)+1);
+	      if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
 	      for(unsigned w=0;w<sizeof(test_widths)/sizeof(int);w++) {
 		int width = test_widths[w];
@@ -307,6 +325,7 @@ void testem64(int64_t val) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
 
 	      for(int prec=0;prec<=12;prec += 2) {
@@ -324,6 +343,7 @@ void testem64(int64_t val) {
 
 		  sha256.append((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
+		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 		}
 
 		snprintf(fmt, 90, "%%%s%s%s%s%s.%d_64%s",
@@ -337,6 +357,7 @@ void testem64(int64_t val) {
 
 		sha256.append((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
+		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
 	    }
 	  }
@@ -349,6 +370,16 @@ void testem64(int64_t val) {
 using namespace std;
 
 int main(int argc, char **argv) {
+  int mode = 0;
+  if (argc >= 3 && strcmp(argv[1], "w") == 0) {
+    fp = fopen(argv[2], "wb");
+    if (!fp) {
+      cerr << "Could not open " << argv[2] << endl;
+      exit(-1);
+    }
+    mode = 1;
+  }
+
   doTest("head %d [%*g] [%.*g] [%*.*g] %d tail", 123, 8, 100.1234567, 7, 101.1234567, 11, 9, 102.1234567, 321);
   doTest("head %d [%*d] [%.*d] [%*.*d] %d tail", 123, 8, 100, 7, 101, 11, 9, 102, 321);
   doTest("head %d [%*s] [%.*s] [%*.*s] %d tail", 123, 8, "abc", 7, "def", 11, 9, "ghi", 321);
@@ -385,7 +416,9 @@ int main(int argc, char **argv) {
     testem64(-1LL << i);
   }
 
-  testem<Float>(NAN, 5);
+  double xnan = bit_cast<double>(int64_t(-1));
+
+  testem<Float>(xnan, 5);
   testem<Float>(+0.0, 5);
   testem<Float>(-0.0, 5);
   testem<Float>(+INFINITY, 5);
@@ -393,7 +426,7 @@ int main(int argc, char **argv) {
   testem<Float>(+1.0, 5);
   testem<Float>(-1.0, 5);
 
-  testem<Double>(NAN);
+  testem<Double>(xnan);
   testem<Double>(+0.0);
   testem<Double>(-0.0);
   testem<Double>(+INFINITY);
@@ -419,7 +452,7 @@ int main(int argc, char **argv) {
   testem<Double>(+1.234567890123456789e-120);
   testem<Double>(-1.234567890123456789e-120);
 
-  testem<Quad>(NAN);
+  testem<Quad>(xnan);
   testem<Quad>(+0.0);
   testem<Quad>(-0.0);
   testem<Quad>(+INFINITY);
@@ -445,7 +478,7 @@ int main(int argc, char **argv) {
   testem<Quad>(+1.234567890123456789e-120);
   testem<Quad>(-1.234567890123456789e-120);
 
-  testem<Octuple>(NAN);
+  testem<Octuple>(xnan);
   testem<Octuple>(+0.0);
   testem<Octuple>(-0.0);
   testem<Octuple>(+INFINITY);
@@ -473,29 +506,31 @@ int main(int argc, char **argv) {
 
   //
 
-  uint8_t h[32];
-  sha256.finalize_bytes(&h);
+  if (mode == 0) {
+    uint8_t h[32];
+    sha256.finalize_bytes(&h);
 
-  if (argc == 1) {
-    for(int i=0;i<32;i++) printf("%02x", h[i]);
-    printf("\n");
-  } else {
-    unsigned int a[32];
-    if (sscanf(argv[1], "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
-	       &a[ 0], &a[ 1], &a[ 2], &a[ 3], &a[ 4], &a[ 5], &a[ 6], &a[ 7], &a[ 8], &a[ 9], 
-	       &a[10], &a[11], &a[12], &a[13], &a[14], &a[15], &a[16], &a[17], &a[18], &a[19], 
-	       &a[20], &a[21], &a[22], &a[23], &a[24], &a[25], &a[26], &a[27], &a[28], &a[29], 
-	       &a[30], &a[31]) != 32) {
-      printf("NG (arg format)\n");
-      exit(-1);
-    }
-    for(int i=0;i<32;i++) {
-      if (h[i] != a[i]) {
-	printf("NG\n");
+    if (argc == 1) {
+      for(int i=0;i<32;i++) printf("%02x", h[i]);
+      printf("\n");
+    } else {
+      unsigned int a[32];
+      if (sscanf(argv[1], "%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x%02x",
+		 &a[ 0], &a[ 1], &a[ 2], &a[ 3], &a[ 4], &a[ 5], &a[ 6], &a[ 7], &a[ 8], &a[ 9], 
+		 &a[10], &a[11], &a[12], &a[13], &a[14], &a[15], &a[16], &a[17], &a[18], &a[19], 
+		 &a[20], &a[21], &a[22], &a[23], &a[24], &a[25], &a[26], &a[27], &a[28], &a[29], 
+		 &a[30], &a[31]) != 32) {
+	printf("NG (arg format)\n");
 	exit(-1);
       }
+      for(int i=0;i<32;i++) {
+	if (h[i] != a[i]) {
+	  printf("NG\n");
+	  exit(-1);
+	}
+      }
+      printf("OK\n");
     }
-    printf("OK\n");
   }
 
   exit(0);

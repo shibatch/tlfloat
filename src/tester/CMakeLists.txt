@@ -48,7 +48,7 @@ add_test(NAME test_hash COMMAND test_hash 975ad94306bbd3b8ceb6a946403379cff54591
 
 add_executable(test_printf_hash test_printf_hash.cpp)
 target_link_libraries(test_printf_hash tlfloat)
-add_test(NAME test_printf_hash COMMAND test_printf_hash 8baecaa492b4afffbf7579aae07b4f727465dded9e5c13e604e4f9f5c376c5cd)
+add_test(NAME test_printf_hash COMMAND test_printf_hash fd393c2ce5cf95bebbafc7966b5ab3ff80f56dec1c61125b774f5ad1e6a28452)
 
 if (LIB_MPFR)
   add_executable(test_mpfr test_mpfr.cpp)
