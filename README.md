@@ -12,11 +12,11 @@ quadruple and octuple precision IEEE 754 floating point numbers can be
 operated.
 
 Internally, these classes are implemented as class templates on top of
-arbitrary-precision integer class templates, which are also included
-in the library, so that the templates are expanded as arbitrary
-precision floating-point operations by just changing the template
-parameters, rather than implementing each floating-point operation for
-each precision.
+arbitrary-precision integer class templates so that the templates are
+expanded as arbitrary precision floating-point operations by just
+changing the template parameters, rather than implementing each
+floating-point operation for each precision. The arbitrary-precision
+integer class templates are also included in this library.
 
 
 ### Features
@@ -123,7 +123,7 @@ $ ./a.out
 ### Libquadmath emulation
 
 In gcc/g++ on x86_64 architecture, libquadmath provides math functions
-for quadruple precision floating point numbers.  However, this library
+for quadruple precision floating point numbers.  However, libquadmath
 is not available with clang or Visual Studio.  By using the
 libquadmath emulation feature of TLFloat library, it is possible to
 use most of the features of libquadmath with clang and Visual Studio.
@@ -169,7 +169,7 @@ portability, replace __float128 with tlfloat_quad.
 
 ### Development status
 
-* This software is currently at the alpha development stage
+* This software is currently at the beta development stage
 
 * The following features will be added in future releases
   * Further documentation
