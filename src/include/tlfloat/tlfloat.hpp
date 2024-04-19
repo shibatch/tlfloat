@@ -1070,7 +1070,10 @@ namespace tlfloat {
 
 	  UnpackedFloat rounder = value.iszero ? UnpackedFloat::zero() : ldexp_(UnpackedFloat::exp10i(-precision), -1);
 
-	  if (typespec == 'f') value += rounder;
+	  if (typespec == 'f') {
+	    UnpackedFloat v = (value + rounder) * UnpackedFloat::exp10i(precision);
+	    if (iseven(v) || !isint(v)) value += rounder;
+	  }
 
 	  int exp = 0, e2 = 0;
 	  if (!arg.iszero) {
@@ -1080,7 +1083,10 @@ namespace tlfloat {
 
 	  bool flag_exp = typespec == 'e';
 
-	  if (typespec != 'f') value += rounder;
+	  if (typespec != 'f') {
+	    UnpackedFloat v = value + rounder;
+	    if (iseven(v) || !isint(v)) value = v;
+	  }
 
 	  if (value >= castFromInt(10)) {
 	    value /= castFromInt(10);
