@@ -460,6 +460,9 @@ int main(int argc, char **argv) {
   tlfloat_snprintf(str, sizeof(str), "%.35Qg\n", AGMq(2));
   check("AGMq", str, "3.14159265358979323846264338327950");
 
+  check("AGMo string", tlfloat::to_string(AGMo(3), 70).c_str(), "3.141592653589793238462643383279502884197169399375105820974944592307818");
+  check("AGMq string", tlfloat::to_string(AGMq(2), 35).c_str(), "3.14159265358979323846264338327950");
+
   cout << "OK" << endl;
 
   return 0;

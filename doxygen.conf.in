@@ -113,7 +113,8 @@ EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = test* */util/* auxiliary.hpp suppress.hpp tlfloatutil.hpp tlmathcoef.hpp rpitab.hpp
 EXCLUDE_SYMBOLS        = *::detail yarray LCG64 RNG PSHA2_256_Internal CryptUtil tlfloat_bigint* \
 		         BigUInt*<*6*> *toHexString to_string_d \
-			 TLFloat*::getUnpacked detail::UnpackedFloat
+			 TLFloat*::getUnpacked detail::UnpackedFloat \
+			 TLFLOAT_OVERLOAD_OP2 TLFLOAT_OVERLOAD_CMP
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO

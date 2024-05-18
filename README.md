@@ -5,6 +5,7 @@ Original distribution site : https://github.com/shibatch/tlfloat
 
 Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
 
+
 ### Introduction
 
 This library implements C++ classes with which half, single, double,
@@ -71,7 +72,6 @@ integer class templates are also included in this library.
   * These classes are internally used to implement the FP classes in TLFloat
 
 
-
 ### How to build
 
 1. Check out the source code from our GitHub repository :
@@ -85,7 +85,6 @@ integer class templates are also included in this library.
 
 4. Run make to build and install the project :
 `make && make install`
-
 
 
 ### Compiling hello world example
@@ -119,6 +118,7 @@ precision and shows it.
 $ ./a.out
 3.141592653589793238462643383279502884197169399375105820974944592307816
 ```
+
 
 ### Libquadmath emulation
 
@@ -166,6 +166,49 @@ instead of quadmath.h, and link with -ltlfloat -lm. If you need
 portability, replace __float128 with tlfloat_quad.
 
 
+### C++11 API
+
+Besides the C++20 API, TLFloat provides classes that can be used with
+C++11 standard.
+
+Below is a simple C source code utilizing this feature.
+
+```
+#include <iostream>
+#include <tlfloat/tlfloat.h>
+
+tlfloat_octuple AGM(int N) {
+  tlfloat_octuple y = tlfloat_sqrto(2) - 1;
+  tlfloat_octuple a = y * y * 2;
+
+  for(int k=0;k<N;k++) {
+    y = 1.0 - tlfloat_powo(y, 4);
+    y = tlfloat_sqrto(tlfloat_sqrto(y));
+    y = (1 - y) / (1 + y);
+    a *= tlfloat_powo(1 + y, 4);
+    a -= tlfloat_ldexpo(((y + 1) * y + 1) * y, 2 * k + 3);
+  }
+
+  return 1 / a;
+}
+
+int main(int argc, char **argv) {
+  std::cout << tlfloat::to_string(AGM(3), 70) << std::endl;
+}
+```
+
+To compile this source code, use the following command.
+
+`g++ cpp11.cpp -std=c++11 -I./install/include -L./install/lib -ltlfloat`
+
+Below is an example of executing this program.
+
+```
+$ ./a.out
+3.141592653589793238462643383279502884197169399375105820974944592307818
+```
+
+The C++11 functions in TLFloat are not constexpr.
 
 ### Development status
 
