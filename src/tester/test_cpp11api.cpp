@@ -4,6 +4,10 @@
 #include <cstdio>
 #include <cstdlib>
 
+#if __cplusplus >= 202002L
+#include <tlfloat/tlfloat.hpp>
+#endif
+
 #define TLFLOAT_LIBQUADMATH_EMULATION
 #include <tlfloat/tlfloat.h>
 
@@ -409,6 +413,16 @@ void doTest(const string &s1, const string &s2) {
   check("q1 >= i2", q1 >= i2, d1 >= i2);
   check("q1 < i2", q1 < i2, d1 < i2);
   check("q1 <= i2", q1 <= i2, d1 <= i2);
+
+#if __cplusplus >= 202002L
+  o1 = (tlfloat_octuple)tlfloat::Octuple(s1.c_str());
+  check("cast Octuple -> tlfloat_octuple", o1, d1);
+  check("cast tlfloat_octuple -> Octuple", isnan(tlfloat::Octuple(o1)) || tlfloat::Octuple(o1) == tlfloat::Octuple(s1.c_str()), true);
+
+  q1 = (tlfloat_quad)tlfloat::Quad(s1.c_str());
+  check("cast Quad -> tlfloat_quad", q1, d1);
+  check("cast tlfloat_quad -> Quad", isnan(tlfloat::Quad(q1)) || tlfloat::Quad(q1) == tlfloat::Quad(s1.c_str()), true);
+#endif
 }
 
 tlfloat_octuple AGMo(int N) {

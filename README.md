@@ -43,7 +43,7 @@ integer class templates are also included in this library.
   * Compatible with Linux, Windows, microcontrollers, wasm, CUDA (version 12 or later)
   * Constexpr functions can be called from CUDA devices with --expt-relaxed-constexpr compiler option
 
-* C language API / libquadmath emulation
+* C/C++11 API / libquadmath emulation
   * Most of libquadmath functions can be used with x86_64 clang
 
 * Moderately optimized
@@ -135,7 +135,7 @@ Below is a simple C source code utilizing this feature.
 #include <stdlib.h>
 
 #define TLFLOAT_LIBQUADMATH_EMULATION
-#include "tlfloat/tlfloat.h"
+#include <tlfloat/tlfloat.h>
 
 int main(int argc, char **argv) {
   if (argc < 3) exit(-1);
@@ -218,7 +218,6 @@ The C++11 functions in TLFloat are not constexpr.
   * Further documentation
   * More testing
     * Add more testers for I/O functions
-  * Pre-C++20 API
   * Interoperability with SLEEF
   * Big endian support
   * Remaining math functions in math.h
