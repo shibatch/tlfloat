@@ -171,7 +171,7 @@ portability, replace __float128 with tlfloat_quad.
 Besides the C++20 API, TLFloat provides classes that can be used with
 C++11 standard.
 
-Below is a simple C source code utilizing this feature.
+Below is a simple C++ source code utilizing this feature.
 
 ```
 #include <iostream>
@@ -183,7 +183,7 @@ tlfloat_octuple AGM(int N) {
 
   for(int k=0;k<N;k++) {
     y = 1.0 - tlfloat_powo(y, 4);
-    y = tlfloat_sqrto(tlfloat_sqrto(y));
+    y = tlfloat_powo(y, 1.0/4);
     y = (1 - y) / (1 + y);
     a *= tlfloat_powo(1 + y, 4);
     a -= tlfloat_ldexpo(((y + 1) * y + 1) * y, 2 * k + 3);
