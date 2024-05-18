@@ -138,3 +138,8 @@ if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "
 endif()
 set_target_properties(test_capi PROPERTIES LINKER_LANGUAGE C)
 add_test(NAME test_capi COMMAND test_capi)
+
+add_executable(test_cpp11api test_cpp11api.cpp)
+target_link_libraries(test_cpp11api tlfloat)
+set_target_properties(test_cpp11api PROPERTIES CXX_STANDARD 11 CXX_EXTENSIONS off)
+add_test(NAME test_cpp11api COMMAND test_cpp11api)
