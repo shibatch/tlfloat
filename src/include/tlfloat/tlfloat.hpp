@@ -745,7 +745,7 @@ namespace tlfloat {
 	if (sign && !iszero) return ~BigUInt<N>(0);
 	if (exp - expoffset() >= int(sizeof(BigUInt<N>)*8-1)) return ~BigUInt<N>(0);
 	int s = nbmant - (exp - expoffset() + 1);
-	return BigUInt<N>(s > 0 ? (mant >> s) : (BigUInt<N>(mant) << -s));
+	return s > 0 ? BigUInt<N>(mant >> s) : (BigUInt<N>(mant) << -s);
       }
 
       template<typename srctype, std::enable_if_t<(std::is_integral_v<srctype> && sizeof(srctype) <= 8), int> = 0>

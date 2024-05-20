@@ -626,6 +626,13 @@ void testem128(int64_t val) {
 	      }
 
 #ifdef TLFLOAT_ENABLE_UINT128
+	      snprintf(fmt, 90, "%%%s%s%s%s%sQ%s",
+		       alt ? "#" : "", 
+		       zero ? "0" : "", 
+		       left ? "-" : "", 
+		       blank ? " " : "", 
+		       sign ? "+" : "",
+		       types2[i]);
 	      tlfloat_snprintf(test, 98, fmt, __int128_t(val));
 
 	      if(strcmp(test,corr) != 0) {
@@ -659,6 +666,13 @@ void testem128(int64_t val) {
 		}
 
 #ifdef TLFLOAT_ENABLE_UINT128
+		snprintf(fmt, 90, "%%%s%s%s%s%s%d.Q%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 width, types2[i]);
 		tlfloat_snprintf(test, 98, fmt, __int128_t(val));
 
 		if(strcmp(test,corr) != 0) {
@@ -694,6 +708,13 @@ void testem128(int64_t val) {
 		  }
 
 #ifdef TLFLOAT_ENABLE_UINT128
+		  snprintf(fmt, 90, "%%%s%s%s%s%s%d.%dQ%s",
+			    alt ? "#" : "", 
+			    zero ? "0" : "", 
+			    left ? "-" : "", 
+			    blank ? " " : "", 
+			    sign ? "+" : "",
+			    width, prec, types2[i]);
 		  tlfloat_snprintf(test, 98, fmt, __int128_t(val));
 
 		  if(strcmp(test,corr) != 0) {
@@ -726,6 +747,13 @@ void testem128(int64_t val) {
 		}
 
 #ifdef TLFLOAT_ENABLE_UINT128
+		snprintf(fmt, 90, "%%%s%s%s%s%s.%dQ%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 prec, types2[i]);
 		tlfloat_snprintf(test, 98, fmt, __int128_t(val));
 
 		if(strcmp(test,corr) != 0) {

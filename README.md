@@ -43,8 +43,9 @@ integer class templates are also included in this library.
   * Compatible with Linux, Windows, microcontrollers, wasm, CUDA (version 12 or later)
   * Constexpr functions can be called from CUDA devices with --expt-relaxed-constexpr compiler option
 
-* C/C++11 API / libquadmath emulation
-  * Most of libquadmath functions can be used with x86_64 clang
+* C/C++11 API with libquadmath emulation
+  * Most of libquadmath functions can be used on x86_64 clang and MSVC
+  * 128-bit integer types can be used on MSVC
 
 * Moderately optimized
   * Optimized for each architecture using intrinsics, etc.

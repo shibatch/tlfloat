@@ -40,6 +40,8 @@ extern "C" {
   typedef struct { uint64_t e[1 << 3]; } tlfloat_int512_t;
   typedef struct { uint64_t e[1 << 4]; } tlfloat_int1024_t;
 
+  typedef struct { uint64_t e[1 << 1]; } tlfloat_uint128_t;
+
 #if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
   typedef __float128 tlfloat_quad_;
 #elif defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)
@@ -135,31 +137,104 @@ extern "C" {
 
   //
 
+  tlfloat_int128_t tlfloat_cast_i128_i64(const int64_t x);
+  int64_t tlfloat_cast_i64_i128(const tlfloat_int128_t x);
+
+  tlfloat_uint128_t tlfloat_cast_u128_u64(const uint64_t x);
+  uint64_t tlfloat_cast_u64_u128(const tlfloat_uint128_t x);
+
+
+  tlfloat_int128_t tlfloat_cast_i128_d(const double x);
+  double tlfloat_cast_d_i128(const tlfloat_int128_t x);
+
+  tlfloat_uint128_t tlfloat_cast_u128_d(const double x);
+  double tlfloat_cast_d_u128(const tlfloat_uint128_t x);
+
+  tlfloat_int128_t tlfloat_cast_i128_q(const tlfloat_quad_ x);
+  tlfloat_quad_ tlfloat_cast_q_i128(const tlfloat_int128_t x);
+
+  tlfloat_uint128_t tlfloat_cast_u128_q(const tlfloat_quad_ x);
+  tlfloat_quad_ tlfloat_cast_q_u128(const tlfloat_uint128_t x);
+
+  tlfloat_int128_t tlfloat_cast_i128_o(const tlfloat_octuple_ x);
+  tlfloat_octuple_ tlfloat_cast_o_i128(const tlfloat_int128_t x);
+
+  tlfloat_uint128_t tlfloat_cast_u128_o(const tlfloat_octuple_ x);
+  tlfloat_octuple_ tlfloat_cast_o_u128(const tlfloat_uint128_t x);
+
+
+  int tlfloat_eq_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
+  int tlfloat_ne_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
+  int tlfloat_lt_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
+  int tlfloat_le_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
+  int tlfloat_gt_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
+  int tlfloat_ge_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
+
+  tlfloat_int128_t tlfloat_add_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
+  tlfloat_int128_t tlfloat_sub_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
+  tlfloat_int128_t tlfloat_mul_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
+  tlfloat_int128_t tlfloat_div_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
+  tlfloat_int128_t tlfloat_mod_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
+
+  tlfloat_int128_t tlfloat_and_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
+  tlfloat_int128_t tlfloat_or_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
+  tlfloat_int128_t tlfloat_xor_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
+  tlfloat_int128_t tlfloat_not_i128 (const tlfloat_int128_t x);
+
+  tlfloat_int128_t tlfloat_shl_i128_i (const tlfloat_int128_t x, const int y);
+  tlfloat_int128_t tlfloat_shr_i128_i (const tlfloat_int128_t x, const int y);
+
+  tlfloat_int128_t tlfloat_neg_i128 (const tlfloat_int128_t x);
+
+
+  int tlfloat_eq_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  int tlfloat_ne_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  int tlfloat_lt_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  int tlfloat_le_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  int tlfloat_gt_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  int tlfloat_ge_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+
+  tlfloat_uint128_t tlfloat_add_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  tlfloat_uint128_t tlfloat_sub_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  tlfloat_uint128_t tlfloat_mul_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  tlfloat_uint128_t tlfloat_div_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  tlfloat_uint128_t tlfloat_mod_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+
+  tlfloat_uint128_t tlfloat_and_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  tlfloat_uint128_t tlfloat_or_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  tlfloat_uint128_t tlfloat_xor_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  tlfloat_uint128_t tlfloat_not_u128 (const tlfloat_uint128_t x);
+
+  tlfloat_uint128_t tlfloat_shl_u128_i (const tlfloat_uint128_t x, const int y);
+  tlfloat_uint128_t tlfloat_shr_u128_i (const tlfloat_uint128_t x, const int y);
+
+  //
+
   /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_eq_q_q (const tlfloat_quad_ x, const tlfloat_quad_ y);
+  int tlfloat_eq_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y);
   /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_neq_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y);
+  int tlfloat_ne_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y);
   /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_lt_q_q (const tlfloat_quad_ x, const tlfloat_quad_ y);
+  int tlfloat_lt_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y);
   /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_le_q_q (const tlfloat_quad_ x, const tlfloat_quad_ y);
+  int tlfloat_le_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y);
   /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_gt_q_q (const tlfloat_quad_ x, const tlfloat_quad_ y);
+  int tlfloat_gt_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y);
   /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_ge_q_q (const tlfloat_quad_ x, const tlfloat_quad_ y);
+  int tlfloat_ge_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y);
 
   /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_eq_o_o (const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  int tlfloat_eq_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
   /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_neq_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  int tlfloat_ne_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
   /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_lt_o_o (const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  int tlfloat_lt_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
   /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_le_o_o (const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  int tlfloat_le_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
   /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_gt_o_o (const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  int tlfloat_gt_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
   /** This function performs ordered comparison of two octuple-precision floating point numbers. Link with -ltlfloat. */
-  int tlfloat_ge_o_o (const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  int tlfloat_ge_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
   //
 
@@ -566,7 +641,7 @@ struct tlfloat_quad {
   tlfloat_quad operator+() const { return *this; }
 
   bool operator==(const tlfloat_quad& rhs) const { return tlfloat_eq_q_q(value, rhs.value); }
-  bool operator!=(const tlfloat_quad& rhs) const { return tlfloat_neq_q_q(value, rhs.value); }
+  bool operator!=(const tlfloat_quad& rhs) const { return tlfloat_ne_q_q(value, rhs.value); }
   bool operator< (const tlfloat_quad& rhs) const { return tlfloat_lt_q_q(value, rhs.value); }
   bool operator<=(const tlfloat_quad& rhs) const { return tlfloat_le_q_q(value, rhs.value); }
   bool operator> (const tlfloat_quad& rhs) const { return tlfloat_gt_q_q(value, rhs.value); }
@@ -618,7 +693,7 @@ struct tlfloat_octuple {
   tlfloat_octuple operator+() const { return *this; }
 
   bool operator==(const tlfloat_octuple& rhs) const { return tlfloat_eq_o_o(value, rhs.value); }
-  bool operator!=(const tlfloat_octuple& rhs) const { return tlfloat_neq_o_o(value, rhs.value); }
+  bool operator!=(const tlfloat_octuple& rhs) const { return tlfloat_ne_o_o(value, rhs.value); }
   bool operator< (const tlfloat_octuple& rhs) const { return tlfloat_lt_o_o(value, rhs.value); }
   bool operator<=(const tlfloat_octuple& rhs) const { return tlfloat_le_o_o(value, rhs.value); }
   bool operator> (const tlfloat_octuple& rhs) const { return tlfloat_gt_o_o(value, rhs.value); }

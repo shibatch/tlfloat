@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <math.h>
 
 #include "tlfloat/tlfloatversion.hpp"
 
@@ -30,6 +32,127 @@ void checkInt(const int u, const int v, const char *mes) {
     exit(-1);
   }
 }
+
+void checkDouble(const double u, const double v, const char *mes) {
+  if (isinf(u) && isinf(v)) return;
+  if (u != v) {
+    printf("NG : %s\n", mes);
+    printf("u : %.20g\n", u);
+    printf("v : %.20g\n", v);
+    exit(-1);
+  }
+}
+
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
+__int128_t rndi128() {
+  __int128_t r = 0;
+  for(int i=0;i<8;i++) r = (r << 16) ^ rand();
+  r &= ~((~(__uint128_t)0) << (rand() & 127));
+  return r;
+}
+
+__uint128_t rndu128() {
+  __uint128_t r = 0;
+  for(int i=0;i<8;i++) r = (r << 16) ^ rand();
+  r &= ~((~(__uint128_t)0) << (rand() & 127));
+  return r;
+}
+
+void checkInt128(const tlfloat_int128_t u_, const __int128_t v, const char *mes) {
+  __int128_t u;
+  memcpy(&u, &u_, sizeof(u));
+
+  if (u != v) {
+    printf("NG : %s\n", mes);
+    printf("u : 0x%016llx%016llx\n", (unsigned long long)(u >> 64), (unsigned long long)u);
+    printf("v : 0x%016llx%016llx\n", (unsigned long long)(v >> 64), (unsigned long long)v);
+    exit(-1);
+  }
+}
+
+void checkUInt128(const tlfloat_uint128_t u_, const __uint128_t v, const char *mes) {
+  __uint128_t u;
+  memcpy(&u, &u_, sizeof(u));
+
+  if (u != v) {
+    printf("NG : %s\n", mes);
+    printf("u : 0x%016llx%016llx\n", (unsigned long long)(u >> 64), (unsigned long long)u);
+    printf("v : 0x%016llx%016llx\n", (unsigned long long)(v >> 64), (unsigned long long)v);
+    exit(-1);
+  }
+}
+
+void doTestInt128(const __int128_t x, const __int128_t y) {
+  tlfloat_int128_t x_, y_;
+  memcpy(&x_, &x, sizeof(x_));
+  memcpy(&y_, &y, sizeof(y_));
+
+  //printf("x : 0x%016llx%016llx\n", (unsigned long long)(x >> 64), (unsigned long long)x);
+  //printf("y : 0x%016llx%016llx\n", (unsigned long long)(y >> 64), (unsigned long long)y);
+
+  checkInt128(tlfloat_add_i128_i128(x_, y_), x + y, "int128 +");
+  checkInt128(tlfloat_sub_i128_i128(x_, y_), x - y, "int128 -");
+  checkInt128(tlfloat_mul_i128_i128(x_, y_), x * y, "int128 *");
+  if (y != 0) {
+    checkInt128(tlfloat_div_i128_i128(x_, y_), x / y, "int128 /");
+    checkInt128(tlfloat_mod_i128_i128(x_, y_), x % y, "int128 %");
+  }
+  checkInt128(tlfloat_neg_i128     (x_    ), -x   , "int128 -");
+
+  checkInt128(tlfloat_and_i128_i128(x_, y_), x & y, "int128 &");
+  checkInt128(tlfloat_or_i128_i128 (x_, y_), x | y, "int128 |");
+  checkInt128(tlfloat_xor_i128_i128(x_, y_), x ^ y, "int128 ^");
+  checkInt128(tlfloat_not_i128     (x_    ), ~x   , "int128 ~");
+
+  checkInt128(tlfloat_shl_i128_i   (x_, (int)(y & 127)), x << (int)(y & 127), "int128 <<");
+  checkInt128(tlfloat_shr_i128_i   (x_, (int)(y & 127)), x >> (int)(y & 127), "int128 >>");
+
+  checkInt(tlfloat_eq_i128_i128(x_, y_), x == y, "int128 ==");
+  checkInt(tlfloat_ne_i128_i128(x_, y_), x != y, "int128 !=");
+  checkInt(tlfloat_gt_i128_i128(x_, y_), x >  y, "int128 >");
+  checkInt(tlfloat_ge_i128_i128(x_, y_), x >= y, "int128 >=");
+  checkInt(tlfloat_lt_i128_i128(x_, y_), x <  y, "int128 <");
+  checkInt(tlfloat_le_i128_i128(x_, y_), x <= y, "int128 <=");
+
+  checkDouble(tlfloat_cast_d_i128(x_), (double)x, "cast double <= int128");
+  checkInt128(tlfloat_cast_i128_d((double)x), (__int128)(double)x, "cast int128 <= double");
+}
+
+void doTestUInt128(const __uint128_t x, const __uint128_t y) {
+  tlfloat_uint128_t x_, y_;
+  memcpy(&x_, &x, sizeof(x_));
+  memcpy(&y_, &y, sizeof(y_));
+
+  //printf("x : 0x%016llx%016llx\n", (unsigned long long)(x >> 64), (unsigned long long)x);
+  //printf("y : 0x%016llx%016llx\n", (unsigned long long)(y >> 64), (unsigned long long)y);
+
+  checkUInt128(tlfloat_add_u128_u128(x_, y_), x + y, "uint128 +");
+  checkUInt128(tlfloat_sub_u128_u128(x_, y_), x - y, "uint128 -");
+  checkUInt128(tlfloat_mul_u128_u128(x_, y_), x * y, "uint128 *");
+  if (y != 0) {
+    checkUInt128(tlfloat_div_u128_u128(x_, y_), x / y, "uint128 /");
+    checkUInt128(tlfloat_mod_u128_u128(x_, y_), x % y, "uint128 %");
+  }
+
+  checkUInt128(tlfloat_and_u128_u128(x_, y_), x & y, "uint128 &");
+  checkUInt128(tlfloat_or_u128_u128 (x_, y_), x | y, "uint128 |");
+  checkUInt128(tlfloat_xor_u128_u128(x_, y_), x ^ y, "uint128 ^");
+  checkUInt128(tlfloat_not_u128     (x_    ), ~x   , "uint128 ~");
+
+  checkUInt128(tlfloat_shl_u128_i   (x_, (int)(y & 127)), x << (int)(y & 127), "uint128 <<");
+  checkUInt128(tlfloat_shr_u128_i   (x_, (int)(y & 127)), x >> (int)(y & 127), "uint128 >>");
+
+  checkInt(tlfloat_eq_u128_u128(x_, y_), x == y, "uint128 ==");
+  checkInt(tlfloat_ne_u128_u128(x_, y_), x != y, "uint128 !=");
+  checkInt(tlfloat_gt_u128_u128(x_, y_), x >  y, "uint128 >");
+  checkInt(tlfloat_ge_u128_u128(x_, y_), x >= y, "uint128 >=");
+  checkInt(tlfloat_lt_u128_u128(x_, y_), x <  y, "uint128 <");
+  checkInt(tlfloat_le_u128_u128(x_, y_), x <= y, "uint128 <=");
+
+  checkDouble(tlfloat_cast_d_u128(x_), (double)x, "cast double <= uint128");
+  checkUInt128(tlfloat_cast_u128_d((double)x), (__uint128_t)(double)x, "cast uint128 <= double");
+}
+#endif
 
 char buf0[1000], buf1[1000];
 
@@ -286,6 +409,17 @@ int main(int argc, char **argv) {
   quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", nextafterq(q0, q2));
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_nextafterq(q0, q2));
   checkStr(buf0, buf1, "quadmath nextafterq");
+
+  //
+
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
+  srand(time(NULL));
+  for(int i=0;i<100000;i++) {
+    doTestInt128(rndi128(), rndi128());
+    doTestUInt128(rndu128(), rndu128());
+  }
+  printf("int128 OK\n");
+#endif
 
   //
 
