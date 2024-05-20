@@ -7,6 +7,9 @@ endif()
 
 if (NOT WIN32)
    add_executable(test_printf test_printf.cpp)
+   if (COMPILER_SUPPORTS_INT128)
+     target_compile_definitions(test_printf PRIVATE TLFLOAT_COMPILER_SUPPORTS_INT128=1)
+   endif()
    target_link_libraries(test_printf tlfloat)
    add_test(NAME test_printf COMMAND test_printf)
 endif()
@@ -24,19 +27,25 @@ if(ENABLE_CUDA_TEST)
 endif()
 
 add_executable(test_arith test_arith.cpp)
+add_executable(test_arith_noopt test_arith.cpp)
+target_compile_definitions(test_arith_noopt PRIVATE TLFLOAT_DISABLE_ARCH_OPTIMIZATION=1)
 target_link_libraries(test_arith tlfloat)
+target_link_libraries(test_arith_noopt tlfloat)
 if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT WIN32)
   target_link_libraries(test_arith quadmath)
+  target_link_libraries(test_arith_noopt quadmath)
 endif()
 if (COMPILER_SUPPORTS_INT128)
   target_compile_definitions(test_arith PRIVATE TLFLOAT_COMPILER_SUPPORTS_INT128=1)
 endif()
 target_compile_definitions(test_arith PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
+target_compile_definitions(test_arith_noopt PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
 add_test(NAME test_arith COMMAND test_arith)
+add_test(NAME test_arith_noopt COMMAND test_arith_noopt)
 
 if (INSTALL_CONTINUOUS_TESTERS)
   install(
-    TARGETS test_arith
+    TARGETS test_arith test_arith_noopt
     DESTINATION "${INSTALL_BINDIR}"
     COMPONENT tester
     )
@@ -45,6 +54,11 @@ endif()
 add_executable(test_hash test_hash.cpp)
 target_link_libraries(test_hash tlfloat)
 add_test(NAME test_hash COMMAND test_hash 975ad94306bbd3b8ceb6a946403379cff54591b498edb56d5a587980d82a1488)
+
+add_executable(test_hash_noopt test_hash.cpp)
+target_compile_definitions(test_hash_noopt PRIVATE TLFLOAT_DISABLE_ARCH_OPTIMIZATION=1)
+target_link_libraries(test_hash_noopt tlfloat)
+add_test(NAME test_hash_noopt COMMAND test_hash_noopt 975ad94306bbd3b8ceb6a946403379cff54591b498edb56d5a587980d82a1488)
 
 add_executable(test_printf_hash test_printf_hash.cpp)
 target_link_libraries(test_printf_hash tlfloat)
@@ -58,9 +72,17 @@ if (LIB_MPFR)
   endif()
   add_test(NAME test_mpfr COMMAND test_mpfr)
 
+  add_executable(test_mpfr_noopt test_mpfr.cpp)
+  target_compile_definitions(test_mpfr_noopt PRIVATE TLFLOAT_DISABLE_ARCH_OPTIMIZATION=1)
+  target_link_libraries(test_mpfr_noopt tlfloat ${LIB_MPFR})
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT WIN32)
+    target_link_libraries(test_mpfr_noopt quadmath)
+  endif()
+  add_test(NAME test_mpfr_noopt COMMAND test_mpfr_noopt)
+
   if (INSTALL_CONTINUOUS_TESTERS)
     install(
-      TARGETS test_mpfr
+      TARGETS test_mpfr test_mpfr_noopt
       DESTINATION "${INSTALL_BINDIR}"
       COMPONENT tester
       )
@@ -73,6 +95,15 @@ if (LIB_MPFR)
   endif()
   target_compile_definitions(tester1 PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
   add_test(NAME tester1 COMMAND tester1)
+
+  add_executable(tester1_noopt tester1.cpp)
+  target_compile_definitions(tester1_noopt PRIVATE TLFLOAT_DISABLE_ARCH_OPTIMIZATION=1)
+  target_link_libraries(tester1_noopt ${LIB_MPFR})
+  if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64" AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT WIN32)
+    target_link_libraries(tester1_noopt quadmath)
+  endif()
+  target_compile_definitions(tester1_noopt PRIVATE TLFLOAT_SUPPRESS_WARNINGS=1)
+  add_test(NAME tester1_noopt COMMAND tester1_noopt)
 endif()
 
 #

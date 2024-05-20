@@ -590,6 +590,157 @@ void testem64(int64_t val) {
   }
 }
 
+void testem128(int64_t val) {
+  const char *types[] = { "lld", "llu", "llx", "llo" };
+  const char *types2[] = { "d", "u", "x", "o" };
+  for(int i=0;i<4;i++) {
+    if (i != 0 && val < 0) continue;
+
+    for(int alt=0;alt<2;alt++) {
+      for(int zero=0;zero<2;zero++) {
+	for(int left=0;left<2;left++) {
+	  for(int blank=0;blank<2;blank++) {
+	    for(int sign=0;sign<2;sign++) {
+	      char fmt[120], corr[120], test[120];
+
+	      snprintf(fmt, 90, "%%%s%s%s%s%s%s",
+		       alt ? "#" : "", 
+		       zero ? "0" : "", 
+		       left ? "-" : "", 
+		       blank ? " " : "", 
+		       sign ? "+" : "",
+		       types[i]);
+	      snprintf(corr, 98, fmt, val);
+
+	      snprintf(fmt, 90, "%%%s%s%s%s%s_128%s",
+		       alt ? "#" : "", 
+		       zero ? "0" : "", 
+		       left ? "-" : "", 
+		       blank ? " " : "", 
+		       sign ? "+" : "",
+		       types2[i]);
+	      tlfloat_snprintf(test, 98, fmt, BigInt<7>(val));
+
+	      if(strcmp(test,corr) != 0) {
+		printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
+	      }
+
+#ifdef TLFLOAT_ENABLE_UINT128
+	      tlfloat_snprintf(test, 98, fmt, __int128_t(val));
+
+	      if(strcmp(test,corr) != 0) {
+		printf("%s(__int128_t) : c=[%s] t=[%s]\n", fmt, corr, test);
+	      }
+#endif
+
+	      for(unsigned w=0;w<sizeof(test_widths)/sizeof(int);w++) {
+		int width = test_widths[w];
+		snprintf(fmt, 90, "%%%s%s%s%s%s%d.%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 width, types[i]);
+		snprintf(corr, 98, fmt, val);
+
+		snprintf(fmt, 90, "%%%s%s%s%s%s%d._128%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 width, types2[i]);
+		tlfloat_snprintf(test, 98, fmt, BigInt<7>(val));
+
+		if(strcmp(test,corr) != 0) {
+		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
+		  exit(-1);
+		}
+
+#ifdef TLFLOAT_ENABLE_UINT128
+		tlfloat_snprintf(test, 98, fmt, __int128_t(val));
+
+		if(strcmp(test,corr) != 0) {
+		  printf("%s(__int128_t) : c=[%s] t=[%s]\n", fmt, corr, test);
+		}
+#endif
+	      }
+
+	      for(int prec=0;prec<=12;prec += 2) {
+		for(unsigned w=0;w<sizeof(test_widths)/sizeof(int);w++) {
+		  int width = test_widths[w];
+		  snprintf(fmt, 90, "%%%s%s%s%s%s%d.%d%s",
+			   alt ? "#" : "", 
+			   zero ? "0" : "", 
+			   left ? "-" : "", 
+			   blank ? " " : "", 
+			   sign ? "+" : "",
+			   width, prec, types[i]);
+		  snprintf(corr, 98, fmt, val);
+
+		  snprintf(fmt, 90, "%%%s%s%s%s%s%d.%d_128%s",
+			    alt ? "#" : "", 
+			    zero ? "0" : "", 
+			    left ? "-" : "", 
+			    blank ? " " : "", 
+			    sign ? "+" : "",
+			    width, prec, types2[i]);
+		  tlfloat_snprintf(test, 98, fmt, BigInt<7>(val));
+
+		  if(strcmp(test,corr) != 0) {
+		    printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
+		    exit(-1);
+		  }
+
+#ifdef TLFLOAT_ENABLE_UINT128
+		  tlfloat_snprintf(test, 98, fmt, __int128_t(val));
+
+		  if(strcmp(test,corr) != 0) {
+		    printf("%s(__int128_t) : c=[%s] t=[%s]\n", fmt, corr, test);
+		  }
+#endif
+		}
+
+		snprintf(fmt, 90, "%%%s%s%s%s%s.%d%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 prec, types[i]);
+		snprintf(corr, 98, fmt, val);
+
+		snprintf(fmt, 90, "%%%s%s%s%s%s.%d_128%s",
+			 alt ? "#" : "", 
+			 zero ? "0" : "", 
+			 left ? "-" : "", 
+			 blank ? " " : "", 
+			 sign ? "+" : "",
+			 prec, types2[i]);
+		tlfloat_snprintf(test, 98, fmt, BigInt<7>(val));
+
+		if(strcmp(test,corr) != 0) {
+		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
+		  exit(-1);
+		}
+
+#ifdef TLFLOAT_ENABLE_UINT128
+		tlfloat_snprintf(test, 98, fmt, __int128_t(val));
+
+		if(strcmp(test,corr) != 0) {
+		  printf("%s(__int128_t) : c=[%s] t=[%s]\n", fmt, corr, test);
+		}
+#endif
+	      }
+	    }
+	  }
+	}
+      }
+    }
+  }
+}
+
 using namespace std;
 
 int main(int argc, char **argv) {
@@ -639,6 +790,14 @@ int main(int argc, char **argv) {
   }
 
   cout << "int64_t OK" << endl;
+
+  testem128(0);
+  for(int i=0;i<63;i++) {
+    testem128(+1LL << i);
+    testem128(-1LL << i);
+  }
+
+  cout << "128bit int OK" << endl;
 
   testem<Float>(NAN, 5);
   testem<Float>(+0.0, 5);

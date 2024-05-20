@@ -161,9 +161,9 @@ $ ./a.out 1.234 2.345
 ```
 
 In order to use the libquadmath emulation feature, define
-TLFLOAT_LIBQUADMATH_EMULATION macro and include tlfloat/tlfloat.h
-instead of quadmath.h, and link with -ltlfloat -lm. If you need
-portability, replace __float128 with tlfloat_quad.
+TLFLOAT_LIBQUADMATH_EMULATION macro, include tlfloat/tlfloat.h instead
+of quadmath.h, and link with -ltlfloat -lm. If you need portability,
+replace __float128 with tlfloat_quad.
 
 
 ### C++11 API

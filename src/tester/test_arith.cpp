@@ -352,7 +352,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-#ifdef COMPILER_SUPPORTS_INT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
     if (f1 >= 0 && f1 < ldexp(1, 128) && tlf1.castToInt((const BigUInt<7> *)nullptr) != UINT128(float(tlf1))) {
       cout << "f1 : " << f1  << " : " << to_string_d(ufloat(f1)) << endl;
       cout << "u128t: " << tlf1.castToInt((const BigUInt<7> *)nullptr) << endl;
@@ -495,7 +495,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-#ifdef COMPILER_SUPPORTS_INT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
     if (d1 >= 0 && d1 < ldexp(1, 128) && tld1.castToInt((const BigUInt<7> *)nullptr) != UINT128(double(tld1))) {
       cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
       cout << "u128t: " << tld1.castToInt((const BigUInt<7> *)nullptr) << endl;
@@ -698,7 +698,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-#ifdef COMPILER_SUPPORTS_INT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
     if (q1 >= 0 && q1 < ldexp(1, 128) && tlq1.castToInt((const BigUInt<7> *)nullptr) != UINT128(quad(tlq1))) {
       cout << "q1 : " << q1  << " : " << to_string_d(uquad(q1)) << endl;
       cout << "u128t: " << tlq1.castToInt((const BigUInt<7> *)nullptr) << endl;
@@ -1244,7 +1244,7 @@ int main(int argc, char **argv) {
 #endif
     }
 
-#ifdef COMPILER_SUPPORTS_INT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
     {
       INT128 i128;
       rng->nextBytes((unsigned char *)&i128, sizeof(i128));
@@ -1288,7 +1288,7 @@ int main(int argc, char **argv) {
       }
 #endif
     }
-#endif // #ifdef COMPILER_SUPPORTS_INT128
+#endif // #ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
   }
 
   cout << "OK" << endl;

@@ -258,7 +258,7 @@ namespace {
 	      break;
 	    }
 	    case 128: {
-	      BigInt<7> value = std::bit_cast<BigInt<7>>(va_arg(ap, tlfloat_bigint7));
+	      BigInt<7> value = std::bit_cast<BigInt<7>>(va_arg(ap, tlfloat_int128_t));
 	      int ret = BigInt<7>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -267,7 +267,7 @@ namespace {
 	      break;
 	    }
 	    case 256: {
-	      BigInt<8> value = std::bit_cast<BigInt<8>>(va_arg(ap, tlfloat_bigint8));
+	      BigInt<8> value = std::bit_cast<BigInt<8>>(va_arg(ap, tlfloat_int256_t));
 	      int ret = BigInt<8>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -276,7 +276,7 @@ namespace {
 	      break;
 	    }
 	    case 512: {
-	      BigInt<9> value = std::bit_cast<BigInt<9>>(va_arg(ap, tlfloat_bigint9));
+	      BigInt<9> value = std::bit_cast<BigInt<9>>(va_arg(ap, tlfloat_int512_t));
 	      int ret = BigInt<9>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -285,7 +285,7 @@ namespace {
 	      break;
 	    }
 	    case 1024: {
-	      BigInt<10> value = std::bit_cast<BigInt<10>>(va_arg(ap, tlfloat_bigint10));
+	      BigInt<10> value = std::bit_cast<BigInt<10>>(va_arg(ap, tlfloat_int1024_t));
 	      int ret = BigInt<10>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					    flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }

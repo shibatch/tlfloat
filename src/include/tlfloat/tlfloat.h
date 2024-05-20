@@ -35,11 +35,10 @@
 extern "C" {
 #endif
 
-  typedef struct { uint64_t e[1 << 0]; } tlfloat_bigint6;
-  typedef struct { uint64_t e[1 << 1]; } tlfloat_bigint7;
-  typedef struct { uint64_t e[1 << 2]; } tlfloat_bigint8;
-  typedef struct { uint64_t e[1 << 3]; } tlfloat_bigint9;
-  typedef struct { uint64_t e[1 << 4]; } tlfloat_bigint10;
+  typedef struct { uint64_t e[1 << 1]; } tlfloat_int128_t;
+  typedef struct { uint64_t e[1 << 2]; } tlfloat_int256_t;
+  typedef struct { uint64_t e[1 << 3]; } tlfloat_int512_t;
+  typedef struct { uint64_t e[1 << 4]; } tlfloat_int1024_t;
 
 #if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
   typedef __float128 tlfloat_quad_;
