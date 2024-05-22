@@ -11,6 +11,8 @@
 #define TLFLOAT_LIBQUADMATH_EMULATION
 #include <tlfloat/tlfloat.h>
 
+#include <testerutil.hpp>
+
 using namespace std;
 
 static void check(const string& msg, double x, double y, int t=0) {

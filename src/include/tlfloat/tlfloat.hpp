@@ -131,7 +131,7 @@ namespace tlfloat {
       template<int N>
       static constexpr detail::xpair<BigUInt<N-1>, BigUInt<N-1>> divmod(const BigUInt<N>& x, const BigUInt<N-1>& y) {
 	auto p = x.divmod(y, BigUInt<N>(y).reciprocal());
-	return detail::xpair<BigUInt<N-1>, BigUInt<N-1>> { p.first, p.second };
+	return detail::xpair<BigUInt<N-1>, BigUInt<N-1>> { (BigUInt<N-1>)p.first, (BigUInt<N-1>)p.second };
       }
 
       //
@@ -735,7 +735,7 @@ namespace tlfloat {
 	if (exp - expoffset() >= int(sizeof(BigInt<N>)*8-2))
 	  return BigInt<N>(BigInt<N>(1) << (sizeof(BigInt<N>)*8-1));
 	int s = nbmant - (exp - expoffset() + 1);
-	BigInt<N> r = s > 0 ? BigInt<N>(mant >> s) : (BigInt<N>(mant) << -s);
+	BigInt<N> r = BigInt<N>(s > 0 ? BigUInt<N>(mant >> s) : (BigUInt<N>(mant) << -s));
 	return sign ? -r : r;
       }
 

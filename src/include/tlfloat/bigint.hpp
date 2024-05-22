@@ -435,20 +435,22 @@ namespace tlfloat {
     constexpr explicit operator bool() const { return !isZero(); }
 
 #ifdef TLFLOAT_ENABLE_UINT128
-    constexpr BigUInt(__uint128_t u) : low(uint64_t(u & 0xffffffffffffffffULL)), high(uint64_t(u >> 64)) {}
-    constexpr explicit operator __uint128_t() const { return (__uint128_t(high) << 64) + low; }
+    constexpr BigUInt(__uint128_t u) : low(uint64_t(0)), high(uint64_t(0)) {
+      setWord(0, uint64_t(u & 0xffffffffffffffffULL)); setWord(1, uint64_t(u >> 64));
+    }
+    constexpr explicit operator __uint128_t() const { return (__uint128_t(getWord(1)) << 64) + getWord(0); }
 
-    constexpr BigUInt(__int128_t u) : BigUInt(__uint128_t(u)) {}
+    constexpr explicit BigUInt(__int128_t u) : BigUInt(__uint128_t(u)) {}
     constexpr explicit operator __int128_t() const { return __uint128_t(*this); }
 #endif
 
     constexpr BigUInt(const BigUInt& m) = default;
-    constexpr BigUInt(const BigUInt<N+1>& h) : low(h.low.low), high(h.low.high) {}
+    constexpr explicit BigUInt(const BigUInt<N+1>& h) : low(h.low.low), high(h.low.high) {}
 
     template<int K, std::enable_if_t<(K < N)>* = nullptr>
     constexpr BigUInt(const BigUInt<K>& l) : low(BigUInt<N-1>(l)), high(uint64_t(0)) {}
     template<int K, std::enable_if_t<(K > (N+1))>* = nullptr>
-    constexpr BigUInt(const BigUInt<K>& h) : BigUInt(BigUInt<N+1>(h)) {}
+    constexpr explicit BigUInt(const BigUInt<K>& h) : BigUInt(BigUInt<N+1>(h)) {}
 
     constexpr BigUInt& operator=(const BigUInt &u) = default;
 
@@ -767,7 +769,7 @@ namespace tlfloat {
 
     //
 
-    constexpr BigUInt(const char *p) {
+    constexpr BigUInt(const char *p, const char **endptr = nullptr, const int base = 10) {
       while(*p == ' ') p++;
       BigUInt r;
       uint64_t u = 0, d = 1;
@@ -781,6 +783,7 @@ namespace tlfloat {
       }
       r = r * d + BigUInt(u);
       low = r.low; high = r.high;
+      if (endptr) *endptr = p;
     }
 
     class Montgomery {
@@ -835,40 +838,40 @@ namespace tlfloat {
     uint64_t u64 = 0;
 
   private:
-    constexpr detail::xpair<BigUInt<6>, bool> inc() const {
-      detail::xpair<BigUInt<6>, bool> s = { 0, false };
+    constexpr detail::xpair<BigUInt, bool> inc() const {
+      detail::xpair<BigUInt, bool> s = { 0, false };
       s.first = u64 + 1;
       s.second = s.first == 0;
       return s;
     }
-    constexpr detail::xpair<BigUInt<6>, bool> dec() const {
-      detail::xpair<BigUInt<6>, bool> s = { 0, false };
+    constexpr detail::xpair<BigUInt, bool> dec() const {
+      detail::xpair<BigUInt, bool> s = { 0, false };
       s.second = u64 == 0;
       s.first = u64 - 1;
       return s;
     }
-    constexpr detail::xpair<BigUInt<6>, bool> adc(const BigUInt<6>& rhs, bool c) const {
-      detail::xpair<BigUInt<6>, bool> s = { 0, false };
+    constexpr detail::xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
+      detail::xpair<BigUInt, bool> s = { 0, false };
       detail::xpair<uint64_t, bool> ub = detail::adc64(c, u64, rhs.u64);
       s.first = ub.first;
       s.second = ub.second;
       return s;
     }
-    constexpr detail::xpair<BigUInt<6>, bool> sbc(const BigUInt<6>& rhs, bool c) const {
-      detail::xpair<BigUInt<6>, bool> s = { 0, false };
+    constexpr detail::xpair<BigUInt, bool> sbc(const BigUInt& rhs, bool c) const {
+      detail::xpair<BigUInt, bool> s = { 0, false };
       detail::xpair<uint64_t, bool> ub = detail::sbc64(c, u64, rhs.u64);
       s.first = ub.first;
       s.second = ub.second;
       return s;
     }
 
-    constexpr BigUInt<6> reciprocalAprx() const {
-      BigUInt<6> x(((~0ULL) / (u64 >> 32)) << 31);
-      return (BigUInt<6>(uint64_t(0)) - mulhi(x)).mulhi(x) << 1;
+    constexpr BigUInt reciprocalAprx() const {
+      BigUInt x(((~0ULL) / (u64 >> 32)) << 31);
+      return (BigUInt(uint64_t(0)) - mulhi(x)).mulhi(x) << 1;
     }
 
-    constexpr BigUInt<6> mulhi(const BigUInt<6>& rhs) const { return detail::mul128(u64, rhs.u64).first; }
-    constexpr BigUInt<6> mulhiAprx(const BigUInt<6>& rhs) const { return mulhi(rhs); }
+    constexpr BigUInt mulhi(const BigUInt& rhs) const { return detail::mul128(u64, rhs.u64).first; }
+    constexpr BigUInt mulhiAprx(const BigUInt& rhs) const { return mulhi(rhs); }
 
   public:
     template<int> friend class BigUInt;
@@ -882,34 +885,34 @@ namespace tlfloat {
     constexpr uint64_t getWord(unsigned idx) const { return u64; }
     constexpr void setWord(unsigned idx, uint64_t u) { u64 = u; }
 
-    constexpr bool eq(BigUInt<6> const& rhs) const { return u64 == rhs.u64; }
+    constexpr bool eq(BigUInt const& rhs) const { return u64 == rhs.u64; }
 
-    constexpr BigUInt<6>& operator=(const BigUInt<6> &u) = default;
+    constexpr BigUInt& operator=(const BigUInt &u) = default;
 
-    constexpr BigUInt<6> operator+(const BigUInt<6>& rhs) const { return u64 + rhs.u64; }
-    constexpr BigUInt<6> operator-(const BigUInt<6>& rhs) const { return u64 - rhs.u64; }
-    constexpr BigUInt<6> operator*(const BigUInt<6>& rhs) const { return u64 * rhs.u64; }
-    constexpr BigUInt<6> operator/(const BigUInt<6>& rhs) const { return u64 / rhs.u64; }
-    constexpr BigUInt<6> operator%(const BigUInt<6>& rhs) const { return u64 % rhs.u64; }
+    constexpr BigUInt operator+(const BigUInt& rhs) const { return u64 + rhs.u64; }
+    constexpr BigUInt operator-(const BigUInt& rhs) const { return u64 - rhs.u64; }
+    constexpr BigUInt operator*(const BigUInt& rhs) const { return u64 * rhs.u64; }
+    constexpr BigUInt operator/(const BigUInt& rhs) const { return u64 / rhs.u64; }
+    constexpr BigUInt operator%(const BigUInt& rhs) const { return u64 % rhs.u64; }
 
-    constexpr bool operator==(BigUInt<6> const& rhs) const { return u64 == rhs.u64; }
-    constexpr bool operator!=(BigUInt<6> const& rhs) const { return !(*this == rhs); }
-    constexpr bool operator> (BigUInt<6> const& rhs) const { return u64 > rhs.u64; }
+    constexpr bool operator==(BigUInt const& rhs) const { return u64 == rhs.u64; }
+    constexpr bool operator!=(BigUInt const& rhs) const { return !(*this == rhs); }
+    constexpr bool operator> (BigUInt const& rhs) const { return u64 > rhs.u64; }
 
-    constexpr int compare(BigUInt<6> const& rhs) const {
+    constexpr int compare(BigUInt const& rhs) const {
       if (u64 > rhs.u64) return +1;
       if (u64 < rhs.u64) return -1;
       return 0;
     }
 
-    constexpr BigUInt<6> operator&(const BigUInt<6>& rhs) const { return u64 & rhs.u64; }
-    constexpr BigUInt<6> operator|(const BigUInt<6>& rhs) const { return u64 | rhs.u64; }
-    constexpr BigUInt<6> operator^(const BigUInt<6>& rhs) const { return u64 ^ rhs.u64; }
-    constexpr BigUInt<6> operator~()                      const { return ~u64; }
-    constexpr BigUInt<6> operator<<(int n)                const {
+    constexpr BigUInt operator&(const BigUInt& rhs) const { return u64 & rhs.u64; }
+    constexpr BigUInt operator|(const BigUInt& rhs) const { return u64 | rhs.u64; }
+    constexpr BigUInt operator^(const BigUInt& rhs) const { return u64 ^ rhs.u64; }
+    constexpr BigUInt operator~()                      const { return ~u64; }
+    constexpr BigUInt operator<<(int n)                const {
       return (n > 63 || n < -63) ? 0 : n >= 0 ? (u64 << n) : (u64 >> -n);
     }
-    constexpr BigUInt<6> operator>>(int n)                const { return *this << -n; }
+    constexpr BigUInt operator>>(int n)                const { return *this << -n; }
     constexpr unsigned clz() const { return detail::clz64(u64); }
 
     //
@@ -960,11 +963,11 @@ namespace tlfloat {
     constexpr BigInt(__int128_t u) : BigInt(BigUInt<N>(__uint128_t(u))) {}
     constexpr explicit operator __int128_t() const { return (__int128_t)BigUInt<N>(*this); }
 
-    constexpr BigInt(__uint128_t u) : BigInt(BigUInt<N>(u)) {}
+    constexpr explicit BigInt(__uint128_t u) : BigInt(BigUInt<N>(u)) {}
     constexpr explicit operator __uint128_t() const { return (__uint128_t)BigUInt<N>(*this); }
 #endif
 
-    constexpr BigInt(const BigUInt<N>& up) : u(up) {}
+    constexpr explicit BigInt(const BigUInt<N>& up) : u(up) {}
 
     template<int K, std::enable_if_t<(K < (N-1))>* = nullptr>
     constexpr BigInt(const BigInt<K>& l) : BigInt(BigInt<N-1>(l)) {}
@@ -977,7 +980,7 @@ namespace tlfloat {
     template<int K, std::enable_if_t<(K == (N+1))>* = nullptr>
     constexpr BigInt(const BigInt<K>& h) : u(BigUInt<N>(h.u.low)) {}
     template<int K, std::enable_if_t<(K > (N+1))>* = nullptr>
-    constexpr BigInt(const BigInt<K>& h) : BigInt(BigInt<N+1>(h)) {}
+    constexpr explicit BigInt(const BigInt<K>& h) : BigInt(BigInt<N+1>(h)) {}
 
     constexpr BigInt(const uint64_t *p) : u(p) {}
 
@@ -987,7 +990,7 @@ namespace tlfloat {
 
     constexpr operator BigUInt<N>() const { return u; }
 
-    constexpr BigInt abs() const { return u.msb() ? -u : u; }
+    constexpr BigInt abs() const { return BigInt(u.msb() ? -u : u); }
 
     constexpr BigInt& operator=(const BigInt &ip) = default;
 
@@ -996,20 +999,20 @@ namespace tlfloat {
     constexpr BigInt& operator--()    { u = u.dec().first; return *this; }
     constexpr BigInt  operator--(int) { BigInt t = *this; u = u.dec().first; return t; }
 
-    constexpr BigInt operator+(const BigInt& rhs) const { return u + rhs.u; }
-    constexpr BigInt operator-(const BigInt& rhs) const { return u - rhs.u; }
-    constexpr BigInt operator-()                     const { return -u; }
-    constexpr BigInt operator+()                     const { return +u; }
-    constexpr BigInt operator*(const BigInt& rhs) const { return u * rhs.u; }
+    constexpr BigInt operator+(const BigInt& rhs) const { return BigInt(u + rhs.u); }
+    constexpr BigInt operator-(const BigInt& rhs) const { return BigInt(u - rhs.u); }
+    constexpr BigInt operator-()                  const { return BigInt(-u); }
+    constexpr BigInt operator+()                  const { return BigInt(u); }
+    constexpr BigInt operator*(const BigInt& rhs) const { return BigInt(u * rhs.u); }
 
     constexpr BigInt operator/(const BigInt& rhs) const {
       BigUInt<N> m = abs().u / rhs.abs().u;
-      return (u.msb() ^ rhs.u.msb()) ? -m : m;
+      return BigInt((u.msb() ^ rhs.u.msb()) ? -m : m);
     }
 
     constexpr BigInt operator%(const BigInt& rhs) const {
       BigUInt<N> m = abs().u % rhs.abs().u;
-      return u.msb() ? -m : m;
+      return BigInt(u.msb() ? -m : m);
     }
 
     constexpr bool isNegative() const { return u.msb(); }
@@ -1018,8 +1021,8 @@ namespace tlfloat {
     constexpr BigInt divmod(const BigInt& rhs, const BigUInt<N>& recip, BigInt* mod) const {
       BigUInt<N> r, q = abs().u.divmod(rhs.abs().u, recip, &r);
       if (u.msb() ^ rhs.u.msb()) { q = -q; r = -r; }
-      *mod = r;
-      return q;
+      *mod = BigInt(r);
+      return BigInt(q);
     }
 
     constexpr BigInt pow(BigUInt<N> e, const BigUInt<N>& m = 0, BigUInt<N> recm = 0) const {
@@ -1049,16 +1052,16 @@ namespace tlfloat {
     constexpr bool operator<=(BigInt const& rhs) const { return !(*this > rhs); }
     constexpr bool operator>=(BigInt const& rhs) const { return !(*this < rhs); }
 
-    constexpr BigInt operator&(const BigInt& rhs) const { return u & rhs.u; }
-    constexpr BigInt operator|(const BigInt& rhs) const { return u | rhs.u; }
-    constexpr BigInt operator^(const BigInt& rhs) const { return u ^ rhs.u; }
-    constexpr BigInt operator~()                     const { return ~u; }
+    constexpr BigInt operator&(const BigInt& rhs) const { return BigInt(u & rhs.u); }
+    constexpr BigInt operator|(const BigInt& rhs) const { return BigInt(u | rhs.u); }
+    constexpr BigInt operator^(const BigInt& rhs) const { return BigInt(u ^ rhs.u); }
+    constexpr BigInt operator~()                  const { return BigInt(~u); }
 
     constexpr BigInt operator>>(int n) const {
-      if (!u.msb()) return u >> n;
-      return (u >> n) | ((~BigUInt<N>(0)) << ((1 << N) - n));
+      if (!u.msb()) return BigInt(u >> n);
+      return BigInt((u >> n) | ((~BigUInt<N>(0)) << ((1 << N) - n)));
     }
-    constexpr BigInt  operator<<(int n) const { return u << n; }
+    constexpr BigInt  operator<<(int n) const { return BigInt(u << n); }
 
     constexpr BigInt& operator>>=(int n) { *this = *this >> n; return *this; }
     constexpr BigInt& operator<<=(int n) { *this = *this << n; return *this; }
@@ -1181,11 +1184,11 @@ namespace tlfloat {
 
     //
 
-    constexpr BigInt(const char *p) {
+    constexpr BigInt(const char *p, const char **endptr = nullptr, const int base = 10) {
       bool sign = false;
       while(*p == ' ') p++;
       if (*p == '-') { p++; sign = true; }
-      u = BigUInt<N>(p);
+      u = BigUInt<N>(p, endptr);
       if (sign) u = -u;
     }
 

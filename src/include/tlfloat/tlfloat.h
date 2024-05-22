@@ -17,6 +17,10 @@
 #endif
 #endif
 
+#if defined(__SIZEOF_INT128__) && !defined(__CUDA_ARCH__) && !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
+#define TLFLOAT_COMPILER_SUPPORTS_INT128
+#endif
+
 #if defined(__SIZEOF_FLOAT128__)
 #if __SIZEOF_FLOAT128__ == 16
 #define TLFLOAT_COMPILER_SUPPORTS_FLOAT128
@@ -35,12 +39,13 @@
 extern "C" {
 #endif
 
-  typedef struct { uint64_t e[1 << 1]; } tlfloat_int128_t;
-  typedef struct { uint64_t e[1 << 2]; } tlfloat_int256_t;
-  typedef struct { uint64_t e[1 << 3]; } tlfloat_int512_t;
-  typedef struct { uint64_t e[1 << 4]; } tlfloat_int1024_t;
-
-  typedef struct { uint64_t e[1 << 1]; } tlfloat_uint128_t;
+#if defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
+  typedef __int128_t tlfloat_int128_t_;
+  typedef __uint128_t tlfloat_uint128_t_;
+#else
+  typedef struct { uint64_t e[1 << 1]; } tlfloat_int128_t_;
+  typedef struct { uint64_t e[1 << 1]; } tlfloat_uint128_t_;
+#endif
 
 #if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
   typedef __float128 tlfloat_quad_;
@@ -98,6 +103,9 @@ extern "C" {
   tlfloat_quad_ tlfloat_strtoq(const char *, const char **);
   tlfloat_octuple_ tlfloat_strtoo(const char *, const char **);
 
+  tlfloat_int128_t_ tlfloat_strtoi128(const char *, const char **, const int);
+  tlfloat_uint128_t_ tlfloat_strtou128(const char *, const char **, const int);
+
   //
 
   /** This function casts a quadruple-precision FP number to a double-precision FP number. Link with -ltlfloat. */
@@ -137,76 +145,76 @@ extern "C" {
 
   //
 
-  tlfloat_int128_t tlfloat_cast_i128_i64(const int64_t x);
-  int64_t tlfloat_cast_i64_i128(const tlfloat_int128_t x);
+  tlfloat_int128_t_ tlfloat_cast_i128_i64(const int64_t x);
+  int64_t tlfloat_cast_i64_i128(const tlfloat_int128_t_ x);
 
-  tlfloat_uint128_t tlfloat_cast_u128_u64(const uint64_t x);
-  uint64_t tlfloat_cast_u64_u128(const tlfloat_uint128_t x);
-
-
-  tlfloat_int128_t tlfloat_cast_i128_d(const double x);
-  double tlfloat_cast_d_i128(const tlfloat_int128_t x);
-
-  tlfloat_uint128_t tlfloat_cast_u128_d(const double x);
-  double tlfloat_cast_d_u128(const tlfloat_uint128_t x);
-
-  tlfloat_int128_t tlfloat_cast_i128_q(const tlfloat_quad_ x);
-  tlfloat_quad_ tlfloat_cast_q_i128(const tlfloat_int128_t x);
-
-  tlfloat_uint128_t tlfloat_cast_u128_q(const tlfloat_quad_ x);
-  tlfloat_quad_ tlfloat_cast_q_u128(const tlfloat_uint128_t x);
-
-  tlfloat_int128_t tlfloat_cast_i128_o(const tlfloat_octuple_ x);
-  tlfloat_octuple_ tlfloat_cast_o_i128(const tlfloat_int128_t x);
-
-  tlfloat_uint128_t tlfloat_cast_u128_o(const tlfloat_octuple_ x);
-  tlfloat_octuple_ tlfloat_cast_o_u128(const tlfloat_uint128_t x);
+  tlfloat_uint128_t_ tlfloat_cast_u128_u64(const uint64_t x);
+  uint64_t tlfloat_cast_u64_u128(const tlfloat_uint128_t_ x);
 
 
-  int tlfloat_eq_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
-  int tlfloat_ne_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
-  int tlfloat_lt_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
-  int tlfloat_le_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
-  int tlfloat_gt_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
-  int tlfloat_ge_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
+  tlfloat_int128_t_ tlfloat_cast_i128_d(const double x);
+  double tlfloat_cast_d_i128(const tlfloat_int128_t_ x);
 
-  tlfloat_int128_t tlfloat_add_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
-  tlfloat_int128_t tlfloat_sub_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y);
-  tlfloat_int128_t tlfloat_mul_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
-  tlfloat_int128_t tlfloat_div_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
-  tlfloat_int128_t tlfloat_mod_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
+  tlfloat_uint128_t_ tlfloat_cast_u128_d(const double x);
+  double tlfloat_cast_d_u128(const tlfloat_uint128_t_ x);
 
-  tlfloat_int128_t tlfloat_and_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
-  tlfloat_int128_t tlfloat_or_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
-  tlfloat_int128_t tlfloat_xor_i128_i128 (const tlfloat_int128_t x, const tlfloat_int128_t y);
-  tlfloat_int128_t tlfloat_not_i128 (const tlfloat_int128_t x);
+  tlfloat_int128_t_ tlfloat_cast_i128_q(const tlfloat_quad_ x);
+  tlfloat_quad_ tlfloat_cast_q_i128(const tlfloat_int128_t_ x);
 
-  tlfloat_int128_t tlfloat_shl_i128_i (const tlfloat_int128_t x, const int y);
-  tlfloat_int128_t tlfloat_shr_i128_i (const tlfloat_int128_t x, const int y);
+  tlfloat_uint128_t_ tlfloat_cast_u128_q(const tlfloat_quad_ x);
+  tlfloat_quad_ tlfloat_cast_q_u128(const tlfloat_uint128_t_ x);
 
-  tlfloat_int128_t tlfloat_neg_i128 (const tlfloat_int128_t x);
+  tlfloat_int128_t_ tlfloat_cast_i128_o(const tlfloat_octuple_ x);
+  tlfloat_octuple_ tlfloat_cast_o_i128(const tlfloat_int128_t_ x);
+
+  tlfloat_uint128_t_ tlfloat_cast_u128_o(const tlfloat_octuple_ x);
+  tlfloat_octuple_ tlfloat_cast_o_u128(const tlfloat_uint128_t_ x);
 
 
-  int tlfloat_eq_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  int tlfloat_ne_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  int tlfloat_lt_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  int tlfloat_le_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  int tlfloat_gt_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  int tlfloat_ge_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  int tlfloat_eq_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  int tlfloat_ne_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  int tlfloat_lt_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  int tlfloat_le_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  int tlfloat_gt_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  int tlfloat_ge_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
 
-  tlfloat_uint128_t tlfloat_add_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  tlfloat_uint128_t tlfloat_sub_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  tlfloat_uint128_t tlfloat_mul_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  tlfloat_uint128_t tlfloat_div_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  tlfloat_uint128_t tlfloat_mod_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
+  tlfloat_int128_t_ tlfloat_add_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  tlfloat_int128_t_ tlfloat_sub_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  tlfloat_int128_t_ tlfloat_mul_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  tlfloat_int128_t_ tlfloat_div_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  tlfloat_int128_t_ tlfloat_mod_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
 
-  tlfloat_uint128_t tlfloat_and_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  tlfloat_uint128_t tlfloat_or_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  tlfloat_uint128_t tlfloat_xor_u128_u128 (const tlfloat_uint128_t x, const tlfloat_uint128_t y);
-  tlfloat_uint128_t tlfloat_not_u128 (const tlfloat_uint128_t x);
+  tlfloat_int128_t_ tlfloat_and_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  tlfloat_int128_t_ tlfloat_or_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  tlfloat_int128_t_ tlfloat_xor_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y);
+  tlfloat_int128_t_ tlfloat_not_i128(const tlfloat_int128_t_ x);
 
-  tlfloat_uint128_t tlfloat_shl_u128_i (const tlfloat_uint128_t x, const int y);
-  tlfloat_uint128_t tlfloat_shr_u128_i (const tlfloat_uint128_t x, const int y);
+  tlfloat_int128_t_ tlfloat_shl_i128_i(const tlfloat_int128_t_ x, const int y);
+  tlfloat_int128_t_ tlfloat_shr_i128_i(const tlfloat_int128_t_ x, const int y);
+
+  tlfloat_int128_t_ tlfloat_neg_i128(const tlfloat_int128_t_ x);
+
+
+  int tlfloat_eq_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  int tlfloat_ne_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  int tlfloat_lt_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  int tlfloat_le_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  int tlfloat_gt_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  int tlfloat_ge_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+
+  tlfloat_uint128_t_ tlfloat_add_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  tlfloat_uint128_t_ tlfloat_sub_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  tlfloat_uint128_t_ tlfloat_mul_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  tlfloat_uint128_t_ tlfloat_div_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  tlfloat_uint128_t_ tlfloat_mod_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+
+  tlfloat_uint128_t_ tlfloat_and_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  tlfloat_uint128_t_ tlfloat_or_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  tlfloat_uint128_t_ tlfloat_xor_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y);
+  tlfloat_uint128_t_ tlfloat_not_u128(const tlfloat_uint128_t_ x);
+
+  tlfloat_uint128_t_ tlfloat_shl_u128_i(const tlfloat_uint128_t_ x, const int y);
+  tlfloat_uint128_t_ tlfloat_shr_u128_i(const tlfloat_uint128_t_ x, const int y);
 
   //
 
@@ -625,9 +633,9 @@ struct tlfloat_quad {
   explicit operator double() const { return tlfloat_cast_d_q(value); }
 
   // Conversion to/from integral types
-  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 64), int>::type = 0>
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
   tlfloat_quad(const T& i) : value(tlfloat_cast_q_d((double)i)) {}
-  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 64), int>::type = 0>
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
   explicit operator T() const { return tlfloat_cast_d_q(value); }
 
   //
@@ -647,6 +655,7 @@ struct tlfloat_quad {
   bool operator> (const tlfloat_quad& rhs) const { return tlfloat_gt_q_q(value, rhs.value); }
   bool operator>=(const tlfloat_quad& rhs) const { return tlfloat_ge_q_q(value, rhs.value); }
 };
+#define TLFLOAT_QUAD_IS_STRUCT
 #else // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
 typedef tlfloat_quad_ tlfloat_quad;
 #endif
@@ -677,9 +686,9 @@ struct tlfloat_octuple {
   explicit operator double() const { return tlfloat_cast_d_o(value); }
 
   // Conversion to/from integral types
-  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 64), int>::type = 0>
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
   tlfloat_octuple(const T& i) : value(tlfloat_cast_o_d((double)i)) {}
-  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 64), int>::type = 0>
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
   explicit operator T() const { return tlfloat_cast_d_o(value); }
 
   //
@@ -701,6 +710,139 @@ struct tlfloat_octuple {
 };
 #else // #if defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
 typedef tlfloat_octuple_ tlfloat_octuple;
+#endif
+
+#if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)) || defined(TLFLOAT_DOXYGEN)
+struct tlfloat_int128_t {
+  tlfloat_int128_t_ value;
+
+  tlfloat_int128_t() { value.e[0] = value.e[1] = 0; }
+
+  // Conversion to/from the corresponding C type
+  tlfloat_int128_t(const tlfloat_int128_t_& v) : value(v) {}
+  operator tlfloat_int128_t_() const { return value; }
+
+  // Conversion to/from double
+  explicit tlfloat_int128_t(const double& d) : value(tlfloat_cast_i128_d(d)) {}
+  explicit operator double() const { return tlfloat_cast_d_i128(value); }
+
+  // Conversion to/from tlfloat_uint128
+  explicit tlfloat_int128_t(const struct tlfloat_uint128_t& d);
+  explicit operator struct tlfloat_uint128_t() const;
+
+  // Conversion to/from integral types
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && !std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
+  tlfloat_int128_t(const T& i) : value(tlfloat_cast_i128_i64(i)) {}
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value &&  std::is_unsigned<T>::value && sizeof(T) <  8), int>::type = 0>
+  explicit tlfloat_int128_t(const T& u) : value(tlfloat_cast_i128_i64((int64_t)u)) {}
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value &&  std::is_unsigned<T>::value && sizeof(T) == 8), int>::type = 0>
+  explicit tlfloat_int128_t(const T& u) : value((tlfloat_int128_t)tlfloat_cast_u128_u64(u)) {}
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && !std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
+  explicit operator T() const { return tlfloat_cast_i64_i128(value); }
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value &&  std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
+  explicit operator T() const { tlfloat_uint128_t_ v; memcpy(&v, &value, sizeof(v)); return tlfloat_cast_u64_u128(v); }
+
+  //
+
+  tlfloat_int128_t operator+(const tlfloat_int128_t& rhs) const { return tlfloat_add_i128_i128(value, rhs.value); }
+  tlfloat_int128_t operator-(const tlfloat_int128_t& rhs) const { return tlfloat_sub_i128_i128(value, rhs.value); }
+  tlfloat_int128_t operator*(const tlfloat_int128_t& rhs) const { return tlfloat_mul_i128_i128(value, rhs.value); }
+  tlfloat_int128_t operator/(const tlfloat_int128_t& rhs) const { return tlfloat_div_i128_i128(value, rhs.value); }
+  tlfloat_int128_t operator%(const tlfloat_int128_t& rhs) const { return tlfloat_mod_i128_i128(value, rhs.value); }
+
+  tlfloat_int128_t operator-() const { return tlfloat_neg_i128(value); }
+  tlfloat_int128_t operator+() const { return *this; }
+
+  tlfloat_int128_t operator&(const tlfloat_int128_t& rhs) const { return tlfloat_and_i128_i128(value, rhs.value); }
+  tlfloat_int128_t operator|(const tlfloat_int128_t& rhs) const { return tlfloat_or_i128_i128 (value, rhs.value); }
+  tlfloat_int128_t operator^(const tlfloat_int128_t& rhs) const { return tlfloat_xor_i128_i128(value, rhs.value); }
+  tlfloat_int128_t operator~() const { return tlfloat_not_i128(value); }
+
+  tlfloat_int128_t operator<<(const int& rhs) const { return tlfloat_shl_i128_i(value, rhs); }
+  tlfloat_int128_t operator>>(const int& rhs) const { return tlfloat_shr_i128_i(value, rhs); }
+  tlfloat_int128_t& operator<<=(int n) { *this = *this << n; return *this; }
+  tlfloat_int128_t& operator>>=(int n) { *this = *this >> n; return *this; }
+
+  bool operator==(const tlfloat_int128_t& rhs) const { return tlfloat_eq_i128_i128(value, rhs.value); }
+  bool operator!=(const tlfloat_int128_t& rhs) const { return tlfloat_ne_i128_i128(value, rhs.value); }
+  bool operator< (const tlfloat_int128_t& rhs) const { return tlfloat_lt_i128_i128(value, rhs.value); }
+  bool operator<=(const tlfloat_int128_t& rhs) const { return tlfloat_le_i128_i128(value, rhs.value); }
+  bool operator> (const tlfloat_int128_t& rhs) const { return tlfloat_gt_i128_i128(value, rhs.value); }
+  bool operator>=(const tlfloat_int128_t& rhs) const { return tlfloat_ge_i128_i128(value, rhs.value); }
+
+  tlfloat_int128_t& operator++()    { *this = tlfloat_add_i128_i128(value, tlfloat_cast_i128_i64(1)); return *this; }
+  tlfloat_int128_t& operator--()    { *this = tlfloat_sub_i128_i128(value, tlfloat_cast_i128_i64(1)); return *this; }
+  tlfloat_int128_t  operator++(int) { tlfloat_int128_t t = *this; *this = tlfloat_add_i128_i128(value, tlfloat_cast_i128_i64(1)); return t; }
+  tlfloat_int128_t  operator--(int) { tlfloat_int128_t t = *this; *this = tlfloat_sub_i128_i128(value, tlfloat_cast_i128_i64(1)); return t; }
+};
+
+struct tlfloat_uint128_t {
+  tlfloat_uint128_t_ value;
+
+  tlfloat_uint128_t() { value.e[0] = value.e[1] = 0; }
+
+  // Conversion to/from the corresponding C type
+  tlfloat_uint128_t(const tlfloat_uint128_t_& v) : value(v) {}
+  operator tlfloat_uint128_t_() const { return value; }
+
+  // Conversion to/from double
+  explicit tlfloat_uint128_t(const double& d) : value(tlfloat_cast_u128_d(d)) {}
+  explicit operator double() const { return tlfloat_cast_d_u128(value); }
+
+  // Conversion to/from tlfloat_int128_t
+  explicit tlfloat_uint128_t(const tlfloat_int128_t& d) { memcpy((void *)this, (void *)&d, sizeof(*this)); }
+  explicit operator tlfloat_int128_t() const { tlfloat_int128_t v; memcpy((void *)&v, (void *)this, sizeof(v)); return v; }
+
+  // Conversion to/from integral types
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && !std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
+  explicit tlfloat_uint128_t(const T& i) : value(tlfloat_cast_u128_u64(i)) {}
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value &&  std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
+  tlfloat_uint128_t(const T& u) : value(tlfloat_cast_u128_u64(u)) {}
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && !std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
+  explicit operator T() const { tlfloat_int128_t_ v; memcpy(&v, &value, sizeof(v)); return tlfloat_cast_i64_i128(v); }
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value &&  std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
+  explicit operator T() const { return tlfloat_cast_u64_u128(value); }
+
+  //
+
+  tlfloat_uint128_t operator+(const tlfloat_uint128_t& rhs) const { return tlfloat_add_u128_u128(value, rhs.value); }
+  tlfloat_uint128_t operator-(const tlfloat_uint128_t& rhs) const { return tlfloat_sub_u128_u128(value, rhs.value); }
+  tlfloat_uint128_t operator*(const tlfloat_uint128_t& rhs) const { return tlfloat_mul_u128_u128(value, rhs.value); }
+  tlfloat_uint128_t operator/(const tlfloat_uint128_t& rhs) const { return tlfloat_div_u128_u128(value, rhs.value); }
+  tlfloat_uint128_t operator%(const tlfloat_uint128_t& rhs) const { return tlfloat_mod_u128_u128(value, rhs.value); }
+
+  tlfloat_uint128_t operator-() const { return (tlfloat_uint128_t)tlfloat_neg_i128((tlfloat_int128_t)value); }
+  tlfloat_uint128_t operator+() const { return *this; }
+
+  tlfloat_uint128_t operator&(const tlfloat_uint128_t& rhs) const { return tlfloat_and_u128_u128(value, rhs.value); }
+  tlfloat_uint128_t operator|(const tlfloat_uint128_t& rhs) const { return tlfloat_or_u128_u128 (value, rhs.value); }
+  tlfloat_uint128_t operator^(const tlfloat_uint128_t& rhs) const { return tlfloat_xor_u128_u128(value, rhs.value); }
+  tlfloat_uint128_t operator~() const { return tlfloat_not_u128(value); }
+
+  tlfloat_uint128_t operator<<(const int& rhs) const { return tlfloat_shl_u128_i(value, rhs); }
+  tlfloat_uint128_t operator>>(const int& rhs) const { return tlfloat_shr_u128_i(value, rhs); }
+  tlfloat_uint128_t& operator<<=(int n) { *this = *this << n; return *this; }
+  tlfloat_uint128_t& operator>>=(int n) { *this = *this >> n; return *this; }
+
+  bool operator==(const tlfloat_uint128_t& rhs) const { return tlfloat_eq_u128_u128(value, rhs.value); }
+  bool operator!=(const tlfloat_uint128_t& rhs) const { return tlfloat_ne_u128_u128(value, rhs.value); }
+  bool operator< (const tlfloat_uint128_t& rhs) const { return tlfloat_lt_u128_u128(value, rhs.value); }
+  bool operator<=(const tlfloat_uint128_t& rhs) const { return tlfloat_le_u128_u128(value, rhs.value); }
+  bool operator> (const tlfloat_uint128_t& rhs) const { return tlfloat_gt_u128_u128(value, rhs.value); }
+  bool operator>=(const tlfloat_uint128_t& rhs) const { return tlfloat_ge_u128_u128(value, rhs.value); }
+
+  tlfloat_uint128_t& operator++()    { *this = tlfloat_add_u128_u128(value, tlfloat_cast_u128_u64(1)); return *this; }
+  tlfloat_uint128_t& operator--()    { *this = tlfloat_sub_u128_u128(value, tlfloat_cast_u128_u64(1)); return *this; }
+  tlfloat_uint128_t  operator++(int) { tlfloat_uint128_t t = *this; *this = tlfloat_add_u128_u128(value, tlfloat_cast_u128_u64(1)); return t; }
+  tlfloat_uint128_t  operator--(int) { tlfloat_uint128_t t = *this; *this = tlfloat_sub_u128_u128(value, tlfloat_cast_u128_u64(1)); return t; }
+};
+
+inline tlfloat_int128_t::tlfloat_int128_t(const struct tlfloat_uint128_t& d) { memcpy((void *)this, (void *)&d, sizeof(*this)); }
+inline tlfloat_int128_t::operator struct tlfloat_uint128_t() const { tlfloat_uint128_t v; memcpy((void *)&v, (void *)this, sizeof(v)); return v; }
+#define TLFLOAT_INT128_IS_STRUCT
+#else
+typedef tlfloat_int128_t_ tlfloat_int128_t;
+typedef tlfloat_uint128_t_ tlfloat_uint128_t;
 #endif
 
 #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
@@ -1062,39 +1204,76 @@ static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloa
 //
 
 #if defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
-#define TLFLOAT_OVERLOAD_OP2(OP, OPA) \
-  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 64) || (std::is_integral<T>::value && sizeof(T) < 64)), int>::type = 0> \
+#define TLFLOAT_OVERLOAD_OP2(OP, OPA)					\
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
   static inline tlfloat_octuple operator OP(const T& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(lhs) OP rhs; } \
-  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 64) || (std::is_integral<T>::value && sizeof(T) < 64)), int>::type = 0> \
+  static inline tlfloat_octuple operator OP(const tlfloat_int128_t& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(tlfloat_cast_o_i128(lhs)) OP rhs; } \
+  static inline tlfloat_octuple operator OP(const tlfloat_uint128_t& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(tlfloat_cast_o_u128(lhs)) OP rhs; } \
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
   static inline tlfloat_octuple operator OP(const tlfloat_octuple& lhs, const T& rhs) { return lhs OP tlfloat_octuple(rhs); } \
-  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 64) || (std::is_integral<T>::value && sizeof(T) < 64)), int>::type = 0> \
-  static inline tlfloat_quad operator OP(const T& lhs, const tlfloat_quad& rhs) { return tlfloat_quad(lhs) OP rhs; } \
-  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 64) || (std::is_integral<T>::value && sizeof(T) < 64)), int>::type = 0> \
-  static inline tlfloat_quad operator OP(const tlfloat_quad& lhs, const T& rhs) { return lhs OP tlfloat_quad(rhs); } \
+  static inline tlfloat_octuple operator OP(const tlfloat_octuple& lhs, const tlfloat_int128_t& rhs) { return lhs OP tlfloat_cast_o_i128(rhs); } \
+  static inline tlfloat_octuple operator OP(const tlfloat_octuple& lhs, const tlfloat_uint128_t& rhs) { return lhs OP tlfloat_cast_o_u128(rhs); } \
   static inline tlfloat_octuple operator OP(const tlfloat_quad& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(lhs) OP rhs; } \
+  static inline tlfloat_octuple operator OP(const tlfloat_octuple& lhs, const tlfloat_quad& rhs) { return lhs OP tlfloat_octuple(rhs); } \
   template<typename rhstype>						\
   static inline tlfloat_octuple& operator OPA(tlfloat_octuple& lhs, const rhstype& rhs) { return (lhs = lhs OP tlfloat_octuple(rhs)); } \
+  static_assert(true, "")
+
+#define TLFLOAT_OVERLOAD_OP2Q(OP, OPA)					\
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
+  static inline tlfloat_quad operator OP(const T& lhs, const tlfloat_quad& rhs) { return tlfloat_quad(lhs) OP rhs; } \
+  static inline tlfloat_quad operator OP(const tlfloat_int128_t& lhs, const tlfloat_quad& rhs) { return tlfloat_quad(tlfloat_cast_q_i128(lhs)) OP rhs; } \
+  static inline tlfloat_quad operator OP(const tlfloat_uint128_t& lhs, const tlfloat_quad& rhs) { return tlfloat_quad(tlfloat_cast_q_u128(lhs)) OP rhs; } \
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
+  static inline tlfloat_quad operator OP(const tlfloat_quad& lhs, const T& rhs) { return lhs OP tlfloat_quad(rhs); } \
+  static inline tlfloat_quad operator OP(const tlfloat_quad& lhs, const tlfloat_int128_t& rhs) { return lhs OP tlfloat_cast_q_i128(rhs); } \
+  static inline tlfloat_quad operator OP(const tlfloat_quad& lhs, const tlfloat_uint128_t& rhs) { return lhs OP tlfloat_cast_q_u128(rhs); } \
+  template<typename rhstype>						\
+  static inline tlfloat_quad& operator OPA(tlfloat_quad& lhs, const rhstype& rhs) { return (lhs = lhs OP tlfloat_quad(rhs)); } \
+  static_assert(true, "")
+
+#define TLFLOAT_OVERLOAD_OP2I(OP, OPA)					\
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
+  static inline tlfloat_int128_t operator OP(const T& lhs, const tlfloat_int128_t& rhs) { return tlfloat_int128_t(lhs) OP rhs; } \
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
+  static inline tlfloat_uint128_t operator OP(const T& lhs, const tlfloat_uint128_t& rhs) { return tlfloat_uint128_t(lhs) OP rhs; } \
+  static_assert(true, "")
+
+#define TLFLOAT_OVERLOAD_CMP(OP)					\
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
+  static inline bool operator OP(const T& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(lhs) OP rhs; } \
+  static inline bool operator OP(const tlfloat_int128_t& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(tlfloat_cast_o_i128(lhs)) OP rhs; } \
+  static inline bool operator OP(const tlfloat_uint128_t& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(tlfloat_cast_o_u128(lhs)) OP rhs; } \
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
+  static inline bool operator OP(const tlfloat_octuple& lhs, const T& rhs) { return lhs OP tlfloat_octuple(rhs); } \
+  static inline bool operator OP(const tlfloat_octuple& lhs, const tlfloat_int128_t& rhs) { return lhs OP tlfloat_octuple(tlfloat_cast_o_i128(rhs)); } \
+  static inline bool operator OP(const tlfloat_octuple& lhs, const tlfloat_uint128_t& rhs) { return lhs OP tlfloat_octuple(tlfloat_cast_o_u128(rhs)); } \
+  static inline bool operator OP(const tlfloat_octuple& lhs, const tlfloat_quad& rhs) { return lhs OP tlfloat_octuple(rhs); } \
+  static inline bool operator OP(const tlfloat_quad& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(lhs) OP rhs; } \
+  static_assert(true, "")
+
+#define TLFLOAT_OVERLOAD_CMPQ(OP)					\
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
+  static inline bool operator OP(const T& lhs, const tlfloat_quad& rhs) { return tlfloat_quad(lhs) OP rhs; } \
+  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) < 8)), int>::type = 0> \
+  static inline bool operator OP(const tlfloat_quad& lhs, const T& rhs) { return lhs OP tlfloat_quad(rhs); } \
+  static_assert(true, "")
+
+#define TLFLOAT_OVERLOAD_CMPI(OP)					\
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0> \
+  static inline bool operator OP(const T& lhs, const tlfloat_int128_t& rhs) { return tlfloat_int128_t(lhs) OP rhs; } \
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0> \
+  static inline bool operator OP(const tlfloat_int128_t& lhs, const T& rhs) { return lhs OP tlfloat_int128_t(rhs); } \
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0> \
+  static inline bool operator OP(const T& lhs, const tlfloat_uint128_t& rhs) { return tlfloat_uint128_t(lhs) OP rhs; } \
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0> \
+  static inline bool operator OP(const tlfloat_uint128_t& lhs, const T& rhs) { return lhs OP tlfloat_uint128_t(rhs); } \
   static_assert(true, "")
 
 TLFLOAT_OVERLOAD_OP2(+, +=);
 TLFLOAT_OVERLOAD_OP2(-, -=);
 TLFLOAT_OVERLOAD_OP2(*, *=);
 TLFLOAT_OVERLOAD_OP2(/, /=);
-
-#undef TLFLOAT_OVERLOAD_OP2
-
-#define TLFLOAT_OVERLOAD_CMP(OP) \
-  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 64) || (std::is_integral<T>::value && sizeof(T) < 64)), int>::type = 0> \
-  static inline bool operator OP(const T& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(lhs) OP rhs; } \
-  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 64) || (std::is_integral<T>::value && sizeof(T) < 64)), int>::type = 0> \
-  static inline bool operator OP(const tlfloat_octuple& lhs, const T& rhs) { return lhs OP tlfloat_octuple(rhs); } \
-  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 64) || (std::is_integral<T>::value && sizeof(T) < 64)), int>::type = 0> \
-  static inline bool operator OP(const T& lhs, const tlfloat_quad& rhs) { return tlfloat_quad(lhs) OP rhs; } \
-  template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 64) || (std::is_integral<T>::value && sizeof(T) < 64)), int>::type = 0> \
-  static inline bool operator OP(const tlfloat_quad& lhs, const T& rhs) { return lhs OP tlfloat_quad(rhs); } \
-  static inline bool operator OP(const tlfloat_quad& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(lhs) OP rhs; } \
-  static_assert(true, "")
-
 TLFLOAT_OVERLOAD_CMP(==);
 TLFLOAT_OVERLOAD_CMP(!=);
 TLFLOAT_OVERLOAD_CMP(<);
@@ -1102,7 +1281,38 @@ TLFLOAT_OVERLOAD_CMP(<=);
 TLFLOAT_OVERLOAD_CMP(>);
 TLFLOAT_OVERLOAD_CMP(>=);
 
+#ifdef TLFLOAT_QUAD_IS_STRUCT
+TLFLOAT_OVERLOAD_OP2Q(+, +=);
+TLFLOAT_OVERLOAD_OP2Q(-, -=);
+TLFLOAT_OVERLOAD_OP2Q(*, *=);
+TLFLOAT_OVERLOAD_OP2Q(/, /=);
+TLFLOAT_OVERLOAD_CMPQ(==);
+TLFLOAT_OVERLOAD_CMPQ(!=);
+TLFLOAT_OVERLOAD_CMPQ(<);
+TLFLOAT_OVERLOAD_CMPQ(<=);
+TLFLOAT_OVERLOAD_CMPQ(>);
+TLFLOAT_OVERLOAD_CMPQ(>=);
+#endif
+
+#ifdef TLFLOAT_INT128_IS_STRUCT
+TLFLOAT_OVERLOAD_OP2I(+, +=);
+TLFLOAT_OVERLOAD_OP2I(-, -=);
+TLFLOAT_OVERLOAD_OP2I(*, *=);
+TLFLOAT_OVERLOAD_OP2I(/, /=);
+TLFLOAT_OVERLOAD_CMPI(==);
+TLFLOAT_OVERLOAD_CMPI(!=);
+TLFLOAT_OVERLOAD_CMPI(<);
+TLFLOAT_OVERLOAD_CMPI(<=);
+TLFLOAT_OVERLOAD_CMPI(>);
+TLFLOAT_OVERLOAD_CMPI(>=);
+#endif
+
+#undef TLFLOAT_OVERLOAD_OP2
+#undef TLFLOAT_OVERLOAD_OP2Q
+#undef TLFLOAT_OVERLOAD_OP2I
 #undef TLFLOAT_OVERLOAD_CMP
+#undef TLFLOAT_OVERLOAD_CMPQ
+#undef TLFLOAT_OVERLOAD_CMPI
 
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_octuple tlfloat_fmao(const tlfloat_octuple x, const tlfloat_octuple y, const tlfloat_octuple z) { return tlfloat_fmao(tlfloat_octuple_(x), tlfloat_octuple_(y), tlfloat_octuple_(z)); }
@@ -1210,6 +1420,18 @@ namespace tlfloat {
   static inline std::string to_string(const tlfloat_octuple& a, int d=6) {
     std::vector<char> buf(1000);
     tlfloat_snprintf(buf.data(), buf.size(), "%.*Og", d, a);
+    return std::string(buf.data());
+  }
+
+  static inline std::string to_string(const tlfloat_int128_t& a) {
+    std::vector<char> buf(1000);
+    tlfloat_snprintf(buf.data(), buf.size(), "%Qd", a);
+    return std::string(buf.data());
+  }
+
+  static inline std::string to_string(const tlfloat_uint128_t& a) {
+    std::vector<char> buf(1000);
+    tlfloat_snprintf(buf.data(), buf.size(), "%Qu", a);
     return std::string(buf.data());
   }
 #endif

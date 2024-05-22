@@ -90,7 +90,7 @@ namespace {
 
       // Read size prefix
 
-      bool flag_quad = false, flag_oct = false, subfmt_processed = false;
+      bool subfmt_processed = false;
       int size_prefix = 0, nbits = 0;
 
       if (*fmt == '_') {
@@ -102,15 +102,9 @@ namespace {
 	  nbits = 0;
 	  errorflag = true;
 	}
-      } else if (*fmt == 'Q') {
-	flag_quad = true;
-	fmt++;
-      } else if (*fmt == 'O') {
-	flag_oct = true;
-	fmt++;
       } else {
 	int pl = 0;
-	if (*fmt == 'h' || *fmt == 'l' || *fmt == 'j' || *fmt == 'z' || *fmt == 't' || *fmt == 'L') {
+	if (*fmt == 'h' || *fmt == 'l' || *fmt == 'j' || *fmt == 'z' || *fmt == 't' || *fmt == 'L' || *fmt == 'Q' || *fmt == 'O') {
 	  size_prefix = *fmt;
 	  pl = 1;
 	}
@@ -141,7 +135,7 @@ namespace {
       case 'e': case 'f': case 'g': case 'a':
 	{
 	  if (nbits == 0) {
-	    if (flag_quad) {
+	    if (size_prefix == 'Q') {
 	      Quad value = std::bit_cast<Quad>(va_arg(ap, tlfloat_quad_));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
@@ -149,7 +143,7 @@ namespace {
 	      if (ret < 0) { errorflag = 1; break; }
 	      outlen += (*consumer)(xbuf, strlen(xbuf), arg);
 	      subfmt_processed = true;
-	    } else if (flag_oct) {
+	    } else if (size_prefix == 'O') {
 	      Octuple value = std::bit_cast<Octuple>(va_arg(ap, tlfloat_octuple_));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
@@ -237,13 +231,13 @@ namespace {
 	  if (*fmt == 'x' || *fmt == 'X') { base = 16; prefix = flag_upper ? "0X" : "0x"; }
 
 	  if (nbits == 0) {
-	    if (flag_quad) {
-#ifdef TLFLOAT_ENABLE_UINT128
+	    if (size_prefix == 'Q') {
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
 	      BigInt<7> value = std::bit_cast<BigInt<7>>(va_arg(ap, __int128_t));
 #else
-	      BigInt<7> value = std::bit_cast<BigInt<7>>(va_arg(ap, tlfloat_int128_t));
+	      BigInt<7> value = std::bit_cast<BigInt<7>>(va_arg(ap, tlfloat_int128_t_));
 #endif
-	      int ret = BigInt<7>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
+	      int ret = BigInt<7>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, 1 << 7,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
 	      outlen += (*consumer)(xbuf, strlen(xbuf), arg);
@@ -271,7 +265,8 @@ namespace {
 	      break;
 	    }
 	    case 128: {
-	      BigInt<7> value = std::bit_cast<BigInt<7>>(va_arg(ap, tlfloat_int128_t));
+	      typedef struct { uint64_t e[2]; } arg_t;
+	      BigInt<7> value = std::bit_cast<BigInt<7>>(va_arg(ap, arg_t));
 	      int ret = BigInt<7>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -280,7 +275,8 @@ namespace {
 	      break;
 	    }
 	    case 256: {
-	      BigInt<8> value = std::bit_cast<BigInt<8>>(va_arg(ap, tlfloat_int256_t));
+	      typedef struct { uint64_t e[4]; } arg_t;
+	      BigInt<8> value = std::bit_cast<BigInt<8>>(va_arg(ap, arg_t));
 	      int ret = BigInt<8>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -289,7 +285,8 @@ namespace {
 	      break;
 	    }
 	    case 512: {
-	      BigInt<9> value = std::bit_cast<BigInt<9>>(va_arg(ap, tlfloat_int512_t));
+	      typedef struct { uint64_t e[8]; } arg_t;
+	      BigInt<9> value = std::bit_cast<BigInt<9>>(va_arg(ap, arg_t));
 	      int ret = BigInt<9>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -298,7 +295,8 @@ namespace {
 	      break;
 	    }
 	    case 1024: {
-	      BigInt<10> value = std::bit_cast<BigInt<10>>(va_arg(ap, tlfloat_int1024_t));
+	      typedef struct { uint64_t e[16]; } arg_t;
+	      BigInt<10> value = std::bit_cast<BigInt<10>>(va_arg(ap, arg_t));
 	      int ret = BigInt<10>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					    flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
 	      if (ret < 0) { errorflag = 1; break; }
@@ -757,113 +755,127 @@ extern "C" {
 
   //
 
-  tlfloat_int128_t tlfloat_cast_i128_i64(const int64_t x) { return std::bit_cast<tlfloat_int128_t>(BigInt<7>(x)); }
-  int64_t tlfloat_cast_i64_i128(const tlfloat_int128_t x) { return (int64_t)std::bit_cast<BigInt<7>>(x); }
+  tlfloat_int128_t_ tlfloat_cast_i128_i64(const int64_t x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>(x)); }
+  int64_t tlfloat_cast_i64_i128(const tlfloat_int128_t_ x) { return (int64_t)std::bit_cast<BigInt<7>>(x); }
 
-  tlfloat_uint128_t tlfloat_cast_u128_u64(const uint64_t x) { return std::bit_cast<tlfloat_uint128_t>(BigUInt<7>(x)); }
-  uint64_t tlfloat_cast_u64_u128(const tlfloat_uint128_t x) { return (uint64_t)std::bit_cast<BigUInt<7>>(x); }
+  tlfloat_uint128_t_ tlfloat_cast_u128_u64(const uint64_t x) { return std::bit_cast<tlfloat_uint128_t_>(BigUInt<7>(x)); }
+  uint64_t tlfloat_cast_u64_u128(const tlfloat_uint128_t_ x) { return (uint64_t)std::bit_cast<BigUInt<7>>(x); }
 
-  tlfloat_int128_t tlfloat_cast_i128_d(const double x) { return std::bit_cast<tlfloat_int128_t>(BigInt<7>(x)); }
-  double tlfloat_cast_d_i128(const tlfloat_int128_t x) { return (double)std::bit_cast<BigInt<7>>(x); }
+  tlfloat_int128_t_ tlfloat_cast_i128_d(const double x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>(x)); }
+  double tlfloat_cast_d_i128(const tlfloat_int128_t_ x) { return (double)std::bit_cast<BigInt<7>>(x); }
 
-  tlfloat_uint128_t tlfloat_cast_u128_d(const double x) { return std::bit_cast<tlfloat_uint128_t>(BigUInt<7>(x)); }
-  double tlfloat_cast_d_u128(const tlfloat_uint128_t x) { return (double)std::bit_cast<BigUInt<7>>(x); }
+  tlfloat_uint128_t_ tlfloat_cast_u128_d(const double x) { return std::bit_cast<tlfloat_uint128_t_>(BigUInt<7>(x)); }
+  double tlfloat_cast_d_u128(const tlfloat_uint128_t_ x) { return (double)std::bit_cast<BigUInt<7>>(x); }
 
-  tlfloat_int128_t tlfloat_cast_i128_q(const tlfloat_quad_ x) { return std::bit_cast<tlfloat_int128_t>(BigInt<7>((Quad)x)); }
-  tlfloat_quad_ tlfloat_cast_q_i128(const tlfloat_int128_t x) { return (tlfloat_quad_)(Quad)std::bit_cast<BigInt<7>>(x); }
+  tlfloat_int128_t_ tlfloat_cast_i128_q(const tlfloat_quad_ x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>((Quad)x)); }
+  tlfloat_quad_ tlfloat_cast_q_i128(const tlfloat_int128_t_ x) { return (tlfloat_quad_)(Quad)std::bit_cast<BigInt<7>>(x); }
 
-  tlfloat_uint128_t tlfloat_cast_u128_q(const tlfloat_quad_ x) { return std::bit_cast<tlfloat_uint128_t>(BigUInt<7>((Quad)x)); }
-  tlfloat_quad_ tlfloat_cast_q_u128(const tlfloat_uint128_t x) { return (tlfloat_quad_)(Quad)std::bit_cast<BigUInt<7>>(x); }
+  tlfloat_uint128_t_ tlfloat_cast_u128_q(const tlfloat_quad_ x) { return std::bit_cast<tlfloat_uint128_t_>(BigUInt<7>((Quad)x)); }
+  tlfloat_quad_ tlfloat_cast_q_u128(const tlfloat_uint128_t_ x) { return (tlfloat_quad_)(Quad)std::bit_cast<BigUInt<7>>(x); }
 
-  tlfloat_int128_t tlfloat_cast_i128_o(const tlfloat_octuple_ x) { return std::bit_cast<tlfloat_int128_t>(BigInt<7>((Octuple)x)); }
-  tlfloat_octuple_ tlfloat_cast_o_i128(const tlfloat_int128_t x) { return (tlfloat_octuple_)(Octuple)std::bit_cast<BigInt<7>>(x); }
+  tlfloat_int128_t_ tlfloat_cast_i128_o(const tlfloat_octuple_ x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>((Octuple)x)); }
+  tlfloat_octuple_ tlfloat_cast_o_i128(const tlfloat_int128_t_ x) { return (tlfloat_octuple_)(Octuple)std::bit_cast<BigInt<7>>(x); }
 
-  tlfloat_uint128_t tlfloat_cast_u128_o(const tlfloat_octuple_ x) { return std::bit_cast<tlfloat_uint128_t>(BigUInt<7>((Octuple)x)); }
-  tlfloat_octuple_ tlfloat_cast_o_u128(const tlfloat_uint128_t x) { return (tlfloat_octuple_)(Octuple)std::bit_cast<BigUInt<7>>(x); }
+  tlfloat_uint128_t_ tlfloat_cast_u128_o(const tlfloat_octuple_ x) { return std::bit_cast<tlfloat_uint128_t_>(BigUInt<7>((Octuple)x)); }
+  tlfloat_octuple_ tlfloat_cast_o_u128(const tlfloat_uint128_t_ x) { return (tlfloat_octuple_)(Octuple)std::bit_cast<BigUInt<7>>(x); }
 
-  int tlfloat_eq_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) { return std::bit_cast<BigInt<7>>(x) == std::bit_cast<BigInt<7>>(y); }
-  int tlfloat_ne_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) { return std::bit_cast<BigInt<7>>(x) != std::bit_cast<BigInt<7>>(y); }
-  int tlfloat_lt_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) { return std::bit_cast<BigInt<7>>(x) <  std::bit_cast<BigInt<7>>(y); }
-  int tlfloat_le_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) { return std::bit_cast<BigInt<7>>(x) <= std::bit_cast<BigInt<7>>(y); }
-  int tlfloat_gt_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) { return std::bit_cast<BigInt<7>>(x) >  std::bit_cast<BigInt<7>>(y); }
-  int tlfloat_ge_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) { return std::bit_cast<BigInt<7>>(x) >= std::bit_cast<BigInt<7>>(y); }
+  int tlfloat_eq_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) { return std::bit_cast<BigInt<7>>(x) == std::bit_cast<BigInt<7>>(y); }
+  int tlfloat_ne_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) { return std::bit_cast<BigInt<7>>(x) != std::bit_cast<BigInt<7>>(y); }
+  int tlfloat_lt_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) { return std::bit_cast<BigInt<7>>(x) <  std::bit_cast<BigInt<7>>(y); }
+  int tlfloat_le_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) { return std::bit_cast<BigInt<7>>(x) <= std::bit_cast<BigInt<7>>(y); }
+  int tlfloat_gt_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) { return std::bit_cast<BigInt<7>>(x) >  std::bit_cast<BigInt<7>>(y); }
+  int tlfloat_ge_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) { return std::bit_cast<BigInt<7>>(x) >= std::bit_cast<BigInt<7>>(y); }
 
-  tlfloat_int128_t tlfloat_add_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) + std::bit_cast<BigInt<7>>(y));
+  tlfloat_int128_t_ tlfloat_add_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) + std::bit_cast<BigInt<7>>(y));
   }
-  tlfloat_int128_t tlfloat_sub_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) - std::bit_cast<BigInt<7>>(y));
+  tlfloat_int128_t_ tlfloat_sub_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) - std::bit_cast<BigInt<7>>(y));
   }
-  tlfloat_int128_t tlfloat_mul_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) * std::bit_cast<BigInt<7>>(y));
+  tlfloat_int128_t_ tlfloat_mul_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) * std::bit_cast<BigInt<7>>(y));
   }
-  tlfloat_int128_t tlfloat_div_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) / std::bit_cast<BigInt<7>>(y));
+  tlfloat_int128_t_ tlfloat_div_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) / std::bit_cast<BigInt<7>>(y));
   }
-  tlfloat_int128_t tlfloat_mod_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) % std::bit_cast<BigInt<7>>(y));
+  tlfloat_int128_t_ tlfloat_mod_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) % std::bit_cast<BigInt<7>>(y));
   }
-  tlfloat_int128_t tlfloat_and_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) & std::bit_cast<BigInt<7>>(y));
+  tlfloat_int128_t_ tlfloat_and_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) & std::bit_cast<BigInt<7>>(y));
   }
-  tlfloat_int128_t tlfloat_or_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) | std::bit_cast<BigInt<7>>(y));
+  tlfloat_int128_t_ tlfloat_or_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) | std::bit_cast<BigInt<7>>(y));
   }
-  tlfloat_int128_t tlfloat_xor_i128_i128(const tlfloat_int128_t x, const tlfloat_int128_t y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) ^ std::bit_cast<BigInt<7>>(y));
+  tlfloat_int128_t_ tlfloat_xor_i128_i128(const tlfloat_int128_t_ x, const tlfloat_int128_t_ y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) ^ std::bit_cast<BigInt<7>>(y));
   }
-  tlfloat_int128_t tlfloat_not_i128(const tlfloat_int128_t x) {
-    return std::bit_cast<tlfloat_int128_t>(~std::bit_cast<BigInt<7>>(x));
+  tlfloat_int128_t_ tlfloat_not_i128(const tlfloat_int128_t_ x) {
+    return std::bit_cast<tlfloat_int128_t_>(~std::bit_cast<BigInt<7>>(x));
   }
-  tlfloat_int128_t tlfloat_shl_i128_i(const tlfloat_int128_t x, const int y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) << y);
+  tlfloat_int128_t_ tlfloat_shl_i128_i(const tlfloat_int128_t_ x, const int y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) << y);
   }
-  tlfloat_int128_t tlfloat_shr_i128_i(const tlfloat_int128_t x, const int y) {
-    return std::bit_cast<tlfloat_int128_t>(std::bit_cast<BigInt<7>>(x) >> y);
+  tlfloat_int128_t_ tlfloat_shr_i128_i(const tlfloat_int128_t_ x, const int y) {
+    return std::bit_cast<tlfloat_int128_t_>(std::bit_cast<BigInt<7>>(x) >> y);
   }
-  tlfloat_int128_t tlfloat_neg_i128(const tlfloat_int128_t x) {
-    return std::bit_cast<tlfloat_int128_t>(-std::bit_cast<BigInt<7>>(x));
+  tlfloat_int128_t_ tlfloat_neg_i128(const tlfloat_int128_t_ x) {
+    return std::bit_cast<tlfloat_int128_t_>(-std::bit_cast<BigInt<7>>(x));
   }
 
 
-  int tlfloat_eq_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) { return std::bit_cast<BigUInt<7>>(x) == std::bit_cast<BigUInt<7>>(y); }
-  int tlfloat_ne_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) { return std::bit_cast<BigUInt<7>>(x) != std::bit_cast<BigUInt<7>>(y); }
-  int tlfloat_lt_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) { return std::bit_cast<BigUInt<7>>(x) <  std::bit_cast<BigUInt<7>>(y); }
-  int tlfloat_le_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) { return std::bit_cast<BigUInt<7>>(x) <= std::bit_cast<BigUInt<7>>(y); }
-  int tlfloat_gt_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) { return std::bit_cast<BigUInt<7>>(x) >  std::bit_cast<BigUInt<7>>(y); }
-  int tlfloat_ge_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) { return std::bit_cast<BigUInt<7>>(x) >= std::bit_cast<BigUInt<7>>(y); }
+  int tlfloat_eq_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) { return std::bit_cast<BigUInt<7>>(x) == std::bit_cast<BigUInt<7>>(y); }
+  int tlfloat_ne_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) { return std::bit_cast<BigUInt<7>>(x) != std::bit_cast<BigUInt<7>>(y); }
+  int tlfloat_lt_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) { return std::bit_cast<BigUInt<7>>(x) <  std::bit_cast<BigUInt<7>>(y); }
+  int tlfloat_le_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) { return std::bit_cast<BigUInt<7>>(x) <= std::bit_cast<BigUInt<7>>(y); }
+  int tlfloat_gt_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) { return std::bit_cast<BigUInt<7>>(x) >  std::bit_cast<BigUInt<7>>(y); }
+  int tlfloat_ge_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) { return std::bit_cast<BigUInt<7>>(x) >= std::bit_cast<BigUInt<7>>(y); }
 
-  tlfloat_uint128_t tlfloat_add_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) + std::bit_cast<BigUInt<7>>(y));
+  tlfloat_uint128_t_ tlfloat_add_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) + std::bit_cast<BigUInt<7>>(y));
   }
-  tlfloat_uint128_t tlfloat_sub_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) - std::bit_cast<BigUInt<7>>(y));
+  tlfloat_uint128_t_ tlfloat_sub_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) - std::bit_cast<BigUInt<7>>(y));
   }
-  tlfloat_uint128_t tlfloat_mul_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) * std::bit_cast<BigUInt<7>>(y));
+  tlfloat_uint128_t_ tlfloat_mul_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) * std::bit_cast<BigUInt<7>>(y));
   }
-  tlfloat_uint128_t tlfloat_div_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) / std::bit_cast<BigUInt<7>>(y));
+  tlfloat_uint128_t_ tlfloat_div_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) / std::bit_cast<BigUInt<7>>(y));
   }
-  tlfloat_uint128_t tlfloat_mod_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) % std::bit_cast<BigUInt<7>>(y));
+  tlfloat_uint128_t_ tlfloat_mod_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) % std::bit_cast<BigUInt<7>>(y));
   }
-  tlfloat_uint128_t tlfloat_and_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) & std::bit_cast<BigUInt<7>>(y));
+  tlfloat_uint128_t_ tlfloat_and_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) & std::bit_cast<BigUInt<7>>(y));
   }
-  tlfloat_uint128_t tlfloat_or_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) | std::bit_cast<BigUInt<7>>(y));
+  tlfloat_uint128_t_ tlfloat_or_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) | std::bit_cast<BigUInt<7>>(y));
   }
-  tlfloat_uint128_t tlfloat_xor_u128_u128(const tlfloat_uint128_t x, const tlfloat_uint128_t y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) ^ std::bit_cast<BigUInt<7>>(y));
+  tlfloat_uint128_t_ tlfloat_xor_u128_u128(const tlfloat_uint128_t_ x, const tlfloat_uint128_t_ y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) ^ std::bit_cast<BigUInt<7>>(y));
   }
-  tlfloat_uint128_t tlfloat_not_u128(const tlfloat_uint128_t x) {
-    return std::bit_cast<tlfloat_uint128_t>(~std::bit_cast<BigUInt<7>>(x));
+  tlfloat_uint128_t_ tlfloat_not_u128(const tlfloat_uint128_t_ x) {
+    return std::bit_cast<tlfloat_uint128_t_>(~std::bit_cast<BigUInt<7>>(x));
   }
-  tlfloat_uint128_t tlfloat_shl_u128_i(const tlfloat_uint128_t x, const int y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) << y);
+  tlfloat_uint128_t_ tlfloat_shl_u128_i(const tlfloat_uint128_t_ x, const int y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) << y);
   }
-  tlfloat_uint128_t tlfloat_shr_u128_i(const tlfloat_uint128_t x, const int y) {
-    return std::bit_cast<tlfloat_uint128_t>(std::bit_cast<BigUInt<7>>(x) >> y);
+  tlfloat_uint128_t_ tlfloat_shr_u128_i(const tlfloat_uint128_t_ x, const int y) {
+    return std::bit_cast<tlfloat_uint128_t_>(std::bit_cast<BigUInt<7>>(x) >> y);
+  }
+
+  tlfloat_int128_t_ tlfloat_strtoi128(const char *nptr, const char **endptr, const int base) {
+    BigInt<7> b = BigInt<7>(nptr, endptr, base);
+    tlfloat_int128_t_ r;
+    memcpy(&r, &b, sizeof(r));
+    return r;
+  }
+
+  tlfloat_uint128_t_ tlfloat_strtou128(const char *nptr, const char **endptr, const int base) {
+    BigUInt<7> b = BigUInt<7>(nptr, endptr, base);
+    tlfloat_uint128_t_ r;
+    memcpy(&r, &b, sizeof(r));
+    return r;
   }
 } // extern "C"

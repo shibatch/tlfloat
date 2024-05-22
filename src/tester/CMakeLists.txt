@@ -5,6 +5,10 @@ if (COMPILER_SUPPORTS_INT128)
   add_test(NAME test_bigint3 COMMAND test_bigint3)
 endif()
 
+add_executable(test_bigint4 test_bigint4.cpp)
+target_link_libraries(test_bigint4 tlfloat)
+add_test(NAME test_bigint4 COMMAND test_bigint4)
+
 if (NOT WIN32)
    add_executable(test_printf test_printf.cpp)
    if (COMPILER_SUPPORTS_INT128)

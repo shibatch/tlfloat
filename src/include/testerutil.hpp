@@ -46,10 +46,22 @@ public:
     for(int i=0;i<(int)len;i++) dst[i] = (u >> (i * 8)) & 0xff;
   }
 
+  unsigned clz64(uint64_t u) {
+    unsigned z = 0;
+    if (u & 0xffffffff00000000ULL) u >>= 32; else z += 32;
+    if (u & 0x00000000ffff0000ULL) u >>= 16; else z += 16;
+    if (u & 0x000000000000ff00ULL) u >>=  8; else z +=  8;
+    if (u & 0x00000000000000f0ULL) u >>=  4; else z +=  4;
+    if (u & 0x000000000000000cULL) u >>=  2; else z +=  2;
+    if (u & 0x0000000000000002ULL) u >>=  1; else z +=  1;
+    if (!u) z++;
+    return z;
+  }
+
   uint64_t nextLT(uint64_t bound) {
     if (bound == 0) return 0;
 
-    unsigned b = sizeof(uint64_t)*8 - tlfloat::detail::clz64(bound - 1);
+    unsigned b = sizeof(uint64_t)*8 - clz64(bound - 1);
     uint64_t r = next(b), u = uint64_t(1) << b;
 
     while(r >= bound) {
@@ -67,7 +79,8 @@ public:
     union {
       uint64_t u;
       double d;
-    } c = { .u = next(52) };
+    } c;
+    c.u = next(52);
     c.u |= 0x3fe0000000000000ULL;
     return c.d;
   }
@@ -95,74 +108,11 @@ public:
   }
 };
 
-class CryptUtil {
-public:
-  template<int N>
-  static tlfloat::BigUInt<N> genRand(tlfloat::BigUInt<N> bound, shared_ptr<RNG> rng) {
-    tlfloat::BigUInt<N> r = 0;
-    if (bound == 0) {
-      rng->nextBytes((unsigned char *)&r, sizeof(r));
-    } else {
-      unsigned b = (bound - 1).ilogbp1();
-      tlfloat::BigUInt<N> u = tlfloat::BigUInt<N>(1) << b;
-      rng->nextBytes((unsigned char *)&r, (b >> 6) << 3);
-      r.setWord(b >> 6, rng->next(b & ((1 << 6)-1)));
-
-      while(r >= bound) {
-	r -= bound;
-	u -= bound;
-	while(u < bound) {
-	  r <<= 1;
-	  r.setWord(0, r.getWord(0) | rng->next(1));
-	  u += u;
-	}
-      }
-    }
-    return r;
-  }
-
-  template<int N>
-  static bool millerTest(shared_ptr<RNG> rng, unsigned s, tlfloat::BigUInt<N> d, const tlfloat::BigUInt<N>& n, const tlfloat::BigUInt<N>& recn) {
-    tlfloat::BigUInt<N> a = 2 + CryptUtil::genRand<N>(n - 4, rng);
-    tlfloat::BigUInt<N> x = a.pow(d, n, recn);
-    if (x == 1 || x == n - 1) return true;
-
-    for(unsigned i=0;i<s;i++) {
-      x = (x * x).mod(n, recn);
-      if (x == 1) return false;
-      if (x == n-1) return true;
-    }
-    return false;
-  }
-
-  template<int N>
-  static bool checkPrimality(const tlfloat::BigUInt<N>& bu, shared_ptr<RNG> rng, unsigned nloop=64) {
-    if (bu == 0 || bu == 1 || bu == 4) return false;
-    if (bu == 2 || bu == 3) return true;
- 
-    tlfloat::BigUInt<N+1> n2 = bu, d = n2 - 1, recn = n2.reciprocal();
-    unsigned s = 0;
-    while((d.getWord(0) & 1) == 0) { d >>= 1; s++; }
- 
-    for (unsigned i = 0;i < nloop;i++) if (!CryptUtil::millerTest<N+1>(rng, s, d, n2, recn)) return false;
-    return true;
-  }
-
-  template<int N>
-  static tlfloat::BigUInt<N> genPrime(tlfloat::BigUInt<N> bound, shared_ptr<RNG> rng) {
-    tlfloat::BigUInt<N> u = genRand(bound, rng);
-    u.setWord(0, u.getWord(0) | 1);
-    for(;;) {
-      if (checkPrimality(u, rng)) break;
-      u += 2;
-    }
-    return u;
-  }
-};
-
 shared_ptr<RNG> createPreferredRNG() {
   return shared_ptr<RNG>(new LCG64());
 }
+
+//
 
 class PSHA2_256_Internal {
   // https://github.com/983/SHA-256
@@ -326,6 +276,8 @@ public:
   }
 };
 
+//
+
 #ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
 typedef __int128_t INT128;
 typedef __uint128_t UINT128;
@@ -355,19 +307,134 @@ string to_string(INT128 value) {
   return (value >= 0 ? "" : "-") + string(s.data());
 }
 
-ostream& operator<<(ostream &os, INT128 value) { return os << to_string(value); }
-ostream& operator<<(ostream &os, UINT128 value) { return os << to_string(value); }
+ostream& operator<<(ostream &os, INT128 value) { return os << ::to_string(value); }
+ostream& operator<<(ostream &os, UINT128 value) { return os << ::to_string(value); }
+#endif
 
-bool equal(__int128_t b0, BigInt<7> i0) {
+//
+
+#ifdef __BIGINT_HPP_INCLUDED__
+class CryptUtil {
+public:
+  template<int N>
+  static tlfloat::BigUInt<N> genRand(tlfloat::BigUInt<N> bound, shared_ptr<RNG> rng) {
+    tlfloat::BigUInt<N> r = 0;
+    if (bound == 0) {
+      rng->nextBytes((unsigned char *)&r, sizeof(r));
+    } else {
+      unsigned b = (bound - 1).ilogbp1();
+      tlfloat::BigUInt<N> u = tlfloat::BigUInt<N>(1) << b;
+      rng->nextBytes((unsigned char *)&r, (b >> 6) << 3);
+      r.setWord(b >> 6, rng->next(b & ((1 << 6)-1)));
+
+      while(r >= bound) {
+	r -= bound;
+	u -= bound;
+	while(u < bound) {
+	  r <<= 1;
+	  r.setWord(0, r.getWord(0) | rng->next(1));
+	  u += u;
+	}
+      }
+    }
+    return r;
+  }
+
+  template<int N>
+  static bool millerTest(shared_ptr<RNG> rng, unsigned s, tlfloat::BigUInt<N> d, const tlfloat::BigUInt<N>& n, const tlfloat::BigUInt<N>& recn) {
+    tlfloat::BigUInt<N> a = 2 + CryptUtil::genRand<N>(n - 4, rng);
+    tlfloat::BigUInt<N> x = a.pow(d, n, recn);
+    if (x == 1 || x == n - 1) return true;
+
+    for(unsigned i=0;i<s;i++) {
+      x = (x * x).mod(n, recn);
+      if (x == 1) return false;
+      if (x == n-1) return true;
+    }
+    return false;
+  }
+
+  template<int N>
+  static bool checkPrimality(const tlfloat::BigUInt<N>& bu, shared_ptr<RNG> rng, unsigned nloop=64) {
+    if (bu == 0 || bu == 1 || bu == 4) return false;
+    if (bu == 2 || bu == 3) return true;
+ 
+    tlfloat::BigUInt<N+1> n2 = bu, d = n2 - 1, recn = n2.reciprocal();
+    unsigned s = 0;
+    while((d.getWord(0) & 1) == 0) { d >>= 1; s++; }
+ 
+    for (unsigned i = 0;i < nloop;i++) if (!CryptUtil::millerTest<N+1>(rng, s, d, n2, recn)) return false;
+    return true;
+  }
+
+  template<int N>
+  static tlfloat::BigUInt<N> genPrime(tlfloat::BigUInt<N> bound, shared_ptr<RNG> rng) {
+    tlfloat::BigUInt<N> u = genRand(bound, rng);
+    u.setWord(0, u.getWord(0) | 1);
+    for(;;) {
+      if (checkPrimality(u, rng)) break;
+      u += 2;
+    }
+    return u;
+  }
+};
+
+#ifdef __TLFLOAT_H_INCLUDED__
+#ifdef TLFLOAT_INT128_IS_STRUCT
+ostream& operator<<(ostream &os, tlfloat_int128_t value) { return os << tlfloat::to_string(value); }
+ostream& operator<<(ostream &os, tlfloat_uint128_t value) { return os << tlfloat::to_string(value); }
+#endif
+
+bool equal(tlfloat_int128_t b0, BigInt<7> i0) {
   bool b = int64_t(b0 >> 64) == int64_t(i0 >> 64) &&
-    int64_t(b0 & ~uint64_t(0)) == int64_t(i0 & BigUInt<7>(~uint64_t(0)));
+    int64_t(b0 & (tlfloat_int128_t)~uint64_t(0)) == int64_t(i0 & BigInt<7>(~uint64_t(0)));
   if (!b) {
-    cerr << "int128 : " << b0 << endl;
-    cerr << "bigint : " << i0 << endl;
+    cerr << "tlfloat_int128 : " << b0 << endl;
+    cerr << "BigInt<7>      : " << i0 << endl;
   }
   return b;
 }
+
+bool equal(tlfloat_uint128_t b0, BigUInt<7> u0) {
+  bool b = uint64_t(b0 >> 64) == uint64_t(u0 >> 64) &&
+    uint64_t(b0 & ~uint64_t(0)) == uint64_t(u0 & BigUInt<7>(~uint64_t(0)));
+  if (!b) {
+    cerr << "tlfloat_uint128 : " << b0 << endl;
+    cerr << "BigUInt<7>      : " << u0 << endl;
+  }
+  return b;
+}
+
+bool equal(BigInt<7> i0, tlfloat_int128_t b0) { return equal(b0, i0); }
+bool equal(BigUInt<7> u0, tlfloat_uint128_t b0) { return equal(b0, u0); }
+#elif defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
+bool equal(__int128_t b0, BigInt<7> i0) {
+  bool b = int64_t(b0 >> 64) == int64_t(i0 >> 64) &&
+    int64_t(b0 & ~uint64_t(0)) == int64_t(i0 & BigInt<7>(~uint64_t(0)));
+  if (!b) {
+    cerr << "int128    : " << b0 << endl;
+    cerr << "BigInt<7> : " << i0 << endl;
+  }
+  return b;
+}
+
+bool equal(__uint128_t b0, BigUInt<7> u0) {
+  bool b = uint64_t(b0 >> 64) == uint64_t(u0 >> 64) &&
+    uint64_t(b0 & ~uint64_t(0)) == uint64_t(u0 & BigUInt<7>(~uint64_t(0)));
+  if (!b) {
+    cerr << "uint128    : " << b0 << endl;
+    cerr << "BigUInt<7> : " << u0 << endl;
+  }
+  return b;
+}
+
+bool equal(BigInt<7> i0, __int128_t b0) { return equal(b0, i0); }
+bool equal(BigUInt<7> u0, __uint128_t b0) { return equal(b0, u0); }
 #endif
+
+#endif // #ifdef __BIGINT_HPP_INCLUDED__
+
+//
 
 #ifdef QUADMATH_H
 #define ENABLE_QUAD
@@ -593,7 +660,7 @@ static double countULP(const Unpacked_t& ux, mpfr_t c, const Unpacked2_t& umin, 
 
   return u;
 }
-#endif
+#endif // #ifdef MPFR_VERSION_MAJOR
 
 float rndf(shared_ptr<RNG> rng) {
   uint64_t r = rng->nextLT(1000);

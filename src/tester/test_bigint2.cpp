@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
   for(int i=0;i<ntest;i++) {
     BigUInt<N> m = CryptUtil::genPrime<N>(BigUInt<N>(1) << n, rng);
     BigUInt<N> a = CryptUtil::genRand<N>(BigUInt<N>(1) << n, rng);
-    BigUInt<N> ainv = BigUInt<N+1>(a).pow(m-2, m);
+    BigUInt<N> ainv = (BigUInt<N>)BigUInt<N+1>(a).pow(m-2, m);
     BigUInt<N>::Montgomery mg(m);
     if (mg.reduce(mg.pow(mg.transform(a), m-2)) != ainv) {
       cout << "Montgomery" << endl;
