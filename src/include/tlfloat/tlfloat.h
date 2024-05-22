@@ -5,26 +5,12 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include "tlfloat/tlfloatversion.hpp"
+
 #if defined(TLFLOAT_DOXYGEN)
 /** Calls to libquadmath functions are replaced to the corresponding
     calls to tlfloat functions if this macro is defined */
 #define TLFLOAT_LIBQUADMATH_EMULATION
-#endif
-
-#if defined(__LDBL_MANT_DIG__)
-#if __LDBL_MANT_DIG__ == 113
-#define TLFLOAT_LONGDOUBLE_IS_FLOAT128
-#endif
-#endif
-
-#if defined(__SIZEOF_INT128__) && !defined(__CUDA_ARCH__) && !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
-#define TLFLOAT_COMPILER_SUPPORTS_INT128
-#endif
-
-#if defined(__SIZEOF_FLOAT128__)
-#if __SIZEOF_FLOAT128__ == 16
-#define TLFLOAT_COMPILER_SUPPORTS_FLOAT128
-#endif
 #endif
 
 #ifdef __cplusplus
@@ -843,7 +829,7 @@ inline tlfloat_int128_t::operator struct tlfloat_uint128_t() const { tlfloat_uin
 #else
 typedef tlfloat_int128_t_ tlfloat_int128_t;
 typedef tlfloat_uint128_t_ tlfloat_uint128_t;
-#endif
+#endif // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)) || defined(TLFLOAT_DOXYGEN)
 
 #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
 

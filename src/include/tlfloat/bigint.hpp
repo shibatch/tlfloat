@@ -42,8 +42,8 @@
 #define TLFLOAT_ENABLE_X86INTRIN
 #endif
 
-#if defined(__SIZEOF_INT128__) && !defined(__CUDA_ARCH__)
-#define TLFLOAT_ENABLE_UINT128
+#if defined(TLFLOAT_COMPILER_SUPPORTS_INT128) && !defined(__CUDA_ARCH__)
+#define TLFLOAT_ENABLE_INT128_OPT
 #endif
 
 #if !defined(__CUDA_ARCH__)
@@ -117,7 +117,7 @@ namespace tlfloat {
 	return xpair<uint64_t, bool>((al & 0xffffffff) | (ah << 32), (ah >> 32) != 0);
       }
     }
-#elif defined(TLFLOAT_ENABLE_UINT128)
+#elif defined(TLFLOAT_ENABLE_INT128_OPT)
     static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       __uint128_t a = __uint128_t(lhs) + rhs + cin;
       return xpair<uint64_t, bool>(uint64_t(a), (a >> 64) != 0);
@@ -155,7 +155,7 @@ namespace tlfloat {
       uint64_t m = ah * bl + ((al * bl) >> 32) + ((al * bh) & 0xffffffff);
       return xpair<uint64_t, uint64_t> (ah * bh + (m >> 32) + ((al * bh) >> 32), lhs * rhs);
     }
-#elif defined(TLFLOAT_ENABLE_UINT128)
+#elif defined(TLFLOAT_ENABLE_INT128_OPT)
     static constexpr xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       __uint128_t m = lhs * __uint128_t(rhs);
       return xpair<uint64_t, uint64_t>(uint64_t(m >> 64), uint64_t(m));
@@ -434,7 +434,7 @@ namespace tlfloat {
 
     constexpr explicit operator bool() const { return !isZero(); }
 
-#ifdef TLFLOAT_ENABLE_UINT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
     constexpr BigUInt(__uint128_t u) : low(uint64_t(0)), high(uint64_t(0)) {
       setWord(0, uint64_t(u & 0xffffffffffffffffULL)); setWord(1, uint64_t(u >> 64));
     }
@@ -959,7 +959,7 @@ namespace tlfloat {
 
     constexpr explicit operator bool() const { return !u.isZero(); }
 
-#ifdef TLFLOAT_ENABLE_UINT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
     constexpr BigInt(__int128_t u) : BigInt(BigUInt<N>(__uint128_t(u))) {}
     constexpr explicit operator __int128_t() const { return (__int128_t)BigUInt<N>(*this); }
 

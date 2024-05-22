@@ -625,7 +625,7 @@ void testem128(int64_t val) {
 		printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
 	      }
 
-#ifdef TLFLOAT_ENABLE_UINT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
 	      snprintf(fmt, 90, "%%%s%s%s%s%sQ%s",
 		       alt ? "#" : "", 
 		       zero ? "0" : "", 
@@ -665,7 +665,7 @@ void testem128(int64_t val) {
 		  exit(-1);
 		}
 
-#ifdef TLFLOAT_ENABLE_UINT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
 		snprintf(fmt, 90, "%%%s%s%s%s%s%d.Q%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 
@@ -707,7 +707,7 @@ void testem128(int64_t val) {
 		    exit(-1);
 		  }
 
-#ifdef TLFLOAT_ENABLE_UINT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
 		  snprintf(fmt, 90, "%%%s%s%s%s%s%d.%dQ%s",
 			    alt ? "#" : "", 
 			    zero ? "0" : "", 
@@ -746,7 +746,7 @@ void testem128(int64_t val) {
 		  exit(-1);
 		}
 
-#ifdef TLFLOAT_ENABLE_UINT128
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
 		snprintf(fmt, 90, "%%%s%s%s%s%s.%dQ%s",
 			 alt ? "#" : "", 
 			 zero ? "0" : "", 

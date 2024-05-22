@@ -16,9 +16,6 @@ set(TLFLOAT_VERSION_PATCHLEVEL 0)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCHLEVEL})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
-configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/tlfloatversion.hpp.in"
-  "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatversion.hpp" @ONLY)
-
 #
 
 enable_language(CXX)
@@ -80,7 +77,18 @@ int main(int argc, char **argv) {
   __int128_t i = argc;
   __uint128_t u = argc;
   return (int)(i % 10) + (int)(u % 10);
-}" COMPILER_SUPPORTS_INT128)
+}" TLFLOAT_COMPILER_SUPPORTS_INT128)
+
+CHECK_CXX_SOURCE_COMPILES("
+int main(int argc, char **argv) {
+  __float128 i = argc;
+  return (int)i;
+}" TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
+
+CHECK_CXX_SOURCE_COMPILES("
+int main() {
+  static_assert((1 + (long double)0x1p-64) - 1 != 0.0, \"long double is not float128\");
+}" TLFLOAT_LONGDOUBLE_IS_FLOAT128)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(CMAKE_REQUIRED_FLAGS "-march=armv8.2-a+fp16")
@@ -90,7 +98,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
 int main(int argc, char **argv) {
   __fp16 hu = vaddh_f16(__fp16(atof(argv[1])), __fp16(0.2));
   return (int)hu;
-}" COMPILER_SUPPORTS_FP16)
+}" TLFLOAT_COMPILER_SUPPORTS_FP16)
 endif()
 
 # Reset used flags
@@ -178,6 +186,11 @@ if (ENABLE_DOXYGEN AND NOT WIN32)
       )
   endif()
 endif()
+
+#
+
+configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/tlfloatversion.hpp.in"
+  "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatversion.hpp" @ONLY)
 
 #
 

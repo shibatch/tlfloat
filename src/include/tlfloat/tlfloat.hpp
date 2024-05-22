@@ -547,7 +547,7 @@ namespace tlfloat {
 	  ptr += 2;
 	  longmant_t m = 0;
 	  exp = 0;
-	  bool bp = false, nz = false;
+	  bool bp = false;
 	  int dr = sizeof(mant_t)*2 + 1, wd = 0;
 	  uint64_t w = 0;
 
@@ -555,13 +555,13 @@ namespace tlfloat {
 	    int d = 0;
 	    if (('0' <= *ptr && *ptr <= '9')) {
 	      d = *ptr++ - '0';
-	      if (d != 0) nz = true;
+	      if (d != 0) dr--;
 	    } else if ('a' <= *ptr && *ptr <= 'f') {
 	      d = *ptr++ - 'a' + 10;
-	      nz = true;
+	      dr--;
 	    } else if ('A' <= *ptr && *ptr <= 'F') {
 	      d = *ptr++ - 'A' + 10;
-	      nz = true;
+	      dr--;
 	    } else if (*ptr == '.') {
 	      if (bp) break;
 	      bp = 1;
@@ -571,14 +571,13 @@ namespace tlfloat {
 
 	    w = (w << 4) + d;
 	    wd++;
-	    if (unsigned(w >> 60) != 0) {
+	    if (w >= (1ULL << 60)) {
 	      if (m != 0) m <<= wd * 4;
 	      m |= w;
 	      w = 0;
 	      wd = 0;
 	    }
 	    if (bp) exp -= 4;
-	    if (nz) dr--;
 	  }
 
 	  if (m != 0) m <<= wd * 4;
@@ -814,7 +813,7 @@ namespace tlfloat {
 	return UnpackedFloat(mant_t(u), x + expoffset() - 2, false, u == 0, false, false);
       }
 
-#ifdef TLFLOAT_ENABLE_UINT128
+#if defined(TLFLOAT_COMPILER_SUPPORTS_INT128) && !defined(__CUDA_ARCH__)
       constexpr __int128_t  castToInt(const __int128_t  *ptr) const { return __int128_t (castToInt((BigInt<7>  *)0)); }
       constexpr __uint128_t castToInt(const __uint128_t *ptr) const { return __uint128_t(castToInt((BigUInt<7> *)0)); }
       static constexpr UnpackedFloat castFromInt(__int128_t  src) { return castFromInt(BigInt <7>(src)); }
