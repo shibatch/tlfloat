@@ -1,4 +1,5 @@
 #include <iostream>
+#include <type_traits>
 #include <cstring>
 #include <cmath>
 #include <cstdio>
@@ -14,6 +15,11 @@
 #include <testerutil.hpp>
 
 using namespace std;
+
+static_assert(is_trivially_copyable<tlfloat_quad>::value, "tlfloat_quad not trivially copyable");
+static_assert(is_trivially_copyable<tlfloat_octuple>::value, "tlfloat_octuple not trivially copyable");
+static_assert(is_trivially_copyable<tlfloat_int128_t>::value, "tlfloat_int128_t not trivially copyable");
+static_assert(is_trivially_copyable<tlfloat_uint128_t>::value, "tlfloat_uint128_t not trivially copyable");
 
 static void check(const string& msg, double x, double y, int t=0) {
   uint64_t u, v;

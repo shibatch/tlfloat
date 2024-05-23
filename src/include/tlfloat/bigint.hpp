@@ -773,15 +773,24 @@ namespace tlfloat {
       while(*p == ' ') p++;
       BigUInt r;
       uint64_t u = 0, d = 1;
-      while('0' <= *p && *p <= '9') {
-	u = u * 10 + (*p - '0');
-	d *= 10;
-	if (d >= (uint64_t(1) << 60)) {
+      while(*p != '\0') {
+	int x = 0;
+	if (('0' <= *p && *p <= '9')) {
+	  x = *p - '0';
+	} else if ('a' <= *p && *p <= 'z') {
+	  x = *p - 'a' + 10;
+	} else if ('A' <= *p && *p <= 'Z') {
+	  x = *p - 'A' + 10;
+	} else break;
+	if (x >= base) break;
+	u = u * base + x;
+	d *= base;
+	if (d >= (~uint64_t(0)) / base - 1) {
 	  r = r * d + u; u = 0; d = 1;
 	}
 	p++;
       }
-      r = r * d + BigUInt(u);
+      r = r * d + u;
       low = r.low; high = r.high;
       if (endptr) *endptr = p;
     }
@@ -1324,3 +1333,7 @@ namespace tlfloat {
 }
 #endif // #if defined(TLFLOAT_DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 #endif // #ifndef __BIGINT_HPP_INCLUDED__
+
+#if defined(__cplusplus) && defined(__TLFLOAT_H_INCLUDED__)
+#warning Include tlfloat/bigint.hpp first, then tlfloat/tlfloat.h.
+#endif

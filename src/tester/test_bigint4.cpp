@@ -55,6 +55,10 @@ void checks(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
   BigInt<7> i1 = cnv.bi;
   tlfloat_int128_t b1 = cnv.i128;
 
+  if (!equal(i0, b0)) e("checks : cast with union");
+  if (!equal((BigInt<7>)b0, b0)) e("checks : cast BigInt<7> <- tlfloat_int128_t");
+  if (!equal(i0, (tlfloat_int128_t)i0)) e("checks : cast tlfloat_int128_t <- BigInt<7>");
+
   if (double(i0) != double(b0)) {
     cerr << i0 << endl;
     e("checks : operator double");
@@ -66,6 +70,15 @@ void checks(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
   if (!equal(tlfloat_int128_t(d), BigInt<7>(d))) {
     fprintf(stderr, "%.20g\n", d);
     e("checks : cast from double");
+  }
+
+  if ((tlfloat_int128_t)tlfloat_quad((tlfloat_int128_t)low0) != low0) {
+    cerr << i0 << endl;
+    e("checks : cast tlfloat_quad");
+  }
+  if ((tlfloat_int128_t)tlfloat_octuple(b0) != b0) {
+    cerr << i0 << endl;
+    e("checks : cast tlfloat_octuple");
   }
 
   //
@@ -168,6 +181,10 @@ void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
   BigUInt<7> i1 = cnv.bi;
   tlfloat_uint128_t b1 = cnv.i128;
 
+  if (!equal(i0, b0)) e("checku : cast with union");
+  if (!equal((BigUInt<7>)b0, b0)) e("checku : cast BigUInt<7> <- tlfloat_uint128_t");
+  if (!equal(i0, (tlfloat_uint128_t)i0)) e("checku : cast tlfloat_uint128_t <- BigUInt<7>");
+
   if (double(i0) != double(b0)) {
     cerr << i0 << endl;
     e("checku : operator double");
@@ -181,6 +198,15 @@ void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
     e("checku : cast from double");
   }
 
+  if ((tlfloat_uint128_t)tlfloat_quad((tlfloat_uint128_t)low0) != low0) {
+    cerr << i0 << endl;
+    e("checku : cast tlfloat_quad");
+  }
+  if ((tlfloat_uint128_t)tlfloat_octuple(b0) != b0) {
+    cerr << i0 << endl;
+    e("checku : cast tlfloat_octuple");
+  }
+
   //
 
   {
@@ -189,13 +215,11 @@ void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
     tlfloat_snprintf(str, sizeof(str), "%Qu", b0);
     if (b0 != tlfloat_strtou128(str, NULL, 10)) e("to/from string unsigned base 10");
 
-#if 0
     tlfloat_snprintf(str, sizeof(str), "%Qo", b0);
     if (b0 != tlfloat_strtou128(str, NULL, 8)) e("to/from string unsigned base 8");
 
     tlfloat_snprintf(str, sizeof(str), "%Qx", b0);
     if (b0 != tlfloat_strtou128(str, NULL, 16)) e("to/from string unsigned base 16");
-#endif
   }
 
   if ((i0 == i1) != (b0 == b1)) e("==");

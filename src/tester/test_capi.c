@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
   quadmath_snprintf(buf0, sizeof(buf0), "%.8Qg", strtoflt128("0.1", NULL));
   checkStr(buf0, "0.1", "quadmath_snprintf");
 
-#if defined(__SIZEOF_FLOAT128__) && defined(__GNUC__)
+#ifdef TLFLOAT_COMPILER_SUPPORTS_FLOAT128
   tlfloat_snprintf(buf0, sizeof(buf0), "%.8Qg", (__float128)1.0 / (__float128)10.0);
   checkStr(buf0, "0.1", "tlfloat_snprintf");
 #elif defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)
