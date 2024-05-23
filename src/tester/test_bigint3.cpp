@@ -135,6 +135,16 @@ void checks(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
 
   if (!equal(i0 >> 3, b0 >> 3)) e(">>");
   if (!equal((i0 >>= 3), (b0 >>= 3))) e(">>=");
+
+  if (!equal(i0 += 3, b0 += 3)) e("+=");
+  if (!equal(i0 -= 3, b0 -= 3)) e("-=");
+  if (!equal(i0 *= 3, b0 *= 3)) e("*=");
+  //if (!equal(i0 /= 3, b0 /= 3)) e("/=");
+
+  if (!equal(i1 += i0, b1 += b0)) e("+=");
+  if (!equal(i1 -= i0, b1 -= b0)) e("-=");
+  if (!equal(i1 *= i0, b1 *= b0)) e("*=");
+  //if (!equal(i1 /= i0, b1 /= b0)) e("/=");
 }
 
 void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double d) {
@@ -249,6 +259,16 @@ void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
 
   if (!equal(i0 >> 3, b0 >> 3)) e(">>");
   if (!equal((i0 >>= 3), (b0 >>= 3))) e(">>=");
+
+  if (!equal(i0 += 3, b0 += 3)) e("+=");
+  if (!equal(i0 -= 3, b0 -= 3)) e("-=");
+  if (!equal(i0 *= 3, b0 *= 3)) e("*=");
+  if (!equal(i0 /= 3, b0 /= 3)) e("/=");
+
+  if (!equal(i1 += i0, b1 += b0)) e("+=");
+  if (!equal(i1 -= i0, b1 -= b0)) e("-=");
+  if (!equal(i1 *= i0, b1 *= b0)) e("*=");
+  if (!equal(i1 /= i0, b1 /= b0)) e("/=");
 }
 
 int main(int argc, char **argv) {

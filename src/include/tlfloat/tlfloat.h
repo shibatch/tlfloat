@@ -1265,6 +1265,10 @@ static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloa
   static inline tlfloat_int128_t operator OP(const tlfloat_int128_t_& lhs, const tlfloat_int128_t& rhs) { return (tlfloat_int128_t)lhs OP rhs; } \
   static inline tlfloat_uint128_t operator OP(const tlfloat_uint128_t& lhs, const tlfloat_uint128_t_& rhs) { return lhs OP (tlfloat_uint128_t)rhs; } \
   static inline tlfloat_uint128_t operator OP(const tlfloat_uint128_t_& lhs, const tlfloat_uint128_t& rhs) { return (tlfloat_uint128_t)lhs OP rhs; } \
+  template<typename rhstype>						\
+  static inline tlfloat_int128_t& operator OPA(tlfloat_int128_t& lhs, const rhstype& rhs) { return (lhs = lhs OP tlfloat_int128_t(rhs)); } \
+  template<typename rhstype>						\
+  static inline tlfloat_uint128_t& operator OPA(tlfloat_uint128_t& lhs, const rhstype& rhs) { return (lhs = lhs OP tlfloat_uint128_t(rhs)); } \
   static_assert(true, "")
 
 #define TLFLOAT_OVERLOAD_CMP(OP)					\
