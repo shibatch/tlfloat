@@ -29,6 +29,12 @@ extern "C" {
   typedef __int128_t tlfloat_int128_t_;
   typedef __uint128_t tlfloat_uint128_t_;
 #else
+/** tlfloat_int128_t_ and tlfloat_uint128_t_ are types for handling
+ * 128-bit integer numbers in C. The data size and data structure of
+ * these types are the same as ordinary integer types. These are POD
+ * types that can be safely passed with C ABI. If the compiler
+ * supports __int128_t and __uint128_t, these type are aliases for
+ * those types. */
   typedef struct { uint64_t e[1 << 1]; } tlfloat_int128_t_;
   typedef struct { uint64_t e[1 << 1]; } tlfloat_uint128_t_;
 #endif
@@ -41,7 +47,7 @@ extern "C" {
 /** This type is for handling quadruple-precision IEEE floating-point
  * numbers in C. The data size and data structure of this type are the
  * same as a quad-precision floating-point number. This is a POD type
- * that can be safely passed with C ABI. If the comipler supports
+ * that can be safely passed with C ABI. If the compiler supports
  * __float128, this type is an alias for __float128. When compling
  * with a compiler on which long double is IEEE float 128, this type
  * is an alias for long double. */
@@ -592,13 +598,13 @@ extern "C" {
 #endif
 
 #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
-/** This type is for handling quadruple-precision IEEE floating-point
- * numbers in C and C++11. The data size and data structure of this
- * type are the same as a quad-precision floating-point number. When
- * compling C code, this type is an alias for tlfloat_quad_. When
- * compling C++ code without IEEE float 128 support, this is a struct
- * encapsulating a tlfloat_quad_ variable with operators
- * overloaded. */
+/** tlfloat_quad is a trivially copyable type for handling
+ * quadruple-precision IEEE floating-point numbers in C and C++11. The
+ * data size and data structure of this type are the same as a
+ * quad-precision floating-point number. When compling C code, this
+ * type is an alias for tlfloat_quad_. When compling C++ code without
+ * IEEE float 128 support, this is a struct encapsulating a
+ * tlfloat_quad_ variable with operators overloaded. */
 struct tlfloat_quad {
   tlfloat_quad_ value;
 
@@ -643,19 +649,22 @@ struct tlfloat_quad {
   bool operator> (const tlfloat_quad& rhs) const { return tlfloat_gt_q_q(value, rhs.value); }
   bool operator>=(const tlfloat_quad& rhs) const { return tlfloat_ge_q_q(value, rhs.value); }
 };
+
+/** This macro is defined iff tlfloat_quad is not an alias of
+    __float128, but a struct defined in tlfloat.h. */
 #define TLFLOAT_QUAD_IS_STRUCT
 #else // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
 typedef tlfloat_quad_ tlfloat_quad;
 #endif
 
 #if defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
-/** This type is for handling octuple-precision IEEE floating-point
- * numbers in C and older C++11. The data size and data structure of
- * this type are the same as an octuple-precision floating-point
- * number. When compling C code, this type is an alias for
- * tlfloat_octuple_. When compling C++ code, this is a struct
- * encapsulating a tlfloat_octuple_ variable with operators
- * overloaded. */
+/** tlfloat_octuple is a trivially copyable type for handling
+ * octuple-precision IEEE floating-point numbers in C and older
+ * C++11. The data size and data structure of this type are the same
+ * as an octuple-precision floating-point number. When compling C
+ * code, this type is an alias for tlfloat_octuple_. When compling C++
+ * code, this is a struct encapsulating a tlfloat_octuple_ variable
+ * with operators overloaded. */
 struct tlfloat_octuple {
   tlfloat_octuple_ value;
 
@@ -706,6 +715,12 @@ typedef tlfloat_octuple_ tlfloat_octuple;
 #endif
 
 #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)) || defined(TLFLOAT_DOXYGEN)
+/** tlfloat_int128_t is a trivially copyable type for handling 128-bit
+ * signed integer in C and C++11. The data size and data structure of
+ * this type are the same as ordinary integer types. When compling C
+ * code, this type is an alias for tlfloat_int128_t_. When compling
+ * C++ code without __int128_t support, this is a struct encapsulating
+ * a tlfloat_int128_t variable with operators overloaded. */
 struct tlfloat_int128_t {
   tlfloat_int128_t_ value;
 
@@ -779,6 +794,13 @@ struct tlfloat_int128_t {
   tlfloat_int128_t  operator--(int) { tlfloat_int128_t t = *this; *this = tlfloat_sub_i128_i128(value, tlfloat_cast_i128_i64(1)); return t; }
 };
 
+/** tlfloat_uint128_t is a trivially copyable type for handling
+ * 128-bit unsigned integer in C and C++11. The data size and data
+ * structure of this type are the same as ordinary integer types. When
+ * compling C code, this type is an alias for tlfloat_uint128_t_. When
+ * compling C++ code without __uint128_t support, this is a struct
+ * encapsulating a tlfloat_int128_t variable with operators
+ * overloaded. */
 struct tlfloat_uint128_t {
   tlfloat_uint128_t_ value;
 
@@ -852,6 +874,10 @@ struct tlfloat_uint128_t {
 
 inline tlfloat_int128_t::tlfloat_int128_t(const tlfloat_uint128_t_& d) { memcpy((void *)this, (void *)&d, sizeof(*this)); }
 inline tlfloat_int128_t::operator tlfloat_uint128_t_() const { tlfloat_uint128_t v; memcpy((void *)&v, (void *)this, sizeof(v)); return v; }
+
+/** This macro is defined iff tlfloat_int128_t and tlfloat_uint128_t
+    are not aliases of __int128_t and __uint128_t, but structs defined
+    in tlfloat.h. */
 #define TLFLOAT_INT128_IS_STRUCT
 #else
 typedef tlfloat_int128_t_ tlfloat_int128_t;

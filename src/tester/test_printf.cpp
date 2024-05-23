@@ -8,6 +8,8 @@
 #include "tlfloat/tlfloat.hpp"
 #include "tlfloat/tlfloat.h"
 
+#include "testerutil.hpp"
+
 using namespace tlfloat;
 
 static const int test_widths[] = { -1, 0, 1, 2, 3, 4, 6, 8, 12, 16, 20, 32 };
@@ -772,6 +774,7 @@ void testem128(int64_t val) {
 using namespace std;
 
 int main(int argc, char **argv) {
+  auto rng = createPreferredRNG();
   int var;
   doTest("head %d [%*g] [%.*g] [%*.*g] %d tail", 123, 8, 100.1234567, 7, 101.1234567, 11, 9, 102.1234567, 321);
   doTest("head %d [%*d] [%.*d] [%*.*d] %d tail", 123, 8, 100, 7, 101, 11, 9, 102, 321);
@@ -891,6 +894,19 @@ int main(int argc, char **argv) {
   testem<Quad>(+1.234567890123456789e-120);
   testem<Quad>(-1.234567890123456789e-120);
 
+  for(int i=0;i<1000;i++) {
+    static char str[1024];
+    Quad qc = rndQ(rng);
+    tlfloat_snprintf(str, sizeof(str), "%.40_128g", qc);
+    Quad qt = tlfloat_strtoq(str, nullptr);
+    if (!cmpq(qc, qt, 1)) {
+      printf("Quad snprintf : %s\n", str);
+      tlfloat_printf("qc = %.40_128g\n", qc);
+      tlfloat_printf("qt = %.40_128g\n", qt);
+      exit(-1);
+    }
+  }
+
   cout << "Quad OK" << endl;
 
   testem<Octuple>(NAN);
@@ -918,6 +934,19 @@ int main(int argc, char **argv) {
   testem<Octuple>(-1e-120);
   testem<Octuple>(+1.234567890123456789e-120);
   testem<Octuple>(-1.234567890123456789e-120);
+
+  for(int i=0;i<1000;i++) {
+    static char str[1024];
+    Octuple oc = rndo(rng);
+    tlfloat_snprintf(str, sizeof(str), "%.80_256g", oc);
+    Octuple ot = tlfloat_strtoo(str, nullptr);
+    if (!cmpo(oc, ot, 1)) {
+      printf("Octuple snprintf : %s\n", str);
+      tlfloat_printf("oc = %.80_256g\n", oc);
+      tlfloat_printf("ot = %.80_256g\n", ot);
+      exit(-1);
+    }
+  }
 
   cout << "Octuple OK" << endl;
 

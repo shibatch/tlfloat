@@ -114,7 +114,8 @@ EXCLUDE_PATTERNS       = test* */util/* auxiliary.hpp suppress.hpp tlfloatutil.h
 EXCLUDE_SYMBOLS        = *::detail yarray LCG64 RNG PSHA2_256_Internal CryptUtil tlfloat_bigint* \
 		         BigUInt*<*6*> *toHexString to_string_d \
 			 TLFloat*::getUnpacked detail::UnpackedFloat \
-			 TLFLOAT_OVERLOAD_OP2 TLFLOAT_OVERLOAD_CMP
+			 TLFLOAT_OVERLOAD_OP2 TLFLOAT_OVERLOAD_CMP TLFLOAT_OVERLOAD_CMPQ \
+			 TLFLOAT_OVERLOAD_OP2I TLFLOAT_OVERLOAD_CMPI TLFLOAT_OVERLOAD_OP2Q
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       = *
 EXAMPLE_RECURSIVE      = NO

@@ -22,44 +22,6 @@ static_assert(is_trivially_copyable_v<Double> == true);
 static_assert(is_trivially_copyable_v<Quad> == true);
 static_assert(is_trivially_copyable_v<Octuple> == true);
 
-static bool cmpf(float x, float y, int t=0) {
-  if (isnan(x) && isnan(y)) return true;
-  uint32_t u, v;
-  memcpy((void *)&u, (void *)&x, sizeof(u));
-  memcpy((void *)&v, (void *)&y, sizeof(v));
-
-  if (t == 0) return u == v;
-
-  int d = int(int32_t(u) - int32_t(v));
-  return -t <= d && d <= t;
-}
-
-static bool cmpd(double x, double y, int t=0) {
-  if (isnan(x) && isnan(y)) return true;
-  uint64_t u, v;
-  memcpy((void *)&u, (void *)&x, sizeof(u));
-  memcpy((void *)&v, (void *)&y, sizeof(v));
-
-  if (t == 0) return u == v;
-
-  int d = int(int64_t(u) - int64_t(v));
-  return -t <= d && d <= t;
-}
-
-#ifdef ENABLE_QUAD
-static bool cmpq(quad x, quad y, int t=0) {
-  if (isnanq(x) && isnanq(y)) return true;
-  BigUInt<7> u, v;
-  memcpy((void *)&u, (void *)&x, sizeof(u));
-  memcpy((void *)&v, (void *)&y, sizeof(v));
-
-  if (t == 0) return u == v;
-
-  int d = int(BigInt<7>(u) - BigInt<7>(v));
-  return -t <= d && d <= t;
-}
-#endif
-
 int main(int argc, char **argv) {
   uint64_t niter = 100000;
 

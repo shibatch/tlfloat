@@ -86,7 +86,8 @@ void checks(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
   {
     char str[256];
     tlfloat_snprintf(str, sizeof(str), "%Qd", b0);
-    if (b0 != tlfloat_strtoi128(str, NULL, 10)) e("to/from string signed base 10");
+    if (b0 != tlfloat_strtoi128(str, NULL, 10)) e("Qd to/from string signed base 10");
+    if (b0 != tlfloat_strtoi128(str, NULL,  0)) e("Qd to/from string signed base 0");
   }
 
   if ((i0 == i1) != (b0 == b1)) e("==");
@@ -158,12 +159,12 @@ void checks(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
   if (!equal(i0 += 3, b0 += 3)) e("+=");
   if (!equal(i0 -= 3ULL, b0 -= 3ULL)) e("-=");
   if (!equal(i0 *= 3, b0 *= 3)) e("*=");
-  //if (!equal(i0 /= 3, b0 /= 3)) e("/=");
+  if (!equal(i0 /= 3, b0 /= 3)) e("/=");
 
   if (!equal(i1 += i0, b1 += b0)) e("+=");
   if (!equal(i1 -= i0, b1 -= tlfloat_int128_t_(b0))) e("-=");
   if (!equal(i1 *= i0, b1 *= tlfloat_uint128_t(b0))) e("*=");
-  //if (!equal(i1 /= i0, b1 /= b0)) e("/=");
+  if (!equal(i1 /= i0, b1 /= b0)) e("/=");
 }
 
 void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double d) {
@@ -223,13 +224,18 @@ void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
     char str[256];
 
     tlfloat_snprintf(str, sizeof(str), "%Qu", b0);
-    if (b0 != tlfloat_strtou128(str, NULL, 10)) e("to/from string unsigned base 10");
+    if (b0 != tlfloat_strtou128(str, NULL, 10)) e("Qu to/from string unsigned base 10");
+    if (b0 != tlfloat_strtou128(str, NULL,  0)) e("Qu to/from string unsigned base 10");
 
     tlfloat_snprintf(str, sizeof(str), "%Qo", b0);
-    if (b0 != tlfloat_strtou128(str, NULL, 8)) e("to/from string unsigned base 8");
+    if (b0 != tlfloat_strtou128(str, NULL,  8)) e("Qo to/from string unsigned base 8");
+    tlfloat_snprintf(str, sizeof(str), "0%Qo", b0);
+    if (b0 != tlfloat_strtou128(str, NULL,  0)) e("Qo to/from string unsigned base 0");
 
     tlfloat_snprintf(str, sizeof(str), "%Qx", b0);
-    if (b0 != tlfloat_strtou128(str, NULL, 16)) e("to/from string unsigned base 16");
+    if (b0 != tlfloat_strtou128(str, NULL, 16)) e("Qx to/from string unsigned base 16");
+    tlfloat_snprintf(str, sizeof(str), "0x%Qx", b0);
+    if (b0 != tlfloat_strtou128(str, NULL,  0)) e("Qx to/from string unsigned base 0");
   }
 
   if ((i0 == i1) != (b0 == b1)) e("==");

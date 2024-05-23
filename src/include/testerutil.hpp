@@ -695,6 +695,18 @@ float rndf(shared_ptr<RNG> rng) {
   }
 }
 
+bool cmpf(float x, float y, int t=0) {
+  if (isnan(x) && isnan(y)) return true;
+  uint32_t u, v;
+  memcpy((void *)&u, (void *)&x, sizeof(u));
+  memcpy((void *)&v, (void *)&y, sizeof(v));
+
+  if (t == 0) return u == v;
+
+  int d = int(int32_t(u) - int32_t(v));
+  return -t <= d && d <= t;
+}
+
 double rndd(shared_ptr<RNG> rng) {
   uint64_t r = rng->nextLT(1000);
 
@@ -728,8 +740,20 @@ double rndd(shared_ptr<RNG> rng) {
   }
 }
 
+bool cmpd(double x, double y, int t=0) {
+  if (isnan(x) && isnan(y)) return true;
+  uint64_t u, v;
+  memcpy((void *)&u, (void *)&x, sizeof(u));
+  memcpy((void *)&v, (void *)&y, sizeof(v));
+
+  if (t == 0) return u == v;
+
+  int d = int(int64_t(u) - int64_t(v));
+  return -t <= d && d <= t;
+}
+
 #ifdef __TLFLOAT_HPP_INCLUDED__
-Quad rndq_(shared_ptr<RNG> rng) {
+Quad rndQ(shared_ptr<RNG> rng) {
   uint64_t r = rng->nextLT(1000);
 
   if (r == 0) {
@@ -769,12 +793,36 @@ Quad rndq_(shared_ptr<RNG> rng) {
 }
 
 #ifdef ENABLE_QUAD
-quad rndq(shared_ptr<RNG> rng) { return (quad)rndq_(rng); }
+quad rndq(shared_ptr<RNG> rng) { return (quad)rndQ(rng); }
 typedef quad quad_;
+
+bool cmpq(quad x, quad y, int t=0) {
+  if (isnanq(x) && isnanq(y)) return true;
+  BigUInt<7> u, v;
+  memcpy((void *)&u, (void *)&x, sizeof(u));
+  memcpy((void *)&v, (void *)&y, sizeof(v));
+
+  if (t == 0) return u == v;
+
+  int d = int(BigInt<7>(u) - BigInt<7>(v));
+  return -t <= d && d <= t;
+}
 #else
-Quad rndq(shared_ptr<RNG> rng) { return rndq_(rng); }
 typedef Quad quad_;
+quad_ rndq(shared_ptr<RNG> rng) { return rndQ(rng); }
 #endif
+
+bool cmpq(Quad x, Quad y, int t=0) {
+  if (isnan(x) && isnan(y)) return true;
+  BigUInt<7> u, v;
+  memcpy((void *)&u, (void *)&x, sizeof(u));
+  memcpy((void *)&v, (void *)&y, sizeof(v));
+
+  if (t == 0) return u == v;
+
+  int d = int(BigInt<7>(u) - BigInt<7>(v));
+  return -t <= d && d <= t;
+}
 
 Octuple rndo(shared_ptr<RNG> rng) {
   uint64_t r = rng->nextLT(1000);
@@ -813,6 +861,18 @@ Octuple rndo(shared_ptr<RNG> rng) {
       if (finite(f)) return f;
     }
   }
+}
+
+bool cmpo(Octuple x, Octuple y, int t=0) {
+  if (isnan(x) && isnan(y)) return true;
+  BigUInt<8> u, v;
+  memcpy((void *)&u, (void *)&x, sizeof(u));
+  memcpy((void *)&v, (void *)&y, sizeof(v));
+
+  if (t == 0) return u == v;
+
+  int d = int(BigInt<8>(u) - BigInt<8>(v));
+  return -t <= d && d <= t;
 }
 #endif // #ifdef __TLFLOAT_HPP_INCLUDED__
 

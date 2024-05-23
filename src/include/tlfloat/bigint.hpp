@@ -769,8 +769,22 @@ namespace tlfloat {
 
     //
 
-    constexpr BigUInt(const char *p, const char **endptr = nullptr, const int base = 10) {
+    constexpr BigUInt(const char *p, const char **endptr = nullptr, const int base_ = 10) {
       while(*p == ' ') p++;
+      int base = base_;
+      if (base_ == 0) {
+	if (*p == '0') {
+	  if (*(p+1) == 'x') {
+	    base = 16;
+	    p += 2;
+	  } else {
+	    base = 8;
+	    p++;
+	  }
+	} else base = 10;
+      }
+      if (base < 2 || base > 36) { low = high = 0; return; }
+
       BigUInt r;
       uint64_t u = 0, d = 1;
       while(*p != '\0') {
