@@ -251,13 +251,13 @@ namespace tlfloat {
       }
 
       void memmove(int64_t pos, const T *p, int64_t size) {
-	if (!(0 <= pos && pos + size < bufSize)) return;
+	if (!(0 <= pos && pos + size <= bufSize)) return;
 	memcpy(&bufPtr[pos], p, size * sizeof(T));
       }
 
       void memmove(int64_t dpos, int64_t spos, int64_t size) {
-	if (!(0 <= dpos && dpos + size < bufSize)) return;
-	if (!(0 <= spos && spos + size < bufSize)) return;
+	if (!(0 <= dpos && dpos + size <= bufSize)) return;
+	if (!(0 <= spos && spos + size <= bufSize)) return;
 	::memmove(&bufPtr[dpos], &bufPtr[spos], size * sizeof(T));
       }
     };

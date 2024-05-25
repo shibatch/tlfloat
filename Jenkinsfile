@@ -27,12 +27,13 @@ pipeline {
                 }
 
                 stage('x86_64 linux emscripten') {
-            	     agent { label 'emscripten' }
+            	     agent { label 'x86_64 && ubuntu22 && emscripten' }
                      options { skipDefaultCheckout() }
             	     steps {
                          cleanWs()
                          checkout scm
 	    	     	 sh '''#!/bin/bash
+			 set -e
                 	 echo "emscripten on" `hostname`
 			 ~/opt/emsdk/emsdk install latest
 			 ~/opt/emsdk/emsdk activate latest

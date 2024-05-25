@@ -211,9 +211,7 @@ $ ./a.out
 
 The C++11 functions in TLFloat are not constexpr.
 
-### Development status
-
-* This software is currently at the beta development stage
+### Development plan
 
 * The following features will be added in future releases
   * Further documentation
