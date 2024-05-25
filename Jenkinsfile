@@ -33,6 +33,9 @@ pipeline {
                          checkout scm
 	    	     	 sh '''
                 	 echo "emscripten on" `hostname`
+			 ~/opt/emsdk/emsdk install latest
+			 ~/opt/emsdk/emsdk activate latest
+			 source ~/opt/emsdk/emsdk_env.sh
 			 rm -rf build
  			 mkdir build
 			 cd build
