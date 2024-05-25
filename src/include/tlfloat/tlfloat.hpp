@@ -153,7 +153,7 @@ namespace tlfloat {
 
       template<int N>
       static constexpr BigUInt<N> isqrt(BigUInt<N> s) {
-	assert(s >= (BigUInt<N>(1) << (sizeof(BigUInt<N>) * 8 - 2)));
+	if (!std::is_constant_evaluated()) assert(s >= (BigUInt<N>(1) << (sizeof(BigUInt<N>) * 8 - 2)));
 	BigUInt<N> x = BigUInt<N>(isqrt(s.high) | 1, 0);
 	x = (x >> 1) + s.mulhiAprx(x.reciprocalAprx());
 	return x + ((~x >> (sizeof(x)*8 - 1)) & 1);

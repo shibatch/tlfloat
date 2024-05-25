@@ -1329,8 +1329,8 @@ namespace tlfloat {
 
   template<int N>
   std::string to_string(const BigUInt<N>& u) {
-    std::vector<char> s((1 << N)/3 + 3);
-    BigInt<N>::snprint(s.data(), s.size(), BigInt<N>(u), 'u');
+    std::vector<char> s((1 << N)/3 + 4);
+    BigInt<N>::snprint(s.data(), s.size() - 1, BigInt<N>(u), 'u');
     return std::string(s.data());
   }
 
@@ -1338,8 +1338,8 @@ namespace tlfloat {
 
   template<int N>
   std::string to_string(const BigInt<N>& i) {
-    std::vector<char> s((1 << N)/3 + 3);
-    BigInt<N>::snprint(s.data(), s.size(), i, 'd');
+    std::vector<char> s((1 << N)/3 + 4);
+    BigInt<N>::snprint(s.data(), s.size() - 1, i, 'd');
     return std::string(s.data());
   }
 

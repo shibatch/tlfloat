@@ -16,7 +16,7 @@ using namespace tlfloat;
 namespace {
   static int xvprintf(size_t (*consumer)(const char *ptr, size_t size, void *arg), void *arg, const char *fmt, va_list ap) {
     const int xbufsize = 5000;
-    char *xbuf = (char *)malloc(xbufsize+10);
+    char *xbuf = (char *)calloc(xbufsize+10, 1);
     int outlen = 0;
     bool errorflag = false;
 
@@ -340,7 +340,7 @@ namespace {
       }
 
       if (!subfmt_processed) {
-	char *subfmt = (char *)malloc(fmt - subfmtstart + 2);
+	char *subfmt = (char *)calloc(fmt - subfmtstart + 2, 1);
 	memcpy(subfmt, subfmtstart, fmt - subfmtstart + 1);
 	subfmt[fmt - subfmtstart + 1] = 0;
 	int ret = ::vsnprintf(xbuf, xbufsize, subfmt, ap2);

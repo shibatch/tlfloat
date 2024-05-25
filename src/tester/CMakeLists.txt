@@ -8,7 +8,7 @@ add_executable(test_bigint4 test_bigint4.cpp)
 target_link_libraries(test_bigint4 tlfloat)
 add_test(NAME test_bigint4 COMMAND test_bigint4)
 
-if (NOT WIN32)
+if (BUILDING_WITH_GLIBC)
    add_executable(test_printf test_printf.cpp)
    target_link_libraries(test_printf tlfloat)
    add_test(NAME test_printf COMMAND test_printf)
@@ -59,7 +59,7 @@ add_test(NAME test_hash_noopt COMMAND test_hash_noopt 975ad94306bbd3b8ceb6a94640
 
 add_executable(test_printf_hash test_printf_hash.cpp)
 target_link_libraries(test_printf_hash tlfloat)
-add_test(NAME test_printf_hash COMMAND test_printf_hash fd393c2ce5cf95bebbafc7966b5ab3ff80f56dec1c61125b774f5ad1e6a28452)
+add_test(NAME test_printf_hash COMMAND test_printf_hash e969c45ecd488d5b70424be4af6a1d292a29ddb4a08ca6b8a66812eacc1ebd3d)
 
 if (LIB_MPFR)
   add_executable(test_mpfr test_mpfr.cpp)

@@ -370,14 +370,25 @@ void testem64(int64_t val) {
 using namespace std;
 
 int main(int argc, char **argv) {
+  auto rng = shared_ptr<RNG>(new LCG64(0));
   int mode = 0;
   if (argc >= 3 && strcmp(argv[1], "w") == 0) {
-    fp = fopen(argv[2], "wb");
-    if (!fp) {
-      cerr << "Could not open " << argv[2] << endl;
-      exit(-1);
+    if (strcmp(argv[2], "-") == 0) {
+      fp = stdout;
+    } else {
+      fp = fopen(argv[2], "wb");
+      if (!fp) {
+	cerr << "Could not open " << argv[2] << endl;
+	exit(-1);
+      }
     }
     mode = 1;
+  }
+
+  for(int i=0;i<1000;i++) {
+    doTest("%d %.20g %d", 123, rndd(rng), 321);
+    doTest("%d %.40_128g %d", 123, rndQ(rng), 321);
+    doTest("%d %.80_256g %d", 123, rndo(rng), 321);
   }
 
   doTest("head %d [%*g] [%.*g] [%*.*g] %d tail", 123, 8, 100.1234567, 7, 101.1234567, 11, 9, 102.1234567, 321);

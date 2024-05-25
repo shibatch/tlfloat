@@ -5,6 +5,10 @@ option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_CUDA_TEST "Build CUDA tester" OFF)
 option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
 option(ENABLE_DOXYGEN "Enable generating documents with Doxygen" OFF)
+option(ENABLE_ARCH_OPTIMIZATION "Enable architecture-specific optimization upon building library" ON)
+set(SET_COMPILER_SUPPORTS_INT128 "auto" CACHE STRING "Set whether the compiler supports __int128 type")
+set(SET_COMPILER_SUPPORTS_FLOAT128 "auto" CACHE STRING "Set whether the compiler supports __float128 type")
+set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is IEEE binary128")
 
 #
 
@@ -12,7 +16,7 @@ project(tlfloat)
 
 set(TLFLOAT_VERSION_MAJOR 1)
 set(TLFLOAT_VERSION_MINOR 2)
-set(TLFLOAT_VERSION_PATCHLEVEL 0)
+set(TLFLOAT_VERSION_PATCHLEVEL 1)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCHLEVEL})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
@@ -49,11 +53,13 @@ endif()
 
 # Include packages
 
-find_program(COMMAND_LLD lld)
-message(STATUS "COMMAND_LLD : " ${COMMAND_LLD})
+if ("${CMAKE_SYSTEM_NAME}" STREQUAL "${CMAKE_HOST_SYSTEM_NAME}")
+  find_program(COMMAND_LLD lld)
+  message(STATUS "COMMAND_LLD : " ${COMMAND_LLD})
 
-find_program(COMMAND_GOLD gold)
-message(STATUS "COMMAND_GOLD : " ${COMMAND_GOLD})
+  find_program(COMMAND_GOLD gold)
+  message(STATUS "COMMAND_GOLD : " ${COMMAND_GOLD})
+endif()
 
 find_library(LIB_MPFR mpfr)
 message(STATUS "LIB_MPFR : " ${LIB_MPFR})
@@ -72,23 +78,50 @@ set(INSTALL_BINDIR "${INSTALL_PREFIX}bin")
 
 include(CheckCXXSourceCompiles)
 
-CHECK_CXX_SOURCE_COMPILES("
+if (SET_COMPILER_SUPPORTS_INT128 STREQUAL "auto")
+  CHECK_CXX_SOURCE_COMPILES("
 int main(int argc, char **argv) {
   __int128_t i = argc;
   __uint128_t u = argc;
   return (int)(i % 10) + (int)(u % 10);
 }" TLFLOAT_COMPILER_SUPPORTS_INT128)
+else()
+  if (SET_COMPILER_SUPPORTS_INT128)
+    set(TLFLOAT_COMPILER_SUPPORTS_INT128 ON)
+  else()
+    set(TLFLOAT_COMPILER_SUPPORTS_INT128 OFF)
+  endif()
+  message(STATUS "Manually setting TLFLOAT_COMPILER_SUPPORTS_INT128 : " ${TLFLOAT_COMPILER_SUPPORTS_INT128})
+endif()
 
-CHECK_CXX_SOURCE_COMPILES("
+if (SET_COMPILER_SUPPORTS_FLOAT128 STREQUAL "auto")
+  CHECK_CXX_SOURCE_COMPILES("
 int main(int argc, char **argv) {
   __float128 i = argc;
   return (int)i;
 }" TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
+else()
+  if (SET_COMPILER_SUPPORTS_FLOAT128)
+    set(TLFLOAT_COMPILER_SUPPORTS_FLOAT128 ON)
+  else()
+    set(TLFLOAT_COMPILER_SUPPORTS_FLOAT128 OFF)
+  endif()
+  message(STATUS "Manually setting TLFLOAT_COMPILER_SUPPORTS_FLOAT128 : " ${TLFLOAT_COMPILER_SUPPORTS_FLOAT128})
+endif()
 
+if (SET_LONGDOUBLE_IS_FLOAT128 STREQUAL "auto")
 CHECK_CXX_SOURCE_COMPILES("
 int main() {
   static_assert((1 + (long double)0x1p-64) - 1 != 0.0, \"long double is not float128\");
 }" TLFLOAT_LONGDOUBLE_IS_FLOAT128)
+else()
+  if (SET_LONGDOUBLE_IS_FLOAT128)
+    set(TLFLOAT_LONGDOUBLE_IS_FLOAT128 ON)
+  else()
+    set(TLFLOAT_LONGDOUBLE_IS_FLOAT128 OFF)
+  endif()
+  message(STATUS "Manually setting TLFLOAT_LONGDOUBLE_IS_FLOAT128 : " ${TLFLOAT_LONGDOUBLE_IS_FLOAT128})
+endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(CMAKE_REQUIRED_FLAGS "-march=armv8.2-a+fp16")
@@ -99,10 +132,16 @@ int main(int argc, char **argv) {
   __fp16 hu = vaddh_f16(__fp16(atof(argv[1])), __fp16(0.2));
   return (int)hu;
 }" TLFLOAT_COMPILER_SUPPORTS_FP16)
+  set(CMAKE_REQUIRED_FLAGS)
 endif()
 
-# Reset used flags
-set(CMAKE_REQUIRED_FLAGS)
+CHECK_CXX_SOURCE_COMPILES("
+#include <cstdio>
+#include <features.h>
+#ifndef __GLIBC__
+#error GLIBC macro not defined
+#endif
+int main(int argc, char **argv) {}" BUILDING_WITH_GLIBC)
 
 # Setting up memory-leak checks
 
@@ -162,6 +201,10 @@ endif()
 
 if (NOT "${LC_CMAKE_BUILD_TYPE}" STREQUAL "release")
   add_compile_definitions(DEBUG=1)
+endif()
+
+if (NOT ENABLE_ARCH_OPTIMIZATION)
+  add_definitions(-DTLFLOAT_DISABLE_ARCH_OPTIMIZATION)
 endif()
 
 # Setting up Doxygen

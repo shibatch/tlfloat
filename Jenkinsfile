@@ -25,6 +25,25 @@ pipeline {
             	     }
                 }
 
+                stage('x86_64 linux emscripten') {
+            	     agent { label 'emscripten' }
+                     options { skipDefaultCheckout() }
+            	     steps {
+                         cleanWs()
+                         checkout scm
+	    	     	 sh '''
+                	 echo "emscripten on" `hostname`
+			 rm -rf build
+ 			 mkdir build
+			 cd build
+			 cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=$EMSDK/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DENABLE_ARCH_OPTIMIZATION=False -DSET_COMPILER_SUPPORTS_INT128=False -DSET_COMPILER_SUPPORTS_FLOAT128=False -DSET_LONGDOUBLE_IS_FLOAT128=False -DCMAKE_BUILD_TYPE=Release ..
+			 cmake -E time ninja
+		         export CTEST_OUTPUT_ON_FAILURE=TRUE
+		         ctest -j `nproc`
+			 '''
+            	     }
+                }
+
                 stage('x86_64 linux clang-18') {
             	     agent { label 'x86_64 && ubuntu22 && cuda' }
                      options { skipDefaultCheckout() }

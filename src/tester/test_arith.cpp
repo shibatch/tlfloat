@@ -5,13 +5,14 @@
 #include <cstdio>
 #include <cstring>
 #include <cmath>
-
-#if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
-#include <quadmath.h>
-#endif
+#include <climits>
 
 #include "tlfloat/tlfloat.hpp"
 #include "testerutil.hpp"
+
+#if defined(TLFLOAT_COMPILER_SUPPORTS_INT128) && defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#include <quadmath.h>
+#endif
 
 using namespace std;
 using namespace tlfloat;
@@ -36,7 +37,6 @@ int main(int argc, char **argv) {
 
   typedef UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
   typedef UnpackedFloat<uint64_t, BigUInt<7>, 11, 52> udouble;
-  typedef UnpackedFloat<BigUInt<7>, BigUInt<8>, 15, 112> uquad;
 
   typedef UnpackedFloat<uint32_t, uint64_t, 0, 30> xfloat;
   typedef UnpackedFloat<uint64_t, BigUInt<7>, 0, 62> xdouble;
@@ -159,6 +159,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
+#if defined(__GLIBC__) || defined(FP_FAST_FMA)
     float f8t = float(ufloat::fma(tlf1, tlf2, tlf3));
     float f8c = fmaf(f1, f2, f3);
 
@@ -171,6 +172,7 @@ int main(int argc, char **argv) {
       cout << "NG" << endl;
       exit(-1);
     }
+#endif
 
     float f9t = float(tld1.cast((const ufloat *)nullptr));
     float f9c = d1;
@@ -382,6 +384,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
+#if defined(__GLIBC__) || defined(FP_FAST_FMA)
     double d8t = double(udouble::fma(tld1, tld2, tld3));
     double d8c = fma(d1, d2, d3);
 
@@ -394,6 +397,7 @@ int main(int argc, char **argv) {
       cout << "NG" << endl;
       exit(-1);
     }
+#endif
 
 #ifdef ENABLE_QUAD
     double d9t = double(tlq1.cast((const udouble *)nullptr));

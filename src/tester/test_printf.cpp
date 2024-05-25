@@ -7,7 +7,6 @@
 
 #include "tlfloat/tlfloat.hpp"
 #include "tlfloat/tlfloat.h"
-
 #include "testerutil.hpp"
 
 using namespace tlfloat;

@@ -6,7 +6,7 @@
 
 #include "tlfloat/tlfloatversion.hpp"
 
-#if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#if defined(TLFLOAT_COMPILER_SUPPORTS_INT128) && defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
 #include <quadmath.h>
 #define TRUE_LIBQUADMATH
 #else
