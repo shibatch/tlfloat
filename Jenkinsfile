@@ -4,6 +4,28 @@ pipeline {
     stages {
         stage('Preamble') {
             parallel {
+                stage('x86_64 linux clang-18') {
+            	     agent { label 'x86_64 && ubuntu22 && cuda' }
+                     options { skipDefaultCheckout() }
+            	     steps {
+                         cleanWs()
+                         checkout scm
+	    	     	 sh '''
+                	 echo "x86_64 clang-18 on" `hostname`
+			 export CC=clang-18
+			 export CXX=clang++-18
+			 export CUDACXX=/opt/cuda-12.4/bin/nvcc
+			 rm -rf build
+ 			 mkdir build
+			 cd build
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_CUDA_TEST=True ..
+			 cmake -E time ninja
+		         export CTEST_OUTPUT_ON_FAILURE=TRUE
+		         ctest -j `nproc`
+			 '''
+            	     }
+                }
+
                 stage('x86_64 linux emscripten') {
             	     agent { label 'emscripten' }
                      options { skipDefaultCheckout() }
@@ -40,28 +62,6 @@ pipeline {
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_VALGRIND=False -DENABLE_ASAN=True ..
-			 cmake -E time ninja
-		         export CTEST_OUTPUT_ON_FAILURE=TRUE
-		         ctest -j `nproc`
-			 '''
-            	     }
-                }
-
-                stage('x86_64 linux clang-18') {
-            	     agent { label 'x86_64 && ubuntu22 && cuda' }
-                     options { skipDefaultCheckout() }
-            	     steps {
-                         cleanWs()
-                         checkout scm
-	    	     	 sh '''
-                	 echo "x86_64 clang-18 on" `hostname`
-			 export CC=clang-18
-			 export CXX=clang++-18
-			 export CUDACXX=/opt/cuda-12.4/bin/nvcc
-			 rm -rf build
- 			 mkdir build
-			 cd build
-			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_CUDA_TEST=True ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j `nproc`
