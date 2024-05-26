@@ -91,16 +91,16 @@ pipeline {
             	     }
                 }
 
-                stage('aarch64 linux clang-17') {
-            	     agent { label 'aarch64 && ubuntu23' }
+                stage('aarch64 linux clang-18') {
+            	     agent { label 'aarch64 && ubuntu24' }
                      options { skipDefaultCheckout() }
             	     steps {
                          cleanWs()
                          checkout scm
 	    	     	 sh '''
-                	 echo "aarch64 clang-17 on" `hostname`
-			 export CC=clang-17
-			 export CXX=clang++-17
+                	 echo "aarch64 clang-18 on" `hostname`
+			 export CC=clang-18
+			 export CXX=clang++-18
 			 rm -rf build
  			 mkdir build
 			 cd build

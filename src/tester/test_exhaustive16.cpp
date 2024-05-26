@@ -2,6 +2,7 @@
 #define MPFR_WANT_FLOAT128
 #include <mpfr.h>
 #include <arm_fp16.h>
+#include <signal.h>
 
 #define TLFLOAT_SUPPRESS_WARNINGS
 
@@ -26,7 +27,14 @@ using namespace tlfloat::detail;
 #define TEST_HYP
 #define TEST_MODREM
 
+static void sighandler(int signum) {
+  cerr << "Caught SIGILL" << endl;
+  exit(0);
+}
+
 int main(int argc, char **argv) {
+  signal(SIGILL, sighandler);
+
   typedef UnpackedFloat<uint16_t, uint32_t, 5, 10> uhalf;
   typedef TLFloat<uhalf> Half;
 

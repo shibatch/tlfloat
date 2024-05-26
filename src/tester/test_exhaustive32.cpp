@@ -77,6 +77,7 @@ int main(int argc, char **argv) {
       }
 
       mpfr_clears(mx, NULL);
+      if (ulp > 0.5) { printf("NG\n"); exit(-1); }
     }
 
     {
@@ -102,6 +103,7 @@ int main(int argc, char **argv) {
       }
 
       mpfr_clears(mx, NULL);
+      if (ulp > 0.5) { printf("NG\n"); exit(-1); }
     }
 #endif
 
@@ -128,6 +130,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -147,6 +150,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -166,6 +170,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 #endif
 
@@ -187,6 +192,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -206,6 +212,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -225,6 +232,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 #endif
 
@@ -246,6 +254,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -265,6 +274,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -284,6 +294,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -303,6 +314,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 #endif
 
@@ -324,6 +336,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -343,6 +356,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -362,6 +376,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -381,6 +396,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 #endif
 
@@ -402,6 +418,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 #endif
 
@@ -423,6 +440,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -442,6 +460,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -461,6 +480,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -480,6 +500,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -499,6 +520,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 
       {
@@ -518,6 +540,7 @@ int main(int argc, char **argv) {
 	  printf("c = %.8g\n\n", c);
 	  fflush(stdout);
 	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
 #endif
 

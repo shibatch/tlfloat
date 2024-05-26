@@ -117,6 +117,10 @@ if (LIB_MPFR AND (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_SYSTEM_PROCESSOR
     target_include_directories(test_exhaustive32 PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
   endif()
 
+  if (ENABLE_EXHAUSTIVE_TESTING)
+    add_test(NAME test_exhaustive32 COMMAND test_exhaustive32)
+  endif()
+
   if (INSTALL_CONTINUOUS_TESTERS)
     install(
       TARGETS test_exhaustive32
@@ -136,6 +140,9 @@ if (TLFLOAT_COMPILER_SUPPORTS_FP16 AND LIB_MPFR)
     target_compile_options(test_exhaustive16 PRIVATE ${OpenMP_CXX_FLAGS})
     target_link_options(test_exhaustive16 PRIVATE ${OpenMP_CXX_FLAGS})
     target_include_directories(test_exhaustive16 PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
+  endif()
+  if (ENABLE_EXHAUSTIVE_TESTING)
+    add_test(NAME test_exhaustive16 COMMAND test_exhaustive16)
   endif()
 
   if (INSTALL_CONTINUOUS_TESTERS)
