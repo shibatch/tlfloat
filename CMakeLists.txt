@@ -64,6 +64,13 @@ endif()
 
 find_library(LIB_MPFR mpfr)
 message(STATUS "LIB_MPFR : " ${LIB_MPFR})
+if (LIB_MPFR)
+  find_path(MPFR_INCLUDE_DIR mpfr.h)
+  message(STATUS "MPFR_INCLUDE_DIR : " ${MPFR_INCLUDE_DIR})
+  if (MPFR_INCLUDE_DIR)
+    include_directories("${MPFR_INCLUDE_DIR}")
+  endif()
+endif()
 
 find_library(LIBM m)
 if (NOT LIBM)

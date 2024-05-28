@@ -225,7 +225,7 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_atanho(o1)", tlfloat_atanho(o1), atanh(d1), T);
   check("tlfloat_expo(o1)", tlfloat_expo(o1), exp(d1), T);
   check("tlfloat_exp2o(o1)", tlfloat_exp2o(o1), exp2(d1), T);
-#ifndef _MSC_VER
+#ifdef _GNU_SOURCE
   check("tlfloat_exp10o(o1)", tlfloat_exp10o(o1), exp10(d1), T);
 #endif
   check("tlfloat_expm1o(o1)", tlfloat_expm1o(o1), expm1(d1), T);
@@ -277,7 +277,7 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_atanhq(q1)", tlfloat_atanhq(q1), atanh(d1), T);
   check("tlfloat_expq(q1)", tlfloat_expq(q1), exp(d1), T);
   check("tlfloat_exp2q(q1)", tlfloat_exp2q(q1), exp2(d1), T);
-#ifndef _MSC_VER
+#ifdef _GNU_SOURCE
   check("tlfloat_exp10q(q1)", tlfloat_exp10q(q1), exp10(d1), T);
 #endif
   check("tlfloat_expm1q(q1)", tlfloat_expm1q(q1), expm1(d1), T);
@@ -329,7 +329,7 @@ void doTest(const string &s1, const string &s2) {
   check("atanhq(q1)", atanhq(q1), atanh(d1), T);
   check("expq(q1)", expq(q1), exp(d1), T);
   check("exp2q(q1)", exp2q(q1), exp2(d1), T);
-#ifndef _MSC_VER
+#ifdef _GNU_SOURCE
   check("exp10q(q1)", exp10q(q1), exp10(d1), T);
 #endif
   check("expm1q(q1)", expm1q(q1), expm1(d1), T);

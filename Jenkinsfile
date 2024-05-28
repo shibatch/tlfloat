@@ -49,6 +49,25 @@ pipeline {
             	     }
                 }
 
+                stage('x86_64 freebsd clang') {
+            	     agent { label 'x86_64 && freebsd' }
+                     options { skipDefaultCheckout() }
+            	     steps {
+                         cleanWs()
+                         checkout scm
+	    	     	 sh '''
+                	 echo "x86_64 freebsd on" `hostname`
+			 rm -rf build
+ 			 mkdir build
+			 cd build
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_VALGRIND=False -DENABLE_ASAN=False ..
+			 cmake -E time ninja
+		         export CTEST_OUTPUT_ON_FAILURE=TRUE
+		         ctest -j `nproc`
+			 '''
+            	     }
+                }
+
                 stage('x86_64 linux gcc-11') {
             	     agent { label 'x86_64 && ubuntu22' }
                      options { skipDefaultCheckout() }
