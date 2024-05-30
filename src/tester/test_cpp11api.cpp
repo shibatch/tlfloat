@@ -223,6 +223,8 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_asinho(o1)", tlfloat_asinho(o1), asinh(d1), T);
   check("tlfloat_acosho(o1)", tlfloat_acosho(o1), acosh(d1), T);
   check("tlfloat_atanho(o1)", tlfloat_atanho(o1), atanh(d1), T);
+  check("tlfloat_erfo(o1)", tlfloat_erfo(o1), erf(d1), T);
+  check("tlfloat_erfco(o1)", tlfloat_erfco(o1), erfc(d1), T);
   check("tlfloat_expo(o1)", tlfloat_expo(o1), exp(d1), T);
   check("tlfloat_exp2o(o1)", tlfloat_exp2o(o1), exp2(d1), T);
 #ifdef _GNU_SOURCE
@@ -275,6 +277,8 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_asinhq(q1)", tlfloat_asinhq(q1), asinh(d1), T);
   check("tlfloat_acoshq(q1)", tlfloat_acoshq(q1), acosh(d1), T);
   check("tlfloat_atanhq(q1)", tlfloat_atanhq(q1), atanh(d1), T);
+  check("tlfloat_erfq(q1)", tlfloat_erfq(q1), erf(d1), T);
+  check("tlfloat_erfcq(q1)", tlfloat_erfcq(q1), erfc(d1), T);
   check("tlfloat_expq(q1)", tlfloat_expq(q1), exp(d1), T);
   check("tlfloat_exp2q(q1)", tlfloat_exp2q(q1), exp2(d1), T);
 #ifdef _GNU_SOURCE
@@ -327,6 +331,8 @@ void doTest(const string &s1, const string &s2) {
   check("asinhq(q1)", asinhq(q1), asinh(d1), T);
   check("acoshq(q1)", acoshq(q1), acosh(d1), T);
   check("atanhq(q1)", atanhq(q1), atanh(d1), T);
+  check("erfq(q1)", erfq(q1), erf(d1), T);
+  check("erfcq(q1)", erfcq(q1), erfc(d1), T);
   check("expq(q1)", expq(q1), exp(d1), T);
   check("exp2q(q1)", exp2q(q1), exp2(d1), T);
 #ifdef _GNU_SOURCE

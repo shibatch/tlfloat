@@ -433,6 +433,18 @@ int main(int argc, char **argv) {
   computeHash<Float, atanh>("Float atanh", rf, xf, fp, mode);
   computeHash<Half, atanh>("Half atanh", rh, xh, fp, mode);
 
+  computeHash<Octuple, erf>("Octuple erf", ro, xo, fp, mode);
+  computeHash<Quad, erf>("Quad erf", rq, xq, fp, mode);
+  computeHash<Double, erf>("Double erf", rd, xd, fp, mode);
+  computeHash<Float, erf>("Float erf", rf, xf, fp, mode);
+  computeHash<Half, erf>("Half erf", rh, xh, fp, mode);
+
+  computeHash<Octuple, erfc>("Octuple erfc", ro, xo, fp, mode);
+  computeHash<Quad, erfc>("Quad erfc", rq, xq, fp, mode);
+  computeHash<Double, erfc>("Double erfc", rd, xd, fp, mode);
+  computeHash<Float, erfc>("Float erfc", rf, xf, fp, mode);
+  computeHash<Half, erfc>("Half erfc", rh, xh, fp, mode);
+
   computeHash<Octuple, fmod>("Octuple fmod", ro, xo, yo, fp, mode);
   computeHash<Quad, fmod>("Quad fmod", rq, xq, yq, fp, mode);
   computeHash<Double, fmod>("Double fmod", rd, xd, yd, fp, mode);

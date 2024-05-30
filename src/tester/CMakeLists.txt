@@ -50,12 +50,12 @@ endif()
 
 add_executable(test_hash test_hash.cpp)
 target_link_libraries(test_hash tlfloat)
-add_test(NAME test_hash COMMAND test_hash 975ad94306bbd3b8ceb6a946403379cff54591b498edb56d5a587980d82a1488)
+add_test(NAME test_hash COMMAND test_hash 16aeab1dfac5457760c33a47ef94c254536211bda5da23b752815888cfffa4d9)
 
 add_executable(test_hash_noopt test_hash.cpp)
 target_compile_definitions(test_hash_noopt PRIVATE TLFLOAT_DISABLE_ARCH_OPTIMIZATION=1)
 target_link_libraries(test_hash_noopt tlfloat)
-add_test(NAME test_hash_noopt COMMAND test_hash_noopt 975ad94306bbd3b8ceb6a946403379cff54591b498edb56d5a587980d82a1488)
+add_test(NAME test_hash_noopt COMMAND test_hash_noopt 16aeab1dfac5457760c33a47ef94c254536211bda5da23b752815888cfffa4d9)
 
 add_executable(test_printf_hash test_printf_hash.cpp)
 target_link_libraries(test_printf_hash tlfloat)

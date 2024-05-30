@@ -25,6 +25,7 @@ using namespace tlfloat::detail;
 #define TEST_POW
 #define TEST_CBRT
 #define TEST_HYP
+#define TEST_ERF
 #define TEST_MODREM
 
 static void sighandler(int signum) {
@@ -475,6 +476,46 @@ int main(int argc, char **argv) {
 	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
 	if (ulp > 0.7) {
 	  printf("\nhalf atanh\n");
+	  cout << "x = " << (__fp16)x << endl;
+	  cout << "c = " << c << endl;
+	  cout << "r = " << (__fp16)r << " : " << to_string_d(Half(r).getUnpacked()) << endl;
+	  printf("ulp = %g\n", ulp);
+	  cout << "NG" << endl;
+	  exit(-1);
+	}
+      }
+#endif
+
+#ifdef TEST_ERF
+      {
+	Half r = erf(x);
+	uhalf xcr = r.getUnpacked();
+
+	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	mpfr_erf(mx, mx, GMP_RNDN);
+	double c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	if (ulp > 0.7) {
+	  printf("\nhalf erf\n");
+	  cout << "x = " << (__fp16)x << endl;
+	  cout << "c = " << c << endl;
+	  cout << "r = " << (__fp16)r << " : " << to_string_d(Half(r).getUnpacked()) << endl;
+	  printf("ulp = %g\n", ulp);
+	  cout << "NG" << endl;
+	  exit(-1);
+	}
+      }
+
+      {
+	Half r = erfc(x);
+	uhalf xcr = r.getUnpacked();
+
+	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	mpfr_erfc(mx, mx, GMP_RNDN);
+	double c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	if (ulp > 0.7) {
+	  printf("\nhalf erfc\n");
 	  cout << "x = " << (__fp16)x << endl;
 	  cout << "c = " << c << endl;
 	  cout << "r = " << (__fp16)r << " : " << to_string_d(Half(r).getUnpacked()) << endl;

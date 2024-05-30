@@ -496,6 +496,18 @@ int main(int argc, char **argv) {
   doTest<Float, atanh>("Float atanh", rf, xf);
   doTest<Half, atanh>("Half atanh", rh, xh);
 
+  doTest<Octuple, erf>("Octuple erf", ro, xo);
+  doTest<Quad, erf>("Quad erf", rq, xq);
+  doTest<Double, erf>("Double erf", rd, xd);
+  doTest<Float, erf>("Float erf", rf, xf);
+  doTest<Half, erf>("Half erf", rh, xh);
+
+  doTest<Octuple, erfc>("Octuple erfc", ro, xo);
+  doTest<Quad, erfc>("Quad erfc", rq, xq);
+  doTest<Double, erfc>("Double erfc", rd, xd);
+  doTest<Float, erfc>("Float erfc", rf, xf);
+  doTest<Half, erfc>("Half erfc", rh, xh);
+
   doTest<Octuple, fmod>("Octuple fmod", ro, xo, yo);
   doTest<Quad, fmod>("Quad fmod", rq, xq, yq);
   doTest<Double, fmod>("Double fmod", rd, xd, yd);

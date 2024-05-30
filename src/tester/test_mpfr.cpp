@@ -37,6 +37,7 @@ using namespace tlfloat::detail;
 #define TEST_CBRT
 #define TEST_HYP
 #define TEST_MODREM
+#define TEST_ERF
 #define TEST_MISC
 
 int main(int argc, char **argv) {
@@ -594,6 +595,46 @@ int main(int argc, char **argv) {
 	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
 	  if (ulp > 0.55) {
 	    printf("\nfloat atanh\n");
+	    printf("ulp = %g\n", ulp);
+	    printf("x = %.8g\n", x);
+	    printf("t = %.8g\n", r);
+	    printf("c = %.8g\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+#endif
+
+#if defined(TEST_FLOAT) && defined(TEST_ERF)
+	{
+	  float r = (float)erf(Float(x));
+	  ufloat xfr = Float(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_erf(mx, mx, GMP_RNDN);
+	  float c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  if (ulp > 0.55) {
+	    printf("\nfloat erf\n");
+	    printf("ulp = %g\n", ulp);
+	    printf("x = %.8g\n", x);
+	    printf("t = %.8g\n", r);
+	    printf("c = %.8g\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  float r = (float)erfc(Float(x));
+	  ufloat xfr = Float(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_erfc(mx, mx, GMP_RNDN);
+	  float c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  if (ulp > 0.55) {
+	    printf("\nfloat erfc\n");
 	    printf("ulp = %g\n", ulp);
 	    printf("x = %.8g\n", x);
 	    printf("t = %.8g\n", r);
@@ -1272,6 +1313,46 @@ int main(int argc, char **argv) {
 	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
 	  if (ulp > 0.505) {
 	    printf("\ndouble atanh\n");
+	    printf("ulp = %lg\n", ulp);
+	    printf("x = %.20lg\n", x);
+	    printf("t = %.20lg\n", r);
+	    printf("c = %.20lg\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+#endif
+
+#if defined(TEST_DOUBLE) && defined(TEST_ERF)
+	{
+	  double r = (double)erf(Double(x));
+	  udouble xfr = Double(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_erf(mx, mx, GMP_RNDN);
+	  double c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  if (ulp > 0.505) {
+	    printf("\ndouble erf\n");
+	    printf("ulp = %lg\n", ulp);
+	    printf("x = %.20lg\n", x);
+	    printf("t = %.20lg\n", r);
+	    printf("c = %.20lg\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  double r = (double)erfc(Double(x));
+	  udouble xfr = Double(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_erfc(mx, mx, GMP_RNDN);
+	  double c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  if (ulp > 0.505) {
+	    printf("\ndouble erfc\n");
 	    printf("ulp = %lg\n", ulp);
 	    printf("x = %.20lg\n", x);
 	    printf("t = %.20lg\n", r);
@@ -2361,6 +2442,66 @@ int main(int argc, char **argv) {
 	}
 #endif
 
+#if defined(TEST_QUAD) && defined(TEST_ERF)
+	{
+	  quad_ r = (quad_)erf(Quad(x));
+	  uquad xfr = Quad(r).getUnpacked();
+
+#ifdef ENABLE_QUAD
+	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
+	  mpfr_erf(mx, mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
+	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  if (ulp > 0.501) {
+	    printf("\nquad erf\n");
+	    printf("ulp = %g\n", ulp);
+	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
+	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
+	    cout << "r = " << r << endl;
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  quad_ r = (quad_)erfc(Quad(x));
+	  uquad xfr = Quad(r).getUnpacked();
+
+#ifdef ENABLE_QUAD
+	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
+	  mpfr_erfc(mx, mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
+	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  if (ulp > 0.501) {
+	    printf("\nquad erfc\n");
+	    printf("ulp = %g\n", ulp);
+	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
+	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
+	    cout << "r = " << r << endl;
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+#endif
+
 #if defined(TEST_QUAD) && defined(TEST_MISC)
 	{
 	  quad_ r = (quad_)fabs(Quad(x));
@@ -3149,6 +3290,44 @@ int main(int argc, char **argv) {
 	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple atanh\n");
+	    cout << "x = " << x << endl;
+	    cout << "c = " << to_string(mx, 72) << endl;
+	    cout << "r = " << to_string(r , 72) << " : " << to_string_d(Octuple(r).getUnpacked()) << endl;
+	    printf("ulp = %g\n", ulp);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+#endif
+
+#if defined(TEST_OCTUPLE) && defined(TEST_ERF)
+	{
+	  Octuple r = erf(Octuple(x));
+	  uoctuple xcr = r.getUnpacked();
+
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_erf(mx, mx, GMP_RNDN);
+	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  if (ulp > 0.5002) {
+	    printf("\noctuple erf\n");
+	    cout << "x = " << x << endl;
+	    cout << "c = " << to_string(mx, 72) << endl;
+	    cout << "r = " << to_string(r , 72) << " : " << to_string_d(Octuple(r).getUnpacked()) << endl;
+	    printf("ulp = %g\n", ulp);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  Octuple r = erfc(Octuple(x));
+	  uoctuple xcr = r.getUnpacked();
+
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_erfc(mx, mx, GMP_RNDN);
+	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  if (ulp > 0.5002) {
+	    printf("\noctuple erfc\n");
 	    cout << "x = " << x << endl;
 	    cout << "c = " << to_string(mx, 72) << endl;
 	    cout << "r = " << to_string(r , 72) << " : " << to_string_d(Octuple(r).getUnpacked()) << endl;

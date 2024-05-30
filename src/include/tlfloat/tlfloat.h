@@ -500,6 +500,16 @@ extern "C" {
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   double tlfloat_remainder(const double x, const double y);
 
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_erff(const float x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_erf(const double x);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_erfcf(const float x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_erfc(const double x);
+
 #if !defined(TLFLOAT_DOXYGEN)
   tlfloat_quad_ tlfloat_fabsq(const tlfloat_quad_ x);
   tlfloat_octuple_ tlfloat_fabso(const tlfloat_octuple_ x);
@@ -587,6 +597,10 @@ extern "C" {
   tlfloat_octuple_ tlfloat_acosho(const tlfloat_octuple_ x);
   tlfloat_quad_ tlfloat_atanhq(const tlfloat_quad_ x);
   tlfloat_octuple_ tlfloat_atanho(const tlfloat_octuple_ x);
+  tlfloat_quad_ tlfloat_erfq(const tlfloat_quad_ x);
+  tlfloat_octuple_ tlfloat_erfo(const tlfloat_octuple_ x);
+  tlfloat_quad_ tlfloat_erfcq(const tlfloat_quad_ x);
+  tlfloat_octuple_ tlfloat_erfco(const tlfloat_octuple_ x);
   tlfloat_quad_ tlfloat_fmodq(const tlfloat_quad_ x, const tlfloat_quad_ y);
   tlfloat_octuple_ tlfloat_fmodo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
   tlfloat_quad_ tlfloat_remainderq(const tlfloat_quad_ x, const tlfloat_quad_ y);
@@ -990,6 +1004,10 @@ static inline tlfloat_quad tlfloat_acoshq(const tlfloat_quad x) { return tlfloat
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_atanhq(const tlfloat_quad x) { return tlfloat_atanhq(tlfloat_quad_(x)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_erfq(const tlfloat_quad x) { return tlfloat_erfq(tlfloat_quad_(x)); }
+/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_erfcq(const tlfloat_quad x) { return tlfloat_erfcq(tlfloat_quad_(x)); }
+/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_fmodq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_fmodq(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_remainderq(tlfloat_quad_(x), tlfloat_quad_(y)); }
@@ -1243,6 +1261,16 @@ static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloa
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
+  static inline tlfloat_quad erfq(const tlfloat_quad x) { return tlfloat_erfq(x); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline tlfloat_quad erfcq(const tlfloat_quad x) { return tlfloat_erfcq(x); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
   static inline tlfloat_quad fmodq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_fmodq(x, y); }
 
   /** This function has the same functionality as the corresponding function in quadmath.h.
@@ -1466,6 +1494,10 @@ static inline tlfloat_octuple tlfloat_asinho(const tlfloat_octuple x) { return t
 static inline tlfloat_octuple tlfloat_acosho(const tlfloat_octuple x) { return tlfloat_acosho(tlfloat_octuple_(x)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_octuple tlfloat_atanho(const tlfloat_octuple x) { return tlfloat_atanho(tlfloat_octuple_(x)); }
+/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_erfo(const tlfloat_octuple x) { return tlfloat_erfo(tlfloat_octuple_(x)); }
+/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_erfco(const tlfloat_octuple x) { return tlfloat_erfco(tlfloat_octuple_(x)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_octuple tlfloat_fmodo(const tlfloat_octuple x, const tlfloat_octuple y) { return tlfloat_fmodo(tlfloat_octuple_(x), tlfloat_octuple_(y)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */

@@ -33,6 +33,9 @@ namespace tlfloat {
       return T("0x1.921fb54442d18469898cc51701b839a252049c1114cf98e804177d4c76273644ap+1");
     }
 
+    template<typename Unpacked_t>
+    static consteval Unpacked_t constRSqrtPI() { return Unpacked_t::castFromInt(1) / sqrt_(constPI<Unpacked_t>()); }
+
     template<typename T>
     static consteval T constLN2() {
       return T("0x1.62e42fefa39ef35793c7673007e5ed5e81e6864ce5316c5b141a2eb71755f457cf70ec40dbd75930ab2aa5f695f43621da5d5c6b827042884eae765222d37048p-1");
@@ -689,7 +692,72 @@ namespace tlfloat {
       if (un.sign) ur.sign = !ur.sign;
       return tlfloat_t(ur.cast((decltype(n.getUnpacked()) *)nullptr));
     }
+
+    //
+
+    template<typename Unpacked_t, unsigned N, unsigned EN, unsigned EM>
+    static constexpr Unpacked_t erf_(const Unpacked_t& z) {
+      Unpacked_t n = Unpacked_t::castFromInt(N*2+1), d = Unpacked_t::castFromInt(1), t;
+      for(int i=N;i>0;i-=2) {
+	t = n;
+	n = n*Unpacked_t::castFromInt(i*2-1) + z*z*Unpacked_t::castFromInt(i*2-0)*d;
+	d = t;
+
+	t = n;
+	n = n*Unpacked_t::castFromInt(i*2-3) - z*z*Unpacked_t::castFromInt(i*2-2)*d;
+	d = t;
+      }
+      d = ldexp_(d, 1);
+      return z * constRSqrtPI<Unpacked_t>() * exp_<Unpacked_t, EN, EM>(-(z*z)) * (d / n);
+    }
+
+    template<typename Unpacked_t, unsigned N, unsigned EN, unsigned EM>
+    static constexpr Unpacked_t erfc_(const Unpacked_t& z) {
+      Unpacked_t n = Unpacked_t::castFromInt(1), d = n, t;
+      for(int i=N;i>0;i-=2) {
+	t = n;
+	n = n + ldexp_(Unpacked_t::castFromInt(i), -1) * d;
+	d = t;
+
+	t = n;
+	n = z * z * n + ldexp_(Unpacked_t::castFromInt(i - 1), -1) * d;
+	d = t;
+      }
+      return z * constRSqrtPI<Unpacked_t>() * exp_<Unpacked_t, EN, EM>(-(z*z)) * (d / n);
+    }
+
+    template<typename tlfloat_t, typename Unpacked_t, int T, unsigned N, unsigned EN, unsigned EM>
+    static constexpr tlfloat_t erf(const tlfloat_t &a) {
+      if (isnan(a)) return a;
+      if (isinf(a)) return signbit(a) ? -1 : 1;
+      Unpacked_t z;
+      if (a < (tlfloat_t)(-T * 0.1)) {
+	z = Unpacked_t::castFromInt(-1) - erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+      } else if (a < (tlfloat_t)(T * 0.1)) {
+	z = erf_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+      } else {
+	z = Unpacked_t::castFromInt(1) - erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+      }
+      return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
+    }
+
+    template<typename tlfloat_t, typename Unpacked_t, int T, unsigned N, unsigned EN, unsigned EM>
+    static constexpr tlfloat_t erfc(const tlfloat_t &a) {
+      if (isnan(a)) return a;
+      if (isinf(a)) return signbit(a) ? 2 : 0;
+      Unpacked_t z;
+      if (a < (tlfloat_t)(-T * 0.1)) {
+	z = Unpacked_t::castFromInt(2) + erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+      } else if (a < (tlfloat_t)(T * 0.1)) {
+	z = Unpacked_t::castFromInt(1) - erf_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+      } else {
+	z = erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+      }
+      return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
+    }
   }
+
+  //
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half sin(const Half& a) { return detail::sin<Half, detail::xhalf, 2>(a); }
@@ -965,5 +1033,27 @@ namespace tlfloat {
   static inline constexpr Quad remainder(const Quad& y, const Quad& x) { return detail::remainder<Quad, detail::xquad>(y, x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Octuple remainder(const Octuple& y, const Octuple& x) { return detail::remainder<Octuple, detail::xoctuple>(y, x); }
+
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Half erf(const Half& x) { return detail::erf<Half, detail::xfloat, 16, 10, 5, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Float erf(const Float& x) { return detail::erf<Float, detail::xdouble, 20, 20, 8, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Double erf(const Double& x) { return detail::erf<Double, detail::xquad, 25, 50, 14, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Quad erf(const Quad& x) { return detail::erf<Quad, detail::xoctuple, 38, 80, 21, 1>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Octuple erf(const Octuple& x) { return detail::erf<Octuple, detail::xsedecuple, 58, 140, 33, 2>(x); }
+
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Half erfc(const Half& x) { return detail::erfc<Half, detail::xfloat, 16, 10, 5, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Float erfc(const Float& x) { return detail::erfc<Float, detail::xdouble, 20, 20, 8, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Double erfc(const Double& x) { return detail::erfc<Double, detail::xquad, 25, 50, 14, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Quad erfc(const Quad& x) { return detail::erfc<Quad, detail::xoctuple, 38, 80, 21, 1>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr Octuple erfc(const Octuple& x) { return detail::erfc<Octuple, detail::xsedecuple, 58, 140, 33, 2>(x); }
 }
 #endif // #ifndef __TLMATH_HPP_INCLUDED__

@@ -1,6 +1,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <chrono>
 #include <cstdint>
 #include <cmath>
 #include <ctime>
@@ -96,7 +97,10 @@ public:
     for(int i=0;i<10;i++) next32();
   }
 
-  LCG64() : LCG64(time(NULL)) {}
+  LCG64() {
+    state = chrono::high_resolution_clock::now().time_since_epoch().count();
+    for(int i=0;i<10;i++) next32();
+  }
 
   uint32_t next32() {
     state = state * 6364136223846793005ULL + 1442695040888963407ULL;

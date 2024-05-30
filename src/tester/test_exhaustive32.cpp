@@ -26,6 +26,7 @@ typedef UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
 #define TEST_LOG
 #define TEST_CBRT
 #define TEST_HYP
+#define TEST_ERF
 
 int main(int argc, char **argv) {
 #ifdef TEST_PH
@@ -42,6 +43,7 @@ int main(int argc, char **argv) {
   double maxulp_cbrt = 0.5;
   double maxulp_sinh = 0.5, maxulp_cosh = 0.5, maxulp_tanh = 0.5;
   double maxulp_asinh = 0.5, maxulp_acosh = 0.5, maxulp_atanh = 0.5;
+  double maxulp_erf = 0.5, maxulp_erfc = 0.5;
 
   #pragma omp parallel for
   for(uint64_t u64=0;u64 < 0x100000000ULL;u64++) {
@@ -534,6 +536,48 @@ int main(int argc, char **argv) {
 	if (ulp > maxulp_atanh) {
 	  maxulp_atanh = ulp;
 	  printf("\natanh\n");
+	  printf("ulp = %g\n", ulp);
+	  printf("x = %.8g\n", x);
+	  printf("t = %.8g\n", r);
+	  printf("c = %.8g\n\n", c);
+	  fflush(stdout);
+	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
+      }
+#endif
+
+#ifdef TEST_ERF
+      {
+	float r = (float)erf(Float(x));
+	ufloat xfr = Float(r).getUnpacked();
+
+	mpfr_set_d(mx, x, GMP_RNDN);
+	mpfr_erf(mx, mx, GMP_RNDN);
+	float c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	if (ulp > maxulp_erf) {
+	  maxulp_erf = ulp;
+	  printf("\nerf\n");
+	  printf("ulp = %g\n", ulp);
+	  printf("x = %.8g\n", x);
+	  printf("t = %.8g\n", r);
+	  printf("c = %.8g\n\n", c);
+	  fflush(stdout);
+	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
+      }
+
+      {
+	float r = (float)erfc(Float(x));
+	ufloat xfr = Float(r).getUnpacked();
+
+	mpfr_set_d(mx, x, GMP_RNDN);
+	mpfr_erfc(mx, mx, GMP_RNDN);
+	float c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	if (ulp > maxulp_erfc) {
+	  maxulp_erfc = ulp;
+	  printf("\nerfc\n");
 	  printf("ulp = %g\n", ulp);
 	  printf("x = %.8g\n", x);
 	  printf("t = %.8g\n", r);

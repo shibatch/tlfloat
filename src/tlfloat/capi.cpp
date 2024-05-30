@@ -753,6 +753,16 @@ extern "C" {
   tlfloat_quad_ tlfloat_remainderq(const tlfloat_quad_ x, const tlfloat_quad_ y) { return (tlfloat_quad_)remainder(Quad(x), Quad(y)); }
   tlfloat_octuple_ tlfloat_remaindero(const tlfloat_octuple_ x, const tlfloat_octuple_ y) { return (tlfloat_octuple_)remainder(Octuple(x), Octuple(y)); }
 
+  float tlfloat_erff(const float a) { return (float)erf(Float(a)); }
+  double tlfloat_erf(const double a) { return (double)erf(Double(a)); }
+  tlfloat_quad_ tlfloat_erfq(const tlfloat_quad_ a) { return (tlfloat_quad_)erf(Quad(a)); }
+  tlfloat_octuple_ tlfloat_erfo(const tlfloat_octuple_ a) { return (tlfloat_octuple_)erf(Octuple(a)); }
+
+  float tlfloat_erfcf(const float a) { return (float)erfc(Float(a)); }
+  double tlfloat_erfc(const double a) { return (double)erfc(Double(a)); }
+  tlfloat_quad_ tlfloat_erfcq(const tlfloat_quad_ a) { return (tlfloat_quad_)erfc(Quad(a)); }
+  tlfloat_octuple_ tlfloat_erfco(const tlfloat_octuple_ a) { return (tlfloat_octuple_)erfc(Octuple(a)); }
+
   //
 
   tlfloat_int128_t_ tlfloat_cast_i128_i64(const int64_t x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>(x)); }

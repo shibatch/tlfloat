@@ -309,6 +309,18 @@ int main(int argc, char **argv) {
     doTest<Quad, atanh, mpfr_atanh>("Quad atanh", qvalues[index0], mr, ma1);
     doTest<Octuple, atanh, mpfr_atanh>("Octuple atanh", ovalues[index0], mr, ma1);
 
+    doTest<Half, erf, mpfr_erf>("Half erf", hvalues[index0], mr, ma1);
+    doTest<Float, erf, mpfr_erf>("Float erf", fvalues[index0], mr, ma1);
+    doTest<Double, erf, mpfr_erf>("Double erf", dvalues[index0], mr, ma1);
+    doTest<Quad, erf, mpfr_erf>("Quad erf", qvalues[index0], mr, ma1);
+    doTest<Octuple, erf, mpfr_erf>("Octuple erf", ovalues[index0], mr, ma1);
+
+    doTest<Half, erfc, mpfr_erfc>("Half erfc", hvalues[index0], mr, ma1);
+    doTest<Float, erfc, mpfr_erfc>("Float erfc", fvalues[index0], mr, ma1);
+    doTest<Double, erfc, mpfr_erfc>("Double erfc", dvalues[index0], mr, ma1);
+    doTest<Quad, erfc, mpfr_erfc>("Quad erfc", qvalues[index0], mr, ma1);
+    doTest<Octuple, erfc, mpfr_erfc>("Octuple erfc", ovalues[index0], mr, ma1);
+
     for(int index1 = 0;index1 < N;index1++) {
       doTest<Half, copysign_, mpfr_copysign>("Half copysign", hvalues[index0], hvalues[index1], mr, ma1, ma2, true);
       doTest<Float, copysign_, mpfr_copysign>("Float copysign", fvalues[index0], fvalues[index1], mr, ma1, ma2, true);
