@@ -1039,21 +1039,21 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Float erf(const Float& x) { return detail::erf<Float, detail::xdouble, 20, 20, 8, 0>(x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
-  static inline constexpr Double erf(const Double& x) { return detail::erf<Double, detail::xquad, 25, 50, 14, 0>(x); }
+  static inline constexpr Double erf(const Double& x) { return detail::erf<Double, detail::xquad, 22, 86, 15, 0>(x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
-  static inline constexpr Quad erf(const Quad& x) { return detail::erf<Quad, detail::xoctuple, 38, 80, 21, 1>(x); }
+  static inline constexpr Quad erf(const Quad& x) { return detail::erf<Quad, detail::xoctuple, 31, 120, 22, 1>(x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
-  static inline constexpr Octuple erf(const Octuple& x) { return detail::erf<Octuple, detail::xsedecuple, 58, 140, 33, 2>(x); }
+  static inline constexpr Octuple erf(const Octuple& x) { return detail::erf<Octuple, detail::xsedecuple, 36, 340, 36, 2>(x); }
 
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Half erfc(const Half& x) { return detail::erfc<Half, detail::xfloat, 16, 10, 5, 0>(x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Float erfc(const Float& x) { return detail::erfc<Float, detail::xdouble, 20, 20, 8, 0>(x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
-  static inline constexpr Double erfc(const Double& x) { return detail::erfc<Double, detail::xquad, 25, 50, 14, 0>(x); }
+  static inline constexpr Double erfc(const Double& x) { return detail::erfc<Double, detail::xquad, 22, 86, 15, 0>(x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
-  static inline constexpr Quad erfc(const Quad& x) { return detail::erfc<Quad, detail::xoctuple, 38, 80, 21, 1>(x); }
+  static inline constexpr Quad erfc(const Quad& x) { return detail::erfc<Quad, detail::xoctuple, 31, 120, 22, 1>(x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
-  static inline constexpr Octuple erfc(const Octuple& x) { return detail::erfc<Octuple, detail::xsedecuple, 58, 140, 33, 2>(x); }
+  static inline constexpr Octuple erfc(const Octuple& x) { return detail::erfc<Octuple, detail::xsedecuple, 36, 340, 36, 2>(x); }
 }
 #endif // #ifndef __TLMATH_HPP_INCLUDED__

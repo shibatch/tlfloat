@@ -204,7 +204,7 @@ int main(int argc, char **argv) {
   cout << endl;
 
   {
-    auto coef = genExpCoef<33+1>();
+    auto coef = genExpCoef<36+1>();
 
     cout << "    static constexpr const char *expCoefStr[] = {" << endl;
 

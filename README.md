@@ -50,6 +50,7 @@ integer class templates are also included in this library.
 * Moderately optimized
   * Optimized for each architecture using intrinsics, etc.
   * Library design allows compilers to fully inline operations
+  * All functions are thread-safe and reentrant
 
 * Implements most of the math.h functions
   * Arithmetic operations, comparison, cast operations
@@ -57,6 +58,7 @@ integer class templates are also included in this library.
   * sin, cos, tan, asin, acos, atan, atan2
   * log, log2, log10, log1p, exp, exp2, exp10, expm1, pow
   * sinh, cosh, tanh, asinh, acosh, atanh
+  * erf, erfc
   * trunc, floor, ceil, round, rint
   * fabs, copysign, fmax, fmin, fdim
   * ldexp, frexp, modf, nextafter
