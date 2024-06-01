@@ -30,7 +30,7 @@ namespace tlfloat {
 
     template<typename T>
     static consteval T constPI() {
-      return T("0x1.921fb54442d18469898cc51701b839a252049c1114cf98e804177d4c76273644ap+1");
+      return T("0x1.921fb54442d18469898cc51701b839a252049c1114cf98e804177d4c76273644a29410f31c6809bbdf2a33679a748636605614dbe4be286e9fc26adadaa38488p+1");
     }
 
     template<typename Unpacked_t>
@@ -73,12 +73,12 @@ namespace tlfloat {
 
     template<typename T>
     static consteval T constCbrt2() {
-      return T("0x1.428a2f98d728ae223ddab715be250d0c288f10291631fbc061800cc36fa2dd3a6p+0");
+      return T("0x1.428a2f98d728ae223ddab715be250d0c288f10291631fbc061800cc36fa2dd3a60b7d03da26f0840f25cc16b0f95075c30967a6b5ac6827ab31f06edf4a3486cp+0");
     }
 
     template<typename T>
     static consteval T constCbrt4() {
-      return T("0x1.965fea53d6e3c82b05999ab43dc4def1980762158a0a815f2291ac0cf93041e58p+0");
+      return T("0x1.965fea53d6e3c82b05999ab43dc4def1980762158a0a815f2291ac0cf93041e5875f13657a43adc3896c0b95c0244e271d6f695f41523046622bc574b2caeaecp+0");
     }
 
     //
@@ -1034,26 +1034,26 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Octuple remainder(const Octuple& y, const Octuple& x) { return detail::remainder<Octuple, detail::xoctuple>(y, x); }
 
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half erf(const Half& x) { return detail::erf<Half, detail::xfloat, 16, 10, 5, 0>(x); }
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float erf(const Float& x) { return detail::erf<Float, detail::xdouble, 20, 20, 8, 0>(x); }
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Double erf(const Double& x) { return detail::erf<Double, detail::xquad, 22, 86, 15, 0>(x); }
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Quad erf(const Quad& x) { return detail::erf<Quad, detail::xoctuple, 31, 120, 22, 1>(x); }
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple erf(const Octuple& x) { return detail::erf<Octuple, detail::xsedecuple, 36, 340, 36, 2>(x); }
 
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half erfc(const Half& x) { return detail::erfc<Half, detail::xfloat, 16, 10, 5, 0>(x); }
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float erfc(const Float& x) { return detail::erfc<Float, detail::xdouble, 20, 20, 8, 0>(x); }
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Double erfc(const Double& x) { return detail::erfc<Double, detail::xquad, 22, 86, 15, 0>(x); }
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Quad erfc(const Quad& x) { return detail::erfc<Quad, detail::xoctuple, 31, 120, 22, 1>(x); }
-  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple erfc(const Octuple& x) { return detail::erfc<Octuple, detail::xsedecuple, 36, 340, 36, 2>(x); }
 }
 #endif // #ifndef __TLMATH_HPP_INCLUDED__
