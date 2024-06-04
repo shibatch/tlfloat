@@ -15,6 +15,11 @@
 using namespace std;
 using namespace tlfloat;
 
+int mpfr_lgamma_(mpfr_t rop, const mpfr_t op, mpfr_rnd_t rnd) {
+  int sign;
+  return mpfr_lgamma(rop, &sign, op, rnd);
+}
+
 template<typename T>
 using Func1 = T (*)(const T&);
 
@@ -47,6 +52,7 @@ template<typename T> static constexpr T ceil_(const T &a) { return ceil(a); }
 template<typename T> static constexpr T round_(const T &a) { return round(a); }
 template<typename T> static constexpr T rint_(const T &a) { return rint(a); }
 template<typename T> static constexpr T nextafter_(const T &a1, const T &a2) { return nextafter(a1, a2); }
+template<typename T> static constexpr T lgamma_(const T &a1) { return lgamma(a1, nullptr); }
 
 template<typename T, Func1<T> func, MPFRFunc1 mpfrFunc>
 void doTest(const char *mes, T a1, mpfr_t &mr, mpfr_t &ma1) {
@@ -320,6 +326,20 @@ int main(int argc, char **argv) {
     doTest<Double, erfc, mpfr_erfc>("Double erfc", dvalues[index0], mr, ma1);
     doTest<Quad, erfc, mpfr_erfc>("Quad erfc", qvalues[index0], mr, ma1);
     doTest<Octuple, erfc, mpfr_erfc>("Octuple erfc", ovalues[index0], mr, ma1);
+
+    doTest<Half, tgamma, mpfr_gamma>("Half tgamma", hvalues[index0], mr, ma1);
+    doTest<Float, tgamma, mpfr_gamma>("Float tgamma", fvalues[index0], mr, ma1);
+    doTest<Double, tgamma, mpfr_gamma>("Double tgamma", dvalues[index0], mr, ma1);
+    doTest<Quad, tgamma, mpfr_gamma>("Quad tgamma", qvalues[index0], mr, ma1);
+    doTest<Octuple, tgamma, mpfr_gamma>("Octuple tgamma", ovalues[index0], mr, ma1);
+
+#if 0
+    doTest<Half, lgamma_, mpfr_lgamma_>("Half lgamma", hvalues[index0], mr, ma1);
+    doTest<Float, lgamma_, mpfr_lgamma_>("Float lgamma", fvalues[index0], mr, ma1);
+    doTest<Double, lgamma_, mpfr_lgamma_>("Double lgamma", dvalues[index0], mr, ma1);
+    doTest<Quad, lgamma_, mpfr_lgamma_>("Quad lgamma", qvalues[index0], mr, ma1);
+    doTest<Octuple, lgamma_, mpfr_lgamma_>("Octuple lgamma", ovalues[index0], mr, ma1);
+#endif
 
     for(int index1 = 0;index1 < N;index1++) {
       doTest<Half, copysign_, mpfr_copysign>("Half copysign", hvalues[index0], hvalues[index1], mr, ma1, ma2, true);

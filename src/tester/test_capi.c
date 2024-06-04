@@ -370,6 +370,18 @@ int main(int argc, char **argv) {
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Og", tlfloat_erfco(o0));
   checkStr(buf0, buf1, "quadmath erfco");
 
+  quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", tgammaq(q0));
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_tgammaq(q0));
+  checkStr(buf0, buf1, "quadmath tgammaq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.24Og", tlfloat_tgammao(o0));
+  checkStr(buf0, buf1, "quadmath tgammao");
+
+  quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", lgammaq(q0));
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_lgammaq(q0));
+  checkStr(buf0, buf1, "quadmath lgammaq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.24Og", tlfloat_lgammao(o0));
+  checkStr(buf0, buf1, "quadmath lgammao");
+
   quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", hypotq(q0, q1));
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_hypotq(q0, q1));
   checkStr(buf0, buf1, "quadmath hypotq");

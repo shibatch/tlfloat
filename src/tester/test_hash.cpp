@@ -122,6 +122,7 @@ template<typename T> static constexpr T ceil_(const T &a) { return ceil(a); }
 template<typename T> static constexpr T round_(const T &a) { return round(a); }
 template<typename T> static constexpr T rint_(const T &a) { return rint(a); }
 template<typename T> static constexpr T nextafter_(const T &a1, const T &a2) { return nextafter(a1, a2); }
+template<typename T> static constexpr T lgamma_(const T &a1) { return lgamma(a1, nullptr); }
 
 //
 
@@ -444,6 +445,18 @@ int main(int argc, char **argv) {
   computeHash<Double, erfc>("Double erfc", rd, xd, fp, mode);
   computeHash<Float, erfc>("Float erfc", rf, xf, fp, mode);
   computeHash<Half, erfc>("Half erfc", rh, xh, fp, mode);
+
+  computeHash<Octuple, tgamma>("Octuple tgamma", ro, xo, fp, mode);
+  computeHash<Quad, tgamma>("Quad tgamma", rq, xq, fp, mode);
+  computeHash<Double, tgamma>("Double tgamma", rd, xd, fp, mode);
+  computeHash<Float, tgamma>("Float tgamma", rf, xf, fp, mode);
+  computeHash<Half, tgamma>("Half tgamma", rh, xh, fp, mode);
+
+  computeHash<Octuple, lgamma_>("Octuple lgamma", ro, xo, fp, mode);
+  computeHash<Quad, lgamma_>("Quad lgamma", rq, xq, fp, mode);
+  computeHash<Double, lgamma_>("Double lgamma", rd, xd, fp, mode);
+  computeHash<Float, lgamma_>("Float lgamma", rf, xf, fp, mode);
+  computeHash<Half, lgamma_>("Half lgamma", rh, xh, fp, mode);
 
   computeHash<Octuple, fmod>("Octuple fmod", ro, xo, yo, fp, mode);
   computeHash<Quad, fmod>("Quad fmod", rq, xq, yq, fp, mode);

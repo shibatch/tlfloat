@@ -27,6 +27,7 @@ typedef UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
 #define TEST_CBRT
 #define TEST_HYP
 #define TEST_ERF
+#define TEST_GAMMA
 
 int main(int argc, char **argv) {
 #ifdef TEST_PH
@@ -44,6 +45,7 @@ int main(int argc, char **argv) {
   double maxulp_sinh = 0.5, maxulp_cosh = 0.5, maxulp_tanh = 0.5;
   double maxulp_asinh = 0.5, maxulp_acosh = 0.5, maxulp_atanh = 0.5;
   double maxulp_erf = 0.5, maxulp_erfc = 0.5;
+  double maxulp_tgamma = 0.5, maxulp_lgamma = 0.5;
 
   #pragma omp parallel for
   for(uint64_t u64=0;u64 < 0x100000000ULL;u64++) {
@@ -586,6 +588,51 @@ int main(int argc, char **argv) {
 	}
 	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
+#endif
+
+#ifdef TEST_GAMMA
+      {
+	float r = (float)tgamma(Float(x));
+	ufloat xfr = Float(r).getUnpacked();
+
+	mpfr_set_d(mx, x, GMP_RNDN);
+	mpfr_gamma(mx, mx, GMP_RNDN);
+	float c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	if (ulp > maxulp_tgamma) {
+	  maxulp_tgamma = ulp;
+	  printf("\ntgamma\n");
+	  printf("ulp = %g\n", ulp);
+	  printf("x = %.8g\n", x);
+	  printf("t = %.8g\n", r);
+	  printf("c = %.8g\n\n", c);
+	  fflush(stdout);
+	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
+      }
+
+#if 0
+      {
+	float r = (float)lgamma(Float(x));
+	ufloat xfr = Float(r).getUnpacked();
+
+	mpfr_set_d(mx, x, GMP_RNDN);
+	int msign = 0;
+	mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
+	float c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	if (ulp > maxulp_lgamma) {
+	  maxulp_lgamma = ulp;
+	  printf("\nlgamma\n");
+	  printf("ulp = %g\n", ulp);
+	  printf("x = %.8g\n", x);
+	  printf("t = %.8g\n", r);
+	  printf("c = %.8g\n\n", c);
+	  fflush(stdout);
+	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
+      }
+#endif
 #endif
 
       mpfr_clears(mx, NULL);

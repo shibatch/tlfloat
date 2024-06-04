@@ -37,6 +37,16 @@ namespace tlfloat {
     static consteval Unpacked_t constRSqrtPI() { return Unpacked_t::castFromInt(1) / sqrt_(constPI<Unpacked_t>()); }
 
     template<typename T>
+    static consteval T constLNPI() {
+      return T("0x1.250d048e7a1bd0bd5f956c6a843f49985e6ddbf3b3f2606e33802ecaefa9308e5aa6c4df523160e6d2402c256db0b866738aa8787561937377769e99dceda3bfp+0");
+    }
+
+    template<typename T>
+    static consteval T constLN2PI() {
+      return T("0x1.d67f1c864beb4a6929792002883240479f611f1a268b169bbd8d46267b542aba425f3affc01d0d7f27d57f20b8aad37760b956ae3699b4b79ecdd9c2ee575be5p+0");
+    }
+
+    template<typename T>
     static consteval T constLN2() {
       return T("0x1.62e42fefa39ef35793c7673007e5ed5e81e6864ce5316c5b141a2eb71755f457cf70ec40dbd75930ab2aa5f695f43621da5d5c6b827042884eae765222d37048p-1");
     }
@@ -129,6 +139,13 @@ namespace tlfloat {
     static consteval xarray<Unpacked_t, N+1> genCbrtCoef() {
       xarray<Unpacked_t, N+1> a;
       for(unsigned k=0;k<N+1;k++) a.e[k] = Unpacked_t(cbrtCoefStr[k]);
+      return a;
+    }
+
+    template<typename Unpacked_t, unsigned N>
+    static consteval xarray<Unpacked_t, N+1> genGammaCoef() {
+      xarray<Unpacked_t, N+1> a;
+      for(unsigned k=0;k<N+1;k++) a.e[k] = Unpacked_t(gammaCoefStr[k]);
       return a;
     }
 
@@ -416,17 +433,22 @@ namespace tlfloat {
 
     //
 
-    template<typename Unpacked_t, unsigned N, unsigned M>
+    template<typename Unpacked_t, unsigned N, unsigned M, int T>
     static constexpr Unpacked_t log_(Unpacked_t d) {
       constexpr xarray<Unpacked_t, N+2> logCoef = genLogCoef<Unpacked_t, N+1>();
 
       xpair<Unpacked_t, int> p = frexp_(d);
       Unpacked_t fr = p.first;
-      int e = p.second;
+      int e = p.second, m = 0;
 
       if (fr < constSqrt2O2<Unpacked_t>()) { fr.exp++; e--; }
 
-      if constexpr (M > 0) for(unsigned i=0;i<M;i++) fr = sqrt_(fr);
+      if constexpr (M > 0) {
+	if (fabs(fr - Unpacked_t::castFromInt(1)).ilogb() > T) {
+	  for(unsigned i=0;i<M;i++) fr = sqrt_(fr);
+	  m = M;
+	}
+      }
 
       Unpacked_t x = (fr - Unpacked_t::castFromInt(1)) / (fr + Unpacked_t::castFromInt(1));
 
@@ -434,27 +456,27 @@ namespace tlfloat {
       for(int i=N;i>=0;i--) y = Unpacked_t::fma(y, x*x, logCoef.e[i]);
       y *= x;
 
-      y = Unpacked_t::fma(Unpacked_t::castFromInt(e), constLN2L<Unpacked_t>(), ldexp_(y, M));
+      y = Unpacked_t::fma(Unpacked_t::castFromInt(e), constLN2L<Unpacked_t>(), ldexp_(y, m));
       return Unpacked_t::fma(Unpacked_t::castFromInt(e), constLN2U<Unpacked_t>(), y);
     }
 
-    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M, int T>
     static constexpr tlfloat_t log(const tlfloat_t &a) {
       if (isnan(a)) return a;
       if (a == 0) return tlfloat_t::inf(true);
       if (signbit(a)) return tlfloat_t::nan();
       if (isinf(a)) return tlfloat_t::inf();
-      Unpacked_t z = log_<Unpacked_t, N, M>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+      Unpacked_t z = log_<Unpacked_t, N, M, T>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
       return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
     }
 
-    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M, int T>
     static constexpr tlfloat_t log(const tlfloat_t &a, const Unpacked_t &SCALE) {
       if (isnan(a)) return a;
       if (a == 0) return tlfloat_t::inf(true);
       if (signbit(a)) return tlfloat_t::nan();
       if (isinf(a)) return tlfloat_t::inf();
-      Unpacked_t z = log_<Unpacked_t, N, M>(a.getUnpacked().cast((const Unpacked_t *)nullptr)) * SCALE;
+      Unpacked_t z = log_<Unpacked_t, N, M, T>(a.getUnpacked().cast((const Unpacked_t *)nullptr)) * SCALE;
       return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
     }
 
@@ -494,7 +516,7 @@ namespace tlfloat {
 
     //
 
-    template<typename tlfloat_t, typename Unpacked_t, unsigned LN, unsigned LM, unsigned EN, unsigned EM>
+    template<typename tlfloat_t, typename Unpacked_t, unsigned LN, unsigned LM, int LT, unsigned EN, unsigned EM>
     static constexpr tlfloat_t pow(const tlfloat_t &x, const tlfloat_t &y) {
       if (signbit(x) && finite(x) && !iszero(x) && finite(y) && !isint(y)) return tlfloat_t::nan();
       if (x == 1 || iszero(y)) return 1;
@@ -519,7 +541,7 @@ namespace tlfloat {
       if (iszero(x) && yisoddint && signbit(y)) return tlfloat_t::inf(signbit(x));
       if (iszero(x) && signbit(y) && !iszero(y) && !yisoddint) return tlfloat_t::inf(false);
       
-      Unpacked_t z = log_<Unpacked_t, LN, LM>(fabs(x).getUnpacked().cast((const Unpacked_t *)nullptr));
+      Unpacked_t z = log_<Unpacked_t, LN, LM, LT>(fabs(x).getUnpacked().cast((const Unpacked_t *)nullptr));
       z = exp_<Unpacked_t, EN, EM>(z * y.getUnpacked().cast((const Unpacked_t *)nullptr));
       if (signbit(x) && yisoddint) z.sign = !z.sign;
       return tlfloat_t(z.cast((const decltype(x.getUnpacked()) *)nullptr));
@@ -601,7 +623,7 @@ namespace tlfloat {
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
 
-    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M, int T>
     static constexpr tlfloat_t asinh(const tlfloat_t &a) {
       Unpacked_t x = a.getUnpacked().cast((const Unpacked_t *)nullptr), y = fabs(x);
       if (x.isnan || y.isinf) return a;
@@ -609,7 +631,7 @@ namespace tlfloat {
       Unpacked_t d = ygt1 ? Unpacked_t::castFromInt(1) / y : y;
       d = sqrt_(Unpacked_t::fma(d, d, Unpacked_t::castFromInt(1)));
       if (ygt1) {
-	d = log_<Unpacked_t, N, M>(Unpacked_t::fma(d, y, y));
+	d = log_<Unpacked_t, N, M, T>(Unpacked_t::fma(d, y, y));
       } else {
 	d = log1p_<Unpacked_t, N, M>(d - Unpacked_t::castFromInt(1) + y);
       }
@@ -617,13 +639,13 @@ namespace tlfloat {
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
 
-    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M, int T>
     static constexpr tlfloat_t acosh(const tlfloat_t &a) {
       Unpacked_t x = a.getUnpacked().cast((const Unpacked_t *)nullptr);
       if (x.isnan) return a;
       if (x < Unpacked_t::castFromInt(1)) return tlfloat_t::nan();
       if (x.isinf) return tlfloat_t::inf();
-      Unpacked_t d = log_<Unpacked_t, N, M>(sqrt_((x + Unpacked_t::castFromInt(1))*(x - Unpacked_t::castFromInt(1))) + x);
+      Unpacked_t d = log_<Unpacked_t, N, M, T>(sqrt_((x + Unpacked_t::castFromInt(1))*(x - Unpacked_t::castFromInt(1))) + x);
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
 
@@ -755,6 +777,67 @@ namespace tlfloat {
       }
       return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
     }
+
+    //
+
+    template<typename Unpacked_t, int R, int O, unsigned SN, unsigned LN, unsigned LM, int LT>
+    static constexpr xpair<bool, Unpacked_t> lgamma_(const Unpacked_t& z) {
+      constexpr xarray<Unpacked_t, O+1> gammaCoef = genGammaCoef<Unpacked_t, O>();
+      const Unpacked_t one = Unpacked_t::castFromInt(1), p5 = Unpacked_t("0x1p-1");
+
+      const bool reflect = z < Unpacked_t::castFromInt(-1);
+      Unpacked_t a = reflect ? one - z : z;
+      const Unpacked_t in = rint(a), fr = a - in;
+
+      Unpacked_t w = Unpacked_t::castFromInt(1);
+      if (in < Unpacked_t::castFromInt(R)) {
+	for(int i = in.castToInt((int *)0);i<R;i++) w *= (Unpacked_t::castFromInt(i) + fr);
+	a = Unpacked_t::castFromInt(R) + fr;
+      }
+
+      Unpacked_t y = gammaCoef.e[O];
+      for(int i=O-1;i>=0;i--) y = Unpacked_t::fma(y, one / (a*a), gammaCoef.e[i]);
+      y = y/a + (a - p5)*log_<Unpacked_t, LN, LM, LT>(a) - a + p5*constLN2PI<Unpacked_t>();
+
+      y -= log_<Unpacked_t, LN, LM, LT>(fabs(w));
+      bool sign = w.sign;
+
+      if (reflect) {
+	Unpacked_t s = sin_<Unpacked_t, SN>(constPI<Unpacked_t>() * fr);
+	y = constLNPI<Unpacked_t>() - log_<Unpacked_t, LN, LM, LT>(fabs(s)) - y;
+	sign = sign != s.sign;
+	sign = sign == iseven(in);
+      }
+      return xpair<bool, Unpacked_t>(sign, y);
+    }
+
+    template<typename tlfloat_t, typename Unpacked_t, int R, int O,
+	     unsigned SN, unsigned LN, unsigned LM, int LT, unsigned EN, unsigned EM>
+    static constexpr tlfloat_t tgamma(const tlfloat_t &z) {
+      Unpacked_t zu = z.getUnpacked().cast((const Unpacked_t *)nullptr);
+      if (zu.isnan || (!zu.sign && zu.isinf)) return z;
+      if (zu.iszero) return tlfloat_t::inf(zu.sign);
+      if (zu.sign && isint(zu)) return tlfloat_t::nan();
+
+      auto p = lgamma_<Unpacked_t, R, O, SN, LN, LM, LT>(zu);
+      Unpacked_t r = exp_<Unpacked_t, EN, EM>(p.second);
+      r.sign = r.sign != p.first;
+      return tlfloat_t(r.cast((const decltype(z.getUnpacked()) *)nullptr));
+    }
+
+    template<typename tlfloat_t, typename Unpacked_t, int R, int O,
+	     unsigned SN, unsigned LN, unsigned LM, int LT, unsigned EN, unsigned EM>
+    static constexpr tlfloat_t lgamma(const tlfloat_t &z, bool *signptr = nullptr) {
+      Unpacked_t zu = z.getUnpacked().cast((const Unpacked_t *)nullptr);
+      if (signptr) *signptr = false;
+      if (zu.isnan) return z;
+      if (zu.iszero|| zu.isinf) { if (signptr) *signptr = zu.sign; return tlfloat_t::inf(); }
+      if (zu.sign && isint(zu)) return tlfloat_t::inf();
+
+      auto p = lgamma_<Unpacked_t, R, O, SN, LN, LM, LT>(zu);
+      if (signptr) *signptr = p.first;
+      return tlfloat_t(p.second.cast((const decltype(z.getUnpacked()) *)nullptr));
+    }
   }
 
   //
@@ -881,15 +964,15 @@ namespace tlfloat {
   static inline constexpr Octuple exp10(const Octuple& a) { return detail::exp<Octuple, detail::xsedecuple, 33, 2>(a, detail::constLN10<detail::xsedecuple>()); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Half log(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0>(a); }
+  static inline constexpr Half log(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Float log(const Float& a) { return detail::log<Float, detail::xfloat, 4, 0>(a); }
+  static inline constexpr Float log(const Float& a) { return detail::log<Float, detail::xfloat, 4, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Double log(const Double& a) { return detail::log<Double, detail::xdouble, 10, 0>(a); }
+  static inline constexpr Double log(const Double& a) { return detail::log<Double, detail::xdouble, 10, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Quad log(const Quad& a) { return detail::log<Quad, detail::xquad, 21, 0>(a); }
+  static inline constexpr Quad log(const Quad& a) { return detail::log<Quad, detail::xquad, 21, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple log(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2>(a); }
+  static inline constexpr Octuple log(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -100>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half log1p(const Half& a) { return detail::log1p<Half, detail::xhalf, 3, 0>(a); }
@@ -903,37 +986,37 @@ namespace tlfloat {
   static inline constexpr Octuple log1p(const Octuple& a) { return detail::log1p<Octuple, detail::xoctuple, 25, 2>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Half log2(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0>(a, detail::constRLN2<detail::xhalf>()); }
+  static inline constexpr Half log2(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0, 0>(a, detail::constRLN2<detail::xhalf>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Float log2(const Float& a) { return detail::log<Float, detail::xfloat, 4, 0>(a, detail::constRLN2<detail::xfloat>()); }
+  static inline constexpr Float log2(const Float& a) { return detail::log<Float, detail::xfloat, 4, 0, 0>(a, detail::constRLN2<detail::xfloat>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Double log2(const Double& a) { return detail::log<Double, detail::xdouble, 10, 0>(a, detail::constRLN2<detail::xdouble>()); }
+  static inline constexpr Double log2(const Double& a) { return detail::log<Double, detail::xdouble, 10, 0, 0>(a, detail::constRLN2<detail::xdouble>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Quad log2(const Quad& a) { return detail::log<Quad, detail::xquad, 22, 0>(a, detail::constRLN2<detail::xquad>()); }
+  static inline constexpr Quad log2(const Quad& a) { return detail::log<Quad, detail::xquad, 22, 0, 0>(a, detail::constRLN2<detail::xquad>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple log2(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2>(a, detail::constRLN2<detail::xoctuple>()); }
+  static inline constexpr Octuple log2(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -100>(a, detail::constRLN2<detail::xoctuple>()); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Half log10(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0>(a, detail::constRLN10<detail::xhalf>()); }
+  static inline constexpr Half log10(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0, 0>(a, detail::constRLN10<detail::xhalf>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Float log10(const Float& a) { return detail::log<Float, detail::xfloat, 4, 0>(a, detail::constRLN10<detail::xfloat>()); }
+  static inline constexpr Float log10(const Float& a) { return detail::log<Float, detail::xfloat, 4, 0, 0>(a, detail::constRLN10<detail::xfloat>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Double log10(const Double& a) { return detail::log<Double, detail::xdouble, 10, 0>(a, detail::constRLN10<detail::xdouble>()); }
+  static inline constexpr Double log10(const Double& a) { return detail::log<Double, detail::xdouble, 10, 0, 0>(a, detail::constRLN10<detail::xdouble>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Quad log10(const Quad& a) { return detail::log<Quad, detail::xquad, 22, 0>(a, detail::constRLN10<detail::xquad>()); }
+  static inline constexpr Quad log10(const Quad& a) { return detail::log<Quad, detail::xquad, 22, 0, 0>(a, detail::constRLN10<detail::xquad>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple log10(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2>(a, detail::constRLN10<detail::xoctuple>()); }
+  static inline constexpr Octuple log10(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -100>(a, detail::constRLN10<detail::xoctuple>()); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Half pow(const Half& x, const Half& y) { return detail::pow<Half, detail::xfloat, 3, 0, 3, 0>(x, y); }
+  static inline constexpr Half pow(const Half& x, const Half& y) { return detail::pow<Half, detail::xfloat, 3, 0, 0, 3, 0>(x, y); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Float pow(const Float& x, const Float& y) { return detail::pow<Float, detail::xdouble, 5, 0, 7, 0>(x, y); }
+  static inline constexpr Float pow(const Float& x, const Float& y) { return detail::pow<Float, detail::xdouble, 5, 0, 0, 7, 0>(x, y); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Double pow(const Double& x, const Double& y) { return detail::pow<Double, detail::xquad, 11, 0, 13, 0>(x, y); }
+  static inline constexpr Double pow(const Double& x, const Double& y) { return detail::pow<Double, detail::xquad, 11, 0, 0, 13, 0>(x, y); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Quad pow(const Quad& x, const Quad& y) { return detail::pow<Quad, detail::xoctuple, 23, 0, 20, 1>(x, y); }
+  static inline constexpr Quad pow(const Quad& x, const Quad& y) { return detail::pow<Quad, detail::xoctuple, 23, 0, 0, 20, 1>(x, y); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple pow(const Octuple& x, const Octuple& y) { return detail::pow<Octuple, detail::xsedecuple, 26, 2, 33, 2>(x, y); }
+  static inline constexpr Octuple pow(const Octuple& x, const Octuple& y) { return detail::pow<Octuple, detail::xsedecuple, 26, 2, -100, 33, 2>(x, y); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half cbrt(const Half& a) { return detail::cbrt<Half, detail::xhalf, 3, 0>(a); }
@@ -980,26 +1063,26 @@ namespace tlfloat {
   static inline constexpr Octuple tanh(const Octuple& a) { return detail::tanh<Octuple, detail::xoctuple, 33, 2>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Half asinh(const Half& a) { return detail::asinh<Half, detail::xfloat, 3, 0>(a); }
+  static inline constexpr Half asinh(const Half& a) { return detail::asinh<Half, detail::xfloat, 3, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Float asinh(const Float& a) { return detail::asinh<Float, detail::xdouble, 7, 0>(a); }
+  static inline constexpr Float asinh(const Float& a) { return detail::asinh<Float, detail::xdouble, 7, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Double asinh(const Double& a) { return detail::asinh<Double, detail::xquad, 13, 0>(a); }
+  static inline constexpr Double asinh(const Double& a) { return detail::asinh<Double, detail::xquad, 13, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Quad asinh(const Quad& a) { return detail::asinh<Quad, detail::xoctuple, 20, 1>(a); }
+  static inline constexpr Quad asinh(const Quad& a) { return detail::asinh<Quad, detail::xoctuple, 20, 1, -50>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple asinh(const Octuple& a) { return detail::asinh<Octuple, detail::xsedecuple, 33, 2>(a); }
+  static inline constexpr Octuple asinh(const Octuple& a) { return detail::asinh<Octuple, detail::xsedecuple, 33, 2, -100>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Half acosh(const Half& a) { return detail::acosh<Half, detail::xfloat, 3, 0>(a); }
+  static inline constexpr Half acosh(const Half& a) { return detail::acosh<Half, detail::xfloat, 3, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Float acosh(const Float& a) { return detail::acosh<Float, detail::xdouble, 7, 0>(a); }
+  static inline constexpr Float acosh(const Float& a) { return detail::acosh<Float, detail::xdouble, 7, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Double acosh(const Double& a) { return detail::acosh<Double, detail::xquad, 13, 0>(a); }
+  static inline constexpr Double acosh(const Double& a) { return detail::acosh<Double, detail::xquad, 13, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Quad acosh(const Quad& a) { return detail::acosh<Quad, detail::xoctuple, 20, 1>(a); }
+  static inline constexpr Quad acosh(const Quad& a) { return detail::acosh<Quad, detail::xoctuple, 20, 1, -50>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple acosh(const Octuple& a) { return detail::acosh<Octuple, detail::xsedecuple, 33, 2>(a); }
+  static inline constexpr Octuple acosh(const Octuple& a) { return detail::acosh<Octuple, detail::xsedecuple, 33, 2, -100>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half atanh(const Half& a) { return detail::atanh<Half, detail::xhalf, 3, 0>(a); }
@@ -1055,5 +1138,27 @@ namespace tlfloat {
   static inline constexpr Quad erfc(const Quad& x) { return detail::erfc<Quad, detail::xoctuple, 31, 120, 22, 1>(x); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple erfc(const Octuple& x) { return detail::erfc<Octuple, detail::xsedecuple, 36, 340, 36, 2>(x); }
+
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr Half tgamma(const Half& x) { return detail::tgamma<Half, detail::xfloat, 5, 20, 3, 3, 0, 0, 3, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr Float tgamma(const Float& x) { return detail::tgamma<Float, detail::xdouble, 7, 15, 5, 5, 0, 0, 7, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr Double tgamma(const Double& x) { return detail::tgamma<Double, detail::xquad, 8, 30, 10, 11, 0, 0, 13, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr Quad tgamma(const Quad& x) { return detail::tgamma<Quad, detail::xoctuple, 20, 35, 15, 23, 0, 0, 20, 1>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr Octuple tgamma(const Octuple& x) { return detail::tgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -100, 33, 2>(x); }
+
+  /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
+  static inline constexpr Half lgamma(const Half& x, bool *sign = 0) { return detail::lgamma<Half, detail::xfloat, 5, 20, 3, 3, 0, 0, 3, 0>(x, sign); }
+  /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
+  static inline constexpr Float lgamma(const Float& x, bool *sign = 0) { return detail::lgamma<Float, detail::xdouble, 7, 15, 5, 5, 0, 0, 7, 0>(x, sign); }
+  /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
+  static inline constexpr Double lgamma(const Double& x, bool *sign = 0) { return detail::lgamma<Double, detail::xquad, 8, 30, 10, 11, 0, 0, 13, 0>(x, sign); }
+  /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
+  static inline constexpr Quad lgamma(const Quad& x, bool *sign = 0) { return detail::lgamma<Quad, detail::xoctuple, 20, 35, 15, 23, 0, 0, 20, 1>(x, sign); }
+  /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
+  static inline constexpr Octuple lgamma(const Octuple& x, bool *sign = 0) { return detail::lgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -100, 33, 2>(x, sign); }
 }
 #endif // #ifndef __TLMATH_HPP_INCLUDED__

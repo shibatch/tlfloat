@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
   cout << "  namespace detail {" << endl;
 
   {
-    auto coef = genSinCoef<25>();
+    auto coef = genSinCoef<26>();
 
     cout << "    static constexpr const char *sinCoefStr[] = {" << endl;
 
@@ -153,7 +153,7 @@ int main(int argc, char **argv) {
   cout << endl;
 
   {
-    auto coef = genCosCoef<25>();
+    auto coef = genCosCoef<26>();
 
     cout << "    static constexpr const char *cosCoefStr[] = {" << endl;
 
@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
   cout << endl;
 
   {
-    auto coef = genTanCoef<25>();
+    auto coef = genTanCoef<26>();
 
     cout << "    static constexpr const char *tanCoefStr[] = {" << endl;
 
@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
   cout << endl;
 
   {
-    auto coef = genAtanCoef<21>();
+    auto coef = genAtanCoef<22>();
 
     cout << "    static constexpr const char *atanCoefStr[] = {" << endl;
 
@@ -244,6 +244,26 @@ int main(int argc, char **argv) {
 
     for(int i=0;i<coef.n();i++) {
       auto o = coef.e[i];
+      o.mant &= ~((BigUInt<9>(1) << 250) - 1);
+      snprint(buf, sizeof(buf), o, 'a', 0, -1);
+      cout << "      \"" << buf << "\",  // " << to_double(o) << endl;
+    }
+
+    cout << "    };" << endl;
+  }
+
+  cout << endl;
+
+  {
+    cout << "    static constexpr const char *gammaCoefStr[] = {" << endl;
+
+    static const int N = 36;
+
+    for(int i=1;i<=N;i++) {
+      auto n = bernoulli<N*2>(i*2);
+      auto d = xsedecuple::castFromInt((2*i) * (2*i-1));
+
+      auto o = n / d;
       o.mant &= ~((BigUInt<9>(1) << 250) - 1);
       snprint(buf, sizeof(buf), o, 'a', 0, -1);
       cout << "      \"" << buf << "\",  // " << to_double(o) << endl;

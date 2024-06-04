@@ -46,6 +46,8 @@ integer class templates are also included in this library.
 * C/C++11 API with libquadmath emulation
   * Most of libquadmath functions can be used on x86_64 clang and MSVC
   * 128-bit integer types can be used on MSVC
+  * C++11 FP and int classes with overloaded operators are provided
+    * C++11 functions in TLFloat are not constexpr
 
 * Moderately optimized
   * Optimized for each architecture using intrinsics, etc.
@@ -58,7 +60,7 @@ integer class templates are also included in this library.
   * sin, cos, tan, asin, acos, atan, atan2
   * log, log2, log10, log1p, exp, exp2, exp10, expm1, pow
   * sinh, cosh, tanh, asinh, acosh, atanh
-  * erf, erfc
+  * erf, erfc, tgamma
   * trunc, floor, ceil, round, rint
   * fabs, copysign, fmax, fmin, fdim
   * ldexp, frexp, modf, nextafter
@@ -68,7 +70,7 @@ integer class templates are also included in this library.
   * Conversion to/from C strings
   * printf-family functions
 
-* The library provides BigInt template classes in addition to the FP classes
+* Provides BigInt template classes in addition to the FP classes
   * It provides operations for integers of artibrary length (2^N bits)
   * They can be used in the similar way to the ordinary int/uint types
   * Data formats are the same as ordinary int/uint
@@ -210,8 +212,6 @@ Below is an example of executing this program.
 $ ./a.out
 3.141592653589793238462643383279502884197169399375105820974944592307818
 ```
-
-The C++11 functions in TLFloat are not constexpr.
 
 ### Development plan
 

@@ -763,6 +763,16 @@ extern "C" {
   tlfloat_quad_ tlfloat_erfcq(const tlfloat_quad_ a) { return (tlfloat_quad_)erfc(Quad(a)); }
   tlfloat_octuple_ tlfloat_erfco(const tlfloat_octuple_ a) { return (tlfloat_octuple_)erfc(Octuple(a)); }
 
+  float tlfloat_tgammaf(const float a) { return (float)tgamma(Float(a)); }
+  double tlfloat_tgamma(const double a) { return (double)tgamma(Double(a)); }
+  tlfloat_quad_ tlfloat_tgammaq(const tlfloat_quad_ a) { return (tlfloat_quad_)tgamma(Quad(a)); }
+  tlfloat_octuple_ tlfloat_tgammao(const tlfloat_octuple_ a) { return (tlfloat_octuple_)tgamma(Octuple(a)); }
+
+  float tlfloat_lgammaf(const float a) { return (float)lgamma(Float(a)); }
+  double tlfloat_lgamma(const double a) { return (double)lgamma(Double(a)); }
+  tlfloat_quad_ tlfloat_lgammaq(const tlfloat_quad_ a) { return (tlfloat_quad_)lgamma(Quad(a)); }
+  tlfloat_octuple_ tlfloat_lgammao(const tlfloat_octuple_ a) { return (tlfloat_octuple_)lgamma(Octuple(a)); }
+
   //
 
   tlfloat_int128_t_ tlfloat_cast_i128_i64(const int64_t x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>(x)); }

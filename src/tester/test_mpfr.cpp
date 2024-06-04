@@ -38,6 +38,7 @@ using namespace tlfloat::detail;
 #define TEST_HYP
 #define TEST_MODREM
 #define TEST_ERF
+#define TEST_GAMMA
 #define TEST_MISC
 
 int main(int argc, char **argv) {
@@ -49,6 +50,62 @@ int main(int argc, char **argv) {
 #endif
     cout << "Testing continuously" << endl;
   }
+
+#ifdef TEST_FLOAT
+  cout << "<FLOAT> ";
+#endif
+#ifdef TEST_DOUBLE
+  cout << "<DOUBLE> ";
+#endif
+#ifdef TEST_QUAD
+  cout << "<QUAD> ";
+#endif
+#ifdef TEST_OCTUPLE
+  cout << "<OCTUPLE> ";
+#endif
+#ifdef TEST_SQRT
+  cout << "[SQRT] ";
+#endif
+#ifdef TEST_TRIG
+  cout << "[TRIG] ";
+#endif
+#ifdef TEST_ROUND
+  cout << "[ROUND] ";
+#endif
+#ifdef TEST_ARITH
+  cout << "[ARITH] ";
+#endif
+#ifdef TEST_INVTRIG
+  cout << "[INVTRIG] ";
+#endif
+#ifdef TEST_EXP
+  cout << "[EXP] ";
+#endif
+#ifdef TEST_LOG
+  cout << "[LOG] ";
+#endif
+#ifdef TEST_POW
+  cout << "[POW] ";
+#endif
+#ifdef TEST_CBRT
+  cout << "[CBRT] ";
+#endif
+#ifdef TEST_HYP
+  cout << "[HYP] ";
+#endif
+#ifdef TEST_MODREM
+  cout << "[MODREM] ";
+#endif
+#ifdef TEST_ERF
+  cout << "[ERF] ";
+#endif
+#ifdef TEST_GAMMA
+  cout << "[GAMMA] ";
+#endif
+#ifdef TEST_MISC
+  cout << "[MISC] ";
+#endif
+  cout << endl;
 
   auto rng = createPreferredRNG();
 
@@ -641,6 +698,48 @@ int main(int argc, char **argv) {
 	    printf("c = %.8g\n\n", c);
 	    cout << "NG" << endl;
 	    exit(-1);
+	  }
+	}
+#endif
+
+#if defined(TEST_FLOAT) && defined(TEST_GAMMA)
+	{
+	  float r = (float)tgamma(Float(x));
+	  ufloat xfr = Float(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_gamma(mx, mx, GMP_RNDN);
+	  float c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  if (ulp > 0.55) {
+	    printf("\nfloat tgamma\n");
+	    printf("ulp = %g\n", ulp);
+	    printf("x = %.8g\n", x);
+	    printf("t = %.8g\n", r);
+	    printf("c = %.8g\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  bool rsign = false;
+	  float r = (float)lgamma(Float(x), &rsign);
+	  ufloat xfr = Float(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  int msign = 0;
+	  mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
+	  float c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  if (ulp > 0.55 || (msign == -1) != rsign) {
+	    printf("\nfloat lgamma\n");
+	    printf("ulp = %g\n", ulp);
+	    printf("x = %.8g\n", x);
+	    printf("t = %.8g, sign = %d\n"  , r, (int)rsign);
+	    printf("c = %.8g, sign = %d\n\n", c, (int)(msign == -1));
+	    cout << "NG" << endl;
+	    //exit(-1);
 	  }
 	}
 #endif
@@ -1359,6 +1458,48 @@ int main(int argc, char **argv) {
 	    printf("c = %.20lg\n\n", c);
 	    cout << "NG" << endl;
 	    exit(-1);
+	  }
+	}
+#endif
+
+#if defined(TEST_DOUBLE) && defined(TEST_GAMMA)
+	{
+	  double r = (double)tgamma(Double(x));
+	  udouble xfr = Double(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_gamma(mx, mx, GMP_RNDN);
+	  double c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  if (ulp > 0.505) {
+	    printf("\ndouble tgamma\n");
+	    printf("ulp = %lg\n", ulp);
+	    printf("x = %.20lg\n", x);
+	    printf("t = %.20lg\n", r);
+	    printf("c = %.20lg\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  bool rsign = false;
+	  double r = (double)lgamma(Double(x), &rsign);
+	  udouble xfr = Double(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  int msign = 0;
+	  mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
+	  double c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  if (ulp > 0.505) {
+	    printf("\ndouble lgamma\n");
+	    printf("ulp = %lg\n", ulp);
+	    printf("x = %.20lg\n", x);
+	    printf("t = %.20lg, sign = %d\n"  , r, (int)rsign);
+	    printf("c = %.20lg, sign = %d\n\n", c, (int)(msign == -1));
+	    cout << "NG" << endl;
+	    //exit(-1);
 	  }
 	}
 #endif
@@ -2502,6 +2643,68 @@ int main(int argc, char **argv) {
 	}
 #endif
 
+#if defined(TEST_QUAD) && defined(TEST_GAMMA)
+	{
+	  quad_ r = (quad_)tgamma(Quad(x));
+	  uquad xfr = Quad(r).getUnpacked();
+
+#ifdef ENABLE_QUAD
+	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
+	  mpfr_gamma(mx, mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
+	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  if (ulp > 0.501) {
+	    printf("\nquad tgamma\n");
+	    printf("ulp = %g\n", ulp);
+	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
+	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
+	    cout << "r = " << r << endl;
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  bool rsign = false;
+	  quad_ r = (quad_)lgamma(Quad(x), &rsign);
+	  uquad xfr = Quad(r).getUnpacked();
+
+#ifdef ENABLE_QUAD
+	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+#endif
+	  int msign = 0;
+	  mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
+	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  if (ulp > 0.501 || (msign == -1) != rsign) {
+	    printf("\nquad lgamma\n");
+	    printf("ulp = %g\n", ulp);
+	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
+	    cout << "c = " << c << ", sign = " << (msign == -1) << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << ", sign = " << (msign == -1) << endl;
+#endif
+	    cout << "r = " << r << ", sign = " << rsign << endl;
+	    cout << "NG" << endl;
+	    //exit(-1);
+	  }
+	}
+#endif
+
 #if defined(TEST_QUAD) && defined(TEST_MISC)
 	{
 	  quad_ r = (quad_)fabs(Quad(x));
@@ -3334,6 +3537,46 @@ int main(int argc, char **argv) {
 	    printf("ulp = %g\n", ulp);
 	    cout << "NG" << endl;
 	    exit(-1);
+	  }
+	}
+#endif
+
+#if defined(TEST_OCTUPLE) && defined(TEST_GAMMA)
+	{
+	  Octuple r = tgamma(Octuple(x));
+	  uoctuple xcr = r.getUnpacked();
+
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_gamma(mx, mx, GMP_RNDN);
+	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  if (ulp > 0.5002) {
+	    printf("\noctuple tgamma\n");
+	    cout << "x = " << x << endl;
+	    cout << "c = " << to_string(mx, 72) << endl;
+	    cout << "r = " << to_string(r , 72) << " : " << to_string_d(Octuple(r).getUnpacked()) << endl;
+	    printf("ulp = %g\n", ulp);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  bool rsign = false;
+	  Octuple r = lgamma(Octuple(x), &rsign);
+	  uoctuple xcr = r.getUnpacked();
+
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  int msign = 0;
+	  mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
+	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  if (ulp > 0.5002 || (msign == -1) != rsign) {
+	    printf("\noctuple lgamma\n");
+	    cout << "x = " << x << endl;
+	    cout << "c = " << to_string(mx, 72) << ", sign = " << (msign == -1) << endl;
+	    cout << "r = " << to_string(r , 72) << " : " << to_string_d(Octuple(r).getUnpacked()) << ", sign = " << rsign << endl;
+	    printf("ulp = %g\n", ulp);
+	    cout << "NG" << endl;
+	    //exit(-1);
 	  }
 	}
 #endif

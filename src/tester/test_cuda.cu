@@ -159,6 +159,7 @@ template<typename T> static constexpr T ceil_(const T &a) { return ceil(a); }
 template<typename T> static constexpr T round_(const T &a) { return round(a); }
 template<typename T> static constexpr T rint_(const T &a) { return rint(a); }
 template<typename T> static constexpr T nextafter_(const T &a1, const T &a2) { return nextafter(a1, a2); }
+template<typename T> static constexpr T lgamma_(const T &a1) { return lgamma(a1, nullptr); }
 
 int main(int argc, char **argv) {
   {
@@ -507,6 +508,18 @@ int main(int argc, char **argv) {
   doTest<Double, erfc>("Double erfc", rd, xd);
   doTest<Float, erfc>("Float erfc", rf, xf);
   doTest<Half, erfc>("Half erfc", rh, xh);
+
+  doTest<Octuple, tgamma>("Octuple tgamma", ro, xo);
+  doTest<Quad, tgamma>("Quad tgamma", rq, xq);
+  doTest<Double, tgamma>("Double tgamma", rd, xd);
+  doTest<Float, tgamma>("Float tgamma", rf, xf);
+  doTest<Half, tgamma>("Half tgamma", rh, xh);
+
+  doTest<Octuple, lgamma_>("Octuple lgamma", ro, xo);
+  doTest<Quad, lgamma_>("Quad lgamma", rq, xq);
+  doTest<Double, lgamma_>("Double lgamma", rd, xd);
+  doTest<Float, lgamma_>("Float lgamma", rf, xf);
+  doTest<Half, lgamma_>("Half lgamma", rh, xh);
 
   doTest<Octuple, fmod>("Octuple fmod", ro, xo, yo);
   doTest<Quad, fmod>("Quad fmod", rq, xq, yq);
