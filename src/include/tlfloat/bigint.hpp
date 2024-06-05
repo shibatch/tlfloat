@@ -7,11 +7,7 @@
 #include <cstring>
 #include <cassert>
 
-#include "tlfloat/tlfloatversion.hpp"
-
-#ifdef TLFLOAT_SUPPRESS_WARNINGS
-#include "suppress.hpp"
-#endif
+#include <tlfloat/tlfloatversion.hpp>
 
 #if defined(TLFLOAT_DOXYGEN)
 /** All architecture-specific optimizations (e.g., use of intrinsic functions) are disabled if this macro is defined */

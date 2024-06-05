@@ -10,7 +10,7 @@
 #include <cmath>
 #include <signal.h>
 
-#define TLFLOAT_SUPPRESS_WARNINGS
+#include "suppress.hpp"
 
 #include "tlfloat/bigint.hpp"
 #include "testerutil.hpp"

@@ -9,6 +9,8 @@
 #endif
 #include <mpfr.h>
 
+#include "suppress.hpp"
+
 #include <tlfloat/tlmath.hpp>
 #include <testerutil.hpp>
 

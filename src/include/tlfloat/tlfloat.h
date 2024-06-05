@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "tlfloat/tlfloatversion.hpp"
+#include <tlfloat/tlfloatversion.hpp>
 
 #if defined(TLFLOAT_DOXYGEN)
 /** Calls to libquadmath functions are replaced to the corresponding

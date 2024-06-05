@@ -4,7 +4,7 @@
 #include <arm_fp16.h>
 #include <signal.h>
 
-#define TLFLOAT_SUPPRESS_WARNINGS
+#include "suppress.hpp"
 
 #include "tlfloat/tlmath.hpp"
 #include "testerutil.hpp"

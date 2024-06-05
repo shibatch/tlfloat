@@ -2,9 +2,7 @@
 #include <cctype>
 #include <cstdarg>
 
-#ifdef TLFLOAT_SUPPRESS_WARNINGS
 #include "suppress.hpp"
-#endif
 
 #define TLFLOAT_NO_LIBSTDCXX
 #include "tlfloat/tlmath.hpp"

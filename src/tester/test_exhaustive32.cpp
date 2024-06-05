@@ -8,7 +8,7 @@
 #define MPFR_WANT_FLOAT128
 #include <mpfr.h>
 
-#define TLFLOAT_SUPPRESS_WARNINGS
+#include "suppress.hpp"
 
 #include "tlfloat/tlmath.hpp"
 #include "testerutil.hpp"

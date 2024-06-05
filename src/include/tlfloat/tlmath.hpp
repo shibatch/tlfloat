@@ -1,9 +1,9 @@
 #ifndef __TLMATH_HPP_INCLUDED__
 #define __TLMATH_HPP_INCLUDED__
 
-#include "tlfloat/tlfloat.hpp"
-#include "tlfloat/tlmathcoef.hpp"
-#include "tlfloat/rpitab.hpp"
+#include <tlfloat/tlfloat.hpp>
+#include <tlfloat/tlmathcoef.hpp>
+#include <tlfloat/rpitab.hpp>
 
 #if defined(__clang_major__) && !defined(_MSC_VER)
 #if __clang_major__ < 17
@@ -972,7 +972,7 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Quad log(const Quad& a) { return detail::log<Quad, detail::xquad, 21, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple log(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -100>(a); }
+  static inline constexpr Octuple log(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -15>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half log1p(const Half& a) { return detail::log1p<Half, detail::xhalf, 3, 0>(a); }
@@ -994,7 +994,7 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Quad log2(const Quad& a) { return detail::log<Quad, detail::xquad, 22, 0, 0>(a, detail::constRLN2<detail::xquad>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple log2(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -100>(a, detail::constRLN2<detail::xoctuple>()); }
+  static inline constexpr Octuple log2(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -15>(a, detail::constRLN2<detail::xoctuple>()); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half log10(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0, 0>(a, detail::constRLN10<detail::xhalf>()); }
@@ -1005,7 +1005,7 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Quad log10(const Quad& a) { return detail::log<Quad, detail::xquad, 22, 0, 0>(a, detail::constRLN10<detail::xquad>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple log10(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -100>(a, detail::constRLN10<detail::xoctuple>()); }
+  static inline constexpr Octuple log10(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -15>(a, detail::constRLN10<detail::xoctuple>()); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half pow(const Half& x, const Half& y) { return detail::pow<Half, detail::xfloat, 3, 0, 0, 3, 0>(x, y); }
@@ -1016,7 +1016,7 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Quad pow(const Quad& x, const Quad& y) { return detail::pow<Quad, detail::xoctuple, 23, 0, 0, 20, 1>(x, y); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple pow(const Octuple& x, const Octuple& y) { return detail::pow<Octuple, detail::xsedecuple, 26, 2, -100, 33, 2>(x, y); }
+  static inline constexpr Octuple pow(const Octuple& x, const Octuple& y) { return detail::pow<Octuple, detail::xsedecuple, 26, 2, -15, 33, 2>(x, y); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half cbrt(const Half& a) { return detail::cbrt<Half, detail::xhalf, 3, 0>(a); }
@@ -1069,9 +1069,9 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Double asinh(const Double& a) { return detail::asinh<Double, detail::xquad, 13, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Quad asinh(const Quad& a) { return detail::asinh<Quad, detail::xoctuple, 20, 1, -50>(a); }
+  static inline constexpr Quad asinh(const Quad& a) { return detail::asinh<Quad, detail::xoctuple, 20, 1, -10>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple asinh(const Octuple& a) { return detail::asinh<Octuple, detail::xsedecuple, 33, 2, -100>(a); }
+  static inline constexpr Octuple asinh(const Octuple& a) { return detail::asinh<Octuple, detail::xsedecuple, 33, 2, -15>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half acosh(const Half& a) { return detail::acosh<Half, detail::xfloat, 3, 0, 0>(a); }
@@ -1080,9 +1080,9 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Double acosh(const Double& a) { return detail::acosh<Double, detail::xquad, 13, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Quad acosh(const Quad& a) { return detail::acosh<Quad, detail::xoctuple, 20, 1, -50>(a); }
+  static inline constexpr Quad acosh(const Quad& a) { return detail::acosh<Quad, detail::xoctuple, 20, 1, -10>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple acosh(const Octuple& a) { return detail::acosh<Octuple, detail::xsedecuple, 33, 2, -100>(a); }
+  static inline constexpr Octuple acosh(const Octuple& a) { return detail::acosh<Octuple, detail::xsedecuple, 33, 2, -15>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half atanh(const Half& a) { return detail::atanh<Half, detail::xhalf, 3, 0>(a); }
@@ -1148,7 +1148,7 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Quad tgamma(const Quad& x) { return detail::tgamma<Quad, detail::xoctuple, 20, 35, 15, 23, 0, 0, 20, 1>(x); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
-  static inline constexpr Octuple tgamma(const Octuple& x) { return detail::tgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -100, 33, 2>(x); }
+  static inline constexpr Octuple tgamma(const Octuple& x) { return detail::tgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -15, 33, 2>(x); }
 
   /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
   static inline constexpr Half lgamma(const Half& x, bool *sign = 0) { return detail::lgamma<Half, detail::xfloat, 5, 20, 3, 3, 0, 0, 3, 0>(x, sign); }
@@ -1159,6 +1159,6 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
   static inline constexpr Quad lgamma(const Quad& x, bool *sign = 0) { return detail::lgamma<Quad, detail::xoctuple, 20, 35, 15, 23, 0, 0, 20, 1>(x, sign); }
   /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
-  static inline constexpr Octuple lgamma(const Octuple& x, bool *sign = 0) { return detail::lgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -100, 33, 2>(x, sign); }
+  static inline constexpr Octuple lgamma(const Octuple& x, bool *sign = 0) { return detail::lgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -15, 33, 2>(x, sign); }
 }
 #endif // #ifndef __TLMATH_HPP_INCLUDED__

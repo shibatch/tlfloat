@@ -7,6 +7,8 @@
 #include <cmath>
 #include <climits>
 
+#include "suppress.hpp"
+
 #include "tlfloat/tlfloat.hpp"
 #include "testerutil.hpp"
 

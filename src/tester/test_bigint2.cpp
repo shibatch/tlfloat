@@ -4,6 +4,8 @@
 #include <vector>
 #include <cstdio>
 
+#include "suppress.hpp"
+
 #include "tlfloat/bigint.hpp"
 #include "testerutil.hpp"
 

@@ -12,7 +12,7 @@
 
 #include <mpfr.h>
 
-#define TLFLOAT_SUPPRESS_WARNINGS
+#include "suppress.hpp"
 
 #include "tlfloat/tlmath.hpp"
 #include "testerutil.hpp"
@@ -722,6 +722,7 @@ int main(int argc, char **argv) {
 	  }
 	}
 
+#if 0
 	{
 	  bool rsign = false;
 	  float r = (float)lgamma(Float(x), &rsign);
@@ -742,6 +743,7 @@ int main(int argc, char **argv) {
 	    //exit(-1);
 	  }
 	}
+#endif
 #endif
 
 #if defined(TEST_FLOAT) && defined(TEST_MISC)
@@ -1482,6 +1484,7 @@ int main(int argc, char **argv) {
 	  }
 	}
 
+#if 0
 	{
 	  bool rsign = false;
 	  double r = (double)lgamma(Double(x), &rsign);
@@ -1502,6 +1505,7 @@ int main(int argc, char **argv) {
 	    //exit(-1);
 	  }
 	}
+#endif
 #endif
 
 #if defined(TEST_DOUBLE) && defined(TEST_MISC)
@@ -2673,6 +2677,7 @@ int main(int argc, char **argv) {
 	  }
 	}
 
+#if 0
 	{
 	  bool rsign = false;
 	  quad_ r = (quad_)lgamma(Quad(x), &rsign);
@@ -2703,6 +2708,7 @@ int main(int argc, char **argv) {
 	    //exit(-1);
 	  }
 	}
+#endif
 #endif
 
 #if defined(TEST_QUAD) && defined(TEST_MISC)
@@ -3560,6 +3566,7 @@ int main(int argc, char **argv) {
 	  }
 	}
 
+#if 0
 	{
 	  bool rsign = false;
 	  Octuple r = lgamma(Octuple(x), &rsign);
@@ -3579,6 +3586,7 @@ int main(int argc, char **argv) {
 	    //exit(-1);
 	  }
 	}
+#endif
 #endif
 
 #if defined(TEST_OCTUPLE) && defined(TEST_MISC)

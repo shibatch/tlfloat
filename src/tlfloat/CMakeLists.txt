@@ -1,5 +1,4 @@
 add_library(tlfloat capi.cpp)
-target_compile_definitions(tlfloat PRIVATE SUPPRESS_WARNINGS=1)
 set(INCLUDEDIR "${PROJECT_SOURCE_DIR}/src/include")
 set(VERFILE "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatversion.hpp")
 set_target_properties(tlfloat PROPERTIES

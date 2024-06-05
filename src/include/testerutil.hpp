@@ -666,6 +666,13 @@ static double countULP(const Unpacked_t& ux, mpfr_t c, const Unpacked2_t& umin, 
 }
 #endif // #ifdef MPFR_VERSION_MAJOR
 
+int64_t rndint(shared_ptr<RNG> rng, unsigned maxnb = 5) {
+  unsigned nbits = rng->nextLT(maxnb);
+  int64_t i = rng->nextLT(1 << nbits) + 1;
+  if (rng->next(1)) i = -i;
+  return i;
+}
+
 float rndf(shared_ptr<RNG> rng) {
   uint64_t r = rng->nextLT(1000);
 
@@ -689,6 +696,12 @@ float rndf(shared_ptr<RNG> rng) {
       memcpy((void *)&f, (void *)&u, sizeof(f));
 
       return f;
+    }
+  } else if (r < 64) {
+    for(;;) {
+      float f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (isfinite(f)) return rndint(rng) + f;
     }
   } else {
     for(;;) {
@@ -734,6 +747,12 @@ double rndd(shared_ptr<RNG> rng) {
       memcpy((void *)&f, (void *)&u, sizeof(f));
 
       return f;
+    }
+  } else if (r < 64) {
+    for(;;) {
+      double f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (isfinite(f)) return rndint(rng) + f;
     }
   } else {
     for(;;) {
@@ -786,6 +805,12 @@ Quad rndQ(shared_ptr<RNG> rng) {
       memcpy((void *)&f, (void *)&u, sizeof(f));
 
       return f;
+    }
+  } else if (r < 64) {
+    for(;;) {
+      Quad f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (finite(f)) return rndint(rng) + f;
     }
   } else {
     for(;;) {
@@ -857,6 +882,12 @@ Octuple rndo(shared_ptr<RNG> rng) {
       memcpy((void *)&f, (void *)&u, sizeof(f));
 
       return f;
+    }
+  } else if (r < 64) {
+    for(;;) {
+      Octuple f;
+      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      if (finite(f)) return rndint(rng) + f;
     }
   } else {
     for(;;) {
