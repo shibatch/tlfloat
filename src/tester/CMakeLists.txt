@@ -59,7 +59,7 @@ set_tests_properties(test_hash_noopt PROPERTIES COST "3")
 
 add_executable(test_printf_hash test_printf_hash.cpp)
 target_link_libraries(test_printf_hash tlfloat)
-add_test(NAME test_printf_hash COMMAND test_printf_hash e969c45ecd488d5b70424be4af6a1d292a29ddb4a08ca6b8a66812eacc1ebd3d)
+add_test(NAME test_printf_hash COMMAND test_printf_hash 19afa79b7328d55c90a0f2a885d1b5cb304a094c312551815fa43ff94488e277)
 set_tests_properties(test_printf_hash PROPERTIES COST "2")
 
 if (LIB_MPFR)
