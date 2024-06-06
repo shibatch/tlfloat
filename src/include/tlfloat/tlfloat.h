@@ -1174,6 +1174,13 @@ static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloa
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
+  static inline void sincosq(const tlfloat_quad x, tlfloat_quad *s, tlfloat_quad *c) {
+    *s = tlfloat_sinq(x); *c = tlfloat_cosq(x);
+  }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
   static inline tlfloat_quad tanq(const tlfloat_quad x) { return tlfloat_tanq(x); }
 
   /** This function has the same functionality as the corresponding function in quadmath.h.

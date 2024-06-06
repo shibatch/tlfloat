@@ -69,16 +69,20 @@
 
 /// TLFloat library defines all C++ classes and functions in tlfloat namespace
 namespace tlfloat {
+  /**
+   * This is a simple template struct similar to std::pair. Unlike
+   * std::pair, the member functions are all constexpr.
+   */
+  template<typename firsttype, typename secondtype>
+  struct xpair {
+    firsttype first;
+    secondtype second;
+    constexpr xpair(const firsttype& f, const secondtype& s) : first(f), second(s) {}
+  };
+
   namespace detail {
     template<typename T, int N>
     struct xarray { T e[N]; };
-
-    template<typename firsttype, typename secondtype>
-    struct xpair {
-      firsttype first;
-      secondtype second;
-      constexpr xpair(const firsttype& f, const secondtype& s) : first(f), second(s) {}
-    };
 
     static constexpr size_t xstrlen(const char *s) {
       if (!std::is_constant_evaluated()) return strlen(s);
@@ -317,8 +321,8 @@ namespace tlfloat {
       const unsigned n = 1 << (N - 7);
       for(unsigned i=0;i<n;i++) {
 	for(unsigned j=0;j<=i;j++) {
-	  detail::xpair<uint64_t, uint64_t> m = detail::mul128(plhs[j], prhs[i - j]);
-	  detail::xpair<uint64_t, bool> ub = detail::adc64(false, m.second, al);
+	  xpair<uint64_t, uint64_t> m = detail::mul128(plhs[j], prhs[i - j]);
+	  xpair<uint64_t, bool> ub = detail::adc64(false, m.second, al);
 	  al = ub.first;
 	  ub = detail::adc64(ub.second, m.first, am);
 	  am = ub.first;
@@ -329,8 +333,8 @@ namespace tlfloat {
       }
       for(unsigned i=n;i<n*2-1;i++) {
 	for(unsigned j=i-(n-1);j<n;j++) {
-	  detail::xpair<uint64_t, uint64_t> m = detail::mul128(plhs[j], prhs[i - j]);
-	  detail::xpair<uint64_t, bool> ub = detail::adc64(false, m.second, al);
+	  xpair<uint64_t, uint64_t> m = detail::mul128(plhs[j], prhs[i - j]);
+	  xpair<uint64_t, bool> ub = detail::adc64(false, m.second, al);
 	  al = ub.first;
 	  ub = detail::adc64(ub.second, m.first, am);
 	  am = ub.first;
@@ -345,37 +349,37 @@ namespace tlfloat {
 
     template<int..., int K = N, std::enable_if_t<K == 7, int> = 0>
     static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
-      detail::xpair<uint64_t, uint64_t> m = detail::mul128(lhs.u64, rhs.u64);
+      xpair<uint64_t, uint64_t> m = detail::mul128(lhs.u64, rhs.u64);
       return BigUInt(m.first, m.second);
     }
 
-    constexpr detail::xpair<BigUInt, bool> inc() const {
+    constexpr xpair<BigUInt, bool> inc() const {
       auto rl = low.inc(), rh = high.inc();
-      detail::xpair<BigUInt, bool> s(0, false);
+      xpair<BigUInt, bool> s(0, false);
       s.first.low  = rl.first;
       s.first.high = rl.second ? rh.first : high;
       s.second = rl.second ? rh.second : false;
       return s;
     }
-    constexpr detail::xpair<BigUInt, bool> dec() const {
+    constexpr xpair<BigUInt, bool> dec() const {
       auto rl = low.dec(), rh = high.dec();
-      detail::xpair<BigUInt, bool> s(0, false);
+      xpair<BigUInt, bool> s(0, false);
       s.first.low  = rl.first;
       s.first.high = rl.second ? rh.first : high;
       s.second = rl.second ? rh.second : false;
       return s;
     }
-    constexpr detail::xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
+    constexpr xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
       auto rl = low.adc(rhs.low, c), rh = high.adc(rhs.high, rl.second);
-      detail::xpair<BigUInt, bool> s(0, false);
+      xpair<BigUInt, bool> s(0, false);
       s.first.high = rh.first;
       s.first.low  = rl.first;
       s.second = rh.second;
       return s;
     }
-    constexpr detail::xpair<BigUInt, bool> sbc(const BigUInt& rhs, bool c) const {
+    constexpr xpair<BigUInt, bool> sbc(const BigUInt& rhs, bool c) const {
       auto rl = low.sbc(rhs.low, c), rh = high.sbc(rhs.high, rl.second);
-      detail::xpair<BigUInt, bool> s(0, false);
+      xpair<BigUInt, bool> s(0, false);
       s.first.high = rh.first;
       s.first.low  = rl.first;
       s.second = rh.second;
@@ -722,11 +726,11 @@ namespace tlfloat {
     }
 
     /** This method performs division and modulo at a time. Give rhs.reciprocal() as the second argument */
-    constexpr detail::xpair<BigUInt, BigUInt> divmod(const BigUInt& rhs, const BigUInt& recip) const {
-      if (rhs == 1) detail::xpair<BigUInt, BigUInt>(*this, 0);
+    constexpr xpair<BigUInt, BigUInt> divmod(const BigUInt& rhs, const BigUInt& recip) const {
+      if (rhs == 1) xpair<BigUInt, BigUInt>(*this, 0);
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
       if (!(rhs > m)) { q++; m = m - rhs; }
-      return detail::xpair<BigUInt, BigUInt>(q, m);
+      return xpair<BigUInt, BigUInt>(q, m);
     }
 
     constexpr BigUInt mod(const BigUInt& rhs, const BigUInt& recip) const {
@@ -857,28 +861,28 @@ namespace tlfloat {
     uint64_t u64 = 0;
 
   private:
-    constexpr detail::xpair<BigUInt, bool> inc() const {
-      detail::xpair<BigUInt, bool> s = { 0, false };
+    constexpr xpair<BigUInt, bool> inc() const {
+      xpair<BigUInt, bool> s = { 0, false };
       s.first = u64 + 1;
       s.second = s.first == 0;
       return s;
     }
-    constexpr detail::xpair<BigUInt, bool> dec() const {
-      detail::xpair<BigUInt, bool> s = { 0, false };
+    constexpr xpair<BigUInt, bool> dec() const {
+      xpair<BigUInt, bool> s = { 0, false };
       s.second = u64 == 0;
       s.first = u64 - 1;
       return s;
     }
-    constexpr detail::xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
-      detail::xpair<BigUInt, bool> s = { 0, false };
-      detail::xpair<uint64_t, bool> ub = detail::adc64(c, u64, rhs.u64);
+    constexpr xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
+      xpair<BigUInt, bool> s = { 0, false };
+      xpair<uint64_t, bool> ub = detail::adc64(c, u64, rhs.u64);
       s.first = ub.first;
       s.second = ub.second;
       return s;
     }
-    constexpr detail::xpair<BigUInt, bool> sbc(const BigUInt& rhs, bool c) const {
-      detail::xpair<BigUInt, bool> s = { 0, false };
-      detail::xpair<uint64_t, bool> ub = detail::sbc64(c, u64, rhs.u64);
+    constexpr xpair<BigUInt, bool> sbc(const BigUInt& rhs, bool c) const {
+      xpair<BigUInt, bool> s = { 0, false };
+      xpair<uint64_t, bool> ub = detail::sbc64(c, u64, rhs.u64);
       s.first = ub.first;
       s.second = ub.second;
       return s;

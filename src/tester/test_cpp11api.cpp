@@ -321,6 +321,12 @@ void doTest(const string &s1, const string &s2) {
   check("rintq(q1)", rintq(q1), rint(d1), T);
   check("sinq(q1)", sinq(q1), sin(d1), T);
   check("cosq(q1)", cosq(q1), cos(d1), T);
+  {
+    tlfloat_quad s, c;
+    sincosq(q1, &s, &c);
+    check("sin in sincosq(q1)", s, sin(d1), T);
+    check("cos in sincosq(q1)", c, cos(d1), T);
+  }
   check("tanq(q1)", tanq(q1), tan(d1), T);
   check("asinq(q1)", asinq(q1), asin(d1), T);
   check("acosq(q1)", acosq(q1), acos(d1), T);

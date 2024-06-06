@@ -120,18 +120,18 @@ namespace tlfloat {
 
       //
 
-      static constexpr detail::xpair<uint16_t, uint16_t> divmod(uint32_t x, uint16_t y) {
-	return detail::xpair<uint16_t, uint16_t> { uint16_t(x / y), uint16_t(x % y) };
+      static constexpr xpair<uint16_t, uint16_t> divmod(uint32_t x, uint16_t y) {
+	return xpair<uint16_t, uint16_t> { uint16_t(x / y), uint16_t(x % y) };
       }
 
-      static constexpr detail::xpair<uint32_t, uint32_t> divmod(uint64_t x, uint32_t y) {
-	return detail::xpair<uint32_t, uint32_t> { uint32_t(x / y), uint32_t(x % y) };
+      static constexpr xpair<uint32_t, uint32_t> divmod(uint64_t x, uint32_t y) {
+	return xpair<uint32_t, uint32_t> { uint32_t(x / y), uint32_t(x % y) };
       }
 
       template<int N>
-      static constexpr detail::xpair<BigUInt<N-1>, BigUInt<N-1>> divmod(const BigUInt<N>& x, const BigUInt<N-1>& y) {
+      static constexpr xpair<BigUInt<N-1>, BigUInt<N-1>> divmod(const BigUInt<N>& x, const BigUInt<N-1>& y) {
 	auto p = x.divmod(y, BigUInt<N>(y).reciprocal());
-	return detail::xpair<BigUInt<N-1>, BigUInt<N-1>> { (BigUInt<N-1>)p.first, (BigUInt<N-1>)p.second };
+	return xpair<BigUInt<N-1>, BigUInt<N-1>> { (BigUInt<N-1>)p.first, (BigUInt<N-1>)p.second };
       }
 
       //
@@ -186,8 +186,8 @@ namespace tlfloat {
 
       friend constexpr UnpackedFloat ldexp_(UnpackedFloat x, const int e) { x.exp += e; return x; }
 
-      friend constexpr detail::xpair<UnpackedFloat, int> frexp_(UnpackedFloat x) {
-	detail::xpair<UnpackedFloat, int> ret = { x, x.exp - expoffset() + 2 };
+      friend constexpr xpair<UnpackedFloat, int> frexp_(UnpackedFloat x) {
+	xpair<UnpackedFloat, int> ret = { x, x.exp - expoffset() + 2 };
 	ret.first.exp = expoffset() - 2;
 	return ret;
       }
@@ -1520,9 +1520,9 @@ namespace tlfloat {
       return f;
     }
 
-    friend constexpr detail::xpair<TLFloat, int> frexp(const TLFloat& f) {
+    friend constexpr xpair<TLFloat, int> frexp(const TLFloat& f) {
       auto p = frexp_(f.getUnpacked().cast((xUnpacked_t *)0));
-      return detail::xpair<TLFloat, int> { (TLFloat)p.first.cast((Unpacked_t *)0), p.second };
+      return xpair<TLFloat, int> { (TLFloat)p.first.cast((Unpacked_t *)0), p.second };
     }
 
     /** This function has the same functionality as the corresponding function in math.h. */
