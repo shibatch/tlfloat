@@ -110,6 +110,42 @@ void doTest(const char *mes, T *r, T *x, T *y) {
 //
 
 template<typename T>
+using Func2i = xpair<T, int64_t> (*)(const T&, const T&);
+
+template<typename T, Func2i<T> func>
+__global__ void kern(int n, T *r, int64_t *ri, T *x, T *y) {
+  int index = threadIdx.x, stride = blockDim.x;
+  for (int i = index; i < n; i += stride) {
+    xpair<T, int64_t> p = func(x[i], y[i]);
+    r[i] = p.first;
+    ri[i] = p.second;
+  }
+}
+
+template<typename T, Func2i<T> func>
+void doTest(const char *mes, T *r, int64_t *ri, T *x, T *y) {
+  auto t0 = getTime();
+  kern<T, func><<<nBlock, nThread>>>(N, r, ri, x, y);
+  cudaErrorCheck( cudaPeekAtLastError() );
+  cudaErrorCheck( cudaDeviceSynchronize() );
+
+  auto t1 = getTime();
+  for (int i = 0; i < N; i++) {
+    auto p = func(x[i], y[i]);
+    if (r[i].m == p.first.m && ri[i] == p.second) continue;
+    cout << mes << " : NG" << endl;
+    cout << "arg1   : " << to_string(x[i], 75) << endl;
+    cout << "device : " << to_string(r[i], 75) << ", " << ri[i] << endl;
+    cout << "host   : " << to_string(p.first, 75) << p.second << endl;
+    exit(-1);
+  }
+  auto t2 = getTime();
+  cout << mes << " : OK (D:" << (t1 - t0)/1000.0 << "ms, H:" << (t2 - t1)/1000.0 << "ms)" << endl;
+}
+
+//
+
+template<typename T>
 using Func3 = T (*)(const T&, const T&, const T&);
 
 template<typename T, Func3<T> func>
@@ -206,6 +242,8 @@ int main(int argc, char **argv) {
   Half *yh = (Half *)cudaMallocManaged_(N*sizeof(Half));
   Half *zh = (Half *)cudaMallocManaged_(N*sizeof(Half));
   Half *rh = (Half *)cudaMallocManaged_(N*sizeof(Half));
+
+  int64_t *ri = (int64_t *)cudaMallocManaged_(N*sizeof(int64_t));
 
   {
     vector<Octuple> v;
@@ -532,6 +570,14 @@ int main(int argc, char **argv) {
   doTest<Double, remainder>("Double remainder", rd, xd, yd);
   doTest<Float, remainder>("Float remainder", rf, xf, yf);
   doTest<Half, remainder>("Half remainder", rh, xh, yh);
+
+  doTest<Octuple, remquo>("Octuple remquo", ro, ri, xo, yo);
+  doTest<Quad, remquo>("Quad remquo", rq, ri, xq, yq);
+  doTest<Double, remquo>("Double remquo", rd, ri, xd, yd);
+  doTest<Float, remquo>("Float remquo", rf, ri, xf, yf);
+  doTest<Half, remquo>("Half remquo", rh, ri, xh, yh);
+
+  cudaFree(ri);
 
   cudaFree(rh);
   cudaFree(zh);

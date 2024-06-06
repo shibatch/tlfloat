@@ -747,6 +747,12 @@ namespace tlfloat {
 	return s > 0 ? BigUInt<N>(mant >> s) : (BigUInt<N>(mant) << -s);
       }
 
+      constexpr uint64_t castToInt2() const {
+	int s = nbmant - (exp - expoffset() + 1);
+	if (s <= -int(sizeof(uint64_t))*8 || s >= int(sizeof(mant_t))*8) return 0;
+	return uint64_t(s > 0 ? (mant >> s) : (uint64_t(mant) << -s));
+      }
+
       template<typename srctype, std::enable_if_t<(std::is_integral_v<srctype> && sizeof(srctype) <= 8), int> = 0>
       static constexpr UnpackedFloat castFromInt(srctype src) {
 	if (src == 0) return zero();

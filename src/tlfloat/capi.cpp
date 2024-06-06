@@ -751,6 +751,27 @@ extern "C" {
   tlfloat_quad_ tlfloat_remainderq(const tlfloat_quad_ x, const tlfloat_quad_ y) { return (tlfloat_quad_)remainder(Quad(x), Quad(y)); }
   tlfloat_octuple_ tlfloat_remaindero(const tlfloat_octuple_ x, const tlfloat_octuple_ y) { return (tlfloat_octuple_)remainder(Octuple(x), Octuple(y)); }
 
+  float tlfloat_remquof(const float x, const float y, int *quo) {
+    auto p = remquo(Float(x), Float(y));
+    if (quo) *quo = p.second & 0xffffffff;
+    return (float)p.first;
+  }
+  double tlfloat_remquo(const double x, const double y, int *quo) {
+    auto p = remquo(Double(x), Double(y));
+    if (quo) *quo = p.second & 0xffffffff;
+    return (double)p.first;
+  }
+  tlfloat_quad_ tlfloat_remquoq(const tlfloat_quad_ x, const tlfloat_quad_ y, int *quo) {
+    auto p = remquo(Quad(x), Quad(y));
+    if (quo) *quo = p.second & 0xffffffff;
+    return (tlfloat_quad_)p.first;
+  }
+  tlfloat_octuple_ tlfloat_remquoo(const tlfloat_octuple_ x, const tlfloat_octuple_ y, int *quo) {
+    auto p = remquo(Octuple(x), Octuple(y));
+    if (quo) *quo = p.second & 0xffffffff;
+    return (tlfloat_octuple_)p.first;
+  }
+
   float tlfloat_erff(const float a) { return (float)erf(Float(a)); }
   double tlfloat_erf(const double a) { return (double)erf(Double(a)); }
   tlfloat_quad_ tlfloat_erfq(const tlfloat_quad_ a) { return (tlfloat_quad_)erf(Quad(a)); }

@@ -523,6 +523,28 @@ int main(int argc, char **argv) {
 	    exit(-1);
 	  }
 	}
+
+	{
+	  auto a = remquo(Float(y), Float(x));
+	  ufloat xfr = Float(a.first).getUnpacked();
+
+	  mpfr_set_d(my, y, GMP_RNDN);
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  long int q;
+	  mpfr_remquo(mx, &q, my, mx, GMP_RNDN);
+	  float c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  if (ulp > 0.5 || (!isnan(c) && a.second != q)) {
+	    printf("\nfloat remquo\n");
+	    printf("ulp = %g\n", ulp);
+	    printf("y = %.8g\n", y);
+	    printf("x = %.8g\n", x);
+	    printf("t = %.8g, %ld\n", (float)a.first, (long int)a.second);
+	    printf("c = %.8g, %ld\n\n", c, q);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
 #endif
 
 #if defined(TEST_FLOAT) && defined(TEST_CBRT)
@@ -1281,6 +1303,28 @@ int main(int argc, char **argv) {
 	    printf("x = %.20lg\n", x);
 	    printf("t = %.20lg\n", r);
 	    printf("c = %.20lg\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  auto a = remquo(Double(y), Double(x));
+	  udouble xfr = Double(a.first).getUnpacked();
+
+	  mpfr_set_d(my, y, GMP_RNDN);
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  long int q;
+	  mpfr_remquo(mx, &q, my, mx, GMP_RNDN);
+	  double c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  if (ulp > 0.5 || (!isnan(c) && a.second != q)) {
+	    printf("\ndouble remquo\n");
+	    printf("ulp = %lg\n", ulp);
+	    printf("y = %.20lg\n", y);
+	    printf("x = %.20lg\n", x);
+	    printf("t = %.20lg, %ld\n", (double)a.first, (long int)a.second);
+	    printf("c = %.20lg, %ld\n\n", c, (long int)q);
 	    cout << "NG" << endl;
 	    exit(-1);
 	  }
@@ -2378,6 +2422,39 @@ int main(int argc, char **argv) {
 	    exit(-1);
 	  }
 	}
+
+	{
+	  auto a = remquo(Quad(y), Quad(x));
+	  uquad xfr = Quad(a.first).getUnpacked();
+
+#ifdef ENABLE_QUAD
+	  mpfr_set_float128(my, y, GMP_RNDN);
+	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+#endif
+	  long int q;
+	  mpfr_remquo(mx, &q, my, mx, GMP_RNDN);
+#ifdef ENABLE_QUAD
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
+	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  if (ulp > 0.5 || (!mpfr_nan_p(mx) && a.second != q)) {
+	    printf("\nquad remquo\n");
+	    printf("ulp = %g\n", ulp);
+	    cout << "y = " << y << endl;
+	    cout << "x = " << x << endl;
+#ifdef ENABLE_QUAD
+	    cout << "c = " << c << ", " << q << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
+	    cout << "r = " << a.first << ", " << a.second << endl;
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
 #endif
 
 #if defined(TEST_QUAD) && defined(TEST_CBRT)
@@ -3372,6 +3449,27 @@ int main(int argc, char **argv) {
 	    cout << "x = " << to_string(x, 72) << endl;
 	    cout << "c = " << to_string(mx, 72) << endl;
 	    cout << "r = " << to_string(r , 72) << " : " << to_string_d(Octuple(r).getUnpacked()) << endl;
+	    printf("ulp = %g\n", ulp);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  auto a = remquo(Octuple(y), Octuple(x));
+	  uoctuple xcr = a.first.getUnpacked();
+
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  long int q;
+	  mpfr_remquo(mx, &q, my, mx, GMP_RNDN);
+	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  if (ulp > 0.5 || (!mpfr_nan_p(mx) && a.second != q)) {
+	    printf("\noctuple remquo\n");
+	    cout << "y = " << to_string(y, 72) << endl;
+	    cout << "x = " << to_string(x, 72) << endl;
+	    cout << "c = " << to_string(mx, 72) << ", " << q << endl;
+	    cout << "r = " << to_string(a.first, 72) << " : " << to_string_d(Octuple(a.first).getUnpacked()) << ", " << a.second << endl;
 	    printf("ulp = %g\n", ulp);
 	    cout << "NG" << endl;
 	    exit(-1);

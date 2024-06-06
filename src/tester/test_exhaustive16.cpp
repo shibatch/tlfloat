@@ -1,4 +1,5 @@
 #include <iostream>
+#include <atomic>
 #define MPFR_WANT_FLOAT128
 #include <mpfr.h>
 #include <arm_fp16.h>
@@ -40,10 +41,14 @@ int main(int argc, char **argv) {
   typedef UnpackedFloat<uint16_t, uint32_t, 5, 10> uhalf;
   typedef TLFloat<uhalf> Half;
 
+  atomic_int progress;
+
   #pragma omp parallel for
   for(uint32_t u32=0;u32 < 0x10000;u32++) {
     if ((u32 & 0xff) == 0) {
-      printf("u = %04x\r", u32);
+      progress++;
+      int k = progress;
+      printf(" %d / 256\r", k);
       fflush(stdout);
     }
     uint16_t u = u32;
@@ -926,6 +931,41 @@ int main(int argc, char **argv) {
 
 	mpfr_clears(mx, my, mz, NULL);
       }
+
+      {
+	mpfr_set_default_prec(32);
+
+	mpfr_t mx, my, mz;
+	mpfr_inits(mx, my, mz, NULL);
+
+	Half x = Half(fu);
+	Half y = Half(fv);
+
+	{
+	  auto p = remquo(x, y);
+	  Half r = p.first;
+	  uhalf xcr = r.getUnpacked();
+
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  long int mq = 0;
+	  mpfr_remquo(mx, &mq, mx, my, GMP_RNDN);
+	  double c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	  if (ulp > 0.5 || mq != p.second) {
+	    printf("\nhalf remquo\n");
+	    cout << "x = " << (__fp16)x << endl;
+	    cout << "y = " << (__fp16)y << endl;
+	    cout << "c = " << c << ", " << mq << endl;
+	    cout << "r = " << (__fp16)r << " : " << to_string_d(Half(r).getUnpacked()) << ", " << p.second << endl;
+	    printf("ulp = %g\n", ulp);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	mpfr_clears(mx, my, mz, NULL);
+      }
 #endif
 
 #ifdef TEST_FMA
@@ -955,6 +995,6 @@ int main(int argc, char **argv) {
     }
   }
 
-  cout << "OK" << endl;
+  cout << endl << "OK" << endl;
   return 0;
 }

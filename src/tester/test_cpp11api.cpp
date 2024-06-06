@@ -62,6 +62,18 @@ static void check(const string& msg, int x, int y) {
   exit(-1);
 }
 
+static void checkQuo(const string& msg, int x, int y) {
+  int x2 = x & 0x7, y2 = y & 0x7;
+  if (x < 0) x2 = -x2;
+  if (y < 0) y2 = -y2;
+  if (x2 == y2) return;
+
+  cout << "NG " << msg << endl;
+  printf("x : %x %d\n", x, x2);
+  printf("y : %x %d\n", y, y2);
+  exit(-1);
+}
+
 static void check(const string& msg, const char* x, const char* y) {
   if (strncmp(x, y, strlen(y)) == 0) return;
 
@@ -225,6 +237,7 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_atanho(o1)", tlfloat_atanho(o1), atanh(d1), T);
   check("tlfloat_erfo(o1)", tlfloat_erfo(o1), erf(d1), T);
   check("tlfloat_erfco(o1)", tlfloat_erfco(o1), erfc(d1), T);
+  check("tlfloat_tgammao(o1)", tlfloat_tgammao(o1), tgamma(d1), T);
   check("tlfloat_expo(o1)", tlfloat_expo(o1), exp(d1), T);
   check("tlfloat_exp2o(o1)", tlfloat_exp2o(o1), exp2(d1), T);
 #ifdef _GNU_SOURCE
@@ -244,6 +257,9 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_hypoto(o1, o2)", tlfloat_hypoto(o1, o2), hypot(d1, d2), T);
   check("tlfloat_fmodo(o1, o2)", tlfloat_fmodo(o1, o2), fmod(d1, d2), T);
   check("tlfloat_remaindero(o1, o2)", tlfloat_remaindero(o1, o2), remainder(d1, d2), T);
+  int qt = 0, qc = 0;
+  check("tlfloat_remquoo(o1, o2, &quo) remainder", tlfloat_remquoo(o1, o2, &qt), remquo(d1, d2, &qc), T);
+  checkQuo("tlfloat_remquoo(o1, o2, &quo) quo", qt, qc);
   check("tlfloat_ilogbo(o1)", tlfloat_ilogbo(o1), ilogb(d1));
   check("tlfloat_isnano(o1)", tlfloat_isnano(o1), isnan(d1));
   check("tlfloat_isinfo(o1)", tlfloat_isinfo(o1), isinf(d1));
@@ -279,6 +295,7 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_atanhq(q1)", tlfloat_atanhq(q1), atanh(d1), T);
   check("tlfloat_erfq(q1)", tlfloat_erfq(q1), erf(d1), T);
   check("tlfloat_erfcq(q1)", tlfloat_erfcq(q1), erfc(d1), T);
+  check("tlfloat_tgammaq(q1)", tlfloat_tgammaq(q1), tgamma(d1), T);
   check("tlfloat_expq(q1)", tlfloat_expq(q1), exp(d1), T);
   check("tlfloat_exp2q(q1)", tlfloat_exp2q(q1), exp2(d1), T);
 #ifdef _GNU_SOURCE
@@ -298,6 +315,9 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_hypotq(q1, q2)", tlfloat_hypotq(q1, q2), hypot(d1, d2), T);
   check("tlfloat_fmodq(q1, q2)", tlfloat_fmodq(q1, q2), fmod(d1, d2), T);
   check("tlfloat_remainderq(q1, q2)", tlfloat_remainderq(q1, q2), remainder(d1, d2), T);
+  qt = qc = 0;
+  check("tlfloat_remquoq(q1, q2, &quo) remainder", tlfloat_remquoq(q1, q2, &qt), remquo(d1, d2, &qc), T);
+  checkQuo("tlfloat_remquoq(q1, q2, &quo) quo", qt, qc);
   check("tlfloat_ilogbq(q1)", tlfloat_ilogbq(q1), ilogb(d1));
   check("tlfloat_isnanq(q1)", tlfloat_isnanq(q1), isnan(d1));
   check("tlfloat_isinfq(q1)", tlfloat_isinfq(q1), isinf(d1));
@@ -339,6 +359,8 @@ void doTest(const string &s1, const string &s2) {
   check("atanhq(q1)", atanhq(q1), atanh(d1), T);
   check("erfq(q1)", erfq(q1), erf(d1), T);
   check("erfcq(q1)", erfcq(q1), erfc(d1), T);
+  check("tgammaq(q1)", tgammaq(q1), tgamma(d1), T);
+  //check("lgammaq(q1)", lgammaq(q1), lgamma(d1), T);
   check("expq(q1)", expq(q1), exp(d1), T);
   check("exp2q(q1)", exp2q(q1), exp2(d1), T);
 #ifdef _GNU_SOURCE
@@ -358,6 +380,9 @@ void doTest(const string &s1, const string &s2) {
   check("hypotq(q1, q2)", hypotq(q1, q2), hypot(d1, d2), T);
   check("fmodq(q1, q2)", fmodq(q1, q2), fmod(d1, d2), T);
   check("remainderq(q1, q2)", remainderq(q1, q2), remainder(d1, d2), T);
+  qt = qc = 0;
+  check("remquoq(q1, q2, &quo) remainder", remquoq(q1, q2, &qt), remquo(d1, d2, &qc), T);
+  checkQuo("remquoq(q1, q2, &quo) quo", qt, qc);
   check("ilogbq(q1)", ilogbq(q1), ilogb(d1));
   check("isnanq(q1)", isnanq(q1), isnan(d1));
   check("isinfq(q1)", isinfq(q1), isinf(d1));

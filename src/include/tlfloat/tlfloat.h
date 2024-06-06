@@ -501,6 +501,11 @@ extern "C" {
   double tlfloat_remainder(const double x, const double y);
 
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  float tlfloat_remquof(const float x, const float y, int *quo);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  double tlfloat_remquo(const double x, const double y, int *quo);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   float tlfloat_erff(const float x);
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   double tlfloat_erf(const double x);
@@ -515,9 +520,9 @@ extern "C" {
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   double tlfloat_tgamma(const double x);
 
-  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  /** This is experimental implementation of log gamma function. Link with -ltlfloat. */
   float tlfloat_lgammaf(const float x);
-  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  /** This is experimental implementation of log gamma function. Link with -ltlfloat. */
   double tlfloat_lgamma(const double x);
 
 #if !defined(TLFLOAT_DOXYGEN)
@@ -619,6 +624,8 @@ extern "C" {
   tlfloat_octuple_ tlfloat_fmodo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
   tlfloat_quad_ tlfloat_remainderq(const tlfloat_quad_ x, const tlfloat_quad_ y);
   tlfloat_octuple_ tlfloat_remaindero(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  tlfloat_quad_ tlfloat_remquoq(const tlfloat_quad_ x, const tlfloat_quad_ y, int *quo);
+  tlfloat_octuple_ tlfloat_remquoo(const tlfloat_octuple_ x, const tlfloat_octuple_ y, int *quo);
 #endif // #if !defined(TLFLOAT_DOXYGEN)
 
 #ifdef __cplusplus
@@ -1023,12 +1030,13 @@ static inline tlfloat_quad tlfloat_erfq(const tlfloat_quad x) { return tlfloat_e
 static inline tlfloat_quad tlfloat_erfcq(const tlfloat_quad x) { return tlfloat_erfcq(tlfloat_quad_(x)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_tgammaq(const tlfloat_quad x) { return tlfloat_tgammaq(tlfloat_quad_(x)); }
-/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
-static inline tlfloat_quad tlfloat_lgammaq(const tlfloat_quad x) { return tlfloat_lgammaq(tlfloat_quad_(x)); }
+/** This is experimental implementation of log gamma function. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_lgammaq(const tlfloat_quad x) { return tlfloat_cast_q_o(tlfloat_lgammao(tlfloat_cast_o_q(tlfloat_quad_(x)))); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_fmodq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_fmodq(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_remainderq(tlfloat_quad_(x), tlfloat_quad_(y)); }
+static inline tlfloat_quad tlfloat_remquoq(const tlfloat_quad x, const tlfloat_quad y, int *quo) { return tlfloat_remquoq(tlfloat_quad_(x), tlfloat_quad_(y), quo); }
 #endif // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
 
 #ifdef TLFLOAT_LIBQUADMATH_EMULATION
@@ -1293,7 +1301,7 @@ static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloa
    * Link with -ltlfloat. */
   static inline tlfloat_quad erfcq(const tlfloat_quad x) { return tlfloat_erfcq(x); }
 
-  /** This function has the same functionality as the corresponding function in quadmath.h.
+  /** This is experimental implementation of log gamma function. 
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
   static inline tlfloat_quad tgammaq(const tlfloat_quad x) { return tlfloat_tgammaq(x); }
@@ -1312,6 +1320,7 @@ static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloa
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
   static inline tlfloat_quad remainderq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_remainderq(x, y); }
+  static inline tlfloat_quad remquoq(const tlfloat_quad x, const tlfloat_quad y, int *quo) { return tlfloat_remquoq(x, y, quo); }
 #endif // #ifdef TLFLOAT_LIBQUADMATH_EMULATION
 
 //
@@ -1541,6 +1550,8 @@ static inline tlfloat_octuple tlfloat_lgammao(const tlfloat_octuple x) { return 
 static inline tlfloat_octuple tlfloat_fmodo(const tlfloat_octuple x, const tlfloat_octuple y) { return tlfloat_fmodo(tlfloat_octuple_(x), tlfloat_octuple_(y)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_octuple tlfloat_remaindero(const tlfloat_octuple x, const tlfloat_octuple y) { return tlfloat_remaindero(tlfloat_octuple_(x), tlfloat_octuple_(y)); }
+/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_remquoo(const tlfloat_octuple x, const tlfloat_octuple y, int *quo) { return tlfloat_remquoo(tlfloat_octuple_(x), tlfloat_octuple_(y), quo); }
 
 namespace tlfloat {
 #ifndef TLFLOAT_NO_LIBSTDCXX

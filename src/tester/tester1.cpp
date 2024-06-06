@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdio>
 
 #if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
 #include <quadmath.h>
@@ -29,11 +30,15 @@ template<typename T>
 using Func2 = T (*)(const T&, const T&);
 
 template<typename T>
+using Func2i = xpair<T, int64_t> (*)(const T&, const T&);
+
+template<typename T>
 using Func3 = T (*)(const T&, const T&, const T&);
 
 using MPFRFunc1 = int (*)(mpfr_t rop, const mpfr_t op, mpfr_rnd_t rnd);
 using MPFRFunc1NR = int (*)(mpfr_t rop, const mpfr_t op);
 using MPFRFunc2 = int (*)(mpfr_t rop, const mpfr_t op1, const mpfr_t op2, mpfr_rnd_t rnd);
+using MPFRFunc2i = int (*)(mpfr_t rop, long int *ip, const mpfr_t op1, const mpfr_t op2, mpfr_rnd_t rnd);
 using MPFRFunc3 = int (*)(mpfr_t rop, const mpfr_t op1, const mpfr_t op2, const mpfr_t op3, mpfr_rnd_t rnd);
 
 template<typename T> static constexpr T fabs_(const T &a1) { return fabs(a1); }
@@ -110,6 +115,30 @@ void doTest(const char *mes, T a1, T a2, mpfr_t &mr, mpfr_t &ma1, mpfr_t &ma2, b
   cout << "arg2    : " << to_string(a2, 72) << endl;
   cout << "tlfloat : " << to_string(r, 72) << endl;
   cout << "mpfr    : " << to_string(mr, 72) << endl;
+  exit(-1);
+}
+
+template<typename T, Func2i<T> func, MPFRFunc2i mpfrFunc>
+void doTest(const char *mes, T a1, T a2, mpfr_t &mr, mpfr_t &ma1, mpfr_t &ma2, bool skipnan = false) {
+  if (skipnan && isnan(a2)) return;
+  xpair<T, int64_t> r = func(a1, a2);
+  typedef decltype(r.first.getUnpacked()) Unpacked_t;
+
+  mpfr_set_unpacked(ma1, a1.getUnpacked(), GMP_RNDN);
+  mpfr_set_unpacked(ma2, a2.getUnpacked(), GMP_RNDN);
+  long int mq = 0;
+  mpfrFunc(mr, &mq, ma1, ma2, GMP_RNDN);
+  double ulp = countULP(r.first.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
+
+  if (ulp <= 0.5 && (mq == r.second || (mq = 0x8000000000000000LL && r.second == 0))) return;
+
+  cout << mes << endl;
+  cout << "arg1    : " << to_string(a1, 72) << endl;
+  cout << "arg2    : " << to_string(a2, 72) << endl;
+  cout << "tlfloat : " << to_string(r.first, 72) << ", " << r.second << endl;
+  printf("%016llx\n", (long long)r.second);
+  cout << "mpfr    : " << to_string(mr, 72) << ", " << mq << endl;
+  printf("%016llx\n", (long long)mq);
   exit(-1);
 }
 
@@ -409,6 +438,12 @@ int main(int argc, char **argv) {
       doTest<Double, remainder, mpfr_remainder>("Double remainder", dvalues[index0], dvalues[index1], mr, ma1, ma2);
       doTest<Quad, remainder, mpfr_remainder>("Quad remainder", qvalues[index0], qvalues[index1], mr, ma1, ma2);
       doTest<Octuple, remainder, mpfr_remainder>("Octuple remainder", ovalues[index0], ovalues[index1], mr, ma1, ma2);
+
+      doTest<Half, remquo, mpfr_remquo>("Half remquo", hvalues[index0], hvalues[index1], mr, ma1, ma2);
+      doTest<Float, remquo, mpfr_remquo>("Float remquo", fvalues[index0], fvalues[index1], mr, ma1, ma2);
+      doTest<Double, remquo, mpfr_remquo>("Double remquo", dvalues[index0], dvalues[index1], mr, ma1, ma2);
+      doTest<Quad, remquo, mpfr_remquo>("Quad remquo", qvalues[index0], qvalues[index1], mr, ma1, ma2);
+      doTest<Octuple, remquo, mpfr_remquo>("Octuple remquo", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
       for(int index2 = 0;index2 < N;index2++) {
 	doTest<Half, fma_, mpfr_fma>("Half fma", hvalues[index0], hvalues[index1], hvalues[index2], mr, ma1, ma2, ma3);

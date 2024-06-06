@@ -33,6 +33,18 @@ void checkInt(const int u, const int v, const char *mes) {
   }
 }
 
+void checkQuo(const int u, const int v, const char *mes) {
+  int u2 = u & 0x7, v2 = v & 0x7;
+  if (u < 0) u2 = -u2;
+  if (v < 0) v2 = -v2;
+  if (u2 != v2) {
+    printf("NG : %s\n", mes);
+    printf("u : %d %d\n", u, u2);
+    printf("v : %d %d\n", v, v2);
+    exit(-1);
+  }
+}
+
 void checkDouble(const double u, const double v, const char *mes) {
   if (isinf(u) && isinf(v)) return;
   if (u != v) {
@@ -399,6 +411,15 @@ int main(int argc, char **argv) {
   checkStr(buf0, buf1, "quadmath remainderq");
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Og", tlfloat_remaindero(o0, o1));
   checkStr(buf0, buf1, "quadmath remaindero");
+
+  int cquo = 0, tquo = 0;
+  quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", remquoq(q0, q1, &cquo));
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_remquoq(q0, q1, &tquo));
+  checkStr(buf0, buf1, "quadmath remquoq remainder");
+  checkQuo(cquo, tquo, "quadmath remquoq quo");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.24Og", tlfloat_remquoo(o0, o1, &tquo));
+  checkStr(buf0, buf1, "quadmath remquoo remainder");
+  checkQuo(cquo, tquo, "quadmath remquoo quo");
 
   quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", fabsq(q2));
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_fabsq(q2));

@@ -79,6 +79,35 @@ void computeHash(const char *mes, T *r, T *x, T *y, FILE *fp=nullptr, int mode=0
 }
 
 template<typename T>
+using Func2i = xpair<T, int64_t> (*)(const T&, const T&);
+
+template<typename T, Func2i<T> func>
+void computeHash(const char *mes, T *r, T *x, T *y, FILE *fp=nullptr, int mode=0) {
+  for (int i = 0; i < N; i++) {
+    xpair<T, int64_t> p = func(x[i], y[i]);
+    if (mode == 0) {
+      sha256.append((void *)&p.first.m, sizeof(p.first.m));
+      sha256.append((void *)&p.second, sizeof(p.second));
+    } else if (mode == 1) {
+      fwrite((void *)&p.first.m, sizeof(p.first.m), 1, fp);
+      fwrite((void *)&p.second, sizeof(p.second), 1, fp);
+    } else if (mode == 2) {
+      T t = 0;
+      size_t s0 = fread((void *)&t, sizeof(t), 1, fp);
+      int64_t q = 0;
+      size_t s1 = fread((void *)&q, sizeof(q), 1, fp);
+      if (s0 != 1 || s1 != 1 || t.m != p.first.m || q != p.second) {
+	cout << mes << endl;
+	cout << "arg1   : " << to_string(x[i], 75) << endl;
+	cout << "arg2   : " << to_string(y[i], 75) << endl;
+	cout << "file   : " << toHexString(t.m) << " : " << to_string(t, 75) << ", " << q << endl;
+	cout << "host   : " << toHexString(p.first.m) << " : " << to_string(p.first, 75) << ", " << p.second << endl;
+      }
+    }
+  }
+}
+
+template<typename T>
 using Func3 = T (*)(const T&, const T&, const T&);
 
 template<typename T, Func3<T> func>
@@ -469,6 +498,12 @@ int main(int argc, char **argv) {
   computeHash<Double, remainder>("Double remainder", rd, xd, yd, fp, mode);
   computeHash<Float, remainder>("Float remainder", rf, xf, yf, fp, mode);
   computeHash<Half, remainder>("Half remainder", rh, xh, yh, fp, mode);
+
+  computeHash<Octuple, remquo>("Octuple remquo", ro, xo, yo, fp, mode);
+  computeHash<Quad, remquo>("Quad remquo", rq, xq, yq, fp, mode);
+  computeHash<Double, remquo>("Double remquo", rd, xd, yd, fp, mode);
+  computeHash<Float, remquo>("Float remquo", rf, xf, yf, fp, mode);
+  computeHash<Half, remquo>("Half remquo", rh, xh, yh, fp, mode);
 
   free(rh);
   free(zh);

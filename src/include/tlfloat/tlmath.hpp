@@ -715,6 +715,37 @@ namespace tlfloat {
       return tlfloat_t(ur.cast((decltype(n.getUnpacked()) *)nullptr));
     }
 
+    template<typename Unpacked_t>
+    static constexpr xpair<Unpacked_t, int64_t> remquo_(const Unpacked_t &n, const Unpacked_t &d, const Unpacked_t &rd) {
+      Unpacked_t r = n, d15 = d * ldexp_(Unpacked_t::castFromInt(3), -1), d05 = ldexp_(d, -1);
+      int64_t quo = 0;
+      bool qisodd = false;
+      for(int i=0;i<(1 << 20);i++) {
+	Unpacked_t q = rint(r * rd);
+	if (fabs(r) < d15) q = Unpacked_t::castFromInt(r.sign ? -1 : 1);
+	if (fabs(r) < d05 || (!qisodd && fabs(r) == d05)) q = Unpacked_t::castFromInt(0);
+	if (q.iszero) break;
+	qisodd = qisodd != (isint(q) && !iseven(q));
+	quo += q.sign ? -int64_t(q.castToInt2() & ((1ULL << 63)-1)) : int64_t(q.castToInt2() & ((1ULL << 63)-1));
+	r = Unpacked_t::fma(q, -d, r);
+      }
+      quo &= (1ULL << 63)-1;
+      return xpair<Unpacked_t, int64_t>(r, n.sign != d.sign ? -quo : quo);
+    }
+
+    template<typename tlfloat_t, typename Unpacked_t>
+    static constexpr xpair<tlfloat_t, int64_t> remquo(const tlfloat_t &n, const tlfloat_t &d) {
+      Unpacked_t un = n.getUnpacked().cast((Unpacked_t *)0);
+      Unpacked_t ud = d.getUnpacked().cast((Unpacked_t *)0);
+      if (un.isinf || ud.iszero) return xpair<tlfloat_t, int64_t>(tlfloat_t::nan(), 0);
+      if (un.isnan || ud.isinf) return xpair<tlfloat_t, int64_t>(n, 0);
+      if (ud.isnan) return xpair<tlfloat_t, int64_t>(d, 0);
+      auto p = remquo_<Unpacked_t>(fabs(un), fabs(ud), toward0(Unpacked_t::castFromInt(1) / fabs(ud)));
+      if (un.sign) p.first.sign = !p.first.sign;
+      if (un.sign != ud.sign) p.second = -p.second; 
+      return xpair<tlfloat_t, int64_t>(tlfloat_t(p.first.cast((decltype(n.getUnpacked()) *)nullptr)), p.second);
+    }
+
     //
 
     template<typename Unpacked_t, unsigned N, unsigned EN, unsigned EM>
@@ -1116,6 +1147,17 @@ namespace tlfloat {
   static inline constexpr Quad remainder(const Quad& y, const Quad& x) { return detail::remainder<Quad, detail::xquad>(y, x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Octuple remainder(const Octuple& y, const Octuple& x) { return detail::remainder<Octuple, detail::xoctuple>(y, x); }
+
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr xpair<Half, int64_t> remquo(const Half& y, const Half& x) { return detail::remquo<Half, detail::xhalf>(y, x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr xpair<Float, int64_t> remquo(const Float& y, const Float& x) { return detail::remquo<Float, detail::xfloat>(y, x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr xpair<Double, int64_t> remquo(const Double& y, const Double& x) { return detail::remquo<Double, detail::xdouble>(y, x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr xpair<Quad, int64_t> remquo(const Quad& y, const Quad& x) { return detail::remquo<Quad, detail::xquad>(y, x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr xpair<Octuple, int64_t> remquo(const Octuple& y, const Octuple& x) { return detail::remquo<Octuple, detail::xoctuple>(y, x); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half erf(const Half& x) { return detail::erf<Half, detail::xfloat, 16, 10, 5, 0>(x); }
