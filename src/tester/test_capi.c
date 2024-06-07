@@ -16,7 +16,7 @@
 #include "tlfloat/tlfloat.h"
 
 #ifdef __STDC_VERSION__
-static const tlfloat_quad testvar = M_PIq;
+const tlfloat_quad testvar = M_PIq;
 #endif
 
 void checkStr(const char *p, const char *q, const char *mes) {

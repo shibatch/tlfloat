@@ -29,8 +29,10 @@ consteval T Machin() {
 int main(int argc, char **argv) {
   char buf[1024];
 
+  //
+
   snprint(buf, sizeof(buf), AGM<Half>(1), 'g', 0, 5);
-  printf("Half (AGM)       : %s\n", buf);
+  printf("Half (AGM)                : %s\n", buf);
 
   if (strncmp(buf, "3.1", 3) != 0) {
     printf("NG\n");
@@ -40,7 +42,7 @@ int main(int argc, char **argv) {
   //
 
   snprint(buf, sizeof(buf), Machin<Half>(), 'g', 0, 5);
-  printf("Half (Machin)    : %s\n", buf);
+  printf("Half (Machin)             : %s\n", buf);
 
   if (strncmp(buf, "3.14", 4) != 0) {
     printf("NG\n");
@@ -49,8 +51,28 @@ int main(int argc, char **argv) {
 
   //
 
+  tlfloat_snprintf(buf, sizeof(buf), "%.5_16g", const_M_PI<Half>());
+  printf("Half (const_M_PI<Half>()) : %s\n", buf);
+
+  if (strncmp(buf, "3.14", 4) != 0) {
+    printf("NG\n");
+    return -1;
+  }
+
+  //
+
+  tlfloat_snprintf(buf, sizeof(buf), "%.5_16g", const_M_E<Half>());
+  printf("Half (const_M_E<Half>())  : %s\n", buf);
+
+  if (strncmp(buf, "2.718", 5) != 0) {
+    printf("NG\n");
+    return -1;
+  }
+
+  //
+
   snprint(buf, sizeof(buf), AGM<Float>(1), 'g', 0, 8);
-  printf("Float (AGM)      : %s\n", buf);
+  printf("Float (AGM)               : %s\n", buf);
 
   if (strncmp(buf, "3.141592", 8) != 0) {
     printf("NG\n");
@@ -59,8 +81,8 @@ int main(int argc, char **argv) {
 
   //
 
-  snprint(buf, sizeof(buf), Machin<Float>(), 'g', 0, 8);
-  printf("Float (Machin)   : %s\n", buf);
+  snprint(buf, sizeof(buf), Machin<Float>(), 'g', 0, 9);
+  printf("Float (Machin)            : %s\n", buf);
 
   if (strncmp(buf, "3.141592", 8) != 0) {
     printf("NG\n");
@@ -69,8 +91,8 @@ int main(int argc, char **argv) {
 
   //
 
-  tlfloat_snprintf(buf, sizeof(buf), "%.15_64g", AGM<Double>(2));
-  printf("Double (AGM)     : %s\n", buf);
+  tlfloat_snprintf(buf, sizeof(buf), "%.16_64g", AGM<Double>(2));
+  printf("Double (AGM)              : %s\n", buf);
 
   if (strncmp(buf, "3.141592653589", 14) != 0) {
     printf("NG\n");
@@ -79,8 +101,8 @@ int main(int argc, char **argv) {
 
   //
 
-  snprint(buf, sizeof(buf), Machin<Double>(), 'g', 0, 15);
-  printf("Double (Machin)  : %s\n", buf);
+  snprint(buf, sizeof(buf), Machin<Double>(), 'g', 0, 16);
+  printf("Double (Machin)           : %s\n", buf);
 
   if (strncmp(buf, "3.141592653589", 14) != 0) {
     printf("NG\n");
@@ -90,7 +112,7 @@ int main(int argc, char **argv) {
   //
 
   tlfloat_snprintf(buf, sizeof(buf), "%.35_128g", AGM<Quad>(2));
-  printf("Quad (AGM)       : %s\n", buf);
+  printf("Quad (AGM)                : %s\n", buf);
 
   if (strncmp(buf, "3.14159265358979323846264338327950", 34) != 0) {
     printf("NG\n");
@@ -100,7 +122,7 @@ int main(int argc, char **argv) {
   //
 
   snprint(buf, sizeof(buf), Machin<Quad>(), 'g', 0, 35);
-  printf("Quad (Machin)    : %s\n", buf);
+  printf("Quad (Machin)             : %s\n", buf);
 
   if (strncmp(buf, "3.14159265358979323846264338327950", 34) != 0) {
     printf("NG\n");
@@ -109,8 +131,28 @@ int main(int argc, char **argv) {
 
   //
 
-  tlfloat_snprintf(buf, sizeof(buf), "%.71_256g", AGM<Octuple>(3));
-  printf("Octuple (AGM)    : %s\n", buf);
+  tlfloat_snprintf(buf, sizeof(buf), "%.37_128g", const_M_PIq());
+  printf("Quad (const_M_PIq())      : %s\n", buf);
+
+  if (strncmp(buf, "3.141592653589793238462643383279502", 35) != 0) {
+    printf("NG\n");
+    return -1;
+  }
+
+  //
+
+  tlfloat_snprintf(buf, sizeof(buf), "%.37_128g", const_M_Eq());
+  printf("Quad (const_M_Eq())       : %s\n", buf);
+
+  if (strncmp(buf, "2.718281828459045235360287471352662", 35) != 0) {
+    printf("NG\n");
+    return -1;
+  }
+
+  //
+
+  tlfloat_snprintf(buf, sizeof(buf), "%.72_256g", AGM<Octuple>(3));
+  printf("Octuple (AGM)             : %s\n", buf);
 
   if (strncmp(buf, "3.14159265358979323846264338327950288419716939937510582097494459230781", 70) != 0) {
     printf("NG\n");
@@ -119,10 +161,30 @@ int main(int argc, char **argv) {
 
   //
 
-  snprint(buf, sizeof(buf), Machin<Octuple>(), 'g', 0, 71);
-  printf("Octuple (Machin) : %s\n", buf);
+  snprint(buf, sizeof(buf), Machin<Octuple>(), 'g', 0, 72);
+  printf("Octuple (Machin)          : %s\n", buf);
 
   if (strncmp(buf, "3.14159265358979323846264338327950288419716939937510582097494459230781", 70) != 0) {
+    printf("NG\n");
+    return -1;
+  }
+
+  //
+
+  tlfloat_snprintf(buf, sizeof(buf), "%.72_256g", const_M_PIo());
+  printf("Octuple (const_M_PIo())   : %s\n", buf);
+
+  if (strncmp(buf, "3.14159265358979323846264338327950288419716939937510582097494459230781", 70) != 0) {
+    printf("NG\n");
+    return -1;
+  }
+
+  //
+
+  tlfloat_snprintf(buf, sizeof(buf), "%.72_256g", const_M_Eo());
+  printf("Octuple (const_M_Eo())    : %s\n", buf);
+
+  if (strncmp(buf, "2.71828182845904523536028747135266249775724709369995957496696762772407", 70) != 0) {
     printf("NG\n");
     return -1;
   }

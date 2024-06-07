@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
       mpfr_set_d(mx, x, GMP_RNDN);
       mpfr_sqrt(mx, mx, GMP_RNDN);
       float c = mpfr_get_d(mx, GMP_RNDN);
-      double ulp = countULP(xfr, mx, ufloat::zero(), ufloat::inf());
+      double ulp = countULP(xfr, mx, ufloat::zero(), ufloat::infinity());
       if (ulp > maxulp_sqrt_) {
 	maxulp_sqrt_ = ulp;
 	printf("\nsqrt_\n");

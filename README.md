@@ -31,7 +31,7 @@ integer class templates are also included in this library.
   * Works without libstdc++
 
 * IEEE 754 compliant
-  * Supports subnormal numbers, NaN, inf, and signed zero
+  * Supports subnormal numbers, NaN, infinity, and signed zero
 
 * Supports a wide range of precisions
   * Half, float, double, quad, and octuple precisions

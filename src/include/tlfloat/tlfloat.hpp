@@ -246,7 +246,7 @@ namespace tlfloat {
 	return UnpackedFloat((mant_t(3) << (nbmant - 1)), (1 << nbexp) - 2, false, false, false, true);
       }
 
-      static constexpr UnpackedFloat inf(bool sign = false) {
+      static constexpr UnpackedFloat infinity(bool sign = false) {
 	return UnpackedFloat(mant_t(1) << nbmant, (1 << nbexp) - 2, sign, false, true, false);
       }
 
@@ -344,7 +344,7 @@ namespace tlfloat {
 	  if (lhs.isnan) return lhs;
 	  if (rhs.isnan) return rhs;
 	  if ((lhs.iszero && rhs.isinf) || (lhs.isinf && rhs.iszero)) return nan();
-	  if (lhs.isinf || rhs.isinf) return inf(lhs.sign != rhs.sign);
+	  if (lhs.isinf || rhs.isinf) return infinity(lhs.sign != rhs.sign);
 	}
 
 	int exp = lhs.exp + rhs.exp - expoffset();
@@ -385,13 +385,13 @@ namespace tlfloat {
 
 	  if (rhs.iszero) {
 	    if (lhs.iszero) return nan();
-	    return inf(lhs.sign != rhs.sign);
+	    return infinity(lhs.sign != rhs.sign);
 	  }
 	  if (rhs.isinf) {
 	    if (lhs.isinf) return nan();
 	    return zero(lhs.sign != rhs.sign);
 	  }
-	  if (lhs.isinf) return inf(lhs.sign != rhs.sign);
+	  if (lhs.isinf) return infinity(lhs.sign != rhs.sign);
 	}
 
 	int exp = lhs.exp - rhs.exp + expoffset() - 1;
@@ -445,8 +445,8 @@ namespace tlfloat {
 
 	  if (lhs.isinf || rhs.isinf || zhs.isinf) {
 	    if ((lhs.iszero && rhs.isinf) || (lhs.isinf && rhs.iszero)) return nan();
-	    if (!zhs.isinf) return inf(lhs.sign != rhs.sign);
-	    if (!(lhs.isinf || rhs.isinf) || ((lhs.sign != rhs.sign) == zhs.sign)) return inf(zhs.sign);
+	    if (!zhs.isinf) return infinity(lhs.sign != rhs.sign);
+	    if (!(lhs.isinf || rhs.isinf) || ((lhs.sign != rhs.sign) == zhs.sign)) return infinity(zhs.sign);
 	    return nan();
 	  }
 	}
@@ -544,8 +544,8 @@ namespace tlfloat {
 	  ptr++;
 	}
 
-	if (xstrncasecmp(ptr, "nan", 3) == 0) { *this = nan();          if (endptr) { *endptr = ptr + 3; } return; }
-	if (xstrncasecmp(ptr, "inf", 3) == 0) { *this = inf(!positive); if (endptr) { *endptr = ptr + 3; } return; }
+	if (xstrncasecmp(ptr, "nan", 3) == 0) { *this = nan();               if (endptr) { *endptr = ptr + 3; } return; }
+	if (xstrncasecmp(ptr, "inf", 3) == 0) { *this = infinity(!positive); if (endptr) { *endptr = ptr + 3; } return; }
 
 	if (*ptr == '0' && (*(ptr+1) == 'x' || *(ptr+1) == 'X')) {
 	  ptr += 2;
@@ -1221,6 +1221,18 @@ namespace tlfloat {
 	return length;
       }
     }; // class UnpackedFloat
+
+    template<typename T>
+    static consteval T const_M_PI_(int exp = 0) {
+      return ldexp_(
+	T("0x1.921fb54442d18469898cc51701b839a252049c1114cf98e804177d4c76273644a29410f31c6809bbdf2a33679a748636605614dbe4be286e9fc26adadaa38488p+1"), exp);
+    }
+
+    template<typename T>
+    static consteval T const_M_E_(int exp = 0) {
+      return ldexp_(
+        T("0x2.b7e151628aed2a6abf7158809cf4f3c762e7160f38b4da56a784d9045190cfef324e7738926cfbe5f4bf8d8d8c31d763da06c80abb1185eb4f7c7b5757f59584p+0"), exp);
+    }
   } // namespace detail
 
   /**
@@ -1251,7 +1263,7 @@ namespace tlfloat {
     static constexpr TLFloat nan() { return Unpacked_t::nan(); }
 
     /** Returns infinity of the given sign */
-    static constexpr TLFloat inf(bool sign=false) { return Unpacked_t::inf(sign); }
+    static constexpr TLFloat infinity(bool sign=false) { return Unpacked_t::infinity(sign); }
 
     /** Returns the minimum representative number of the given sign */
     static constexpr TLFloat flt_true_min(bool sign=false) { return Unpacked_t::flt_true_min(sign); }
@@ -1273,6 +1285,8 @@ namespace tlfloat {
     constexpr TLFloat& operator=(const TLFloat&) = default;
 
     constexpr Unpacked_t getUnpacked() const { return Unpacked_t(m); }
+
+    static constexpr Unpacked_t to_Unpacked_t(TLFloat f = zero()) { return f.getUnpacked(); }
 
     template<typename mant_t_, typename longmant_t_, int nbexp_, int nbmant_>
     constexpr TLFloat(const detail::UnpackedFloat<mant_t_, longmant_t_, nbexp_, nbmant_> &tf) :
@@ -1569,7 +1583,7 @@ namespace tlfloat {
     friend constexpr TLFloat hypot(const TLFloat& x, const TLFloat& y) {
       auto xx = x.getUnpacked().cast((xUnpacked_t *)0);
       auto yy = y.getUnpacked().cast((xUnpacked_t *)0);
-      if (xx.isinf || yy.isinf) return inf(false);
+      if (xx.isinf || yy.isinf) return infinity(false);
       if (xx.isnan || yy.isnan) return nan();
       return sqrt_(xx * xx + yy * yy).cast((Unpacked_t *)0);
     }
