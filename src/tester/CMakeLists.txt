@@ -179,7 +179,7 @@ add_test(NAME test_capi COMMAND test_capi)
 
 add_executable(test_cpp11api test_cpp11api.cpp)
 target_link_libraries(test_cpp11api tlfloat)
-set_target_properties(test_cpp11api PROPERTIES CXX_STANDARD 11 CXX_EXTENSIONS off)
+set_target_properties(test_cpp11api PROPERTIES CXX_STANDARD 11)
 add_test(NAME test_cpp11api COMMAND test_cpp11api)
 
 add_executable(test_cpp11api20 test_cpp11api.cpp)
