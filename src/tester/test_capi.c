@@ -15,6 +15,10 @@
 
 #include "tlfloat/tlfloat.h"
 
+#ifdef __STDC_VERSION__
+static const tlfloat_quad testvar = M_PIq;
+#endif
+
 void checkStr(const char *p, const char *q, const char *mes) {
   if (strcmp(p, q) != 0) {
     printf("NG : %s\n", mes);
@@ -454,6 +458,43 @@ int main(int argc, char **argv) {
   quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", nextafterq(q0, q2));
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_nextafterq(q0, q2));
   checkStr(buf0, buf1, "quadmath nextafterq");
+
+#ifdef __STDC_VERSION__
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_Eq);
+  checkStr("0x1.5bf0a8b1457695355fb8ac404e7ap+1", buf1, "M_Eq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_LOG2Eq);
+  checkStr("0x1.71547652b82fe1777d0ffda0d23ap+0", buf1, "M_LOG2Eq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_LOG10Eq);
+  checkStr("0x1.bcb7b1526e50e32a6ab7555f5a68p-2", buf1, "M_LOG10Eq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_LN2q);
+  checkStr("0x1.62e42fefa39ef35793c7673007e6p-1", buf1, "M_LN2q");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_LN10q);
+  checkStr("0x1.26bb1bbb5551582dd4adac5705a6p+1", buf1, "M_LN10q");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_PIq);
+  checkStr("0x1.921fb54442d18469898cc51701b8p+1", buf1, "M_PIq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_PI_2q);
+  checkStr("0x1.921fb54442d18469898cc51701b8p+0", buf1, "M_PI_2q");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_PI_4q);
+  checkStr("0x1.921fb54442d18469898cc51701b8p-1", buf1, "M_PI_4q");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_1_PIq);
+  checkStr("0x1.45f306dc9c882a53f84eafa3ea6ap-2", buf1, "M_1_PIq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_2_PIq);
+  checkStr("0x1.45f306dc9c882a53f84eafa3ea6ap-1", buf1, "M_2_PIq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_2_SQRTPIq);
+  checkStr("0x1.20dd750429b6d11ae3a914fed7fep+0", buf1, "M_2_SQRTPIq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_SQRT2q);
+  checkStr("0x1.6a09e667f3bcc908b2fb1366ea95p+0", buf1, "M_SQRT2q");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_SQRT1_2q);
+  checkStr("0x1.6a09e667f3bcc908b2fb1366ea95p-1", buf1, "M_SQRT1_2q");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", FLT128_MAX);
+  checkStr("0x1.ffffffffffffffffffffffffffffp+16383", buf1, "FLT128_MAX");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", FLT128_MIN);
+  checkStr("0x1p-16382", buf1, "FLT128_MIN");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", FLT128_DENORM_MIN);
+  checkStr("0x1p-16494", buf1, "FLT128_DENORM_MIN");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", FLT128_EPSILON);
+  checkStr("0x1p-112", buf1, "FLT128_EPSILON");
+#endif
 
   //
 

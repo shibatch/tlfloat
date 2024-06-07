@@ -45,13 +45,13 @@ int main(int argc, char **argv) {
 
   #pragma omp parallel for
   for(uint32_t u32=0;u32 < 0x10000;u32++) {
-    if ((u32 & 0xff) == 0) {
+    if ((u32 & 0xff) == 0xff) {
       progress++;
       int k = progress;
       printf(" %d / 256\r", k);
       fflush(stdout);
     }
-    uint16_t u = u32;
+    uint16_t u = ((u32 << 8) | (u32 >> 8)) & 0xffff;
     __fp16 fu;
     memcpy((void *)&fu, (void *)&u, sizeof(fu));
 
@@ -89,7 +89,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_sin(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf sin\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_cos(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf cos\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_tan(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf tan\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -148,7 +148,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_asin(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf asin\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -167,7 +167,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_acos(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf acos\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -186,7 +186,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_atan(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf atan\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -207,7 +207,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_exp(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf exp\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_expm1(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf expm1\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -245,7 +245,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_exp2(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf exp2\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_exp10(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf exp10\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -285,7 +285,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_log(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf log\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -304,7 +304,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_log1p(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf log1p\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -323,7 +323,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_log2(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf log2\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -342,7 +342,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_log10(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf log10\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -363,7 +363,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_cbrt(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf cbrt\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -384,7 +384,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_sinh(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf sinh\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -403,7 +403,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_cosh(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf cosh\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -422,7 +422,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_tanh(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf tanh\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -441,7 +441,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_asinh(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf asinh\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -460,7 +460,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_acosh(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf acosh\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -479,7 +479,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_atanh(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf atanh\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -500,7 +500,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_erf(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf erf\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -519,7 +519,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_erfc(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf erfc\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -540,7 +540,7 @@ int main(int argc, char **argv) {
 	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	mpfr_gamma(mx, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf tgamma\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -560,7 +560,7 @@ int main(int argc, char **argv) {
 	int msign = 0;
 	mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
 	double c = mpfr_get_d(mx, GMP_RNDN);
-	double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	if (ulp > 0.7) {
 	  printf("\nhalf lgamma\n");
 	  cout << "x = " << (__fp16)x << endl;
@@ -659,7 +659,7 @@ int main(int argc, char **argv) {
 #endif
 
     for(uint32_t v32=0;v32 < 0x10000;v32++) {
-      uint16_t v = v32;
+      uint16_t v = ((v32 << 8) | (v32 >> 8)) & 0xffff;
       __fp16 fv;
       memcpy((void *)&fv, (void *)&v, sizeof(fv));
 
@@ -813,7 +813,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_atan2(mx, my, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	  double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	  if (ulp > 0.7) {
 	    printf("\nhalf atan2\n");
 	    cout << "y = " << (__fp16)y << endl;
@@ -848,7 +848,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_pow(mx, mx, my, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	  double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	  if (ulp > 0.7) {
 	    printf("\nhalf pow\n");
 	    cout << "x = " << (__fp16)x << endl;
@@ -883,7 +883,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_fmod(mx, mx, my, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	  double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nhalf fmod\n");
 	    cout << "x = " << (__fp16)x << endl;
@@ -916,7 +916,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_remainder(mx, mx, my, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	  double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nhalf remainder\n");
 	    cout << "x = " << (__fp16)x << endl;
@@ -951,7 +951,7 @@ int main(int argc, char **argv) {
 	  long int mq = 0;
 	  mpfr_remquo(mx, &mq, mx, my, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uhalf::floatdenormmin(), uhalf::floatmax());
+	  double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
 	  if (ulp > 0.5 || mq != p.second) {
 	    printf("\nhalf remquo\n");
 	    cout << "x = " << (__fp16)x << endl;

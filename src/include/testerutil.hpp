@@ -780,7 +780,7 @@ Quad rndQ(shared_ptr<RNG> rng) {
   uint64_t r = rng->nextLT(1000);
 
   if (r == 0) {
-    Quad pm = Quad::floatdenormmin(), nm = -pm;
+    Quad pm = Quad::flt_true_min(), nm = -pm;
     Quad po = 1, no = -1;
     static Quad a[] = { +0.0, -0.0, +INFINITY, -INFINITY, NAN,
       pm, nextafter(pm, po), nextafter(nextafter(pm, po), po),
@@ -857,7 +857,7 @@ Octuple rndo(shared_ptr<RNG> rng) {
   uint64_t r = rng->nextLT(1000);
 
   if (r == 0) {
-    Octuple pm = Octuple::floatdenormmin(), nm = -pm;
+    Octuple pm = Octuple::flt_true_min(), nm = -pm;
     Octuple po = 1, no = -1;
     static Octuple a[] = { +0.0, -0.0, +INFINITY, -INFINITY, NAN,
       pm, nextafter(pm, po), nextafter(nextafter(pm, po), po),
@@ -919,26 +919,36 @@ vector<T> genTestValues(unsigned n, shared_ptr<RNG> rng) {
     T::nan(),
     T::inf(false),
     T::inf(true),
-    T::floatdenormmin(false),
-    nextafter(T::floatdenormmin(false), 1),
-    nextafter(nextafter(T::floatdenormmin(false), 1), 1),
-    nextafter(nextafter(nextafter(T::floatdenormmin(false), 1), 1), 1),
-    nextafter(nextafter(nextafter(nextafter(T::floatdenormmin(false), 1), 1), 1), 1),
-    T::floatdenormmin(true),
-    nextafter(T::floatdenormmin(true), -1),
-    nextafter(nextafter(T::floatdenormmin(true), -1), -1),
-    nextafter(nextafter(nextafter(T::floatdenormmin(true), -1), -1), -1),
-    nextafter(nextafter(nextafter(nextafter(T::floatdenormmin(true), -1), -1), -1), -1),
-    T::floatmax(false),
-    nextafter(T::floatmax(false), 0),
-    nextafter(nextafter(T::floatmax(false), 0), 0),
-    nextafter(nextafter(nextafter(T::floatmax(false), 0), 0), 0),
-    nextafter(nextafter(nextafter(nextafter(T::floatmax(false), 0), 0), 0), 0),
-    T::floatmax(true),
-    nextafter(T::floatmax(true), 0),
-    nextafter(nextafter(T::floatmax(true), 0), 0),
-    nextafter(nextafter(nextafter(T::floatmax(true), 0), 0), 0),
-    nextafter(nextafter(nextafter(nextafter(T::floatmax(true), 0), 0), 0), 0),
+    T::flt_true_min(false),
+    nextafter(T::flt_true_min(false), 1),
+    nextafter(nextafter(T::flt_true_min(false), 1), 1),
+    nextafter(nextafter(nextafter(T::flt_true_min(false), 1), 1), 1),
+    nextafter(nextafter(nextafter(nextafter(T::flt_true_min(false), 1), 1), 1), 1),
+    T::flt_true_min(true),
+    nextafter(T::flt_true_min(true), -1),
+    nextafter(nextafter(T::flt_true_min(true), -1), -1),
+    nextafter(nextafter(nextafter(T::flt_true_min(true), -1), -1), -1),
+    nextafter(nextafter(nextafter(nextafter(T::flt_true_min(true), -1), -1), -1), -1),
+    T::flt_max(false),
+    nextafter(T::flt_max(false), 0),
+    nextafter(nextafter(T::flt_max(false), 0), 0),
+    nextafter(nextafter(nextafter(T::flt_max(false), 0), 0), 0),
+    nextafter(nextafter(nextafter(nextafter(T::flt_max(false), 0), 0), 0), 0),
+    T::flt_max(true),
+    nextafter(T::flt_max(true), 0),
+    nextafter(nextafter(T::flt_max(true), 0), 0),
+    nextafter(nextafter(nextafter(T::flt_max(true), 0), 0), 0),
+    nextafter(nextafter(nextafter(nextafter(T::flt_max(true), 0), 0), 0), 0),
+    nextafter(nextafter(T::flt_min(false), 0), 0),
+    nextafter(T::flt_min(false), 0),
+    T::flt_min(false),
+    nextafter(T::flt_min(false), 1),
+    nextafter(nextafter(T::flt_min(false), 1), 1),
+    nextafter(nextafter(T::flt_min(true), 0), 0),
+    nextafter(T::flt_min(true), 0),
+    T::flt_min(true),
+    nextafter(T::flt_min(true), -1),
+    nextafter(nextafter(T::flt_min(true), -1), -1),
     nextafter(T("+1.0"), 0),
     nextafter(nextafter(T("+1.0"), 0), 0),
     nextafter(nextafter(nextafter(T("+1.0"), 0), 0), 0),

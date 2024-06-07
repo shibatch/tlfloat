@@ -68,7 +68,7 @@ void doTest(const char *mes, T a1, mpfr_t &mr, mpfr_t &ma1) {
 
   mpfr_set_unpacked(ma1, a1.getUnpacked(), GMP_RNDN);
   mpfrFunc(mr, ma1, GMP_RNDN);
-  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
+  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::flt_true_min(), Unpacked_t::flt_max(), true);
 
   if (ulp <= 1.0) return;
 
@@ -86,7 +86,7 @@ void doTest(const char *mes, T a1, mpfr_t &mr, mpfr_t &ma1) {
 
   mpfr_set_unpacked(ma1, a1.getUnpacked(), GMP_RNDN);
   mpfrFunc(mr, ma1);
-  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
+  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::flt_true_min(), Unpacked_t::flt_max(), true);
 
   if (ulp <= 1.0) return;
 
@@ -106,7 +106,7 @@ void doTest(const char *mes, T a1, T a2, mpfr_t &mr, mpfr_t &ma1, mpfr_t &ma2, b
   mpfr_set_unpacked(ma1, a1.getUnpacked(), GMP_RNDN);
   mpfr_set_unpacked(ma2, a2.getUnpacked(), GMP_RNDN);
   mpfrFunc(mr, ma1, ma2, GMP_RNDN);
-  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
+  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::flt_true_min(), Unpacked_t::flt_max(), true);
 
   if (ulp <= 1.0) return;
 
@@ -128,9 +128,9 @@ void doTest(const char *mes, T a1, T a2, mpfr_t &mr, mpfr_t &ma1, mpfr_t &ma2, b
   mpfr_set_unpacked(ma2, a2.getUnpacked(), GMP_RNDN);
   long int mq = 0;
   mpfrFunc(mr, &mq, ma1, ma2, GMP_RNDN);
-  double ulp = countULP(r.first.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
+  double ulp = countULP(r.first.getUnpacked(), mr, Unpacked_t::flt_true_min(), Unpacked_t::flt_max(), true);
 
-  if (ulp <= 0.5 && (mq == r.second || (mq = 0x8000000000000000LL && r.second == 0))) return;
+  if (ulp <= 0.5 && (mq == r.second || (mq == (long int)0x8000000000000000LL && r.second == 0))) return;
 
   cout << mes << endl;
   cout << "arg1    : " << to_string(a1, 72) << endl;
@@ -152,7 +152,7 @@ void doTest(const char *mes, T a1, T a2, T a3, mpfr_t &mr, mpfr_t &ma1, mpfr_t &
   mpfr_set_unpacked(ma2, a2.getUnpacked(), GMP_RNDN);
   mpfr_set_unpacked(ma3, a3.getUnpacked(), GMP_RNDN);
   mpfrFunc(mr, ma1, ma2, ma3, GMP_RNDN);
-  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::floatdenormmin(), Unpacked_t::floatmax(), true);
+  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::flt_true_min(), Unpacked_t::flt_max(), true);
 
   if (ulp <= 1.0) return;
 

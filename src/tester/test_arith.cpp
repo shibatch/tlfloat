@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cmath>
+#include <cfloat>
 #include <climits>
 
 #include "suppress.hpp"
@@ -24,6 +25,16 @@ static_assert(is_trivially_copyable_v<Float> == true);
 static_assert(is_trivially_copyable_v<Double> == true);
 static_assert(is_trivially_copyable_v<Quad> == true);
 static_assert(is_trivially_copyable_v<Octuple> == true);
+
+static_assert(Float::flt_min() == FLT_MIN);
+static_assert(Float::flt_true_min() == FLT_TRUE_MIN);
+static_assert(Float::flt_max() == FLT_MAX);
+static_assert(Float::flt_epsilon() == FLT_EPSILON);
+
+static_assert(Double::flt_min() == DBL_MIN);
+static_assert(Double::flt_true_min() == DBL_TRUE_MIN);
+static_assert(Double::flt_max() == DBL_MAX);
+static_assert(Double::flt_epsilon() == DBL_EPSILON);
 
 int main(int argc, char **argv) {
   uint64_t niter = 100000;

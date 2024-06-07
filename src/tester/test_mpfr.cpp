@@ -41,6 +41,10 @@ using namespace tlfloat::detail;
 #define TEST_GAMMA
 #define TEST_MISC
 
+static bool eqquo(int64_t t, long int c) {
+  return t == c || (c == (long int)0x8000000000000000LL && t == 0);
+}
+
 int main(int argc, char **argv) {
   uint64_t niter = argc > 1 ? strtoull(argv[1], nullptr, 10) : 100000;
 
@@ -129,7 +133,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_sqrt(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nfloat sqrt\n");
 	    printf("x = %.8g\n", x);
@@ -149,7 +153,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_hypot(mx, mx, my, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat hypot\n");
 	    printf("x = %.8g\n", x);
@@ -171,7 +175,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_sin(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat sin\n");
 	    printf("ulp = %g\n", ulp);
@@ -190,7 +194,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_cos(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat cos\n");
 	    printf("ulp = %g\n", ulp);
@@ -209,7 +213,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_tan(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.56) {
 	    printf("\nfloat tan\n");
 	    printf("ulp = %g\n", ulp);
@@ -231,7 +235,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_atan2(mx, my, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat atan2\n");
 	    printf("ulp = %g\n", ulp);
@@ -251,7 +255,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_asin(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat asin\n");
 	    printf("ulp = %g\n", ulp);
@@ -270,7 +274,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_acos(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat acos\n");
 	    printf("ulp = %g\n", ulp);
@@ -289,7 +293,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_atan(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat atan\n");
 	    printf("ulp = %g\n", ulp);
@@ -310,7 +314,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_exp(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat exp\n");
 	    printf("ulp = %g\n", ulp);
@@ -329,7 +333,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_expm1(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat expm1\n");
 	    printf("ulp = %g\n", ulp);
@@ -348,7 +352,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_exp2(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat exp2\n");
 	    printf("ulp = %g\n", ulp);
@@ -367,7 +371,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_exp10(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat exp10\n");
 	    printf("ulp = %g\n", ulp);
@@ -388,7 +392,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_log(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat log\n");
 	    printf("ulp = %g\n", ulp);
@@ -407,7 +411,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_log1p(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat log1p\n");
 	    printf("ulp = %g\n", ulp);
@@ -426,7 +430,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_log2(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat log2\n");
 	    printf("ulp = %g\n", ulp);
@@ -445,7 +449,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_log10(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat log10\n");
 	    printf("ulp = %g\n", ulp);
@@ -467,7 +471,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_pow(mx, my, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat pow\n");
 	    printf("ulp = %g\n", ulp);
@@ -490,7 +494,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_fmod(mx, my, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nfloat fmod\n");
 	    printf("ulp = %g\n", ulp);
@@ -511,7 +515,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_remainder(mx, my, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nfloat remainder\n");
 	    printf("ulp = %g\n", ulp);
@@ -530,11 +534,11 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_set_d(mx, x, GMP_RNDN);
-	  long int q;
+	  long int q = 0;
 	  mpfr_remquo(mx, &q, my, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
-	  if (ulp > 0.5 || (!isnan(c) && a.second != q)) {
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
+	  if (ulp > 0.5 || !eqquo(a.second, q)) {
 	    printf("\nfloat remquo\n");
 	    printf("ulp = %g\n", ulp);
 	    printf("y = %.8g\n", y);
@@ -555,7 +559,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_cbrt(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat cbrt\n");
 	    printf("ulp = %g\n", ulp);
@@ -576,7 +580,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_sinh(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat sinh\n");
 	    printf("ulp = %g\n", ulp);
@@ -595,7 +599,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_cosh(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat cosh\n");
 	    printf("ulp = %g\n", ulp);
@@ -614,7 +618,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_tanh(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat tanh\n");
 	    printf("ulp = %g\n", ulp);
@@ -633,7 +637,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_asinh(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat asinh\n");
 	    printf("ulp = %g\n", ulp);
@@ -652,7 +656,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_acosh(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat acosh\n");
 	    printf("ulp = %g\n", ulp);
@@ -671,7 +675,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_atanh(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat atanh\n");
 	    printf("ulp = %g\n", ulp);
@@ -692,7 +696,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_erf(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat erf\n");
 	    printf("ulp = %g\n", ulp);
@@ -711,7 +715,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_erfc(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat erfc\n");
 	    printf("ulp = %g\n", ulp);
@@ -732,7 +736,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_gamma(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55) {
 	    printf("\nfloat tgamma\n");
 	    printf("ulp = %g\n", ulp);
@@ -754,7 +758,7 @@ int main(int argc, char **argv) {
 	  int msign = 0;
 	  mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.55 || (msign == -1) != rsign) {
 	    printf("\nfloat lgamma\n");
 	    printf("ulp = %g\n", ulp);
@@ -776,7 +780,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_abs(mx, mx, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nfloat fabs\n");
 	    printf("ulp = %g\n", ulp);
@@ -796,7 +800,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_copysign(mx, mx, my, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.5 && !isnan(y)) {
 	    printf("\nfloat copysign\n");
 	    printf("ulp = %g\n", ulp);
@@ -817,7 +821,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_max(mx, mx, my, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nfloat fmax\n");
 	    printf("ulp = %g\n", ulp);
@@ -837,7 +841,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_min(mx, mx, my, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nfloat fmin\n");
 	    printf("ulp = %g\n", ulp);
@@ -857,7 +861,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_dim(mx, mx, my, GMP_RNDN);
 	  float c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nfloat fdim\n");
 	    printf("ulp = %g\n", ulp);
@@ -878,7 +882,7 @@ int main(int argc, char **argv) {
 	  mpfr_modf(mx, my, mx, GMP_RNDN);
 	  double ci = mpfr_get_d(mx, GMP_RNDN);
 	  float c = mpfr_get_d(my, GMP_RNDN);
-	  double ulp = countULP(xfr, my, ufloat::floatdenormmin(), ufloat::floatmax());
+	  double ulp = countULP(xfr, my, ufloat::flt_true_min(), ufloat::flt_max());
 	  if (ulp > 0.5 || (!(isnan(w) && isnan(ci)) && double(w) != ci)) {
 	    printf("\nfloat modf\n");
 	    printf("ulp = %g\n", ulp);
@@ -915,7 +919,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_sqrt(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\ndouble sqrt\n");
 	    printf("x = %.20lg\n", x);
@@ -934,7 +938,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_hypot(mx, mx, my, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble hypot\n");
 	    printf("x = %.20lg\n", x);
@@ -955,7 +959,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_sin(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.506) {
 	    printf("\ndouble sin\n");
 	    printf("ulp = %g\n", ulp);
@@ -974,7 +978,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_cos(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.506) {
 	    printf("\ndouble cos\n");
 	    printf("ulp = %lg\n", ulp);
@@ -993,7 +997,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_tan(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.51) {
 	    printf("\ndouble tan\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1015,7 +1019,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_atan2(mx, my, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.51) {
 	    printf("\ndouble atan2\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1035,7 +1039,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_asin(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.51) {
 	    printf("\ndouble asin\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1054,7 +1058,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_acos(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.51) {
 	    printf("\ndouble acos\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1073,7 +1077,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_atan(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.51) {
 	    printf("\ndouble atan\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1094,7 +1098,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_exp(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble exp\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1113,7 +1117,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_expm1(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble expm1\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1132,7 +1136,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_exp2(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble exp2\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1151,7 +1155,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_exp10(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble exp10\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1172,7 +1176,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_log(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble log\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1191,7 +1195,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_log1p(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble log1p\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1210,7 +1214,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_log2(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.506) {
 	    printf("\ndouble log2\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1229,7 +1233,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_log10(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.506) {
 	    printf("\ndouble log10\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1251,7 +1255,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_pow(mx, my, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.51) {
 	    printf("\ndouble pow\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1274,7 +1278,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_fmod(mx, my, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\ndouble fmod\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1295,7 +1299,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_remainder(mx, my, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\ndouble remainder\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1314,11 +1318,11 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_set_d(mx, x, GMP_RNDN);
-	  long int q;
+	  long int q = 0;
 	  mpfr_remquo(mx, &q, my, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
-	  if (ulp > 0.5 || (!isnan(c) && a.second != q)) {
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
+	  if (ulp > 0.5 || !eqquo(a.second, q)) {
 	    printf("\ndouble remquo\n");
 	    printf("ulp = %lg\n", ulp);
 	    printf("y = %.20lg\n", y);
@@ -1339,7 +1343,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_cbrt(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble cbrt\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1360,7 +1364,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_sinh(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble sinh\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1379,7 +1383,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_cosh(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble cosh\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1398,7 +1402,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_tanh(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble tanh\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1417,7 +1421,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_asinh(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble asinh\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1436,7 +1440,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_acosh(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble acosh\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1455,7 +1459,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_atanh(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble atanh\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1476,7 +1480,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_erf(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble erf\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1495,7 +1499,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_erfc(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble erfc\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1516,7 +1520,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_gamma(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble tgamma\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1538,7 +1542,7 @@ int main(int argc, char **argv) {
 	  int msign = 0;
 	  mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.505) {
 	    printf("\ndouble lgamma\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1560,7 +1564,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(mx, x, GMP_RNDN);
 	  mpfr_abs(mx, mx, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\ndouble fabs\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1580,7 +1584,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_copysign(mx, mx, my, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.5 && !isnan(y)) {
 	    printf("\ndouble copysign\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1601,7 +1605,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_max(mx, mx, my, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\ndouble fmax\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1621,7 +1625,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_min(mx, mx, my, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\ndouble fmin\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1641,7 +1645,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_d(my, y, GMP_RNDN);
 	  mpfr_dim(mx, mx, my, GMP_RNDN);
 	  double c = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\ndouble fdim\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1662,7 +1666,7 @@ int main(int argc, char **argv) {
 	  mpfr_modf(mx, my, mx, GMP_RNDN);
 	  double ci = mpfr_get_d(mx, GMP_RNDN);
 	  double c = mpfr_get_d(my, GMP_RNDN);
-	  double ulp = countULP(xfr, my, udouble::floatdenormmin(), udouble::floatmax());
+	  double ulp = countULP(xfr, my, udouble::flt_true_min(), udouble::flt_max());
 	  if (ulp > 0.5 || (!(isnan(w) && isnan(ci)) && double(w) != ci)) {
 	    printf("\ndouble modf\n");
 	    printf("ulp = %lg\n", ulp);
@@ -1704,7 +1708,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad add\n");
 	    cout << "x = " << x << endl;
@@ -1735,7 +1739,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad mul\n");
 	    cout << "x = " << x << endl;
@@ -1766,7 +1770,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad div\n");
 	    cout << "x = " << x << endl;
@@ -1799,7 +1803,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad fma\n");
 	    cout << "x = " << x << endl;
@@ -1831,7 +1835,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad sqrt\n");
 	    cout << "x = " << x << endl;
@@ -1861,7 +1865,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad hypot\n");
 	    cout << "x = " << x << endl;
@@ -1892,7 +1896,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad sin\n");
 	    printf("ulp = %g\n", ulp);
@@ -1921,7 +1925,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad cos\n");
 	    printf("ulp = %g\n", ulp);
@@ -1950,7 +1954,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad tan\n");
 	    printf("ulp = %g\n", ulp);
@@ -1983,7 +1987,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad atan2\n");
 	    printf("ulp = %g\n", ulp);
@@ -2013,7 +2017,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad asin\n");
 	    printf("ulp = %g\n", ulp);
@@ -2042,7 +2046,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad acos\n");
 	    printf("ulp = %g\n", ulp);
@@ -2071,7 +2075,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad atan\n");
 	    printf("ulp = %g\n", ulp);
@@ -2102,7 +2106,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad exp\n");
 	    printf("ulp = %g\n", ulp);
@@ -2131,7 +2135,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad expm1\n");
 	    printf("ulp = %g\n", ulp);
@@ -2160,7 +2164,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad exp2\n");
 	    printf("ulp = %g\n", ulp);
@@ -2189,7 +2193,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad exp10\n");
 	    printf("ulp = %g\n", ulp);
@@ -2220,7 +2224,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad log\n");
 	    printf("ulp = %g\n", ulp);
@@ -2249,7 +2253,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad log1p\n");
 	    printf("ulp = %g\n", ulp);
@@ -2278,7 +2282,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad log2\n");
 	    printf("ulp = %g\n", ulp);
@@ -2307,7 +2311,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad log10\n");
 	    printf("ulp = %g\n", ulp);
@@ -2340,7 +2344,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad pow\n");
 	    printf("ulp = %g\n", ulp);
@@ -2374,7 +2378,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad fmod\n");
 	    printf("ulp = %g\n", ulp);
@@ -2406,7 +2410,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad remainder\n");
 	    printf("ulp = %g\n", ulp);
@@ -2434,13 +2438,13 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 #endif
-	  long int q;
+	  long int q = 0;
 	  mpfr_remquo(mx, &q, my, mx, GMP_RNDN);
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
-	  if (ulp > 0.5 || (!mpfr_nan_p(mx) && a.second != q)) {
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
+	  if (ulp > 0.5 || !eqquo(a.second, q)) {
 	    printf("\nquad remquo\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
@@ -2471,7 +2475,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad cbrt\n");
 	    printf("ulp = %g\n", ulp);
@@ -2502,7 +2506,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad sinh\n");
 	    printf("ulp = %g\n", ulp);
@@ -2531,7 +2535,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad cosh\n");
 	    printf("ulp = %g\n", ulp);
@@ -2560,7 +2564,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad tanh\n");
 	    printf("ulp = %g\n", ulp);
@@ -2589,7 +2593,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad asinh\n");
 	    printf("ulp = %g\n", ulp);
@@ -2618,7 +2622,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad acosh\n");
 	    printf("ulp = %g\n", ulp);
@@ -2647,7 +2651,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad atanh\n");
 	    printf("ulp = %g\n", ulp);
@@ -2678,7 +2682,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad erf\n");
 	    printf("ulp = %g\n", ulp);
@@ -2707,7 +2711,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad erfc\n");
 	    printf("ulp = %g\n", ulp);
@@ -2738,7 +2742,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501) {
 	    printf("\nquad tgamma\n");
 	    printf("ulp = %g\n", ulp);
@@ -2770,7 +2774,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.501 || (msign == -1) != rsign) {
 	    printf("\nquad lgamma\n");
 	    printf("ulp = %g\n", ulp);
@@ -2802,7 +2806,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad fabs\n");
 	    printf("ulp = %g\n", ulp);
@@ -2833,7 +2837,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5 && y == y) {
 	    printf("\nquad copysign\n");
 	    printf("ulp = %g\n", ulp);
@@ -2864,7 +2868,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad fmax\n");
 	    printf("ulp = %g\n", ulp);
@@ -2895,7 +2899,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad fmin\n");
 	    printf("ulp = %g\n", ulp);
@@ -2926,7 +2930,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, mx, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad fdim\n");
 	    printf("ulp = %g\n", ulp);
@@ -2957,7 +2961,7 @@ int main(int argc, char **argv) {
 #ifdef ENABLE_QUAD
 	  quad_ c = mpfr_get_float128(my, GMP_RNDN);
 #endif
-	  double ulp = countULP(xfr, my, uquad::floatdenormmin(), uquad::floatmax());
+	  double ulp = countULP(xfr, my, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5 || (!(isnan(w) && isnan(ci)) && double(w) != ci)) {
 	    printf("\nquad modf\n");
 	    printf("ulp = %g\n", ulp);
@@ -3000,7 +3004,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_add(mx, mx, my, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xfr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple add\n");
 	    cout << "x = " << x << endl;
@@ -3019,7 +3023,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_mul(mx, mx, my, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xfr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple mul\n");
 	    cout << "x = " << x << endl;
@@ -3038,7 +3042,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_div(mx, mx, my, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xfr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple div\n");
 	    cout << "x = " << x << endl;
@@ -3058,7 +3062,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(mz, z.getUnpacked(), GMP_RNDN);
 	  mpfr_fma(mx, mx, my, mz, GMP_RNDN);
-	  double ulp = countULP(xfr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xfr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple fma\n");
 	    cout << "x = " << x << endl;
@@ -3079,7 +3083,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_sqrt(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple sqrt\n");
 	    cout << "x = " << x << endl;
@@ -3098,7 +3102,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_hypot(mx, mx, my, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple hypot\n");
 	    cout << "x = " << x << endl;
@@ -3119,7 +3123,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_sin(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple sin\n");
 	    cout << "x = " << x << endl;
@@ -3137,7 +3141,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_cos(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple cos\n");
 	    cout << "x = " << x << endl;
@@ -3155,7 +3159,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_tan(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple tan\n");
 	    cout << "x = " << x << endl;
@@ -3176,7 +3180,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_atan2(mx, my, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple atan2\n");
 	    cout << "y = " << to_string(y, 72) << endl;
@@ -3195,7 +3199,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_asin(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple asin\n");
 	    cout << "x = " << x << endl;
@@ -3213,7 +3217,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_acos(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple acos\n");
 	    cout << "x = " << x << endl;
@@ -3231,7 +3235,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_atan(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple atan\n");
 	    cout << "x = " << x << endl;
@@ -3251,7 +3255,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_exp(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple exp\n");
 	    cout << "x = " << x << endl;
@@ -3269,7 +3273,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_expm1(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple expm1\n");
 	    cout << "x = " << x << endl;
@@ -3287,7 +3291,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_exp2(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple exp2\n");
 	    cout << "x = " << x << endl;
@@ -3305,7 +3309,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_exp10(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple exp10\n");
 	    cout << "x = " << x << endl;
@@ -3325,7 +3329,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_log(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple log\n");
 	    cout << "x = " << x << endl;
@@ -3343,7 +3347,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_log1p(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple log1p\n");
 	    cout << "x = " << x << endl;
@@ -3361,7 +3365,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_log2(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple log2\n");
 	    cout << "x = " << x << endl;
@@ -3379,7 +3383,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_log10(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple log10\n");
 	    cout << "x = " << x << endl;
@@ -3400,7 +3404,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_pow(mx, my, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple pow\n");
 	    cout << "y = " << to_string(y, 72) << endl;
@@ -3422,7 +3426,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_fmod(mx, my, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple fmod\n");
 	    cout << "y = " << to_string(y, 72) << endl;
@@ -3442,7 +3446,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_remainder(mx, my, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple remainder\n");
 	    cout << "y = " << to_string(y, 72) << endl;
@@ -3461,10 +3465,10 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  long int q;
+	  long int q = 0;
 	  mpfr_remquo(mx, &q, my, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
-	  if (ulp > 0.5 || (!mpfr_nan_p(mx) && a.second != q)) {
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
+	  if (ulp > 0.5 || !eqquo(a.second, q)) {
 	    printf("\noctuple remquo\n");
 	    cout << "y = " << to_string(y, 72) << endl;
 	    cout << "x = " << to_string(x, 72) << endl;
@@ -3484,7 +3488,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_cbrt(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple cbrt\n");
 	    cout << "x = " << x << endl;
@@ -3504,7 +3508,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_sinh(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple sinh\n");
 	    cout << "x = " << x << endl;
@@ -3522,7 +3526,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_cosh(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple cosh\n");
 	    cout << "x = " << x << endl;
@@ -3540,7 +3544,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_tanh(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple tanh\n");
 	    cout << "x = " << x << endl;
@@ -3558,7 +3562,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_asinh(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple asinh\n");
 	    cout << "x = " << x << endl;
@@ -3576,7 +3580,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_acosh(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple acosh\n");
 	    cout << "x = " << x << endl;
@@ -3594,7 +3598,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_atanh(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple atanh\n");
 	    cout << "x = " << x << endl;
@@ -3614,7 +3618,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_erf(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple erf\n");
 	    cout << "x = " << x << endl;
@@ -3632,7 +3636,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_erfc(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple erfc\n");
 	    cout << "x = " << x << endl;
@@ -3652,7 +3656,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_gamma(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002) {
 	    printf("\noctuple tgamma\n");
 	    cout << "x = " << x << endl;
@@ -3673,7 +3677,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  int msign = 0;
 	  mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5002 || (msign == -1) != rsign) {
 	    printf("\noctuple lgamma\n");
 	    cout << "x = " << x << endl;
@@ -3694,7 +3698,7 @@ int main(int argc, char **argv) {
 
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_abs(mx, mx, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple fabs\n");
 	    cout << "x = " << x << endl;
@@ -3713,7 +3717,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_copysign(mx, mx, my, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5 && !isnan(y)) {
 	    printf("\noctuple copysign\n");
 	    cout << "x = " << x << endl;
@@ -3732,7 +3736,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_max(mx, mx, my, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple fmax\n");
 	    cout << "x = " << x << endl;
@@ -3751,7 +3755,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_min(mx, mx, my, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple fmin\n");
 	    cout << "x = " << x << endl;
@@ -3770,7 +3774,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
 	  mpfr_dim(mx, mx, my, GMP_RNDN);
-	  double ulp = countULP(xcr, mx, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\noctuple fdim\n");
 	    cout << "x = " << x << endl;
@@ -3790,7 +3794,7 @@ int main(int argc, char **argv) {
 	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
 	  mpfr_modf(mx, my, mx, GMP_RNDN);
 	  double ci = mpfr_get_d(mx, GMP_RNDN);
-	  double ulp = countULP(xcr, my, uoctuple::floatdenormmin(), uoctuple::floatmax());
+	  double ulp = countULP(xcr, my, uoctuple::flt_true_min(), uoctuple::flt_max());
 	  if (ulp > 0.5 || (!(isnan(w) && isnan(ci)) && double(w) != ci)) {
 	    printf("\noctuple modf\n");
 	    cout << "x = " << x << endl;

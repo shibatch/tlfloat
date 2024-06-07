@@ -250,11 +250,15 @@ namespace tlfloat {
 	return UnpackedFloat(mant_t(1) << nbmant, (1 << nbexp) - 2, sign, false, true, false);
       }
 
-      static constexpr UnpackedFloat floatdenormmin(bool sign = false) {
+      static constexpr UnpackedFloat flt_true_min(bool sign = false) {
 	return UnpackedFloat(mant_t(1), 0, sign, false, false, false);
       }
 
-      static constexpr UnpackedFloat floatmax(bool sign = false) {
+      static constexpr UnpackedFloat flt_min(bool sign = false) {
+	return UnpackedFloat(mant_t(1) << nbmant, 0, sign, false, false, false);
+      }
+
+      static constexpr UnpackedFloat flt_max(bool sign = false) {
 	return UnpackedFloat((mant_t(2) << nbmant) - 1, (1 << nbexp) - 3, sign, false, false, false);
       }
 
@@ -1250,10 +1254,16 @@ namespace tlfloat {
     static constexpr TLFloat inf(bool sign=false) { return Unpacked_t::inf(sign); }
 
     /** Returns the minimum representative number of the given sign */
-    static constexpr TLFloat floatdenormmin(bool sign=false) { return Unpacked_t::floatdenormmin(sign); }
+    static constexpr TLFloat flt_true_min(bool sign=false) { return Unpacked_t::flt_true_min(sign); }
+
+    /** Returns the minimum normalized number of the given sign */
+    static constexpr TLFloat flt_min(bool sign=false) { return Unpacked_t::flt_min(sign); }
 
     /** Returns the maximum representative number of the given sign */
-    static constexpr TLFloat floatmax(bool sign=false) { return Unpacked_t::floatmax(sign); }
+    static constexpr TLFloat flt_max(bool sign=false) { return Unpacked_t::flt_max(sign); }
+
+    /** Returns the absolute value difference between 1.0 and the next representable value */
+    static constexpr TLFloat flt_epsilon() { return nextafter(TLFloat(1), 2) - 1; }
 
     /** Returns zero of the given sign */
     static constexpr TLFloat zero(bool sign=false) { return Unpacked_t::zero(sign); }

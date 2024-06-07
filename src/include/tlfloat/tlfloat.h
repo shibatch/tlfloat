@@ -926,6 +926,86 @@ inline tlfloat_octuple::operator tlfloat_int128_t_() const { return tlfloat_cast
 inline tlfloat_octuple::operator tlfloat_uint128_t_() const { return tlfloat_cast_u128_o(value); }
 #endif
 
+#if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
+#define tlfloat_M_Eq 0x1.5bf0a8b1457695355fb8ac404e7ap+1Q
+#define tlfloat_M_LOG2Eq 0x1.71547652b82fe1777d0ffda0d23ap+0Q
+#define tlfloat_M_LOG10Eq 0x1.bcb7b1526e50e32a6ab7555f5a68p-2Q
+#define tlfloat_M_LN2q 0x1.62e42fefa39ef35793c7673007e6p-1Q
+#define tlfloat_M_LN10q 0x1.26bb1bbb5551582dd4adac5705a6p+1Q
+#define tlfloat_M_PIq 0x1.921fb54442d18469898cc51701b8p+1Q
+#define tlfloat_M_PI_2q 0x1.921fb54442d18469898cc51701b8p+0Q
+#define tlfloat_M_PI_4q 0x1.921fb54442d18469898cc51701b8p-1Q
+#define tlfloat_M_1_PIq 0x1.45f306dc9c882a53f84eafa3ea6ap-2Q
+#define tlfloat_M_2_PIq 0x1.45f306dc9c882a53f84eafa3ea6ap-1Q
+#define tlfloat_M_2_SQRTPIq 0x1.20dd750429b6d11ae3a914fed7fep+0Q
+#define tlfloat_M_SQRT2q 0x1.6a09e667f3bcc908b2fb1366ea95p+0Q
+#define tlfloat_M_SQRT1_2q 0x1.6a09e667f3bcc908b2fb1366ea95p-1Q
+#define tlfloat_FLT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383Q
+#define tlfloat_FLT128_MIN 0x1p-16382Q
+#define tlfloat_FLT128_DENORM_MIN 0x0.0000000000000000000000000001p-16382Q
+#define tlfloat_FLT128_TRUE_MIN 0x0.0000000000000000000000000001p-16382Q
+#define tlfloat_FLT128_EPSILON 0x1p-112Q
+#elif defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)
+#define tlfloat_M_Eq 0x1.5bf0a8b1457695355fb8ac404e7ap+1L
+#define tlfloat_M_LOG2Eq 0x1.71547652b82fe1777d0ffda0d23ap+0L
+#define tlfloat_M_LOG10Eq 0x1.bcb7b1526e50e32a6ab7555f5a68p-2L
+#define tlfloat_M_LN2q 0x1.62e42fefa39ef35793c7673007e6p-1L
+#define tlfloat_M_LN10q 0x1.26bb1bbb5551582dd4adac5705a6p+1L
+#define tlfloat_M_PIq 0x1.921fb54442d18469898cc51701b8p+1L
+#define tlfloat_M_PI_2q 0x1.921fb54442d18469898cc51701b8p+0L
+#define tlfloat_M_PI_4q 0x1.921fb54442d18469898cc51701b8p-1L
+#define tlfloat_M_1_PIq 0x1.45f306dc9c882a53f84eafa3ea6ap-2L
+#define tlfloat_M_2_PIq 0x1.45f306dc9c882a53f84eafa3ea6ap-1L
+#define tlfloat_M_2_SQRTPIq 0x1.20dd750429b6d11ae3a914fed7fep+0L
+#define tlfloat_M_SQRT2q 0x1.6a09e667f3bcc908b2fb1366ea95p+0L
+#define tlfloat_M_SQRT1_2q 0x1.6a09e667f3bcc908b2fb1366ea95p-1L
+#define tlfloat_FLT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383L
+#define tlfloat_FLT128_MIN 0x1p-16382L
+#define tlfloat_FLT128_DENORM_MIN 0x0.0000000000000000000000000001p-16382L
+#define tlfloat_FLT128_TRUE_MIN 0x0.0000000000000000000000000001p-16382L
+#define tlfloat_FLT128_EPSILON 0x1p-112L
+#elif defined(__cplusplus)
+static inline constexpr tlfloat_quad_ tlfloat_constq(uint64_t h, uint64_t l) { return tlfloat_quad_ { l, h }; }
+
+#define tlfloat_M_Eq tlfloat_constq( 0x40005bf0a8b14576, 0x95355fb8ac404e7a )
+#define tlfloat_M_LOG2Eq tlfloat_constq( 0x3fff71547652b82f, 0xe1777d0ffda0d23a )
+#define tlfloat_M_LOG10Eq tlfloat_constq( 0x3ffdbcb7b1526e50, 0xe32a6ab7555f5a68 )
+#define tlfloat_M_LN2q tlfloat_constq( 0x3ffe62e42fefa39e, 0xf35793c7673007e6 )
+#define tlfloat_M_LN10q tlfloat_constq( 0x400026bb1bbb5551, 0x582dd4adac5705a6 )
+#define tlfloat_M_PIq tlfloat_constq( 0x4000921fb54442d1, 0x8469898cc51701b8 )
+#define tlfloat_M_PI_2q tlfloat_constq( 0x3fff921fb54442d1, 0x8469898cc51701b8 )
+#define tlfloat_M_PI_4q tlfloat_constq( 0x3ffe921fb54442d1, 0x8469898cc51701b8 )
+#define tlfloat_M_1_PIq tlfloat_constq( 0x3ffd45f306dc9c88, 0x2a53f84eafa3ea6a )
+#define tlfloat_M_2_PIq tlfloat_constq( 0x3ffe45f306dc9c88, 0x2a53f84eafa3ea6a )
+#define tlfloat_M_2_SQRTPIq tlfloat_constq( 0x3fff20dd750429b6, 0xd11ae3a914fed7fe )
+#define tlfloat_M_SQRT2q tlfloat_constq( 0x3fff6a09e667f3bc, 0xc908b2fb1366ea95 )
+#define tlfloat_M_SQRT1_2q tlfloat_constq( 0x3ffe6a09e667f3bc, 0xc908b2fb1366ea95 )
+#define tlfloat_FLT128_MAX tlfloat_constq( 0x7ffeffffffffffff, 0xffffffffffffffff )
+#define tlfloat_FLT128_MIN tlfloat_constq( 0x0001000000000000, 0x0000000000000000 )
+#define tlfloat_FLT128_DENORM_MIN tlfloat_constq( 0x0000000000000000, 0x0000000000000001 )
+#define tlfloat_FLT128_TRUE_MIN tlfloat_constq( 0x0000000000000000, 0x0000000000000001 )
+#define tlfloat_FLT128_EPSILON tlfloat_constq( 0x3f8f000000000000, 0x0000000000000000 )
+#elif defined(__STDC_VERSION__)
+#define tlfloat_M_Eq ((tlfloat_quad_) { 0x95355fb8ac404e7a, 0x40005bf0a8b14576 })
+#define tlfloat_M_LOG2Eq ((tlfloat_quad_) { 0xe1777d0ffda0d23a, 0x3fff71547652b82f })
+#define tlfloat_M_LOG10Eq ((tlfloat_quad_) { 0xe32a6ab7555f5a68, 0x3ffdbcb7b1526e50 })
+#define tlfloat_M_LN2q ((tlfloat_quad_) { 0xf35793c7673007e6, 0x3ffe62e42fefa39e })
+#define tlfloat_M_LN10q ((tlfloat_quad_) { 0x582dd4adac5705a6, 0x400026bb1bbb5551 })
+#define tlfloat_M_PIq ((const tlfloat_quad_) { 0x8469898cc51701b8, 0x4000921fb54442d1 })
+#define tlfloat_M_PI_2q ((tlfloat_quad_) { 0x8469898cc51701b8, 0x3fff921fb54442d1 })
+#define tlfloat_M_PI_4q ((tlfloat_quad_) { 0x8469898cc51701b8, 0x3ffe921fb54442d1 })
+#define tlfloat_M_1_PIq ((tlfloat_quad_) { 0x2a53f84eafa3ea6a, 0x3ffd45f306dc9c88 })
+#define tlfloat_M_2_PIq ((tlfloat_quad_) { 0x2a53f84eafa3ea6a, 0x3ffe45f306dc9c88 })
+#define tlfloat_M_2_SQRTPIq ((tlfloat_quad_) { 0xd11ae3a914fed7fe, 0x3fff20dd750429b6 })
+#define tlfloat_M_SQRT2q ((tlfloat_quad_) { 0xc908b2fb1366ea95, 0x3fff6a09e667f3bc })
+#define tlfloat_M_SQRT1_2q ((tlfloat_quad_) { 0xc908b2fb1366ea95, 0x3ffe6a09e667f3bc })
+#define tlfloat_FLT128_MAX ((tlfloat_quad_) { 0xffffffffffffffff, 0x7ffeffffffffffff })
+#define tlfloat_FLT128_MIN ((tlfloat_quad_) { 0x0000000000000000, 0x0001000000000000 })
+#define tlfloat_FLT128_DENORM_MIN ((tlfloat_quad_) { 0x0000000000000001, 0x0000000000000000 })
+#define tlfloat_FLT128_TRUE_MIN ((tlfloat_quad_) { 0x0000000000000001, 0x0000000000000000 })
+#define tlfloat_FLT128_EPSILON ((tlfloat_quad_) { 0x0000000000000000, 0x3f8f000000000000 })
+#endif
+
 #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
 
 inline tlfloat_quad::tlfloat_quad(const struct tlfloat_octuple& v) : value(tlfloat_cast_q_o(v)) {}
@@ -1036,10 +1116,39 @@ static inline tlfloat_quad tlfloat_lgammaq(const tlfloat_quad x) { return tlfloa
 static inline tlfloat_quad tlfloat_fmodq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_fmodq(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_remainderq(tlfloat_quad_(x), tlfloat_quad_(y)); }
+/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_remquoq(const tlfloat_quad x, const tlfloat_quad y, int *quo) { return tlfloat_remquoq(tlfloat_quad_(x), tlfloat_quad_(y), quo); }
 #endif // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
 
 #ifdef TLFLOAT_LIBQUADMATH_EMULATION
+
+#if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) || defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128) || defined(__STDC_VERSION__) || defined(__cplusplus)
+#define M_Eq tlfloat_M_Eq
+#define M_LOG2Eq tlfloat_M_LOG2Eq
+#define M_LOG10Eq tlfloat_M_LOG10Eq
+#define M_LN2q tlfloat_M_LN2q
+#define M_LN10q tlfloat_M_LN10q
+#define M_PIq tlfloat_M_PIq
+#define M_PI_2q tlfloat_M_PI_2q
+#define M_PI_4q tlfloat_M_PI_4q
+#define M_1_PIq tlfloat_M_1_PIq
+#define M_2_PIq tlfloat_M_2_PIq
+#define M_2_SQRTPIq tlfloat_M_2_SQRTPIq
+#define M_SQRT2q tlfloat_M_SQRT2q
+#define M_SQRT1_2q tlfloat_M_SQRT1_2q
+#define FLT128_MAX tlfloat_FLT128_MAX
+#define FLT128_MIN tlfloat_FLT128_MIN
+#define FLT128_DENORM_MIN tlfloat_FLT128_DENORM_MIN
+#define FLT128_EPSILON tlfloat_FLT128_EPSILON
+#endif
+
+#define FLT128_MANT_DIG 113
+#define FLT128_MIN_EXP (-16381)
+#define FLT128_MAX_EXP 16384
+#define FLT128_DIG 33
+#define FLT128_MIN_10_EXP (-4931)
+#define FLT128_MAX_10_EXP 4932
+
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
@@ -1301,12 +1410,12 @@ static inline tlfloat_quad tlfloat_remquoq(const tlfloat_quad x, const tlfloat_q
    * Link with -ltlfloat. */
   static inline tlfloat_quad erfcq(const tlfloat_quad x) { return tlfloat_erfcq(x); }
 
-  /** This is experimental implementation of log gamma function. 
+  /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
   static inline tlfloat_quad tgammaq(const tlfloat_quad x) { return tlfloat_tgammaq(x); }
 
-  /** This function has the same functionality as the corresponding function in quadmath.h.
+  /** This is experimental implementation of log gamma function. 
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
   static inline tlfloat_quad lgammaq(const tlfloat_quad x) { return tlfloat_lgammaq(x); }
@@ -1320,6 +1429,10 @@ static inline tlfloat_quad tlfloat_remquoq(const tlfloat_quad x, const tlfloat_q
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
   static inline tlfloat_quad remainderq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_remainderq(x, y); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
   static inline tlfloat_quad remquoq(const tlfloat_quad x, const tlfloat_quad y, int *quo) { return tlfloat_remquoq(x, y, quo); }
 #endif // #ifdef TLFLOAT_LIBQUADMATH_EMULATION
 
