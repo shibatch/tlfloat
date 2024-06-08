@@ -86,6 +86,11 @@ namespace tlfloat {
       return T("0x1.965fea53d6e3c82b05999ab43dc4def1980762158a0a815f2291ac0cf93041e5875f13657a43adc3896c0b95c0244e271d6f695f41523046622bc574b2caeaecp+0");
     }
 
+    template<typename T>
+    static consteval T constEuler() {
+      return T("0x9.3c467e37db0c7a4d1be3f810152cb56a1cecc3af65cc0190c03df34709affbd8e4b59fa03a9f0eed0649ccb621057d11056ae9132135a08e43b4673d74bafea5p-4");
+    }
+
     //
 
     template<typename Unpacked_t, unsigned N>
@@ -868,7 +873,7 @@ namespace tlfloat {
 
   //
 
-  /** Returns PI * 2^exp */
+  /** Returns 2^exp * PI */
   template<typename tlfloat_t>
   static inline consteval tlfloat_t const_M_PI(int exp = 0) {
     typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
@@ -876,10 +881,55 @@ namespace tlfloat {
     return detail::const_M_PI_<xUnpacked_t>(exp).cast((Unpacked_t *)0);
   }
 
-  static inline consteval Quad const_M_PIq(int exp = 0) { return const_M_PI<Quad>(exp); }
-  static inline consteval Octuple const_M_PIo(int exp = 0) { return const_M_PI<Octuple>(exp); }
+  /** Returns 2^exp * log_2 (e) */
+  template<typename tlfloat_t>
+  static inline consteval tlfloat_t const_M_LOG2E(int exp = 0) {
+    typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
+    return ldexp_(detail::constRLN2<xUnpacked_t>(), exp).cast((Unpacked_t*)0);
+  }
 
-  /** Returns E * 2^exp */
+  /** Returns 2^exp * log_10 (e) */
+  template<typename tlfloat_t>
+  static inline consteval tlfloat_t const_M_LOG10E(int exp = 0) {
+    typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
+    return ldexp_(detail::constRLN10<xUnpacked_t>(), exp).cast((Unpacked_t*)0);
+  }
+
+  /** Returns 2^exp * log 2 */
+  template<typename tlfloat_t>
+  static inline consteval tlfloat_t const_M_LN2(int exp = 0) {
+    typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
+    return ldexp_(detail::constLN2<xUnpacked_t>(), exp).cast((Unpacked_t*)0);
+  }
+
+  /** Returns 2^exp * log 10 */
+  template<typename tlfloat_t>
+  static inline consteval tlfloat_t const_M_LN10(int exp = 0) {
+    typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
+    return ldexp_(detail::constLN10<xUnpacked_t>(), exp).cast((Unpacked_t*)0);
+  }
+
+  /** Returns 2^exp / PI */
+  template<typename tlfloat_t>
+  static inline consteval tlfloat_t const_M_1_PI(int exp = 0) {
+    typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
+    return (xUnpacked_t::castFromInt(1) / detail::const_M_PI_<xUnpacked_t>(-exp)).cast((Unpacked_t *)0);
+  }
+
+  /** Returns 2^exp / sqrt(PI) */
+  template<typename tlfloat_t>
+  static inline consteval tlfloat_t const_M_1_SQRTPI(int exp = 0) {
+    typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
+    return (ldexp_(xUnpacked_t::castFromInt(1), exp) / sqrt_(detail::const_M_PI_<xUnpacked_t>(0))).cast((Unpacked_t*)0);
+  }
+
+  /** Returns 2^exp * E */
   template<typename tlfloat_t>
   static inline consteval tlfloat_t const_M_E(int exp = 0) {
     typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
@@ -887,8 +937,13 @@ namespace tlfloat {
     return detail::const_M_E_<xUnpacked_t>(exp).cast((Unpacked_t *)0);
   }
 
-  static inline consteval Quad const_M_Eq(int exp = 0) { return const_M_E<Quad>(exp); }
-  static inline consteval Octuple const_M_Eo(int exp = 0) { return const_M_E<Octuple>(exp); }
+  /** Returns the Euler–Mascheroni constant */
+  template<typename tlfloat_t>
+  static inline consteval tlfloat_t const_Euler() {
+    typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
+    return detail::constEuler<xUnpacked_t>().cast((Unpacked_t*)0);
+  }
 
   //
 
