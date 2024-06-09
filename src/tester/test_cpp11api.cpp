@@ -103,6 +103,7 @@ void doTest(const string &s1, const string &s2) {
   tlfloat_quad q1 = tlfloat_strtoq(s1.c_str(), NULL);
   tlfloat_quad q2 = strtoflt128(s2.c_str(), NULL);
 
+  double d0;
   double d1 = atof(s1.c_str());
   double d2 = atof(s2.c_str());
 
@@ -148,6 +149,9 @@ void doTest(const string &s1, const string &s2) {
   o0 = o1; o0 += d2; check("o0 = o1; o0 += d2;", o0, d1 + d2);
   o0 = o1; o0 += i2; check("o0 = o1; o0 += i2;", o0, d1 + i2);
 
+  o0 = o1; d0 = d1; check("o0 = o1; o0 ++;", o0++, d0++); check("o0 = o1; o0 ++; (2)", o0, d0);
+  o0 = o1; d0 = d1; check("o0 = o1; ++ o0;", ++o0, ++d0); check("o0 = o1; ++ o0; (2)", o0, d0);
+
   check("o1 - o2", o1 - o2, d1 - d2);
   check("d1 - o2", d1 - o2, d1 - d2);
   check("f1 - o2", f1 - o2, d1 - d2);
@@ -158,6 +162,9 @@ void doTest(const string &s1, const string &s2) {
   o0 = o1; o0 -= q2; check("o0 = o1; o0 -= q2;", o0, d1 - d2);
   o0 = o1; o0 -= d2; check("o0 = o1; o0 -= d2;", o0, d1 - d2);
   o0 = o1; o0 -= i2; check("o0 = o1; o0 -= i2;", o0, d1 - i2);
+
+  o0 = o1; d0 = d1; check("o0 = o1; o0 --;", o0--, d0--); check("o0 = o1; o0 --; (2)", o0, d0);
+  o0 = o1; d0 = d1; check("o0 = o1; -- o0;", --o0, --d0); check("o0 = o1; -- o0; (2)", o0, d0);
 
   check("o1 * o2", o1 * o2, d1 * d2);
   check("d1 * o2", d1 * o2, d1 * d2);

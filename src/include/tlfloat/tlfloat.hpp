@@ -1482,6 +1482,11 @@ namespace tlfloat {
     template<typename rhstype>
     constexpr TLFloat& operator/=(const rhstype& rhs) { *this = *this / TLFloat(rhs); return *this; }
 
+    TLFloat& operator++()    { *this += 1; return *this; }
+    TLFloat& operator--()    { *this -= 1; return *this; }
+    TLFloat  operator++(int) { TLFloat t = *this; *this += 1; return t; }
+    TLFloat  operator--(int) { TLFloat t = *this; *this -= 1; return t; }
+
     //
 
     // Double + int, Double + float, Double + Float

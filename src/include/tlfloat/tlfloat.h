@@ -683,6 +683,11 @@ struct tlfloat_quad {
   bool operator<=(const tlfloat_quad& rhs) const { return tlfloat_le_q_q(value, rhs.value); }
   bool operator> (const tlfloat_quad& rhs) const { return tlfloat_gt_q_q(value, rhs.value); }
   bool operator>=(const tlfloat_quad& rhs) const { return tlfloat_ge_q_q(value, rhs.value); }
+
+  tlfloat_quad_t& operator++()    { *this = tlfloat_addq(value, tlfloat_cast_q_i64(1)); return *this; }
+  tlfloat_quad_t& operator--()    { *this = tlfloat_subq(value, tlfloat_cast_q_i64(1)); return *this; }
+  tlfloat_quad_t  operator++(int) { tlfloat_quad_t t = *this; *this = tlfloat_addq(value, tlfloat_cast_q_i64(1)); return t; }
+  tlfloat_quad_t  operator--(int) { tlfloat_quad_t t = *this; *this = tlfloat_subq(value, tlfloat_cast_q_i64(1)); return t; }
 };
 
 /** This macro is defined iff tlfloat_quad is not an alias of
@@ -744,6 +749,11 @@ struct tlfloat_octuple {
   bool operator<=(const tlfloat_octuple& rhs) const { return tlfloat_le_o_o(value, rhs.value); }
   bool operator> (const tlfloat_octuple& rhs) const { return tlfloat_gt_o_o(value, rhs.value); }
   bool operator>=(const tlfloat_octuple& rhs) const { return tlfloat_ge_o_o(value, rhs.value); }
+
+  tlfloat_octuple& operator++()    { *this = tlfloat_addo(value, tlfloat_cast_o_i64(1)); return *this; }
+  tlfloat_octuple& operator--()    { *this = tlfloat_subo(value, tlfloat_cast_o_i64(1)); return *this; }
+  tlfloat_octuple  operator++(int) { tlfloat_octuple t = *this; *this = tlfloat_addo(value, tlfloat_cast_o_i64(1)); return t; }
+  tlfloat_octuple  operator--(int) { tlfloat_octuple t = *this; *this = tlfloat_subo(value, tlfloat_cast_o_i64(1)); return t; }
 };
 #else // #if defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
 typedef tlfloat_octuple_ tlfloat_octuple;

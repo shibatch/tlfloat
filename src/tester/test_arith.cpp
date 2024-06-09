@@ -36,6 +36,23 @@ static_assert(Double::flt_true_min() == DBL_TRUE_MIN);
 static_assert(Double::flt_max() == DBL_MAX);
 static_assert(Double::flt_epsilon() == DBL_EPSILON);
 
+static void check(const char* msg, double x, double y) {
+  if (isnan(x) && isnan(y)) return;
+
+  uint64_t u, v;
+  memcpy((void *)&u, (void *)&x, sizeof(u));
+  memcpy((void *)&v, (void *)&y, sizeof(v));
+
+  if (u == v) return;
+
+  cout << "NG " << msg << endl;
+  printf("x : %.18g %016llx\n", x, (unsigned long long)u);
+  printf("y : %.18g %016llx\n", y, (unsigned long long)v);
+  exit(-1);
+}
+
+static void check(const char* msg, Octuple x, Octuple y) { check(msg, (double)x, (double)y); }
+
 int main(int argc, char **argv) {
   uint64_t niter = 100000;
 
@@ -1268,6 +1285,69 @@ int main(int argc, char **argv) {
 #endif
     }
 #endif // #ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
+  }
+
+  for(uint64_t i=0;niter == 0 || i<niter;i++) {
+    float f1 = rndf(rng), f2 = rndf(rng), f3 = rndf(rng);
+    double d1 = f1, d2 = f2, d3 = f3, d0;
+    Quad q1 = f1, q2 = f2, q3 = f3;
+    Octuple o1 = f1, o2 = f2, o3 = f3, o0;
+    int i1 = (int)rng->nextLT(65536) - 32768, i2 = (int)rng->nextLT(65536) - 32768;
+
+    //
+
+    check("(double)Double(Octuple(d1))", (double)Double(Octuple(d1)), d1);
+    check("(double)(Double)Octuple(i1)", (double)(Double)Octuple(i1), (double)i1);
+
+    check("o1 + o2", o1 + o2, d1 + d2);
+    check("d1 + o2", d1 + o2, d1 + d2);
+    check("f1 + o2", f1 + o2, d1 + d2);
+    check("o1 + f2", o1 + f2, d1 + d2);
+    check("i1 + o2", i1 + o2, i1 + d2);
+    check("o1 + i2", o1 + i2, d1 + i2);
+    o0 = o1; o0 += o2; check("o0 = o1; o0 += o2;", o0, d1 + d2);
+    o0 = o1; o0 += q2; check("o0 = o1; o0 += q2;", o0, d1 + d2);
+    o0 = o1; o0 += d2; check("o0 = o1; o0 += d2;", o0, d1 + d2);
+    o0 = o1; o0 += i2; check("o0 = o1; o0 += i2;", o0, d1 + i2);
+
+    o0 = o1; d0 = d1; check("o0 = o1; o0 ++;", o0++, d0++); check("o0 = o1; o0 ++; (2)", o0, d0);
+    o0 = o1; d0 = d1; check("o0 = o1; ++ o0;", ++o0, ++d0); check("o0 = o1; ++ o0; (2)", o0, d0);
+
+    check("o1 - o2", o1 - o2, d1 - d2);
+    check("d1 - o2", d1 - o2, d1 - d2);
+    check("f1 - o2", f1 - o2, d1 - d2);
+    check("o1 - f2", o1 - f2, d1 - d2);
+    check("i1 - o2", i1 - o2, i1 - d2);
+    check("o1 - i2", o1 - i2, d1 - i2);
+    o0 = o1; o0 -= o2; check("o0 = o1; o0 -= o2;", o0, d1 - d2);
+    o0 = o1; o0 -= q2; check("o0 = o1; o0 -= q2;", o0, d1 - d2);
+    o0 = o1; o0 -= d2; check("o0 = o1; o0 -= d2;", o0, d1 - d2);
+    o0 = o1; o0 -= i2; check("o0 = o1; o0 -= i2;", o0, d1 - i2);
+
+    o0 = o1; d0 = d1; check("o0 = o1; o0 --;", o0--, d0--); check("o0 = o1; o0 --; (2)", o0, d0);
+    o0 = o1; d0 = d1; check("o0 = o1; -- o0;", --o0, --d0); check("o0 = o1; -- o0; (2)", o0, d0);
+
+    check("o1 * o2", o1 * o2, d1 * d2);
+    check("d1 * o2", d1 * o2, d1 * d2);
+    check("f1 * o2", f1 * o2, d1 * d2);
+    check("o1 * f2", o1 * f2, d1 * d2);
+    check("i1 * o2", i1 * o2, i1 * d2);
+    check("o1 * i2", o1 * i2, d1 * i2);
+    o0 = o1; o0 *= o2; check("o0 = o1; o0 *= o2;", o0, d1 * d2);
+    o0 = o1; o0 *= q2; check("o0 = o1; o0 *= q2;", o0, d1 * d2);
+    o0 = o1; o0 *= d2; check("o0 = o1; o0 *= d2;", o0, d1 * d2);
+    o0 = o1; o0 *= i2; check("o0 = o1; o0 *= i2;", o0, d1 * i2);
+
+    check("o1 / o2", o1 / o2, d1 / d2);
+    check("d1 / o2", d1 / o2, d1 / d2);
+    check("f1 / o2", f1 / o2, d1 / d2);
+    check("o1 / f2", o1 / f2, d1 / d2);
+    check("i1 / o2", i1 / o2, i1 / d2);
+    check("o1 / i2", o1 / i2, d1 / i2);
+    o0 = o1; o0 /= o2; check("o0 = o1; o0 /= o2;", o0, d1 / d2);
+    o0 = o1; o0 /= q2; check("o0 = o1; o0 /= q2;", o0, d1 / d2);
+    o0 = o1; o0 /= d2; check("o0 = o1; o0 /= d2;", o0, d1 / d2);
+    o0 = o1; o0 /= i2; check("o0 = o1; o0 /= i2;", o0, d1 / i2);
   }
 
   cout << "OK" << endl;
