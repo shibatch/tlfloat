@@ -291,8 +291,8 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    if ((bool)isinff(f1) != (bool)isinf(Float(f1))) {
-      printf("\nisinff f1 = %.10g, c = %d, t = %d\n", f1, isinff(f1), isinf(Float(f1)));
+    if ((bool)isinf(f1) != (bool)isinf(Float(f1))) {
+      printf("\nisinf f1 = %.10g, c = %d, t = %d\n", f1, isinf(f1), isinf(Float(f1)));
       exit(-1);
     }
 
