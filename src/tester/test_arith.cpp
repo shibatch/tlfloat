@@ -286,6 +286,23 @@ int main(int argc, char **argv) {
 
     //
 
+    if (isnanf(f1) != isnan(Float(f1))) {
+      printf("\nisnanf f1 = %.10g\n", f1);
+      exit(-1);
+    }
+
+    if (isinff(f1) != isinf(Float(f1))) {
+      printf("\nisinff f1 = %.10g\n", f1);
+      exit(-1);
+    }
+
+    if (finitef(f1) != finite(Float(f1))) {
+      printf("\nfinitef f1 = %.10g\n", f1);
+      exit(-1);
+    }
+
+    //
+
     double d1t = double(tlf1.cast((const udouble *)nullptr));
     double d1c = f1;
 
@@ -621,6 +638,29 @@ int main(int argc, char **argv) {
 
     //
 
+    if (isnan(d1) != isnan(Double(d1))) {
+      printf("\nisnan d1 = %.10g\n", d1);
+      exit(-1);
+    }
+
+    if (isinf(d1) != isinf(Double(d1))) {
+      printf("\nisinf d1 = %.10g\n", d1);
+      exit(-1);
+    }
+
+    if (finite(d1) != finite(Double(d1))) {
+      printf("\nfinite d1 = %.10g\n", d1);
+      exit(-1);
+    }
+
+    if (fpclassify(d1) != fpclassify(Double(d1))) {
+      printf("\nfpclassify d1 = %.10g, c = %d, t = %d\n", d1, fpclassify(d1), fpclassify(Double(d1)));
+      cout << to_string_d(Double(d1).getUnpacked()) << endl;
+      exit(-1);
+    }
+
+    //
+
 #ifdef ENABLE_QUAD
     quad q1t = quad(tlf1.cast((const uquad *)nullptr));
     quad q1c = f1;
@@ -940,6 +980,28 @@ int main(int argc, char **argv) {
       cout << "ct: " << qt << " : " << to_string_d(uquad(qt)) << endl;
       cout << "cc: " << qc << " : " << to_string_d(uquad(qc)) << endl;
       cout << "NG" << endl;
+      exit(-1);
+    }
+
+    //
+
+    if (isnanq(q1) != isnan(Quad(q1))) {
+      printf("\nisnan q1 = %.10g\n", (double)q1);
+      exit(-1);
+    }
+
+    if (isinfq(q1) != isinf(Quad(q1))) {
+      printf("\nisinf q1 = %.10g\n", (double)q1);
+      exit(-1);
+    }
+
+    if (finiteq(q1) != finite(Quad(q1))) {
+      printf("\nfinite q1 = %.10g\n", (double)q1);
+      exit(-1);
+    }
+
+    if (fpclassifyq(q1) != fpclassify(Quad(q1))) {
+      printf("\nfpclassify q1 = %.10g\n", (double)q1);
       exit(-1);
     }
 #endif

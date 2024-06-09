@@ -587,6 +587,11 @@ extern "C" {
   int tlfloat_finiteq(const tlfloat_quad_ x) { return finite(Quad(x)); }
   int tlfloat_finiteo(const tlfloat_octuple_ x) { return finite(Octuple(x)); }
 
+  int tlfloat_fpclassifyf(const float x) { return fpclassify(Float(x)); }
+  int tlfloat_fpclassify(const double x) { return fpclassify(Double(x)); }
+  int tlfloat_fpclassifyq(const tlfloat_quad_ x) { return fpclassify(Quad(x)); }
+  int tlfloat_fpclassifyo(const tlfloat_octuple_ x) { return fpclassify(Octuple(x)); }
+
   int tlfloat_signbitf(const float x) { return signbit(Float(x)); }
   int tlfloat_signbit(const double x) { return signbit(Double(x)); }
   int tlfloat_signbitq(const tlfloat_quad_ x) { return signbit(Quad(x)); }

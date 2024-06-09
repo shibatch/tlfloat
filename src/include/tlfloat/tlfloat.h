@@ -22,6 +22,14 @@
 #include <string>
 #endif
 
+#ifndef TLFLOAT_FP_NAN
+#define TLFLOAT_FP_NAN 0
+#define TLFLOAT_FP_INFINITE 1
+#define TLFLOAT_FP_ZERO 2
+#define TLFLOAT_FP_SUBNORMAL 3
+#define TLFLOAT_FP_NORMAL 4
+#endif
+
 extern "C" {
 #endif
 
@@ -337,6 +345,11 @@ extern "C" {
   int tlfloat_finite(const double x);
 
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_fpclassifyf(const float x);
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+  int tlfloat_fpclassify(const double x);
+
+  /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   int tlfloat_signbitf(const float x);
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   int tlfloat_signbit(const double x);
@@ -552,6 +565,8 @@ extern "C" {
   int tlfloat_isinfo(const tlfloat_octuple_ x);
   int tlfloat_finiteq(const tlfloat_quad_ x);
   int tlfloat_finiteo(const tlfloat_octuple_ x);
+  int tlfloat_fpclassifyq(const tlfloat_quad_ x);
+  int tlfloat_fpclassifyo(const tlfloat_octuple_ x);
   int tlfloat_signbitq(const tlfloat_quad_ x);
   int tlfloat_signbito(const tlfloat_octuple_ x);
   tlfloat_quad_ tlfloat_hypotq(const tlfloat_quad_ x, const tlfloat_quad_ y);
@@ -1055,6 +1070,8 @@ static inline int tlfloat_isinfq(const tlfloat_quad x) { return tlfloat_isinfq(t
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline int tlfloat_finiteq(const tlfloat_quad x) { return tlfloat_finiteq(tlfloat_quad_(x)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+static inline int tlfloat_fpclassifyq(const tlfloat_quad x) { return tlfloat_fpclassifyq(tlfloat_quad_(x)); }
+/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline int tlfloat_signbitq(const tlfloat_quad x) { return tlfloat_signbitq(tlfloat_quad_(x)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_hypotq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_hypotq(tlfloat_quad_(x), tlfloat_quad_(y)); }
@@ -1275,6 +1292,11 @@ static inline tlfloat_quad tlfloat_remquoq(const tlfloat_quad x, const tlfloat_q
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
   static inline int finiteq(const tlfloat_quad x) { return tlfloat_finiteq(x); }
+
+  /** This function has the same functionality as the corresponding function in quadmath.h.
+   * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
+   * Link with -ltlfloat. */
+  static inline int fpclassifyq(const tlfloat_quad x) { return tlfloat_fpclassifyq(x); }
 
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.

@@ -5,6 +5,14 @@
 
 #include <tlfloat/bigint.hpp>
 
+#ifndef TLFLOAT_FP_NAN
+#define TLFLOAT_FP_NAN 0
+#define TLFLOAT_FP_INFINITE 1
+#define TLFLOAT_FP_ZERO 2
+#define TLFLOAT_FP_SUBNORMAL 3
+#define TLFLOAT_FP_NORMAL 4
+#endif
+
 namespace tlfloat {
   namespace detail {
     static const double LOG10_2 = 0.30102999566398119521; // log(2)/log(10)
@@ -1435,6 +1443,15 @@ namespace tlfloat {
     friend constexpr bool finite(const TLFloat& u) { return !(isnan(u) || isinf(u)); }
 
     /** This function has the same functionality as the corresponding function in math.h. */
+    friend constexpr int fpclassify(const TLFloat& u) {
+      if (isnan(u)) return TLFLOAT_FP_NAN;
+      if (isinf(u)) return TLFLOAT_FP_INFINITE;
+      if (u == 0) return TLFLOAT_FP_ZERO;
+      if (fabs(u) < u.getUnpacked().flt_min()) return TLFLOAT_FP_SUBNORMAL;
+      return TLFLOAT_FP_NORMAL;
+    }
+
+    /** This function has the same functionality as the corresponding function in math.h. */
     friend constexpr bool signbit(const TLFloat& u) {
       TLFloat n(u);
       return Unpacked_t::bit(n.m, sizeof(mant_t) * 8 - 1);
@@ -1484,10 +1501,10 @@ namespace tlfloat {
     template<typename rhstype>
     constexpr TLFloat& operator/=(const rhstype& rhs) { *this = *this / TLFloat(rhs); return *this; }
 
-    TLFloat& operator++()    { *this += 1; return *this; }
-    TLFloat& operator--()    { *this -= 1; return *this; }
-    TLFloat  operator++(int) { TLFloat t = *this; *this += 1; return t; }
-    TLFloat  operator--(int) { TLFloat t = *this; *this -= 1; return t; }
+    constexpr TLFloat& operator++()    { *this += 1; return *this; }
+    constexpr TLFloat& operator--()    { *this -= 1; return *this; }
+    constexpr TLFloat  operator++(int) { TLFloat t = *this; *this += 1; return t; }
+    constexpr TLFloat  operator--(int) { TLFloat t = *this; *this -= 1; return t; }
 
     //
 
