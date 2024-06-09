@@ -74,6 +74,9 @@ int main(int argc, char **argv) {
   shared_ptr<RNG> rng = createPreferredRNG();
 
   for(uint64_t i=0;niter == 0 || i<niter;i++) {
+    int i1 = (int)rng->nextLT(65536) - 32768, i2 = (int)rng->nextLT(65536) - 32768;
+    int it, ic;
+
     float f1 = rndf(rng), f2 = rndf(rng), f3 = rndf(rng);
     ufloat tlf1(f1), tlf2(f2), tlf3(f3);
 
@@ -298,6 +301,18 @@ int main(int argc, char **argv) {
 
     if ((bool)finite_(f1) != (bool)finite(Float(f1))) {
       printf("\nfinite f1 = %.10g\n", f1);
+      exit(-1);
+    }
+
+    if (!cmpf(ldexpf(f1, i1), (float)ldexp(Float(f1), i1))) {
+      printf("\nldexpf f1 = %.10g, i1 = %d\n", f1, i1);
+      printf("c = %.10g, t = %.10g\n", ldexpf(f1, i1), (float)ldexp(Float(f1), i1));
+      exit(-1);
+    }
+
+    if (!cmpf(frexpf(f1, &ic), (float)frexp(Float(f1), &it)) || ic != it) {
+      printf("\nfrexpf f1 = %.10g, it = %d, ic = %d\n", f1, it, ic);
+      printf("c = %.10g, t = %.10g\n", frexpf(f1, &ic), (float)frexp(Float(f1), &it));
       exit(-1);
     }
 
@@ -659,6 +674,17 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
+    if (!cmpd(ldexp(d1, i1), (double)ldexp(Double(d1), i1))) {
+      printf("\nldexp d1 = %.18lg, i1 = %d\n", d1, i1);
+      exit(-1);
+    }
+
+    if (!cmpd(frexp(d1, &ic), (double)frexp(Double(d1), &it)) || ic != it) {
+      printf("\nfrexp d1 = %.10g, it = %d, ic = %d\n", d1, it, ic);
+      printf("c = %.10g, t = %.10g\n", frexp(d1, &ic), (double)frexp(Double(d1), &it));
+      exit(-1);
+    }
+
     //
 
 #ifdef ENABLE_QUAD
@@ -1003,6 +1029,11 @@ int main(int argc, char **argv) {
 #ifdef QUADMATH_H
     if (!cmpfpclass(fpclassifyq(q1), fpclassify(Quad(q1)))) {
       printf("\nfpclassify q1 = %.10g\n", (double)q1);
+      exit(-1);
+    }
+
+    if (!cmpq(ldexpq(q1, i1), (quad)ldexp(Quad(q1), i1))) {
+      printf("\nldexpq q1 = %.18lg, i1 = %d\n", (double)q1, i1);
       exit(-1);
     }
 #endif

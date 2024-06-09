@@ -112,8 +112,27 @@ public:
   }
 };
 
+class TLCG64 : public RNG {
+  uint64_t state = 1;
+public:
+  TLCG64() {
+    state = chrono::high_resolution_clock::now().time_since_epoch().count();
+    for(int i=0;i<10;i++) next32();
+  }
+
+  uint32_t next32() {
+    uint64_t t = chrono::high_resolution_clock::now().time_since_epoch().count();
+    state = state * 6364136223846793005ULL + (t << 1) + 1;
+    return uint32_t(state >> 32);
+  }
+  uint64_t next64() {
+    uint32_t u = next32();
+    return u | (uint64_t(next32()) << 32);
+  }
+};
+
 shared_ptr<RNG> createPreferredRNG() {
-  return shared_ptr<RNG>(new LCG64());
+  return shared_ptr<RNG>(new TLCG64());
 }
 
 //

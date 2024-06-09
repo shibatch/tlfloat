@@ -288,6 +288,8 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_finiteo(o1)", (bool)tlfloat_finiteo(o1), (bool)finite_(d1));
   check("tlfloat_signbito(o1)", (bool)tlfloat_signbito(o1), (bool)signbit(d1));
   check("tlfloat_ldexpo(o1, i2)", tlfloat_ldexpo(o1, i2), ldexp(d1, i2), T);
+  check("tlfloat_frexpo(o1, &qt)", tlfloat_frexpo(o1, &qt), frexp(d1, &qc), T);
+  if (!isnan(d1) && !isinf(d1)) check("exp in tlfloat_frexpo(o1, &qt)", qt, qc);
   check("tlfloat_powo(o1, o2)", tlfloat_powo(o1, o2), pow(d1, d2), T);
   check("tlfloat_atan2o(o1, o2)", tlfloat_atan2o(o1, o2), atan2(d1, d2), T);
   check("tlfloat_fmao(o1, o2, o2)", tlfloat_fmao(o1, o2, o2), fma(d1, d2, d2), T);
@@ -342,6 +344,8 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_finiteq(q1)", (bool)tlfloat_finiteq(q1), (bool)finite_(d1));
   check("tlfloat_signbitq(q1)", (bool)tlfloat_signbitq(q1), (bool)signbit(d1));
   check("tlfloat_ldexpq(q1, i2)", tlfloat_ldexpq(q1, i2), ldexp(d1, i2), T);
+  check("tlfloat_frexpq(q1, &qt)", tlfloat_frexpq(q1, &qt), frexp(d1, &qc), T);
+  if (!isnan(d1) && !isinf(d1)) check("exp in tlfloat_frexpq(q1, &qt)", qt, qc);
   check("tlfloat_powq(q1, q2)", tlfloat_powq(q1, q2), pow(d1, d2), T);
   check("tlfloat_atan2q(q1, q2)", tlfloat_atan2q(q1, q2), atan2(d1, d2), T);
   check("tlfloat_fmaq(q1, q2, q2)", tlfloat_fmaq(q1, q2, q2), fma(d1, d2, d2), T);

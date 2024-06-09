@@ -36,13 +36,13 @@ static_assert(Double(const_Euler<Octuple>()) == 0.5772156649015328606);
 template<typename T>
 T AGM(int N) {
   T y = sqrt(T(2.0)) - 1;
-  T a = ldexp_(y * y, 1);
+  T a = ldexp(y * y, 1);
 
   for(int k=0;k<N;k++) {
     y = sqrt(sqrt(T(T(1.0f) - (y * y) * T(y * Octuple(y)))));
     y = T(Quad(1) - y) / T(y + Octuple(1.0f));
     T z = T(Double(1) + y) * T(Half(1.0) + y);
-    a = z * z * a - ldexp_(T((y + Float(1.0)) * Octuple(y) + 1.0) * y, 2 * k + 3);
+    a = z * z * a - ldexp(T((y + Float(1.0)) * Octuple(y) + 1.0) * y, 2 * k + 3);
   }
 
   return T(1) / a;

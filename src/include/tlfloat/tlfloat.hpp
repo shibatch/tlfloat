@@ -192,9 +192,20 @@ namespace tlfloat {
 
       friend constexpr UnpackedFloat fabs(UnpackedFloat x) { x.sign = 0; return x; }
 
-      friend constexpr UnpackedFloat ldexp_(UnpackedFloat x, const int e) { x.exp += e; return x; }
+      friend constexpr UnpackedFloat ldexp_(UnpackedFloat x, const int e) {
+#if !(defined(__GNUC__) && !defined(__clang__))
+	static_assert(x.nbexp_() == 0);
+#endif
+	if (!x.iszero) x.exp += e;
+	return x;
+      }
+
+      friend constexpr UnpackedFloat ldexp(UnpackedFloat x, const int e) {
+	return ldexp_(x.cast((decltype(UnpackedFloat::xUnpackedFloat())*) 0), e).cast((UnpackedFloat*) 0);
+      }
 
       friend constexpr xpair<UnpackedFloat, int> frexp_(UnpackedFloat x) {
+	static_assert(x.nbexp_() == 0);
 	xpair<UnpackedFloat, int> ret = { x, x.exp - expoffset() + 2 };
 	ret.first.exp = expoffset() - 2;
 	return ret;
@@ -924,14 +935,15 @@ namespace tlfloat {
 
       friend constexpr bool isint(const UnpackedFloat &f) {
 	if (f.isinf || f.isnan) return false;
-	return rint(f) == f;
+	return trunc(f) == f;
       }
 
       friend constexpr bool iseven(const UnpackedFloat &f) {
-	return isint(ldexp_(f, -1));
+	return isint(ldexp(f, -1));
       }
 
       friend constexpr UnpackedFloat toward0(UnpackedFloat f) {
+	static_assert(f.nbexp_() == 0);
 	if (f.iszero || f.isinf || f.isnan) return f;
 	f.mant--;
 	if (!((f.mant >> nbmant) & 1)) {
@@ -1087,7 +1099,7 @@ namespace tlfloat {
 	  if (precision > (long)bufsize/2 - 10) precision = bufsize/2 - 10;
 	  if (typespec == 'g' && precision > 0) precision--;
 
-	  UnpackedFloat rounder = value.iszero ? UnpackedFloat::zero() : ldexp_(UnpackedFloat::exp10i(-precision), -1);
+	  UnpackedFloat rounder = value.iszero ? UnpackedFloat::zero() : ldexp(UnpackedFloat::exp10i(-precision), -1);
 
 	  if (typespec == 'f') {
 	    UnpackedFloat v = (value + rounder) * UnpackedFloat::exp10i(precision);
@@ -1568,22 +1580,17 @@ namespace tlfloat {
       return (sizeof(mant_t) * 8 - Unpacked_t::nbmant_()) - Unpacked_t::clz(u.mant) - Unpacked_t::expoffset();
     }
 
-    friend constexpr TLFloat ldexp_(const TLFloat& x, const int e) {
-      auto f = x.getUnpacked();
-      f.exp += e;
-      return f;
-    }
-
     friend constexpr xpair<TLFloat, int> frexp(const TLFloat& f) {
+      if (f == 0 || isnan(f) || isinf(f)) return xpair<TLFloat, int> { f, 0 };
       auto p = frexp_(f.getUnpacked().cast((xUnpacked_t *)0));
       return xpair<TLFloat, int> { (TLFloat)p.first.cast((Unpacked_t *)0), p.second };
     }
 
     /** This function has the same functionality as the corresponding function in math.h. */
     friend constexpr TLFloat frexp(const TLFloat& f, int *exp) {
-      auto p = frexp_(f.getUnpacked().cast((xUnpacked_t *)0));
+      auto p = frexp(f);
       if (exp) *exp = p.second;
-      return (TLFloat)p.first.cast((Unpacked_t *)0);
+      return p.first;
     }
 
     /** This function has the same functionality as the corresponding function in math.h. */

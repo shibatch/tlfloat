@@ -64,7 +64,7 @@ integer class templates are also included in this library.
   * trunc, floor, ceil, round, rint
   * fabs, copysign, fmax, fmin, fdim
   * ldexp, frexp, modf, nextafter
-  * isnan, isinf, finite, signbit
+  * isnan, isinf, finite, fpclassify, signbit
 
 * Implements I/O functions
   * Conversion to/from C strings

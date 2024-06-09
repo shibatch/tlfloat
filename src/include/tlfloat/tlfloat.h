@@ -7,6 +7,14 @@
 
 #include <tlfloat/tlfloatversion.hpp>
 
+#ifndef TLFLOAT_FP_NAN
+#define TLFLOAT_FP_NAN 0
+#define TLFLOAT_FP_INFINITE 1
+#define TLFLOAT_FP_ZERO 2
+#define TLFLOAT_FP_SUBNORMAL 3
+#define TLFLOAT_FP_NORMAL 4
+#endif
+
 #if defined(TLFLOAT_DOXYGEN)
 /** Calls to libquadmath functions are replaced to the corresponding
     calls to tlfloat functions if this macro is defined */
@@ -20,14 +28,6 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#endif
-
-#ifndef TLFLOAT_FP_NAN
-#define TLFLOAT_FP_NAN 0
-#define TLFLOAT_FP_INFINITE 1
-#define TLFLOAT_FP_ZERO 2
-#define TLFLOAT_FP_SUBNORMAL 3
-#define TLFLOAT_FP_NORMAL 4
 #endif
 
 extern "C" {
