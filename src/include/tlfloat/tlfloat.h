@@ -684,10 +684,10 @@ struct tlfloat_quad {
   bool operator> (const tlfloat_quad& rhs) const { return tlfloat_gt_q_q(value, rhs.value); }
   bool operator>=(const tlfloat_quad& rhs) const { return tlfloat_ge_q_q(value, rhs.value); }
 
-  tlfloat_quad_t& operator++()    { *this = tlfloat_addq(value, tlfloat_cast_q_i64(1)); return *this; }
-  tlfloat_quad_t& operator--()    { *this = tlfloat_subq(value, tlfloat_cast_q_i64(1)); return *this; }
-  tlfloat_quad_t  operator++(int) { tlfloat_quad_t t = *this; *this = tlfloat_addq(value, tlfloat_cast_q_i64(1)); return t; }
-  tlfloat_quad_t  operator--(int) { tlfloat_quad_t t = *this; *this = tlfloat_subq(value, tlfloat_cast_q_i64(1)); return t; }
+  tlfloat_quad& operator++()    { *this = tlfloat_addq(value, tlfloat_cast_q_i64(1)); return *this; }
+  tlfloat_quad& operator--()    { *this = tlfloat_subq(value, tlfloat_cast_q_i64(1)); return *this; }
+  tlfloat_quad  operator++(int) { tlfloat_quad t = *this; *this = tlfloat_addq(value, tlfloat_cast_q_i64(1)); return t; }
+  tlfloat_quad  operator--(int) { tlfloat_quad t = *this; *this = tlfloat_subq(value, tlfloat_cast_q_i64(1)); return t; }
 };
 
 /** This macro is defined iff tlfloat_quad is not an alias of

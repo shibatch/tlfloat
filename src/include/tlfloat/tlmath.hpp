@@ -23,13 +23,13 @@ namespace tlfloat {
     //
 
     template<typename Unpacked_t>
-    static consteval Unpacked_t constSqrt2O2() { return ldexp_(sqrt_(Unpacked_t::castFromInt(2)), -1); }
+    static consteval Unpacked_t constSqrt2O2() { return ldexp_(sqrt_(Unpacked_t(2)), -1); }
 
     template<typename Unpacked_t>
-    static consteval Unpacked_t constOneOthree() { return Unpacked_t::castFromInt(1) / Unpacked_t::castFromInt(3); }
+    static consteval Unpacked_t constOneOthree() { return Unpacked_t(1) / Unpacked_t(3); }
 
     template<typename Unpacked_t>
-    static consteval Unpacked_t constRSqrtPI() { return Unpacked_t::castFromInt(1) / sqrt_(const_M_PI_<Unpacked_t>()); }
+    static consteval Unpacked_t constRSqrtPI() { return Unpacked_t(1) / sqrt_(const_M_PI_<Unpacked_t>()); }
 
     template<typename T>
     static consteval T constLNPI() {
@@ -201,7 +201,7 @@ namespace tlfloat {
     static constexpr Unpacked_t sin_(const Unpacked_t& a) {
       const xpair<Unpacked_t, int> p = ph<Unpacked_t>(a, 1);
 
-      Unpacked_t d = Unpacked_t::castFromInt(0);
+      Unpacked_t d = Unpacked_t(0);
 
       if (p.second & 1) {
 	constexpr xarray<Unpacked_t, N+2> cosCoef = genCosCoef<Unpacked_t, N>();
@@ -229,7 +229,7 @@ namespace tlfloat {
     static constexpr Unpacked_t cos_(const Unpacked_t& a) {
       const xpair<Unpacked_t, int> p = ph<Unpacked_t>(a, 1);
 
-      Unpacked_t d = Unpacked_t::castFromInt(0);
+      Unpacked_t d = Unpacked_t(0);
 
       if (p.second & 1) {
 	constexpr xarray<Unpacked_t, N+1> sinCoef = genSinCoef<Unpacked_t, N>();
@@ -268,13 +268,13 @@ namespace tlfloat {
 
       if constexpr (M > 0) {
 	for(unsigned i=0;i<M;i++) {
-	  y = Unpacked_t::fma(d, d, Unpacked_t::castFromInt(-1));
+	  y = Unpacked_t::fma(d, d, Unpacked_t(-1));
 	  x = -ldexp_(d, 1);
 	  d = x / y;
 	}
       }
 
-      y = Unpacked_t::fma(d, d, Unpacked_t::castFromInt(-1));
+      y = Unpacked_t::fma(d, d, Unpacked_t(-1));
       x = -ldexp_(d, 1);
 
       if (p.second & 1) { d = x; x = y; y = -d; }
@@ -306,15 +306,15 @@ namespace tlfloat {
       Unpacked_t d = y / x, r = atanCoef.e[N];
 
       for(unsigned i=0;i<M;i++) {
-	d = d / (sqrt_(Unpacked_t::fma(d, d, Unpacked_t::castFromInt(1))) + Unpacked_t::castFromInt(1));
+	d = d / (sqrt_(Unpacked_t::fma(d, d, Unpacked_t(1))) + Unpacked_t(1));
       }
 
       for(int i=N-1;i>=0;i--) r = Unpacked_t::fma(r, d * d, atanCoef.e[i]);
       r *= d;
 
-      Unpacked_t qu = Unpacked_t::castFromInt(q);
+      Unpacked_t qu = Unpacked_t(q);
       if (q == 0) qu.sign = r.sign;
-      if (x.iszero) { r = Unpacked_t::castFromInt(0); qu.sign = r.sign = y.sign; }
+      if (x.iszero) { r = Unpacked_t(0); qu.sign = r.sign = y.sign; }
 
       return Unpacked_t::fma(qu, ldexp_(const_M_PI_<Unpacked_t>(), -1),  ldexp_(r, M));
     }
@@ -335,8 +335,8 @@ namespace tlfloat {
     template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
     static constexpr tlfloat_t atan(const tlfloat_t &a) {
       if (isnan(a)) return a;
-      Unpacked_t y = isinf(a) ? Unpacked_t::castFromInt(signbit(a) ? -1 : 1) : a.getUnpacked().cast((const Unpacked_t *)nullptr);
-      Unpacked_t x = Unpacked_t::castFromInt(isinf(a) ? 0 : 1);
+      Unpacked_t y = isinf(a) ? Unpacked_t(signbit(a) ? -1 : 1) : a.getUnpacked().cast((const Unpacked_t *)nullptr);
+      Unpacked_t x = Unpacked_t(isinf(a) ? 0 : 1);
       Unpacked_t z = atan2_<Unpacked_t, N, M>(y, x);
       return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
     }
@@ -346,7 +346,7 @@ namespace tlfloat {
       if (isnan(a)) return a;
       if (fabs(a) > 1) return tlfloat_t::nan();
       Unpacked_t y = a.getUnpacked().cast((const Unpacked_t *)nullptr);
-      Unpacked_t x = sqrt_((Unpacked_t::castFromInt(1) + y) * (Unpacked_t::castFromInt(1) - y));
+      Unpacked_t x = sqrt_((Unpacked_t(1) + y) * (Unpacked_t(1) - y));
       Unpacked_t z = atan2_<Unpacked_t, N, M>(y, x);
       return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
     }
@@ -356,7 +356,7 @@ namespace tlfloat {
       if (isnan(a)) return a;
       if (fabs(a) > 1) return tlfloat_t::nan();
       Unpacked_t x = a.getUnpacked().cast((const Unpacked_t *)nullptr);
-      Unpacked_t y = sqrt_((Unpacked_t::castFromInt(1) + x) * (Unpacked_t::castFromInt(1) - x));
+      Unpacked_t y = sqrt_((Unpacked_t(1) + x) * (Unpacked_t(1) - x));
       Unpacked_t z = atan2_<Unpacked_t, N, M>(y, x);
       return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
     }
@@ -367,7 +367,7 @@ namespace tlfloat {
     static constexpr Unpacked_t exp_(Unpacked_t d) {
       constexpr xarray<Unpacked_t, N+2> expCoef = genExpCoef<Unpacked_t, N+1>();
 
-      if (d.exp > 28) return d.sign ? Unpacked_t::castFromInt(0) : Unpacked_t::infinity();
+      if (d.exp > 28) return d.sign ? Unpacked_t(0) : Unpacked_t::infinity();
 
       int64_t q = rint(d * constRLN2<Unpacked_t>()).castToInt((int64_t *)nullptr);
 
@@ -389,7 +389,7 @@ namespace tlfloat {
       constexpr xarray<Unpacked_t, N+2> expCoef = genExpCoef<Unpacked_t, N+1>();
 
       if (d.iszero) return d;
-      if (d.exp > 28) return d.sign ? Unpacked_t::castFromInt(-1) : Unpacked_t::infinity();
+      if (d.exp > 28) return d.sign ? Unpacked_t(-1) : Unpacked_t::infinity();
 
       int64_t q = rint(d * constRLN2<Unpacked_t>()).castToInt((int64_t *)nullptr);
 
@@ -404,7 +404,7 @@ namespace tlfloat {
 
       if constexpr (M > 0) for(unsigned i=0;i<M;i++) s = Unpacked_t::fma(s, s, ldexp_(s, 1));
 
-      return ldexp_(s, q) + (ldexp_(Unpacked_t::castFromInt(1), q) - Unpacked_t::castFromInt(1));
+      return ldexp_(s, q) + (ldexp_(Unpacked_t(1), q) - Unpacked_t(1));
     }
 
     template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
@@ -444,20 +444,20 @@ namespace tlfloat {
       if (fr < constSqrt2O2<Unpacked_t>()) { fr.exp++; e--; }
 
       if constexpr (M > 0) {
-	if (fabs(fr - Unpacked_t::castFromInt(1)).ilogb() > T) {
+	if (fabs(fr - Unpacked_t(1)).ilogb() > T) {
 	  for(unsigned i=0;i<M;i++) fr = sqrt_(fr);
 	  m = M;
 	}
       }
 
-      Unpacked_t x = (fr - Unpacked_t::castFromInt(1)) / (fr + Unpacked_t::castFromInt(1));
+      Unpacked_t x = (fr - Unpacked_t(1)) / (fr + Unpacked_t(1));
 
       Unpacked_t y = logCoef.e[N+1];
       for(int i=N;i>=0;i--) y = Unpacked_t::fma(y, x*x, logCoef.e[i]);
       y *= x;
 
-      y = Unpacked_t::fma(Unpacked_t::castFromInt(e), constLN2L<Unpacked_t>(), ldexp_(y, m));
-      return Unpacked_t::fma(Unpacked_t::castFromInt(e), constLN2U<Unpacked_t>(), y);
+      y = Unpacked_t::fma(Unpacked_t(e), constLN2L<Unpacked_t>(), ldexp_(y, m));
+      return Unpacked_t::fma(Unpacked_t(e), constLN2U<Unpacked_t>(), y);
     }
 
     template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M, int T>
@@ -484,24 +484,24 @@ namespace tlfloat {
     static constexpr Unpacked_t log1p_(Unpacked_t d) {
       constexpr xarray<Unpacked_t, N+2> logCoef = genLogCoef<Unpacked_t, N+1>();
 
-      xpair<Unpacked_t, int> p = frexp_(d + Unpacked_t::castFromInt(1));
+      xpair<Unpacked_t, int> p = frexp_(d + Unpacked_t(1));
       Unpacked_t fr = p.first;
       int e = p.second;
 
       if (fr < constSqrt2O2<Unpacked_t>()) { fr.exp++; e--; }
 
-      fr = e == 0 ? d : (fr - Unpacked_t::castFromInt(1));
+      fr = e == 0 ? d : (fr - Unpacked_t(1));
 
-      if constexpr (M > 0) for(unsigned i=0;i<M;i++) fr = fr / (sqrt_(fr + Unpacked_t::castFromInt(1)) + Unpacked_t::castFromInt(1));
+      if constexpr (M > 0) for(unsigned i=0;i<M;i++) fr = fr / (sqrt_(fr + Unpacked_t(1)) + Unpacked_t(1));
 
-      Unpacked_t x = fr / (fr + Unpacked_t::castFromInt(2));
+      Unpacked_t x = fr / (fr + Unpacked_t(2));
 
       Unpacked_t y = logCoef.e[N+1];
       for(int i=N;i>=0;i--) y = Unpacked_t::fma(y, x*x, logCoef.e[i]);
       y *= x;
 
-      y = Unpacked_t::fma(Unpacked_t::castFromInt(e), constLN2L<Unpacked_t>(), ldexp_(y, M));
-      return Unpacked_t::fma(Unpacked_t::castFromInt(e), constLN2U<Unpacked_t>(), y);
+      y = Unpacked_t::fma(Unpacked_t(e), constLN2L<Unpacked_t>(), ldexp_(y, M));
+      return Unpacked_t::fma(Unpacked_t(e), constLN2U<Unpacked_t>(), y);
     }
 
     template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
@@ -557,7 +557,7 @@ namespace tlfloat {
       int e = (d * constOneOthree<Unpacked_t>()).ilogb() + 2;
       d.exp -= e;
       int r = (e + eoffset * 3) % 3;
-      Unpacked_t q = Unpacked_t::castFromInt(1);
+      Unpacked_t q = Unpacked_t(1);
       if (r == 1) q = constCbrt2<Unpacked_t>();
       if (r == 2) q = constCbrt4<Unpacked_t>();
 
@@ -567,7 +567,7 @@ namespace tlfloat {
       d.sign = false;
 
       Unpacked_t x = cbrtCoef.e[N+1], y;
-      for(int i=N;i>=0;i--) x = Unpacked_t::fma(x, d - Unpacked_t::castFromInt(1), cbrtCoef.e[i]);
+      for(int i=N;i>=0;i--) x = Unpacked_t::fma(x, d - Unpacked_t(1), cbrtCoef.e[i]);
 
       if constexpr (M > 0) {
 	for(unsigned i=0;i<M;i++) {
@@ -578,7 +578,7 @@ namespace tlfloat {
       }
       y = x * x * d;
 
-      return Unpacked_t::fma(Unpacked_t::fma(y, x, Unpacked_t::castFromInt(-1)), -ldexp_(constOneOthree<Unpacked_t>(), 1) * y, y) * q;
+      return Unpacked_t::fma(Unpacked_t::fma(y, x, Unpacked_t(-1)), -ldexp_(constOneOthree<Unpacked_t>(), 1) * y, y) * q;
     }
 
     template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
@@ -596,7 +596,7 @@ namespace tlfloat {
       if (x.isnan || x.isinf) return a;
       if (y > Unpacked_t::castFromInt(1ULL << 20)) return tlfloat_t::infinity(x.sign);
       Unpacked_t d = expm1_<Unpacked_t, N, M>(fabs(x));
-      d = ldexp_(d * (d + Unpacked_t::castFromInt(2)) / (d + Unpacked_t::castFromInt(1)), -1);
+      d = ldexp_(d * (d + Unpacked_t(2)) / (d + Unpacked_t(1)), -1);
       if (x.sign) d.sign = !d.sign;
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
@@ -608,7 +608,7 @@ namespace tlfloat {
       if (x.iszero) return 1;
       if (y > Unpacked_t::castFromInt(1ULL << 20)) return tlfloat_t::infinity();
       Unpacked_t d = exp_<Unpacked_t, N, M>(fabs(x));
-      d = ldexp_(d + Unpacked_t::castFromInt(1) / d, -1);
+      d = ldexp_(d + Unpacked_t(1) / d, -1);
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
 
@@ -618,7 +618,7 @@ namespace tlfloat {
       if (x.isnan) return a;
       if (y.isinf || y > Unpacked_t::castFromInt(1ULL << 20)) return x.sign ? -1 : 1;
       Unpacked_t d = expm1_<Unpacked_t, N, M>(ldexp_(y, 1));
-      d = d / (d + Unpacked_t::castFromInt(2));
+      d = d / (d + Unpacked_t(2));
       if (x.sign) d.sign = !d.sign;
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
@@ -627,13 +627,13 @@ namespace tlfloat {
     static constexpr tlfloat_t asinh(const tlfloat_t &a) {
       Unpacked_t x = a.getUnpacked().cast((const Unpacked_t *)nullptr), y = fabs(x);
       if (x.isnan || y.isinf) return a;
-      bool ygt1 = y > Unpacked_t::castFromInt(1);
-      Unpacked_t d = ygt1 ? Unpacked_t::castFromInt(1) / y : y;
-      d = sqrt_(Unpacked_t::fma(d, d, Unpacked_t::castFromInt(1)));
+      bool ygt1 = y > Unpacked_t(1);
+      Unpacked_t d = ygt1 ? Unpacked_t(1) / y : y;
+      d = sqrt_(Unpacked_t::fma(d, d, Unpacked_t(1)));
       if (ygt1) {
 	d = log_<Unpacked_t, N, M, T>(Unpacked_t::fma(d, y, y));
       } else {
-	d = log1p_<Unpacked_t, N, M>(d - Unpacked_t::castFromInt(1) + y);
+	d = log1p_<Unpacked_t, N, M>(d - Unpacked_t(1) + y);
       }
       if (x.sign) d.sign = !d.sign;
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
@@ -643,9 +643,9 @@ namespace tlfloat {
     static constexpr tlfloat_t acosh(const tlfloat_t &a) {
       Unpacked_t x = a.getUnpacked().cast((const Unpacked_t *)nullptr);
       if (x.isnan) return a;
-      if (x < Unpacked_t::castFromInt(1)) return tlfloat_t::nan();
+      if (x < Unpacked_t(1)) return tlfloat_t::nan();
       if (x.isinf) return tlfloat_t::infinity();
-      Unpacked_t d = log_<Unpacked_t, N, M, T>(sqrt_((x + Unpacked_t::castFromInt(1))*(x - Unpacked_t::castFromInt(1))) + x);
+      Unpacked_t d = log_<Unpacked_t, N, M, T>(sqrt_((x + Unpacked_t(1))*(x - Unpacked_t(1))) + x);
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
 
@@ -654,9 +654,9 @@ namespace tlfloat {
       Unpacked_t x = a.getUnpacked().cast((const Unpacked_t *)nullptr), y = fabs(x);
       if (x.isnan) return a;
       if (x.isinf) return tlfloat_t::nan();
-      if (y > Unpacked_t::castFromInt(1)) return tlfloat_t::nan();
-      if (y == Unpacked_t::castFromInt(1)) return tlfloat_t::infinity(x.sign);
-      Unpacked_t d = ldexp_(log1p_<Unpacked_t, N, M>(ldexp_(y, 1) / (Unpacked_t::castFromInt(1) - y)), -1);
+      if (y > Unpacked_t(1)) return tlfloat_t::nan();
+      if (y == Unpacked_t(1)) return tlfloat_t::infinity(x.sign);
+      Unpacked_t d = ldexp_(log1p_<Unpacked_t, N, M>(ldexp_(y, 1) / (Unpacked_t(1) - y)), -1);
       if (x.sign) d.sign = !d.sign;
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
@@ -665,11 +665,11 @@ namespace tlfloat {
 
     template<typename Unpacked_t>
     static constexpr Unpacked_t fmod_(const Unpacked_t &n, const Unpacked_t &d, const Unpacked_t &rd) {
-      Unpacked_t r = n, d3 = d * Unpacked_t::castFromInt(3), d2 = ldexp_(d, 1);
+      Unpacked_t r = n, d3 = d * Unpacked_t(3), d2 = ldexp_(d, 1);
       for(int i=0;i<(1 << 20);i++) {
 	Unpacked_t q = trunc(toward0(r * rd));
-	if (d3 > r && r >  d) q = Unpacked_t::castFromInt(2);
-	if (d2 > r && r >= d) q = Unpacked_t::castFromInt(1);
+	if (d3 > r && r >  d) q = Unpacked_t(2);
+	if (d2 > r && r >= d) q = Unpacked_t(1);
 	r = Unpacked_t::fma(q, -d, r);
 	if (r < d) break;
       }
@@ -683,19 +683,19 @@ namespace tlfloat {
       if (un.isinf || ud.iszero) return tlfloat_t::nan();
       if (un.isnan || ud.isinf) return n;
       if (ud.isnan) return d;
-      Unpacked_t ur = fmod_<Unpacked_t>(fabs(un), fabs(ud), toward0(Unpacked_t::castFromInt(1) / fabs(ud)));
+      Unpacked_t ur = fmod_<Unpacked_t>(fabs(un), fabs(ud), toward0(Unpacked_t(1) / fabs(ud)));
       if (un.sign) ur.sign = !ur.sign;
       return tlfloat_t(ur.cast((decltype(n.getUnpacked()) *)nullptr));
     }
 
     template<typename Unpacked_t>
     static constexpr Unpacked_t remainder_(const Unpacked_t &n, const Unpacked_t &d, const Unpacked_t &rd) {
-      Unpacked_t r = n, d15 = d * ldexp_(Unpacked_t::castFromInt(3), -1), d05 = ldexp_(d, -1);
+      Unpacked_t r = n, d15 = d * ldexp_(Unpacked_t(3), -1), d05 = ldexp_(d, -1);
       bool qisodd = false;
       for(int i=0;i<(1 << 20);i++) {
 	Unpacked_t q = rint(r * rd);
-	if (fabs(r) < d15) q = Unpacked_t::castFromInt(r.sign ? -1 : 1);
-	if (fabs(r) < d05 || (!qisodd && fabs(r) == d05)) q = Unpacked_t::castFromInt(0);
+	if (fabs(r) < d15) q = Unpacked_t(r.sign ? -1 : 1);
+	if (fabs(r) < d05 || (!qisodd && fabs(r) == d05)) q = Unpacked_t(0);
 	if (q.iszero) break;
 	qisodd = qisodd != (isint(q) && !iseven(q));
 	r = Unpacked_t::fma(q, -d, r);
@@ -710,20 +710,20 @@ namespace tlfloat {
       if (un.isinf || ud.iszero) return tlfloat_t::nan();
       if (un.isnan || ud.isinf) return n;
       if (ud.isnan) return d;
-      Unpacked_t ur = remainder_<Unpacked_t>(fabs(un), fabs(ud), toward0(Unpacked_t::castFromInt(1) / fabs(ud)));
+      Unpacked_t ur = remainder_<Unpacked_t>(fabs(un), fabs(ud), toward0(Unpacked_t(1) / fabs(ud)));
       if (un.sign) ur.sign = !ur.sign;
       return tlfloat_t(ur.cast((decltype(n.getUnpacked()) *)nullptr));
     }
 
     template<typename Unpacked_t>
     static constexpr xpair<Unpacked_t, int64_t> remquo_(const Unpacked_t &n, const Unpacked_t &d, const Unpacked_t &rd) {
-      Unpacked_t r = n, d15 = d * ldexp_(Unpacked_t::castFromInt(3), -1), d05 = ldexp_(d, -1);
+      Unpacked_t r = n, d15 = d * ldexp_(Unpacked_t(3), -1), d05 = ldexp_(d, -1);
       int64_t quo = 0;
       bool qisodd = false;
       for(int i=0;i<(1 << 20);i++) {
 	Unpacked_t q = rint(r * rd);
-	if (fabs(r) < d15) q = Unpacked_t::castFromInt(r.sign ? -1 : 1);
-	if (fabs(r) < d05 || (!qisodd && fabs(r) == d05)) q = Unpacked_t::castFromInt(0);
+	if (fabs(r) < d15) q = Unpacked_t(r.sign ? -1 : 1);
+	if (fabs(r) < d05 || (!qisodd && fabs(r) == d05)) q = Unpacked_t(0);
 	if (q.iszero) break;
 	qisodd = qisodd != (isint(q) && !iseven(q));
 	quo += q.sign ? -int64_t(q.castToInt2() & ((1ULL << 63)-1)) : int64_t(q.castToInt2() & ((1ULL << 63)-1));
@@ -740,7 +740,7 @@ namespace tlfloat {
       if (un.isinf || ud.iszero) return xpair<tlfloat_t, int64_t>(tlfloat_t::nan(), 0);
       if (un.isnan || ud.isinf) return xpair<tlfloat_t, int64_t>(n, 0);
       if (ud.isnan) return xpair<tlfloat_t, int64_t>(d, 0);
-      auto p = remquo_<Unpacked_t>(fabs(un), fabs(ud), toward0(Unpacked_t::castFromInt(1) / fabs(ud)));
+      auto p = remquo_<Unpacked_t>(fabs(un), fabs(ud), toward0(Unpacked_t(1) / fabs(ud)));
       if (un.sign) p.first.sign = !p.first.sign;
       if (un.sign != ud.sign) p.second = -p.second; 
       return xpair<tlfloat_t, int64_t>(tlfloat_t(p.first.cast((decltype(n.getUnpacked()) *)nullptr)), p.second);
@@ -750,14 +750,14 @@ namespace tlfloat {
 
     template<typename Unpacked_t, unsigned N, unsigned EN, unsigned EM>
     static constexpr Unpacked_t erf_(const Unpacked_t& z) {
-      Unpacked_t n = Unpacked_t::castFromInt(N*2+1), d = Unpacked_t::castFromInt(1), t;
+      Unpacked_t n = Unpacked_t::castFromInt(N*2+1), d = Unpacked_t(1), t;
       for(int i=N;i>0;i-=2) {
 	t = n;
-	n = n*Unpacked_t::castFromInt(i*2-1) + z*z*Unpacked_t::castFromInt(i*2-0)*d;
+	n = n*Unpacked_t(i*2-1) + z*z*Unpacked_t(i*2-0)*d;
 	d = t;
 
 	t = n;
-	n = n*Unpacked_t::castFromInt(i*2-3) - z*z*Unpacked_t::castFromInt(i*2-2)*d;
+	n = n*Unpacked_t(i*2-3) - z*z*Unpacked_t(i*2-2)*d;
 	d = t;
       }
       d = ldexp_(d, 1);
@@ -766,14 +766,14 @@ namespace tlfloat {
 
     template<typename Unpacked_t, unsigned N, unsigned EN, unsigned EM>
     static constexpr Unpacked_t erfc_(const Unpacked_t& z) {
-      Unpacked_t n = Unpacked_t::castFromInt(1), d = n, t;
+      Unpacked_t n = Unpacked_t(1), d = n, t;
       for(int i=N;i>0;i-=2) {
 	t = n;
-	n = n + ldexp_(Unpacked_t::castFromInt(i), -1) * d;
+	n = n + ldexp_(Unpacked_t(i), -1) * d;
 	d = t;
 
 	t = n;
-	n = z * z * n + ldexp_(Unpacked_t::castFromInt(i - 1), -1) * d;
+	n = z * z * n + ldexp_(Unpacked_t(i - 1), -1) * d;
 	d = t;
       }
       return z * constRSqrtPI<Unpacked_t>() * exp_<Unpacked_t, EN, EM>(-(z*z)) * (d / n);
@@ -785,11 +785,11 @@ namespace tlfloat {
       if (isinf(a)) return signbit(a) ? -1 : 1;
       Unpacked_t z;
       if (a < (tlfloat_t)(-T * 0.1)) {
-	z = Unpacked_t::castFromInt(-1) - erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+	z = Unpacked_t(-1) - erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
       } else if (a < (tlfloat_t)(T * 0.1)) {
 	z = erf_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
       } else {
-	z = Unpacked_t::castFromInt(1) - erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+	z = Unpacked_t(1) - erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
       }
       return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
     }
@@ -800,9 +800,9 @@ namespace tlfloat {
       if (isinf(a)) return signbit(a) ? 2 : 0;
       Unpacked_t z;
       if (a < (tlfloat_t)(-T * 0.1)) {
-	z = Unpacked_t::castFromInt(2) + erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+	z = Unpacked_t(2) + erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
       } else if (a < (tlfloat_t)(T * 0.1)) {
-	z = Unpacked_t::castFromInt(1) - erf_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
+	z = Unpacked_t(1) - erf_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
       } else {
 	z = erfc_<Unpacked_t, N, EN, EM>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
       }
@@ -814,16 +814,16 @@ namespace tlfloat {
     template<typename Unpacked_t, int R, int O, unsigned SN, unsigned LN, unsigned LM, int LT>
     static constexpr xpair<bool, Unpacked_t> lgamma_(const Unpacked_t& z) {
       constexpr xarray<Unpacked_t, O+1> gammaCoef = genGammaCoef<Unpacked_t, O>();
-      const Unpacked_t one = Unpacked_t::castFromInt(1), p5 = Unpacked_t("0x1p-1");
+      const Unpacked_t one = Unpacked_t(1), p5 = Unpacked_t("0x1p-1");
 
-      const bool reflect = z < Unpacked_t::castFromInt(-1);
+      const bool reflect = z < Unpacked_t(-1);
       Unpacked_t a = reflect ? one - z : z;
       const Unpacked_t in = rint(a), fr = a - in;
 
-      Unpacked_t w = Unpacked_t::castFromInt(1);
-      if (in < Unpacked_t::castFromInt(R)) {
-	for(int i = in.castToInt((int *)0);i<R;i++) w *= (Unpacked_t::castFromInt(i) + fr);
-	a = Unpacked_t::castFromInt(R) + fr;
+      Unpacked_t w = Unpacked_t(1);
+      if (in < Unpacked_t(R)) {
+	for(int i = in.castToInt((int *)0);i<R;i++) w *= (Unpacked_t(i) + fr);
+	a = Unpacked_t(R) + fr;
       }
 
       Unpacked_t y = gammaCoef.e[O];
@@ -918,7 +918,7 @@ namespace tlfloat {
   static inline consteval tlfloat_t const_M_1_PI(int exp = 0) {
     typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
     typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
-    return (xUnpacked_t::castFromInt(1) / detail::const_M_PI_<xUnpacked_t>(-exp)).cast((Unpacked_t *)0);
+    return (xUnpacked_t(1) / detail::const_M_PI_<xUnpacked_t>(-exp)).cast((Unpacked_t *)0);
   }
 
   /** Returns 2^exp / sqrt(PI) */
@@ -926,7 +926,7 @@ namespace tlfloat {
   static inline consteval tlfloat_t const_M_1_SQRTPI(int exp = 0) {
     typedef decltype(tlfloat_t::to_Unpacked_t()) Unpacked_t;
     typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
-    return (ldexp_(xUnpacked_t::castFromInt(1), exp) / sqrt_(detail::const_M_PI_<xUnpacked_t>(0))).cast((Unpacked_t*)0);
+    return (ldexp_(xUnpacked_t(1), exp) / sqrt_(detail::const_M_PI_<xUnpacked_t>(0))).cast((Unpacked_t*)0);
   }
 
   /** Returns 2^exp * E */

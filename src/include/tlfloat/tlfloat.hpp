@@ -534,6 +534,8 @@ namespace tlfloat {
 	exp(exp_), mant(mant_), sign(sign_), iszero(iszero_), isinf(isinf_), isnan(isnan_) {
       }
 
+      explicit constexpr UnpackedFloat(const int i) { *this = castFromInt(i); }
+
       constexpr UnpackedFloat(const char *ptr, const char **endptr=nullptr) {
 	while(xisspace(*ptr)) ptr++;
 
