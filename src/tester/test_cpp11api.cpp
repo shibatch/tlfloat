@@ -64,6 +64,10 @@ static void check(const string& msg, int x, int y) {
   exit(-1);
 }
 
+static void check(const string& msg, bool x, bool y) {
+  check(msg, (int)x, (int)y);
+}
+
 static void checkQuo(const string& msg, int x, int y) {
   int x2 = x & 0x7, y2 = y & 0x7;
   if (x < 0) x2 = -x2;
@@ -279,14 +283,14 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_remquoo(o1, o2, &quo) remainder", tlfloat_remquoo(o1, o2, &qt), remquo(d1, d2, &qc), T);
   checkQuo("tlfloat_remquoo(o1, o2, &quo) quo", qt, qc);
   check("tlfloat_ilogbo(o1)", tlfloat_ilogbo(o1), ilogb(d1));
-  check("tlfloat_isnano(o1)", tlfloat_isnano(o1), isnan(d1));
-  check("tlfloat_isinfo(o1)", tlfloat_isinfo(o1), isinf(d1));
+  check("tlfloat_isnano(o1)", (bool)tlfloat_isnano(o1), (bool)isnan(d1));
+  check("tlfloat_isinfo(o1)", (bool)tlfloat_isinfo(o1), (bool)isinf(d1));
 #ifndef _MSC_VER
-  check("tlfloat_finiteo(o1)", tlfloat_finiteo(o1), finite(d1));
+  check("tlfloat_finiteo(o1)", (bool)tlfloat_finiteo(o1), (bool)finite(d1));
 #else
-  check("tlfloat_finiteo(o1)", tlfloat_finiteo(o1), _finite(d1));
+  check("tlfloat_finiteo(o1)", (bool)tlfloat_finiteo(o1), (bool)_finite(d1));
 #endif
-  check("tlfloat_signbito(o1)", tlfloat_signbito(o1), signbit(d1));
+  check("tlfloat_signbito(o1)", (bool)tlfloat_signbito(o1), (bool)signbit(d1));
   check("tlfloat_ldexpo(o1, i2)", tlfloat_ldexpo(o1, i2), ldexp(d1, i2), T);
   check("tlfloat_powo(o1, o2)", tlfloat_powo(o1, o2), pow(d1, d2), T);
   check("tlfloat_atan2o(o1, o2)", tlfloat_atan2o(o1, o2), atan2(d1, d2), T);
@@ -337,14 +341,14 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_remquoq(q1, q2, &quo) remainder", tlfloat_remquoq(q1, q2, &qt), remquo(d1, d2, &qc), T);
   checkQuo("tlfloat_remquoq(q1, q2, &quo) quo", qt, qc);
   check("tlfloat_ilogbq(q1)", tlfloat_ilogbq(q1), ilogb(d1));
-  check("tlfloat_isnanq(q1)", tlfloat_isnanq(q1), isnan(d1));
-  check("tlfloat_isinfq(q1)", tlfloat_isinfq(q1), isinf(d1));
+  check("tlfloat_isnanq(q1)", (bool)tlfloat_isnanq(q1), (bool)isnan(d1));
+  check("tlfloat_isinfq(q1)", (bool)tlfloat_isinfq(q1), (bool)isinf(d1));
 #ifndef _MSC_VER
-  check("tlfloat_finiteq(q1)", tlfloat_finiteq(q1), finite(d1));
+  check("tlfloat_finiteq(q1)", (bool)tlfloat_finiteq(q1), (bool)finite(d1));
 #else
-  check("tlfloat_finiteq(q1)", tlfloat_finiteq(q1), _finite(d1));
+  check("tlfloat_finiteq(q1)", (bool)tlfloat_finiteq(q1), (bool)_finite(d1));
 #endif
-  check("tlfloat_signbitq(q1)", tlfloat_signbitq(q1), signbit(d1));
+  check("tlfloat_signbitq(q1)", (bool)tlfloat_signbitq(q1), (bool)signbit(d1));
   check("tlfloat_ldexpq(q1, i2)", tlfloat_ldexpq(q1, i2), ldexp(d1, i2), T);
   check("tlfloat_powq(q1, q2)", tlfloat_powq(q1, q2), pow(d1, d2), T);
   check("tlfloat_atan2q(q1, q2)", tlfloat_atan2q(q1, q2), atan2(d1, d2), T);
@@ -402,14 +406,14 @@ void doTest(const string &s1, const string &s2) {
   check("remquoq(q1, q2, &quo) remainder", remquoq(q1, q2, &qt), remquo(d1, d2, &qc), T);
   checkQuo("remquoq(q1, q2, &quo) quo", qt, qc);
   check("ilogbq(q1)", ilogbq(q1), ilogb(d1));
-  check("isnanq(q1)", isnanq(q1), isnan(d1));
-  check("isinfq(q1)", isinfq(q1), isinf(d1));
+  check("isnanq(q1)", (bool)isnanq(q1), (bool)isnan(d1));
+  check("isinfq(q1)", (bool)isinfq(q1), (bool)isinf(d1));
 #ifndef _MSC_VER
-  check("finiteq(q1)", finiteq(q1), finite(d1));
+  check("finiteq(q1)", (bool)finiteq(q1), (bool)finite(d1));
 #else
-  check("finiteq(q1)", finiteq(q1), _finite(d1));
+  check("finiteq(q1)", (bool)finiteq(q1), (bool)_finite(d1));
 #endif
-  check("signbitq(q1)", signbitq(q1), signbit(d1));
+  check("signbitq(q1)", (bool)signbitq(q1), (bool)signbit(d1));
   check("ldexpq(q1, i2)", ldexpq(q1, i2), ldexp(d1, i2), T);
   check("powq(q1, q2)", powq(q1, q2), pow(d1, d2), T);
   check("atan2q(q1, q2)", atan2q(q1, q2), atan2(d1, d2), T);

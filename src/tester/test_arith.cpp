@@ -286,17 +286,17 @@ int main(int argc, char **argv) {
 
     //
 
-    if (isnanf(f1) != isnan(Float(f1))) {
+    if ((bool)isnanf(f1) != (bool)isnan(Float(f1))) {
       printf("\nisnanf f1 = %.10g\n", f1);
       exit(-1);
     }
 
-    if (isinff(f1) != isinf(Float(f1))) {
-      printf("\nisinff f1 = %.10g\n", f1);
+    if ((bool)isinff(f1) != (bool)isinf(Float(f1))) {
+      printf("\nisinff f1 = %.10g, c = %d, t = %d\n", f1, isinff(f1), isinf(Float(f1)));
       exit(-1);
     }
 
-    if (finitef(f1) != finite(Float(f1))) {
+    if ((bool)finitef(f1) != (bool)finite(Float(f1))) {
       printf("\nfinitef f1 = %.10g\n", f1);
       exit(-1);
     }
@@ -638,17 +638,17 @@ int main(int argc, char **argv) {
 
     //
 
-    if (isnan(d1) != isnan(Double(d1))) {
+    if ((bool)isnan(d1) != (bool)isnan(Double(d1))) {
       printf("\nisnan d1 = %.10g\n", d1);
       exit(-1);
     }
 
-    if (isinf(d1) != isinf(Double(d1))) {
+    if ((bool)isinf(d1) != (bool)isinf(Double(d1))) {
       printf("\nisinf d1 = %.10g\n", d1);
       exit(-1);
     }
 
-    if (finite(d1) != finite(Double(d1))) {
+    if ((bool)finite(d1) != (bool)finite(Double(d1))) {
       printf("\nfinite d1 = %.10g\n", d1);
       exit(-1);
     }
@@ -985,26 +985,28 @@ int main(int argc, char **argv) {
 
     //
 
-    if (isnanq(q1) != isnan(Quad(q1))) {
+    if ((bool)isnanq(q1) != (bool)isnan(Quad(q1))) {
       printf("\nisnan q1 = %.10g\n", (double)q1);
       exit(-1);
     }
 
-    if (isinfq(q1) != isinf(Quad(q1))) {
+    if ((bool)isinfq(q1) != (bool)isinf(Quad(q1))) {
       printf("\nisinf q1 = %.10g\n", (double)q1);
       exit(-1);
     }
 
-    if (finiteq(q1) != finite(Quad(q1))) {
+    if ((bool)finiteq(q1) != (bool)finite(Quad(q1))) {
       printf("\nfinite q1 = %.10g\n", (double)q1);
       exit(-1);
     }
 
+#ifdef QUADMATH_H
     if (fpclassifyq(q1) != fpclassify(Quad(q1))) {
       printf("\nfpclassify q1 = %.10g\n", (double)q1);
       exit(-1);
     }
 #endif
+#endif // #ifdef ENABLE_QUAD
 
     //
 

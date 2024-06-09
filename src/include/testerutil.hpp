@@ -461,6 +461,7 @@ typedef long double quad;
 #define ilogbq ilogbl
 #define finiteq finitel
 #define isnanq isnanl
+#define isinfq isinfl
 #define truncq truncl
 #define floorq floorl
 #define ceilq ceill
