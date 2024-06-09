@@ -285,11 +285,7 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_ilogbo(o1)", tlfloat_ilogbo(o1), ilogb(d1));
   check("tlfloat_isnano(o1)", (bool)tlfloat_isnano(o1), (bool)isnan(d1));
   check("tlfloat_isinfo(o1)", (bool)tlfloat_isinfo(o1), (bool)isinf(d1));
-#ifndef _MSC_VER
-  check("tlfloat_finiteo(o1)", (bool)tlfloat_finiteo(o1), (bool)finite(d1));
-#else
-  check("tlfloat_finiteo(o1)", (bool)tlfloat_finiteo(o1), (bool)_finite(d1));
-#endif
+  check("tlfloat_finiteo(o1)", (bool)tlfloat_finiteo(o1), (bool)finite_(d1));
   check("tlfloat_signbito(o1)", (bool)tlfloat_signbito(o1), (bool)signbit(d1));
   check("tlfloat_ldexpo(o1, i2)", tlfloat_ldexpo(o1, i2), ldexp(d1, i2), T);
   check("tlfloat_powo(o1, o2)", tlfloat_powo(o1, o2), pow(d1, d2), T);
@@ -343,11 +339,7 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_ilogbq(q1)", tlfloat_ilogbq(q1), ilogb(d1));
   check("tlfloat_isnanq(q1)", (bool)tlfloat_isnanq(q1), (bool)isnan(d1));
   check("tlfloat_isinfq(q1)", (bool)tlfloat_isinfq(q1), (bool)isinf(d1));
-#ifndef _MSC_VER
-  check("tlfloat_finiteq(q1)", (bool)tlfloat_finiteq(q1), (bool)finite(d1));
-#else
-  check("tlfloat_finiteq(q1)", (bool)tlfloat_finiteq(q1), (bool)_finite(d1));
-#endif
+  check("tlfloat_finiteq(q1)", (bool)tlfloat_finiteq(q1), (bool)finite_(d1));
   check("tlfloat_signbitq(q1)", (bool)tlfloat_signbitq(q1), (bool)signbit(d1));
   check("tlfloat_ldexpq(q1, i2)", tlfloat_ldexpq(q1, i2), ldexp(d1, i2), T);
   check("tlfloat_powq(q1, q2)", tlfloat_powq(q1, q2), pow(d1, d2), T);
@@ -408,11 +400,7 @@ void doTest(const string &s1, const string &s2) {
   check("ilogbq(q1)", ilogbq(q1), ilogb(d1));
   check("isnanq(q1)", (bool)isnanq(q1), (bool)isnan(d1));
   check("isinfq(q1)", (bool)isinfq(q1), (bool)isinf(d1));
-#ifndef _MSC_VER
-  check("finiteq(q1)", (bool)finiteq(q1), (bool)finite(d1));
-#else
-  check("finiteq(q1)", (bool)finiteq(q1), (bool)_finite(d1));
-#endif
+  check("finiteq(q1)", (bool)finiteq(q1), (bool)finite_(d1));
   check("signbitq(q1)", (bool)signbitq(q1), (bool)signbit(d1));
   check("ldexpq(q1, i2)", ldexpq(q1, i2), ldexp(d1, i2), T);
   check("powq(q1, q2)", powq(q1, q2), pow(d1, d2), T);

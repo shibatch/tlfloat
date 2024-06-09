@@ -470,6 +470,12 @@ typedef long double quad;
 #define M_PIq_ M_PIl
 #endif
 
+#ifdef _MSC_VER
+#define finite_ _finite
+#else
+#define finite_ finite
+#endif
+
 #ifdef __TLFLOAT_HPP_INCLUDED__
 typedef tlfloat::detail::UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
 typedef tlfloat::detail::UnpackedFloat<uint64_t, tlfloat::BigUInt<7>, 11, 52> udouble;
@@ -711,6 +717,23 @@ float rndf(shared_ptr<RNG> rng) {
       if (isfinite(f)) return f;
     }
   }
+}
+
+#ifndef TLFLOAT_FP_NAN
+#define TLFLOAT_FP_NAN 0
+#define TLFLOAT_FP_INFINITE 1
+#define TLFLOAT_FP_ZERO 2
+#define TLFLOAT_FP_SUBNORMAL 3
+#define TLFLOAT_FP_NORMAL 4
+#endif
+
+bool cmpfpclass(int sl, int tl) {
+  if (sl == FP_NAN && tl == TLFLOAT_FP_NAN) return true;
+  if (sl == FP_INFINITE && tl == TLFLOAT_FP_INFINITE) return true;
+  if (sl == FP_ZERO && tl == TLFLOAT_FP_ZERO) return true;
+  if (sl == FP_SUBNORMAL && tl == TLFLOAT_FP_SUBNORMAL) return true;
+  if (sl == FP_NORMAL && tl == TLFLOAT_FP_NORMAL) return true;
+  return false;
 }
 
 bool cmpf(float x, float y, int t=0) {

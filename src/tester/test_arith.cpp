@@ -13,7 +13,7 @@
 #include "tlfloat/tlfloat.hpp"
 #include "testerutil.hpp"
 
-#if defined(TLFLOAT_COMPILER_SUPPORTS_INT128) && defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
 #include <quadmath.h>
 #endif
 
@@ -286,8 +286,8 @@ int main(int argc, char **argv) {
 
     //
 
-    if ((bool)isnanf(f1) != (bool)isnan(Float(f1))) {
-      printf("\nisnanf f1 = %.10g\n", f1);
+    if ((bool)isnan(f1) != (bool)isnan(Float(f1))) {
+      printf("\nisnan f1 = %.10g\n", f1);
       exit(-1);
     }
 
@@ -296,8 +296,8 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    if ((bool)finitef(f1) != (bool)finite(Float(f1))) {
-      printf("\nfinitef f1 = %.10g\n", f1);
+    if ((bool)finite_(f1) != (bool)finite(Float(f1))) {
+      printf("\nfinite f1 = %.10g\n", f1);
       exit(-1);
     }
 
@@ -648,12 +648,12 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    if ((bool)finite(d1) != (bool)finite(Double(d1))) {
+    if ((bool)finite_(d1) != (bool)finite(Double(d1))) {
       printf("\nfinite d1 = %.10g\n", d1);
       exit(-1);
     }
 
-    if (fpclassify(d1) != fpclassify(Double(d1))) {
+    if (!cmpfpclass(fpclassify(d1), fpclassify(Double(d1)))) {
       printf("\nfpclassify d1 = %.10g, c = %d, t = %d\n", d1, fpclassify(d1), fpclassify(Double(d1)));
       cout << to_string_d(Double(d1).getUnpacked()) << endl;
       exit(-1);
@@ -1001,7 +1001,7 @@ int main(int argc, char **argv) {
     }
 
 #ifdef QUADMATH_H
-    if (fpclassifyq(q1) != fpclassify(Quad(q1))) {
+    if (!cmpfpclass(fpclassifyq(q1), fpclassify(Quad(q1)))) {
       printf("\nfpclassify q1 = %.10g\n", (double)q1);
       exit(-1);
     }
