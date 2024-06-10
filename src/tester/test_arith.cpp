@@ -310,7 +310,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    if (!cmpf(frexpf(f1, &ic), (float)frexp(Float(f1), &it)) || ic != it) {
+    if (!cmpf(frexpf(f1, &ic), (float)frexp(Float(f1), &it)) || (!isnan(f1) && !isinf(f1) && ic != it)) {
       printf("\nfrexpf f1 = %.10g, it = %d, ic = %d\n", f1, it, ic);
       printf("c = %.10g, t = %.10g\n", frexpf(f1, &ic), (float)frexp(Float(f1), &it));
       exit(-1);
@@ -679,7 +679,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    if (!cmpd(frexp(d1, &ic), (double)frexp(Double(d1), &it)) || ic != it) {
+    if (!cmpd(frexp(d1, &ic), (double)frexp(Double(d1), &it)) || (!isnan(d1) && !isinf(d1) && ic != it)) {
       printf("\nfrexp d1 = %.10g, it = %d, ic = %d\n", d1, it, ic);
       printf("c = %.10g, t = %.10g\n", frexp(d1, &ic), (double)frexp(Double(d1), &it));
       exit(-1);
