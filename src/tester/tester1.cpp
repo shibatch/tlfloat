@@ -1,11 +1,13 @@
 #include <iostream>
 #include <cstdio>
 
-#if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#include <tlfloat/detect.h>
+
+#if defined(TLFLOAT_ENABLE_LIBQUADMATH)
 #include <quadmath.h>
 #endif
 
-#if (defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)) || defined(__aarch64__)
+#if defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 #define MPFR_WANT_FLOAT128
 #endif
 #include <mpfr.h>

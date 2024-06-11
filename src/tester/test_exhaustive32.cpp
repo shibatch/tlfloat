@@ -2,11 +2,15 @@
 #include <atomic>
 #include <cstdint>
 
-#if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#include <tlfloat/detect.h>
+
+#if defined(TLFLOAT_ENABLE_LIBQUADMATH)
 #include <quadmath.h>
 #endif
 
+#if defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 #define MPFR_WANT_FLOAT128
+#endif
 #include <mpfr.h>
 
 #include "suppress.hpp"
@@ -63,7 +67,7 @@ int main(int argc, char **argv) {
     memcpy((void *)&x, (void *)&u, sizeof(x));
 
 #ifdef TEST_SQRT
-    if (x >= 0 && finite(x)) {
+    if (x >= 0 && finite_(x)) {
       mpfr_set_default_prec(32);
       mpfr_t mx;
       mpfr_inits(mx, NULL);

@@ -1,9 +1,14 @@
 #include <iostream>
 #include <atomic>
-#define MPFR_WANT_FLOAT128
-#include <mpfr.h>
-#include <arm_fp16.h>
 #include <signal.h>
+#include <arm_fp16.h>
+
+#include <tlfloat/detect.h>
+
+#if defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+#define MPFR_WANT_FLOAT128
+#endif
+#include <mpfr.h>
 
 #include "suppress.hpp"
 

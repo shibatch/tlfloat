@@ -6,6 +6,8 @@
 #include <cmath>
 #include <ctime>
 
+#include <tlfloat/detect.h>
+
 using namespace std;
 using namespace tlfloat;
 
@@ -471,7 +473,7 @@ std::ostream& operator<<(std::ostream &os, const __float128& f) {
 }
 #endif
 
-#if defined(__aarch64__) && defined(__GNUC__)
+#ifdef TLFLOAT_LONGDOUBLE_IS_FLOAT128
 #define ENABLE_QUAD
 typedef long double quad;
 #define fabsq fabsl
@@ -491,7 +493,13 @@ typedef long double quad;
 
 #ifdef _MSC_VER
 #define finite_ _finite
-#else
+#endif
+
+#ifdef __APPLE__
+#define finite_ isfinite
+#endif
+
+#ifndef finite_
 #define finite_ finite
 #endif
 
@@ -623,7 +631,7 @@ static int mpfr_ph(mpfr_t &rop, const Unpacked_t& ux, int e) {
   return q & 0xff;
 }
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 quad mpfr_sqrt(quad a) {
   mpfr_t x;
   mpfr_inits(x, NULL);

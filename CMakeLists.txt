@@ -151,6 +151,22 @@ CHECK_CXX_SOURCE_COMPILES("
 #endif
 int main(int argc, char **argv) {}" BUILDING_WITH_GLIBC)
 
+CHECK_CXX_SOURCE_COMPILES("
+#define MPFR_WANT_FLOAT128
+#include <mpfr.h>
+int main() {}" TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+
+set(CMAKE_REQUIRED_LIBRARIES quadmath)
+CHECK_CXX_SOURCE_COMPILES("
+#define MPFR_WANT_FLOAT128
+#include <cstdio>
+#include <quadmath.h>
+int main(int argc, char **argv) {
+__float128 f = atof(argv[1]);
+printf(\"%g\", (double)sinq(f));
+}" TLFLOAT_ENABLE_LIBQUADMATH)
+set(CMAKE_REQUIRED_LIBRARIES)
+
 # Setting up memory-leak checks
 
 include(CTest)
@@ -242,6 +258,9 @@ endif()
 
 configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/tlfloatversion.hpp.in"
   "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatversion.hpp" @ONLY)
+
+configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/detect.h.in"
+  "${PROJECT_BINARY_DIR}/include/tlfloat/detect.h" @ONLY)
 
 #
 

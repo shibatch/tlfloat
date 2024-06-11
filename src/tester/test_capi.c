@@ -4,9 +4,9 @@
 #include <time.h>
 #include <math.h>
 
-#include "tlfloat/tlfloatversion.hpp"
+#include <tlfloat/detect.h>
 
-#if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#if defined(TLFLOAT_ENABLE_LIBQUADMATH)
 #include <quadmath.h>
 #define TRUE_LIBQUADMATH
 #else

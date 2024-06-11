@@ -8,12 +8,13 @@
 #include <cfloat>
 #include <climits>
 
-#include "suppress.hpp"
+#include <tlfloat/detect.h>
+#include <suppress.hpp>
 
-#include "tlfloat/tlfloat.hpp"
-#include "testerutil.hpp"
+#include <tlfloat/tlfloat.hpp>
+#include <testerutil.hpp>
 
-#if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#if defined(TLFLOAT_ENABLE_LIBQUADMATH)
 #include <quadmath.h>
 #endif
 

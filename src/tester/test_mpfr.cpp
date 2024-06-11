@@ -2,11 +2,13 @@
 #include <cstdint>
 #include <cfloat>
 
-#if defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)
+#include <tlfloat/detect.h>
+
+#if defined(TLFLOAT_ENABLE_LIBQUADMATH)
 #include <quadmath.h>
 #endif
 
-#if (defined(__x86_64__) && defined(__GNUC__) && !defined(__clang__)) || defined(__aarch64__)
+#if defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 #define MPFR_WANT_FLOAT128
 #endif
 
@@ -1697,15 +1699,15 @@ int main(int argc, char **argv) {
 	  auto xfr = (Quad(x) + Quad(y)).getUnpacked();
 	  quad_ r = (quad_)Quad(xfr);
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_add(mx, mx, my, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -1713,7 +1715,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad add\n");
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << ", " << to_string(mx, 72) << " : " << to_string_d(Quad(c).getUnpacked()) << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -1728,15 +1730,15 @@ int main(int argc, char **argv) {
 	  auto xfr = (Quad(x) * Quad(y)).getUnpacked();
 	  quad_ r = (quad_)Quad(xfr);
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_mul(mx, mx, my, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -1744,7 +1746,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad mul\n");
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << ", " << to_string(mx, 72) << " : " << to_string_d(Quad(c).getUnpacked()) << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -1759,15 +1761,15 @@ int main(int argc, char **argv) {
 	  auto xfr = (Quad(x) / Quad(y)).getUnpacked();
 	  quad_ r = (quad_)Quad(xfr);
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_div(mx, mx, my, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -1775,7 +1777,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad div\n");
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << ", " << to_string(mx, 72) << " : " << to_string_d(Quad(c).getUnpacked()) << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -1790,17 +1792,17 @@ int main(int argc, char **argv) {
 	  auto xfr = fma(Quad(x), Quad(y), Quad(z)).getUnpacked();
 	  quad_ r = (quad_)Quad(xfr);
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mz, z, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(mz, z.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mz, Quad(z).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_fma(mx, mx, my, mz, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -1809,7 +1811,7 @@ int main(int argc, char **argv) {
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
 	    cout << "z = " << z << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << ", " << to_string(mx, 72) << " : " << to_string_d(Quad(c).getUnpacked()) << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -1826,20 +1828,20 @@ int main(int argc, char **argv) {
 	  auto xfr = sqrt(Quad(x)).getUnpacked();
 	  quad_ r = (quad_)Quad(xfr);
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_sqrt(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
 	  if (ulp > 0.5) {
 	    printf("\nquad sqrt\n");
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -1854,15 +1856,15 @@ int main(int argc, char **argv) {
 	  auto xfr = hypot(Quad(x), Quad(y)).getUnpacked();
 	  quad_ r = (quad_)Quad(xfr);
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_hypot(mx, mx, my, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -1870,7 +1872,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad hypot\n");
 	    cout << "x = " << x << endl;
 	    cout << "y = " << y << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -1887,13 +1889,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)sin(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_sin(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -1901,7 +1903,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad sin\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -1916,13 +1918,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)cos(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_cos(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -1930,7 +1932,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad cos\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -1945,13 +1947,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)tan(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_tan(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -1959,7 +1961,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad tan\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -1976,15 +1978,15 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)atan2(Quad(y), Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_atan2(mx, my, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -1993,7 +1995,7 @@ int main(int argc, char **argv) {
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2008,13 +2010,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)asin(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_asin(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2022,7 +2024,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad asin\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2037,13 +2039,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)acos(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_acos(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2051,7 +2053,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad acos\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2066,13 +2068,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)atan(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_atan(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2080,7 +2082,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad atan\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2097,13 +2099,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)exp(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_exp(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2111,7 +2113,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad exp\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2126,13 +2128,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)expm1(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_expm1(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2140,7 +2142,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad expm1\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2155,13 +2157,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)exp2(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_exp2(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2169,7 +2171,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad exp2\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2184,13 +2186,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)exp10(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_exp10(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2198,7 +2200,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad exp10\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2215,13 +2217,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)log(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_log(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2229,7 +2231,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad log\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2244,13 +2246,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)log1p(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_log1p(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2258,7 +2260,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad log1p\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2273,13 +2275,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)log2(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_log2(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2287,7 +2289,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad log2\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2302,13 +2304,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)log10(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_log10(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2316,7 +2318,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad log10\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2333,15 +2335,15 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)pow(Quad(y), Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_pow(mx, my, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2350,7 +2352,7 @@ int main(int argc, char **argv) {
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2367,15 +2369,15 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)fmod(Quad(y), Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_fmod(mx, my, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2384,7 +2386,7 @@ int main(int argc, char **argv) {
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2399,15 +2401,15 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)remainder(Quad(y), Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_remainder(mx, my, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2416,7 +2418,7 @@ int main(int argc, char **argv) {
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2431,16 +2433,16 @@ int main(int argc, char **argv) {
 	  auto a = remquo(Quad(y), Quad(x));
 	  uquad xfr = Quad(a.first).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(my, y, GMP_RNDN);
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  long int q = 0;
 	  mpfr_remquo(mx, &q, my, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2449,7 +2451,7 @@ int main(int argc, char **argv) {
 	    printf("ulp = %g\n", ulp);
 	    cout << "y = " << y << endl;
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << ", " << q << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2466,13 +2468,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)cbrt(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_cbrt(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2480,7 +2482,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad cbrt\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2497,13 +2499,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)sinh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_sinh(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2511,7 +2513,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad sinh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2526,13 +2528,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)cosh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_cosh(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2540,7 +2542,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad cosh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2555,13 +2557,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)tanh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_tanh(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2569,7 +2571,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad tanh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2584,13 +2586,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)asinh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_asinh(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2598,7 +2600,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad asinh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2613,13 +2615,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)acosh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_acosh(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2627,7 +2629,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad acosh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2642,13 +2644,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)atanh(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_atanh(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2656,7 +2658,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad atanh\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2673,13 +2675,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)erf(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_erf(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2687,7 +2689,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad erf\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2702,13 +2704,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)erfc(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_erfc(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2716,7 +2718,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad erfc\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2733,13 +2735,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)tgamma(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_gamma(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2747,7 +2749,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad tgamma\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2764,14 +2766,14 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)lgamma(Quad(x), &rsign);
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  int msign = 0;
 	  mpfr_lgamma(mx, &msign, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2779,7 +2781,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad lgamma\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << ", sign = " << (msign == -1) << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << ", sign = " << (msign == -1) << endl;
@@ -2797,13 +2799,13 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)fabs(Quad(x));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_abs(mx, mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2811,7 +2813,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad fabs\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2826,15 +2828,15 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)copysign(Quad(x), Quad(y));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_copysign(mx, mx, my, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2842,7 +2844,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad copysign\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2857,15 +2859,15 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)fmax(Quad(x), Quad(y));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_max(mx, mx, my, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2873,7 +2875,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad fmax\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2888,15 +2890,15 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)fmin(Quad(x), Quad(y));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_min(mx, mx, my, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2904,7 +2906,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad fmin\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2919,15 +2921,15 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)fdim(Quad(x), Quad(y));
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 	  mpfr_set_float128(my, y, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
-	  mpfr_set_unpacked(my, y.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(my, Quad(y).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_dim(mx, mx, my, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
@@ -2935,7 +2937,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad fdim\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
@@ -2951,14 +2953,14 @@ int main(int argc, char **argv) {
 	  quad_ r = (quad_)modf(Quad(x), &w);
 	  uquad xfr = Quad(r).getUnpacked();
 
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  mpfr_set_float128(mx, x, GMP_RNDN);
 #else
-	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
 #endif
 	  mpfr_modf(mx, my, mx, GMP_RNDN);
 	  double ci = mpfr_get_d(mx, GMP_RNDN);
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	  quad_ c = mpfr_get_float128(my, GMP_RNDN);
 #endif
 	  double ulp = countULP(xfr, my, uquad::flt_true_min(), uquad::flt_max());
@@ -2966,7 +2968,7 @@ int main(int argc, char **argv) {
 	    printf("\nquad modf\n");
 	    printf("ulp = %g\n", ulp);
 	    cout << "x = " << x << endl;
-#ifdef ENABLE_QUAD
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 	    cout << "c = " << c << endl;
 #else
 	    cout << "c = " << to_string(mx, 72) << endl;
