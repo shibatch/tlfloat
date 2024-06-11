@@ -54,7 +54,7 @@ endif()
 
 # Include packages
 
-if ("${CMAKE_SYSTEM_NAME}" STREQUAL "${CMAKE_HOST_SYSTEM_NAME}")
+if (NOT CMAKE_CROSSCOMPILING)
   find_program(COMMAND_LLD lld)
   message(STATUS "COMMAND_LLD : " ${COMMAND_LLD})
 
@@ -138,7 +138,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clan
 #include <arm_fp16.h>
 int main(int argc, char **argv) {
   __fp16 hu = vaddh_f16(__fp16(atof(argv[1])), __fp16(0.2));
-  return (int)hu;
+  bool b = vceqh_f16(__fp16(atof(argv[1])), __fp16(0.2));
+  return (int)hu + (int)b;
 }" TLFLOAT_COMPILER_SUPPORTS_FP16)
   set(CMAKE_REQUIRED_FLAGS)
 endif()
@@ -172,7 +173,7 @@ set(CMAKE_REQUIRED_LIBRARIES)
 include(CTest)
 set(MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full --error-exitcode=1")
 
-if (ENABLE_VALGRIND)
+if (ENABLE_VALGRIND AND NOT CMAKE_CROSSCOMPILING)
   find_program(VALGRIND "valgrind")
   message(STATUS "VALGRIND : " ${VALGRIND})
 endif()
@@ -180,7 +181,7 @@ endif()
 # Compiler options
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fconstexpr-ops-limit=1000000000 --param=max-vartrack-size=1000000000")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fcompare-debug-second -fconstexpr-ops-limit=1000000000 --param=max-vartrack-size=1000000000")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-g -Og")
   if (ENABLE_ASAN)
     if(CMAKE_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)")

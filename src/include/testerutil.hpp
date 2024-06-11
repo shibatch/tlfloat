@@ -495,12 +495,8 @@ typedef long double quad;
 #define finite_ _finite
 #endif
 
-#ifdef __APPLE__
-#define finite_ isfinite
-#endif
-
 #ifndef finite_
-#define finite_ finite
+#define finite_ isfinite
 #endif
 
 #ifdef __TLFLOAT_HPP_INCLUDED__
@@ -753,6 +749,14 @@ float rndf(shared_ptr<RNG> rng) {
 #define TLFLOAT_FP_SUBNORMAL 3
 #define TLFLOAT_FP_NORMAL 4
 #endif
+
+bool eqquo(int64_t t, long int c) {
+  if (sizeof(int64_t) == sizeof(long int)) {
+    return t == c || (c == (1LL << (sizeof(long int)*8-1)) && t == 0);
+  } else {
+    return ((t & 7) == (c & 7) && ((t < 0) == (c < 0))) || ((c & 0x7fffffff) == 0);
+  }
+}
 
 bool cmpfpclass(int sl, int tl) {
   if (sl == FP_NAN && tl == TLFLOAT_FP_NAN) return true;

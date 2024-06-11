@@ -41,7 +41,7 @@ pipeline {
 			 rm -rf build
  			 mkdir build
 			 cd build
-			 cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=$EMSDK/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DENABLE_ARCH_OPTIMIZATION=False -DSET_COMPILER_SUPPORTS_INT128=False -DSET_COMPILER_SUPPORTS_FLOAT128=False -DSET_LONGDOUBLE_IS_FLOAT128=False -DCMAKE_BUILD_TYPE=Release ..
+			 cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=$EMSDK/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DSET_COMPILER_SUPPORTS_INT128=False -DSET_COMPILER_SUPPORTS_FLOAT128=False -DSET_LONGDOUBLE_IS_FLOAT128=False ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j `nproc`
@@ -124,6 +124,27 @@ pipeline {
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_VALGRIND=False -DENABLE_ASAN=True ..
+			 cmake -E time ninja
+		         export CTEST_OUTPUT_ON_FAILURE=TRUE
+		         ctest -j `nproc`
+			 '''
+            	     }
+                }
+
+                stage('arm32 linux gcc-12') {
+            	     agent { label 'armv7 && debian12' }
+                     options { skipDefaultCheckout() }
+            	     steps {
+                         cleanWs()
+                         checkout scm
+	    	     	 sh '''
+                	 echo "arm32 gcc-12 on" `hostname`
+			 export CC=gcc-12
+			 export CXX=g++-12
+			 rm -rf build
+ 			 mkdir build
+			 cd build
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j `nproc`

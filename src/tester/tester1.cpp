@@ -132,7 +132,7 @@ void doTest(const char *mes, T a1, T a2, mpfr_t &mr, mpfr_t &ma1, mpfr_t &ma2, b
   mpfrFunc(mr, &mq, ma1, ma2, GMP_RNDN);
   double ulp = countULP(r.first.getUnpacked(), mr, Unpacked_t::flt_true_min(), Unpacked_t::flt_max(), true);
 
-  if (ulp <= 0.5 && (mq == r.second || (mq == (long int)0x8000000000000000LL && r.second == 0))) return;
+  if (ulp <= 0.5 && eqquo(r.second, mq)) return;
 
   cout << mes << endl;
   cout << "arg1    : " << to_string(a1, 72) << endl;

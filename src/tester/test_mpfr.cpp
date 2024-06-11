@@ -43,10 +43,6 @@ using namespace tlfloat::detail;
 #define TEST_GAMMA
 #define TEST_MISC
 
-static bool eqquo(int64_t t, long int c) {
-  return t == c || (c == (long int)0x8000000000000000LL && t == 0);
-}
-
 int main(int argc, char **argv) {
   uint64_t niter = argc > 1 ? strtoull(argv[1], nullptr, 10) : 100000;
 

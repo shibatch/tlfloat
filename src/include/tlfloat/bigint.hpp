@@ -197,7 +197,7 @@ namespace tlfloat {
       }
     }
 #elif defined(TLFLOAT_ENABLE_GNUC_CLZ)
-    static constexpr unsigned clz64(uint64_t u) { return u == 0 ? 64 : __builtin_clzl(u); }
+    static constexpr unsigned clz64(uint64_t u) { return u == 0 ? 64 : __builtin_clzll(u); }
 #elif defined(TLFLOAT_ENABLE_CUDA_CLZ)
     static constexpr unsigned clz64(uint64_t u) {
       if (!std::is_constant_evaluated()) return __clzll(u);
