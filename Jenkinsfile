@@ -193,6 +193,9 @@ pipeline {
                          cleanWs()
                          checkout scm
 	    	     	 sh '''
+			 eval "$(/opt/homebrew/bin/brew shellenv)"
+			 brew update
+			 brew upgrade
 			 export CC=gcc-13
 			 export CXX=g++-13
 			 rm -rf build
