@@ -1685,8 +1685,9 @@ namespace tlfloat {
 
   template<typename Unpacked_t>
   static std::string to_string(Unpacked_t u, int d=6) {
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
     std::vector<char> buf(1000);
-    snprint(buf.data(), buf.size(), u, 'g', 0, d, false, false, false, false, false, false);
+    snprint(buf.data(), buf.size(), u.cast((xUnpacked_t *)0), 'g', 0, d, false, false, false, false, false, false);
     return std::string(buf.data());
   }
 #endif
@@ -1694,13 +1695,24 @@ namespace tlfloat {
   /** This works like sprintf(str, "%.6g", *this) where the precision can be specified with d */
   template<typename Unpacked_t>
   static std::string to_string(TLFloat<Unpacked_t> a, int d=6) {
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
     std::vector<char> buf(1000);
-    snprint(buf.data(), buf.size(), a.getUnpacked(), 'g', 0, d, false, false, false, false, false, false);
+    snprint(buf.data(), buf.size(), a.getUnpacked().cast((xUnpacked_t *)0), 'g', 0, d, false, false, false, false, false, false);
     return std::string(buf.data());
   }
 
   template<typename Unpacked_t>
-  static std::ostream& operator<<(std::ostream &os, const TLFloat<Unpacked_t>& u) { return os << to_string(u); }
+  static std::ostream& operator<<(std::ostream &os, const TLFloat<Unpacked_t>& a) {
+    typedef decltype(Unpacked_t::xUnpackedFloat()) xUnpacked_t;
+    std::vector<char> buf(1000);
+    std::ios_base::fmtflags f = os.flags();
+    char typespec = 'g';
+    if ((f & os.fixed) != 0) typespec = 'f';
+    if ((f & os.hex) != 0) typespec = 'a';
+    snprint(buf.data(), buf.size(), a.getUnpacked().cast((xUnpacked_t *)0), typespec, os.width(), os.precision(),
+	    false, false, false, (f & std::ios::left) != 0, false, (f & std::ios::uppercase) != 0);
+    return os << buf.data();
+  }
 #endif // #if defined(TLFLOAT_DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 
   //

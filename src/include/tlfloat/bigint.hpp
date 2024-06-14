@@ -1306,6 +1306,7 @@ namespace tlfloat {
 #if defined(TLFLOAT_DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 
 #include <iostream>
+#include <ios>
 #include <vector>
 #include <string>
 
@@ -1334,7 +1335,17 @@ namespace tlfloat {
     return std::string(s.data());
   }
 
-  template<int N> static std::ostream& operator<<(std::ostream &os, const BigUInt<N>& u) { return os << to_string(u); }
+  template<int N> static std::ostream& operator<<(std::ostream &os, const BigUInt<N>& u) {
+    std::vector<char> buf(1000);
+    std::ios_base::fmtflags f = os.flags();
+    char typespec = 'u';
+    int base = 10;
+    if ((f & os.hex) != 0) { typespec = 'x'; base = 16; }
+    if ((f & os.oct) != 0) { typespec = 'o'; base = 8; }
+    BigInt<N>::snprint(buf.data(), buf.size(), BigInt<N>(u), typespec, os.width(), os.precision(), base, 1 << N,
+		       false, false, false, (f & std::ios::left) != 0, false, (f & std::ios::uppercase) != 0);
+    return os << buf.data();
+  }
 
   template<int N>
   std::string to_string(const BigInt<N>& i) {
@@ -1343,7 +1354,17 @@ namespace tlfloat {
     return std::string(s.data());
   }
 
-  template<int N> static std::ostream& operator<<(std::ostream &os, const BigInt<N>& u) { return os << to_string(u); }
+  template<int N> static std::ostream& operator<<(std::ostream &os, const BigInt<N>& d) {
+    std::vector<char> buf(1000);
+    std::ios_base::fmtflags f = os.flags();
+    char typespec = 'd';
+    int base = 10;
+    if ((f & os.hex) != 0) { typespec = 'x'; base = 16; }
+    if ((f & os.oct) != 0) { typespec = 'o'; base = 8; }
+    BigInt<N>::snprint(buf.data(), buf.size(), d, typespec, os.width(), os.precision(), base, 1 << N,
+		       false, false, false, (f & std::ios::left) != 0, false, (f & std::ios::uppercase) != 0);
+    return os << buf.data();
+  }
 }
 #endif // #if defined(TLFLOAT_DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)
 #endif // #ifndef __BIGINT_HPP_INCLUDED__

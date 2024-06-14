@@ -98,6 +98,7 @@ Below is a simple C++ source code utilizing TLFloat.
 
 ```
 #include <iostream>
+#include <iomanip>
 #include <tlfloat/tlmath.hpp>
 
 using namespace tlfloat;
@@ -107,7 +108,7 @@ Octuple machin() {
 }
 
 int main(int argc, char **argv) {
-  std::cout << to_string(machin(), 70) << std::endl;
+  std::cout << std::setprecision(70) << machin() << std::endl;
 }
 ```
 

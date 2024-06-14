@@ -1,14 +1,6 @@
 #include <iostream>
 #include <sstream>
-#include <vector>
-#include <thread>
-#include <cstring>
-#include <cstdio>
-#include <cstdlib>
-#include <cctype>
-#include <cassert>
-#include <cmath>
-#include <signal.h>
+#include <iomanip>
 
 #include "suppress.hpp"
 
@@ -145,6 +137,27 @@ void checks(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
   if (!equal(i1 -= i0, b1 -= b0)) e("-=");
   if (!equal(i1 *= i0, b1 *= b0)) e("*=");
   //if (!equal(i1 /= i0, b1 /= b0)) e("/=");
+
+  {
+    stringstream ssc, sst;
+    ssc << (int64_t)low0 << endl;
+    sst << BigInt<7>((int64_t)low0) << endl;
+    if (ssc.str() != sst.str()) { cout << "NG 0s c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+  }
+
+  {
+    stringstream ssc, sst;
+    ssc << setw(20) << (int64_t)low0 << endl;
+    sst << setw(20) << BigInt<7>((int64_t)low0) << endl;
+    if (ssc.str() != sst.str()) { cout << "NG 1s c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+  }
+
+  {
+    stringstream ssc, sst;
+    ssc << setw(20) << right << (int64_t)low0 << endl;
+    sst << setw(20) << right << BigInt<7>((int64_t)low0) << endl;
+    if (ssc.str() != sst.str()) { cout << "NG 2s c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+  }
 }
 
 void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double d) {
@@ -269,6 +282,43 @@ void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
   if (!equal(i1 -= i0, b1 -= b0)) e("-=");
   if (!equal(i1 *= i0, b1 *= b0)) e("*=");
   if (!equal(i1 /= i0, b1 /= b0)) e("/=");
+
+  //
+
+  {
+    stringstream ssc, sst;
+    ssc << (uint64_t)low0 << endl;
+    sst << BigUInt<7>((uint64_t)low0) << endl;
+    if (ssc.str() != sst.str()) { cout << "NG 0u c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+  }
+
+  {
+    stringstream ssc, sst;
+    ssc << setw(20) << (uint64_t)low0 << endl;
+    sst << setw(20) << BigUInt<7>((uint64_t)low0) << endl;
+    if (ssc.str() != sst.str()) { cout << "NG 1u c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+  }
+
+  {
+    stringstream ssc, sst;
+    ssc << setw(20) << hex << (uint64_t)low0 << endl;
+    sst << setw(20) << hex << BigUInt<7>((uint64_t)low0) << endl;
+    if (ssc.str() != sst.str()) { cout << "NG 2u c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+  }
+
+  {
+    stringstream ssc, sst;
+    ssc << setw(20) << oct << (uint64_t)low0 << endl;
+    sst << setw(20) << oct << BigUInt<7>((uint64_t)low0) << endl;
+    if (ssc.str() != sst.str()) { cout << "NG 3u c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+  }
+
+  {
+    stringstream ssc, sst;
+    ssc << setw(20) << right << (uint64_t)low0 << endl;
+    sst << setw(20) << right << BigUInt<7>((uint64_t)low0) << endl;
+    if (ssc.str() != sst.str()) { cout << "NG 4u c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+  }
 }
 
 int main(int argc, char **argv) {

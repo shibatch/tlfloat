@@ -1,4 +1,6 @@
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 #include <cstdio>
 
 #include <tlfloat/detect.h>
@@ -454,6 +456,36 @@ int main(int argc, char **argv) {
 	doTest<Quad, fma_, mpfr_fma>("Quad fma", qvalues[index0], qvalues[index1], qvalues[index2], mr, ma1, ma2, ma3);
 	doTest<Octuple, fma_, mpfr_fma>("Octuple fma", ovalues[index0], ovalues[index1], ovalues[index2], mr, ma1, ma2, ma3);
       }
+    }
+
+    //
+
+    {
+      stringstream ssc, sst;
+      ssc << (double)dvalues[index0] << endl;
+      sst << dvalues[index0] << endl;
+      if (ssc.str() != sst.str()) { cout << "NG 0 c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+    }
+
+    {
+      stringstream ssc, sst;
+      ssc << setw(20) << (double)dvalues[index0] << endl;
+      sst << setw(20) << dvalues[index0] << endl;
+      if (ssc.str() != sst.str()) { cout << "NG 1 c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+    }
+
+    {
+      stringstream ssc, sst;
+      ssc << setprecision(14) << (double)dvalues[index0] << endl;
+      sst << setprecision(14) << dvalues[index0] << endl;
+      if (ssc.str() != sst.str()) { cout << "NG 2 c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
+    }
+
+    {
+      stringstream ssc, sst;
+      ssc << setw(20) << right << (double)dvalues[index0] << endl;
+      sst << setw(20) << right << dvalues[index0] << endl;
+      if (ssc.str() != sst.str()) { cout << "NG 3 c = <" << ssc.str() << ">, t = <" << sst.str() << ">" << endl; exit(-1); }
     }
   }
 
