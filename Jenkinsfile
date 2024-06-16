@@ -206,6 +206,27 @@ pipeline {
 			 '''
             	     }
                 }
+
+                stage('i386 linux gcc-12') {
+            	     agent { label 'i386 && debian12' }
+                     options { skipDefaultCheckout() }
+            	     steps {
+                         cleanWs()
+                         checkout scm
+	    	     	 sh '''
+                	 echo "i386 gcc-12 on" `hostname`
+			 export CC=gcc-12
+			 export CXX=g++-12
+			 rm -rf build
+ 			 mkdir build
+			 cd build
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
+			 cmake -E time ninja
+		         export CTEST_OUTPUT_ON_FAILURE=TRUE
+		         ctest -j `nproc`
+			 '''
+            	     }
+                }
             }
         }
     }

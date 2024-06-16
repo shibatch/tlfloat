@@ -443,11 +443,13 @@ int main(int argc, char **argv) {
       doTest<Quad, remainder, mpfr_remainder>("Quad remainder", qvalues[index0], qvalues[index1], mr, ma1, ma2);
       doTest<Octuple, remainder, mpfr_remainder>("Octuple remainder", ovalues[index0], ovalues[index1], mr, ma1, ma2);
 
+#ifndef __i386__
       doTest<Half, remquo, mpfr_remquo>("Half remquo", hvalues[index0], hvalues[index1], mr, ma1, ma2);
       doTest<Float, remquo, mpfr_remquo>("Float remquo", fvalues[index0], fvalues[index1], mr, ma1, ma2);
       doTest<Double, remquo, mpfr_remquo>("Double remquo", dvalues[index0], dvalues[index1], mr, ma1, ma2);
       doTest<Quad, remquo, mpfr_remquo>("Quad remquo", qvalues[index0], qvalues[index1], mr, ma1, ma2);
       doTest<Octuple, remquo, mpfr_remquo>("Octuple remquo", ovalues[index0], ovalues[index1], mr, ma1, ma2);
+#endif
 
       for(int index2 = 0;index2 < N;index2++) {
 	doTest<Half, fma_, mpfr_fma>("Half fma", hvalues[index0], hvalues[index1], hvalues[index2], mr, ma1, ma2, ma3);

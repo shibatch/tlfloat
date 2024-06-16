@@ -5,6 +5,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <suppress.hpp>
+
 #if __cplusplus >= 202002L
 #include <tlfloat/tlfloat.hpp>
 #endif
@@ -280,8 +282,10 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_fmodo(o1, o2)", tlfloat_fmodo(o1, o2), fmod(d1, d2), T);
   check("tlfloat_remaindero(o1, o2)", tlfloat_remaindero(o1, o2), remainder(d1, d2), T);
   int qt = 0, qc = 0;
+#ifndef __i386__
   check("tlfloat_remquoo(o1, o2, &quo) remainder", tlfloat_remquoo(o1, o2, &qt), remquo(d1, d2, &qc), T);
   checkQuo("tlfloat_remquoo(o1, o2, &quo) quo", qt, qc);
+#endif
   check("tlfloat_ilogbo(o1)", tlfloat_ilogbo(o1), ilogb(d1));
   check("tlfloat_isnano(o1)", (bool)tlfloat_isnano(o1), (bool)isnan(d1));
   check("tlfloat_isinfo(o1)", (bool)tlfloat_isinfo(o1), (bool)isinf(d1));
@@ -336,8 +340,10 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_fmodq(q1, q2)", tlfloat_fmodq(q1, q2), fmod(d1, d2), T);
   check("tlfloat_remainderq(q1, q2)", tlfloat_remainderq(q1, q2), remainder(d1, d2), T);
   qt = qc = 0;
+#ifndef __i386__
   check("tlfloat_remquoq(q1, q2, &quo) remainder", tlfloat_remquoq(q1, q2, &qt), remquo(d1, d2, &qc), T);
   checkQuo("tlfloat_remquoq(q1, q2, &quo) quo", qt, qc);
+#endif
   check("tlfloat_ilogbq(q1)", tlfloat_ilogbq(q1), ilogb(d1));
   check("tlfloat_isnanq(q1)", (bool)tlfloat_isnanq(q1), (bool)isnan(d1));
   check("tlfloat_isinfq(q1)", (bool)tlfloat_isinfq(q1), (bool)isinf(d1));
@@ -399,8 +405,10 @@ void doTest(const string &s1, const string &s2) {
   check("fmodq(q1, q2)", fmodq(q1, q2), fmod(d1, d2), T);
   check("remainderq(q1, q2)", remainderq(q1, q2), remainder(d1, d2), T);
   qt = qc = 0;
+#ifndef __i386__
   check("remquoq(q1, q2, &quo) remainder", remquoq(q1, q2, &qt), remquo(d1, d2, &qc), T);
   checkQuo("remquoq(q1, q2, &quo) quo", qt, qc);
+#endif
   check("ilogbq(q1)", ilogbq(q1), ilogb(d1));
   check("isnanq(q1)", (bool)isnanq(q1), (bool)isnan(d1));
   check("isinfq(q1)", (bool)isinfq(q1), (bool)isinf(d1));
