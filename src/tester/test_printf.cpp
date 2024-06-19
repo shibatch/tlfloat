@@ -82,6 +82,7 @@ void testem(double val, int cmpprec=10) {
 		       sign ? "+" : "",
 		       nbits,
 		       types[i]);
+	      lt = tlfloat_snprintf(test, 8, fmt, T(val));
 	      lt = tlfloat_snprintf(test, 100, fmt, T(val));
 
 	      if( (lt != lc0 && lt != lc1) ||
@@ -112,6 +113,7 @@ void testem(double val, int cmpprec=10) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 width, nbits, types[i]);
+		lt = tlfloat_snprintf(test, 8, fmt, T(val));
 		lt = tlfloat_snprintf(test, 100, fmt, T(val));
 
 		if( (lt != lc0 && lt != lc1) ||
@@ -141,6 +143,7 @@ void testem(double val, int cmpprec=10) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 nbits, types[i]);
+		lt = tlfloat_snprintf(test, 8, fmt, width, T(val));
 		lt = tlfloat_snprintf(test, 100, fmt, width, T(val));
 
 		if( (lt != lc0 && lt != lc1) ||
@@ -174,6 +177,7 @@ void testem(double val, int cmpprec=10) {
 			   blank ? " " : "", 
 			   sign ? "+" : "",
 			   width, prec, nbits, types[i]);
+		  lt = tlfloat_snprintf(test, 8, fmt, T(val));
 		  lt = tlfloat_snprintf(test, 100, fmt, T(val));
 
 		  if( (lt != lc0 && lt != lc1) ||
@@ -203,6 +207,7 @@ void testem(double val, int cmpprec=10) {
 			   blank ? " " : "", 
 			   sign ? "+" : "",
 			   nbits, types[i]);
+		  lt = tlfloat_snprintf(test, 8, fmt, width, prec, T(val));
 		  lt = tlfloat_snprintf(test, 100, fmt, width, prec, T(val));
 
 		  if( (lt != lc0 && lt != lc1) ||
@@ -231,6 +236,7 @@ void testem(double val, int cmpprec=10) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 prec, nbits, types[i]);
+		lt = tlfloat_snprintf(test, 8, fmt, T(val));
 		lt = tlfloat_snprintf(test, 100, fmt, T(val));
 
 		if( (lt != lc0 && lt != lc1) ||
@@ -260,6 +266,7 @@ void testem(double val, int cmpprec=10) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 nbits, types[i]);
+		lt = tlfloat_snprintf(test, 8, fmt, prec, T(val));
 		lt = tlfloat_snprintf(test, 100, fmt, prec, T(val));
 
 		if( (lt != lc0 && lt != lc1) ||
@@ -280,6 +287,7 @@ void testem(double val, int cmpprec=10) {
 
 void testem32(int32_t val) {
   const char *types[] = { "d", "u", "x", "o" };
+  const int base[] = { 10, 10, 16, 8 };
   for(int i=0;i<4;i++) {
     for(int alt=0;alt<2;alt++) {
       for(int zero=0;zero<2;zero++) {
@@ -304,11 +312,31 @@ void testem32(int32_t val) {
 		       blank ? " " : "", 
 		       sign ? "+" : "",
 		       types[i]);
+	      tlfloat_snprintf(test, 8, fmt, val);
 	      tlfloat_snprintf(test, 100, fmt, val);
 
 	      if(strcmp(test,corr) != 0) {
 		printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
 		exit(-1);
+	      }
+
+	      {
+		const char *tp = test;
+		char *cp = test;
+		if ((unsigned long long)BigUInt<7>(test, &tp, base[i]) != strtoull(test, &cp, base[i]) || tp != cp) {
+		  printf("%s : 0U t=%llu(%d) c=%llu(%d)\n", test,
+			 (unsigned long long)BigUInt<7>(test, nullptr, base[i]), int(tp-test), strtoull(test, nullptr, base[i]), int(cp-test));
+		  exit(-1);
+		}
+	      }
+	      {
+		const char *tp = test;
+		char *cp = test;
+		if ((long long)BigInt<7>(test, &tp, base[i]) != strtoll(test, &cp, base[i]) || tp != cp) {
+		  printf("%s : 0S t=%lld(%d) c=%lld(%d)\n", test,
+			 (long long)BigInt<7>(test, nullptr, base[i]), int(tp-test), strtoll(test, nullptr, base[i]), int(cp-test));
+		  exit(-1);
+		}
 	      }
 
 	      //
@@ -332,11 +360,31 @@ void testem32(int32_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 width, types[i]);
+		tlfloat_snprintf(test, 8, fmt, val);
 		tlfloat_snprintf(test, 100, fmt, val);
 
 		if(strcmp(test,corr) != 0) {
 		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
 		  exit(-1);
+		}
+
+		{
+		  const char *tp = test;
+		  char *cp = test;
+		  if ((unsigned long long)BigUInt<7>(test, &tp, base[i]) != strtoull(test, &cp, base[i]) || tp != cp) {
+		    printf("%s : 0U t=%llu(%d) c=%llu(%d)\n", test,
+			   (unsigned long long)BigUInt<7>(test, nullptr, base[i]), int(tp-test), strtoull(test, nullptr, base[i]), int(cp-test));
+		    exit(-1);
+		  }
+		}
+		{
+		  const char *tp = test;
+		  char *cp = test;
+		  if ((long long)BigInt<7>(test, &tp, base[i]) != strtoll(test, &cp, base[i]) || tp != cp) {
+		    printf("%s : 0S t=%lld(%d) c=%lld(%d)\n", test,
+			   (long long)BigInt<7>(test, nullptr, base[i]), int(tp-test), strtoll(test, nullptr, base[i]), int(cp-test));
+		    exit(-1);
+		  }
 		}
 
 		//
@@ -357,11 +405,31 @@ void testem32(int32_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 types[i]);
+		tlfloat_snprintf(test, 8, fmt, width, val);
 		tlfloat_snprintf(test, 100, fmt, width, val);
 
 		if(strcmp(test,corr) != 0) {
 		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
 		  exit(-1);
+		}
+
+		{
+		  const char *tp = test;
+		  char *cp = test;
+		  if ((unsigned long long)BigUInt<7>(test, &tp, base[i]) != strtoull(test, &cp, base[i]) || tp != cp) {
+		    printf("%s : 0U t=%llu(%d) c=%llu(%d)\n", test,
+			   (unsigned long long)BigUInt<7>(test, nullptr, base[i]), int(tp-test), strtoull(test, nullptr, base[i]), int(cp-test));
+		    exit(-1);
+		  }
+		}
+		{
+		  const char *tp = test;
+		  char *cp = test;
+		  if ((long long)BigInt<7>(test, &tp, base[i]) != strtoll(test, &cp, base[i]) || tp != cp) {
+		    printf("%s : 0S t=%lld(%d) c=%lld(%d)\n", test,
+			   (long long)BigInt<7>(test, nullptr, base[i]), int(tp-test), strtoll(test, nullptr, base[i]), int(cp-test));
+		    exit(-1);
+		  }
 		}
 	      }
 
@@ -385,11 +453,31 @@ void testem32(int32_t val) {
 			    blank ? " " : "", 
 			    sign ? "+" : "",
 			    width, prec, types[i]);
+		  tlfloat_snprintf(test, 8, fmt, val);
 		  tlfloat_snprintf(test, 100, fmt, val);
 
 		  if(strcmp(test,corr) != 0) {
 		    printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
 		    exit(-1);
+		  }
+
+		  {
+		    const char *tp = test;
+		    char *cp = test;
+		    if ((unsigned long long)BigUInt<7>(test, &tp, base[i]) != strtoull(test, &cp, base[i]) || tp != cp) {
+		      printf("%s : 0U t=%llu(%d) c=%llu(%d)\n", test,
+			     (unsigned long long)BigUInt<7>(test, nullptr, base[i]), int(tp-test), strtoull(test, nullptr, base[i]), int(cp-test));
+		      exit(-1);
+		    }
+		  }
+		  {
+		    const char *tp = test;
+		    char *cp = test;
+		    if ((long long)BigInt<7>(test, &tp, base[i]) != strtoll(test, &cp, base[i]) || tp != cp) {
+		      printf("%s : 0S t=%lld(%d) c=%lld(%d)\n", test,
+			     (long long)BigInt<7>(test, nullptr, base[i]), int(tp-test), strtoll(test, nullptr, base[i]), int(cp-test));
+		      exit(-1);
+		    }
 		  }
 
 		  //
@@ -410,11 +498,31 @@ void testem32(int32_t val) {
 			    blank ? " " : "", 
 			    sign ? "+" : "",
 			    types[i]);
+		  tlfloat_snprintf(test, 8, fmt, width, prec, val);
 		  tlfloat_snprintf(test, 100, fmt, width, prec, val);
 
 		  if(strcmp(test,corr) != 0) {
 		    printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
 		    exit(-1);
+		  }
+
+		  {
+		    const char *tp = test;
+		    char *cp = test;
+		    if ((unsigned long long)BigUInt<7>(test, &tp, base[i]) != strtoull(test, &cp, base[i]) || tp != cp) {
+		      printf("%s : 0U t=%llu(%d) c=%llu(%d)\n", test,
+			     (unsigned long long)BigUInt<7>(test, nullptr, base[i]), int(tp-test), strtoull(test, nullptr, base[i]), int(cp-test));
+		      exit(-1);
+		    }
+		  }
+		  {
+		    const char *tp = test;
+		    char *cp = test;
+		    if ((long long)BigInt<7>(test, &tp, base[i]) != strtoll(test, &cp, base[i]) || tp != cp) {
+		      printf("%s : 0S t=%lld(%d) c=%lld(%d)\n", test,
+			     (long long)BigInt<7>(test, nullptr, base[i]), int(tp-test), strtoll(test, nullptr, base[i]), int(cp-test));
+		      exit(-1);
+		    }
 		  }
 		}
 
@@ -434,11 +542,31 @@ void testem32(int32_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 prec, types[i]);
+		tlfloat_snprintf(test, 8, fmt, val);
 		tlfloat_snprintf(test, 100, fmt, val);
 
 		if(strcmp(test,corr) != 0) {
 		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
 		  exit(-1);
+		}
+
+		{
+		  const char *tp = test;
+		  char *cp = test;
+		  if ((unsigned long long)BigUInt<7>(test, &tp, base[i]) != strtoull(test, &cp, base[i]) || tp != cp) {
+		    printf("%s : 0U t=%llu(%d) c=%llu(%d)\n", test,
+			   (unsigned long long)BigUInt<7>(test, nullptr, base[i]), int(tp-test), strtoull(test, nullptr, base[i]), int(cp-test));
+		    exit(-1);
+		  }
+		}
+		{
+		  const char *tp = test;
+		  char *cp = test;
+		  if ((long long)BigInt<7>(test, &tp, base[i]) != strtoll(test, &cp, base[i]) || tp != cp) {
+		    printf("%s : 0S t=%lld(%d) c=%lld(%d)\n", test,
+			   (long long)BigInt<7>(test, nullptr, base[i]), int(tp-test), strtoll(test, nullptr, base[i]), int(cp-test));
+		    exit(-1);
+		  }
 		}
 
 		//
@@ -459,11 +587,31 @@ void testem32(int32_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 types[i]);
+		tlfloat_snprintf(test, 8, fmt, prec, val);
 		tlfloat_snprintf(test, 100, fmt, prec, val);
 
 		if(strcmp(test,corr) != 0) {
 		  printf("%s : c=[%s] t=[%s]\n", fmt, corr, test);
 		  exit(-1);
+		}
+
+		{
+		  const char *tp = test;
+		  char *cp = test;
+		  if ((unsigned long long)BigUInt<7>(test, &tp, base[i]) != strtoull(test, &cp, base[i]) || tp != cp) {
+		    printf("%s : 0U t=%llu(%d) c=%llu(%d)\n", test,
+			   (unsigned long long)BigUInt<7>(test, nullptr, base[i]), int(tp-test), strtoull(test, nullptr, base[i]), int(cp-test));
+		    exit(-1);
+		  }
+		}
+		{
+		  const char *tp = test;
+		  char *cp = test;
+		  if ((long long)BigInt<7>(test, &tp, base[i]) != strtoll(test, &cp, base[i]) || tp != cp) {
+		    printf("%s : 0S t=%lld(%d) c=%lld(%d)\n", test,
+			   (long long)BigInt<7>(test, nullptr, base[i]), int(tp-test), strtoll(test, nullptr, base[i]), int(cp-test));
+		    exit(-1);
+		  }
 		}
 	      }
 	    }
@@ -501,6 +649,7 @@ void testem64(int64_t val) {
 		       blank ? " " : "", 
 		       sign ? "+" : "",
 		       types2[i]);
+	      tlfloat_snprintf(test, 8, fmt, val);
 	      tlfloat_snprintf(test, 98, fmt, val);
 
 	      if(strcmp(test,corr) != 0) {
@@ -525,6 +674,7 @@ void testem64(int64_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 width, types2[i]);
+		tlfloat_snprintf(test, 8, fmt, val);
 		tlfloat_snprintf(test, 98, fmt, val);
 
 		if(strcmp(test,corr) != 0) {
@@ -552,6 +702,7 @@ void testem64(int64_t val) {
 			    blank ? " " : "", 
 			    sign ? "+" : "",
 			    width, prec, types2[i]);
+		  tlfloat_snprintf(test, 8, fmt, val);
 		  tlfloat_snprintf(test, 98, fmt, val);
 
 		  if(strcmp(test,corr) != 0) {
@@ -576,6 +727,7 @@ void testem64(int64_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 prec, types2[i]);
+		tlfloat_snprintf(test, 8, fmt, val);
 		tlfloat_snprintf(test, 98, fmt, val);
 
 		if(strcmp(test,corr) != 0) {
@@ -620,6 +772,7 @@ void testem128(int64_t val) {
 		       blank ? " " : "", 
 		       sign ? "+" : "",
 		       types2[i]);
+	      tlfloat_snprintf(test, 8, fmt, BigInt<7>(val));
 	      tlfloat_snprintf(test, 98, fmt, BigInt<7>(val));
 
 	      if(strcmp(test,corr) != 0) {
@@ -634,6 +787,7 @@ void testem128(int64_t val) {
 		       blank ? " " : "", 
 		       sign ? "+" : "",
 		       types2[i]);
+	      tlfloat_snprintf(test, 8, fmt, __int128_t(val));
 	      tlfloat_snprintf(test, 98, fmt, __int128_t(val));
 
 	      if(strcmp(test,corr) != 0) {
@@ -659,6 +813,7 @@ void testem128(int64_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 width, types2[i]);
+		tlfloat_snprintf(test, 8, fmt, BigInt<7>(val));
 		tlfloat_snprintf(test, 98, fmt, BigInt<7>(val));
 
 		if(strcmp(test,corr) != 0) {
@@ -674,6 +829,7 @@ void testem128(int64_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 width, types2[i]);
+		tlfloat_snprintf(test, 8, fmt, __int128_t(val));
 		tlfloat_snprintf(test, 98, fmt, __int128_t(val));
 
 		if(strcmp(test,corr) != 0) {
@@ -701,6 +857,7 @@ void testem128(int64_t val) {
 			    blank ? " " : "", 
 			    sign ? "+" : "",
 			    width, prec, types2[i]);
+		  tlfloat_snprintf(test, 8, fmt, BigInt<7>(val));
 		  tlfloat_snprintf(test, 98, fmt, BigInt<7>(val));
 
 		  if(strcmp(test,corr) != 0) {
@@ -716,6 +873,7 @@ void testem128(int64_t val) {
 			    blank ? " " : "", 
 			    sign ? "+" : "",
 			    width, prec, types2[i]);
+		  tlfloat_snprintf(test, 8, fmt, __int128_t(val));
 		  tlfloat_snprintf(test, 98, fmt, __int128_t(val));
 
 		  if(strcmp(test,corr) != 0) {
@@ -740,6 +898,7 @@ void testem128(int64_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 prec, types2[i]);
+		tlfloat_snprintf(test, 8, fmt, BigInt<7>(val));
 		tlfloat_snprintf(test, 98, fmt, BigInt<7>(val));
 
 		if(strcmp(test,corr) != 0) {
@@ -755,6 +914,7 @@ void testem128(int64_t val) {
 			 blank ? " " : "", 
 			 sign ? "+" : "",
 			 prec, types2[i]);
+		tlfloat_snprintf(test, 8, fmt, __int128_t(val));
 		tlfloat_snprintf(test, 98, fmt, __int128_t(val));
 
 		if(strcmp(test,corr) != 0) {
@@ -896,6 +1056,7 @@ int main(int argc, char **argv) {
   for(int i=0;i<1000;i++) {
     static char str[1024];
     Quad qc = rndQ(rng);
+    tlfloat_snprintf(str, 8, "%.40_128g", qc);
     tlfloat_snprintf(str, sizeof(str), "%.40_128g", qc);
     Quad qt = tlfloat_strtoq(str, nullptr);
     if (!cmpq(qc, qt, 1)) {
@@ -937,6 +1098,7 @@ int main(int argc, char **argv) {
   for(int i=0;i<1000;i++) {
     static char str[1024];
     Octuple oc = rndo(rng);
+    tlfloat_snprintf(str, 8, "%.80_256g", oc);
     tlfloat_snprintf(str, sizeof(str), "%.80_256g", oc);
     Octuple ot = tlfloat_strtoo(str, nullptr);
     if (!cmpo(oc, ot, 1)) {

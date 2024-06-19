@@ -21,14 +21,6 @@ namespace tlfloat {
     static constexpr bool xisdigit(int c) { return '0' <= c && c <= '9'; }
     static constexpr int xtolower(int c) { if ('A' <= c && c <= 'Z') return c - 'A' + 'a'; else return c; }
 
-    static constexpr int xstrcasecmp(const char *p, const char *q) {
-      for(;;) {
-	if (*p == '\0' && *q == '\0') return 0;
-	if (xtolower(*p) != xtolower(*q)) return *p > *q ? 1 : -1;
-	p++; q++;
-      }
-    }
-
     static constexpr int xstrncasecmp(const char *p, const char *q, size_t n) {
       for(;n>0;n--) {
 	if (*p == '\0' && *q == '\0') return 0;

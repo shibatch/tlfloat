@@ -5,8 +5,9 @@ option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_CUDA_TEST "Build CUDA tester" OFF)
 option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
 option(ENABLE_DOXYGEN "Enable generating documents with Doxygen" OFF)
+option(ENABLE_COVERAGE "Enable generating coverage data" OFF)
 option(ENABLE_ARCH_OPTIMIZATION "Enable architecture-specific optimization upon building library" ON)
-option(ENABLE_EXHAUSTIVE_TESTING "Enable exhastive testing for 16-bit and 32-bit arguments" OFF)
+option(ENABLE_EXHAUSTIVE_TESTING "Enable exhaustive testing for 16-bit and 32-bit arguments" OFF)
 set(SET_COMPILER_SUPPORTS_INT128 "auto" CACHE STRING "Set whether the compiler supports __int128 type")
 set(SET_COMPILER_SUPPORTS_FLOAT128 "auto" CACHE STRING "Set whether the compiler supports __float128 type")
 set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is IEEE binary128")
@@ -17,7 +18,7 @@ project(tlfloat)
 
 set(TLFLOAT_VERSION_MAJOR 1)
 set(TLFLOAT_VERSION_MINOR 3)
-set(TLFLOAT_VERSION_PATCHLEVEL 1)
+set(TLFLOAT_VERSION_PATCHLEVEL 2)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCHLEVEL})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
@@ -236,6 +237,18 @@ endif()
 
 if (NOT ENABLE_ARCH_OPTIMIZATION)
   add_definitions(-DTLFLOAT_DISABLE_ARCH_OPTIMIZATION)
+endif()
+
+# Setting up for coverage report
+
+if (ENABLE_COVERAGE)
+  if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --coverage -fprofile-arcs -ftest-coverage")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fprofile-arcs -ftest-coverage")
+  elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT WIN32)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-instr-generate -fcoverage-mapping")
+  endif()
 endif()
 
 # Setting up Doxygen

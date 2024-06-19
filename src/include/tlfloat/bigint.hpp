@@ -84,13 +84,6 @@ namespace tlfloat {
     template<typename T, int N>
     struct xarray { T e[N]; };
 
-    static constexpr size_t xstrlen(const char *s) {
-      if (!std::is_constant_evaluated()) return strlen(s);
-      const char *p;
-      for(p=s;*p != '\0';p++) ;
-      return p - s;
-    }
-
 #if defined(TLFLOAT_ENABLE_X86INTRIN)
     static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
@@ -769,20 +762,25 @@ namespace tlfloat {
 
     //
 
-    constexpr BigUInt(const char *p, const char **endptr = nullptr, const int base_ = 10) {
+    constexpr BigUInt(const char *p_, const char **endptr = nullptr, const int base_ = 10) {
+      const char *p = p_;
+      bool success = false;
       while(*p == ' ') p++;
-      int base = base_;
-      if (base_ == 0) {
-	if (*p == '0') {
-	  if (*(p+1) == 'x') {
-	    base = 16;
-	    p += 2;
-	  } else {
-	    base = 8;
-	    p++;
-	  }
-	} else base = 10;
+      bool sign = false;
+      if (*p == '-') {
+	p++; sign = true;
+      } else if (*p == '+') {
+	p++;
       }
+      int base = base_;
+      if (*p == '0' && (*(p+1) == 'x' || *(p+1) == 'X') && (base_ == 0 || base_ == 16)) {
+	base = 16; p += 2;
+      } else if (*p == '0' && (base_ == 0 || base_ == 8)) {
+	base =  8; p += 1; success = true;
+      } else if (base_ == 0) {
+	base = 10;
+      }
+
       if (base < 2 || base > 36) { low = high = 0; return; }
 
       BigUInt r;
@@ -803,10 +801,12 @@ namespace tlfloat {
 	  r = r * d + u; u = 0; d = 1;
 	}
 	p++;
+	success = true;
       }
       r = r * d + u;
       low = r.low; high = r.high;
-      if (endptr) *endptr = p;
+      if (endptr) *endptr = success ? p : p_;
+      if (sign) *this = 1 + ~(*this);
     }
 
     class Montgomery {
@@ -1049,7 +1049,7 @@ namespace tlfloat {
     }
 
     constexpr BigInt pow(BigUInt<N> e, const BigUInt<N>& m = 0, BigUInt<N> recm = 0) const {
-      BigInt p = abs().u.pow(e, m, recm);
+      BigInt p = (BigInt)abs().u.pow(e, m, recm);
       if (isNegative() && (e.getWord(0) & 1) == 1) p = -p;
       return p;
     }
@@ -1208,11 +1208,7 @@ namespace tlfloat {
     //
 
     constexpr BigInt(const char *p, const char **endptr = nullptr, const int base = 10) {
-      bool sign = false;
-      while(*p == ' ') p++;
-      if (*p == '-') { p++; sign = true; }
-      u = BigUInt<N>(p, endptr);
-      if (sign) u = -u;
+      u = BigUInt<N>(p, endptr, base);
     }
 
     TLFLOAT_NOINLINE static int snprint(char *cbuf, size_t bufsize, BigInt<N> value, char typespec = 'd',
