@@ -60,7 +60,7 @@ pipeline {
 			 rm -rf build
  			 mkdir build
 			 cd build
-			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_VALGRIND=False -DENABLE_ASAN=False ..
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_ASAN=False ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j `nproc`
@@ -81,7 +81,7 @@ pipeline {
 			 rm -rf build
  			 mkdir build
 			 cd build
-			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_VALGRIND=False -DENABLE_ASAN=True ..
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_ASAN=True ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j `nproc`
@@ -102,7 +102,7 @@ pipeline {
 			 rm -rf build
  			 mkdir build
 			 cd build
-			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_VALGRIND=False ..
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j `nproc`
@@ -123,7 +123,7 @@ pipeline {
 			 rm -rf build
  			 mkdir build
 			 cd build
-			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_VALGRIND=False -DENABLE_ASAN=True ..
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_ASAN=True ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j `nproc`
@@ -217,6 +217,27 @@ pipeline {
                 	 echo "i386 gcc-12 on" `hostname`
 			 export CC=gcc-12
 			 export CXX=g++-12
+			 rm -rf build
+ 			 mkdir build
+			 cd build
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
+			 cmake -E time ninja
+		         export CTEST_OUTPUT_ON_FAILURE=TRUE
+		         ctest -j `nproc`
+			 '''
+            	     }
+                }
+
+                stage('riscv linux gcc-13') {
+            	     agent { label 'riscv && ubuntu23' }
+                     options { skipDefaultCheckout() }
+            	     steps {
+                         cleanWs()
+                         checkout scm
+	    	     	 sh '''
+                	 echo "riscv gcc-13 on" `hostname`
+			 export CC=gcc-13
+			 export CXX=g++-13
 			 rm -rf build
  			 mkdir build
 			 cd build

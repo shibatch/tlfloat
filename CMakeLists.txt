@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-option(ENABLE_VALGRIND "Enable testing with valgrind" ON)
+option(BUILD_TESTS "Build tests" ON)
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_CUDA_TEST "Build CUDA tester" OFF)
 option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
