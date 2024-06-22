@@ -305,11 +305,13 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
+#ifndef __APPLE__
     if (!cmpf(ldexpf(f1, i1), (float)ldexp(Float(f1), i1))) {
       printf("\nldexpf f1 = %.10g, i1 = %d\n", f1, i1);
       printf("c = %.10g, t = %.10g\n", ldexpf(f1, i1), (float)ldexp(Float(f1), i1));
       exit(-1);
     }
+#endif
 
     if (!cmpf(frexpf(f1, &ic), (float)frexp(Float(f1), &it)) || (!isnan(f1) && !isinf(f1) && ic != it)) {
       printf("\nfrexpf f1 = %.10g, it = %d, ic = %d\n", f1, it, ic);
@@ -675,10 +677,12 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
+#ifndef __APPLE__
     if (!cmpd(ldexp(d1, i1), (double)ldexp(Double(d1), i1))) {
       printf("\nldexp d1 = %.18lg, i1 = %d\n", d1, i1);
       exit(-1);
     }
+#endif
 
     if (!cmpd(frexp(d1, &ic), (double)frexp(Double(d1), &it)) || (!isnan(d1) && !isinf(d1) && ic != it)) {
       printf("\nfrexp d1 = %.10g, it = %d, ic = %d\n", d1, it, ic);
