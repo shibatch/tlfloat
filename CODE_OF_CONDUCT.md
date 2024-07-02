@@ -1,17 +1,35 @@
 
-# TLFloat Community Guidelines (version 0.2)
+# TLFloat Community Guidelines (version 0.3)
 
 
 ## Purpose and positioning of these guidelines
 
 These guidelines summarize the standards of practice that the
 participating members of the project are expected to follow in order
-to facilitate the promotion and operation of the project. More
-specifically, one of the purposes of establishing these guidelines is
-to prevent conflicts among the members.
+to facilitate the promotion and operation of the project.
+
+More specifically, one of the purposes of establishing these
+guidelines is to prevent conflicts among the members.
+
+In addition, if a company is using this software for commercial
+purposes, such as bundling it with their products for sale, and wishes
+this software to be maintained continuously, they should provide
+financial support to this project. The "burnout" of OSS developers is
+a frequently discussed topic, but the real problem is that companies
+that use OSS commercially do not financially support open source
+projects. Development and maintenance of OSS cannot proceed unless
+someone contributes resources, and the role of providing resources
+free of charge should not be imposed on those who have been developing
+OSS. Also, by the time each prominent OSS has achieved usable
+performance by commercial standards, the developers or their employers
+have had to bear the development resources. Even if a company does not
+expect continuous maintenance of OSS, it is natural that a company
+that uses OSS commercially should bear a part of the development
+resources up to that point.
 
 These guidelines are not a set of rules, and no penalties or other
-consequences for violations are set forth in this guideline.
+consequences for violations are set forth in this guideline. Each
+member may completely disregard these guidelines if he/she wishes.
 
 
 ## The guidelines
@@ -42,7 +60,7 @@ consequences for violations are set forth in this guideline.
     penal provisions.
 
 
-### Keeping calm and fair discussion
+### Keeping calm and logical discussion
 
 * Each member should refrain from posting a comment that is considered
   likely to cause strong emotions in those who read the comment.
@@ -61,10 +79,10 @@ consequences for violations are set forth in this guideline.
 * Each member of the project should treat another member equally at
   this point in time.
   * In principle, affirmative action is not supported in this project.
-  * Imposing disadvantages on members who do not support affirmative
-    action is production of new inequities and should be avoided.
-  * If affirmative action must be taken, the disadvantage for it
-    should be borne entirely by the supporters of affirmative action.
+    Imposing disadvantages on members who do not support affirmative
+    action is production of new inequities and should be avoided. If
+    affirmative action must be taken, the disadvantage for it should
+    be borne entirely by the supporters of affirmative action.
 
 
 ### To resolve the problem throughout the community
