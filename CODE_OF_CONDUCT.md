@@ -17,7 +17,7 @@ guidelines is to prevent conflicts among the members.
 In addition, if a company is using this software for commercial
 purposes, such as bundling it with their products for sale, and wishes
 this software to be maintained continuously, they should provide
-financial support to this project. The "burnout" of OSS developers is
+financial support to this project. The "burn out" of OSS developers is
 a frequently discussed topic, but the real problem is that companies
 that use OSS commercially do not financially support open source
 projects. Development and maintenance of OSS cannot proceed unless
@@ -26,9 +26,9 @@ free of charge should not be imposed on those who have been developing
 OSS. Also, by the time each prominent OSS has achieved usable
 performance by commercial standards, the developers or their employers
 have had to bear the development resources. Even if a company does not
-expect continuous maintenance of OSS, it is natural that a company
-that uses OSS commercially should bear a part of the development
-resources up to that point.
+expect continuous maintenance of OSS, it should be natural that a
+company that uses OSS commercially should bear a part of the
+development resources up to that point.
 
 Let me explain in simpler language. Imagine that you are offered a
 free lunch somewhere. In such a case, a rather large number of people
@@ -38,24 +38,31 @@ such people is much smaller. And then there are those who sell what is
 provided free of charge to others at a price. Certainly, as a free
 lunch provider, we don't forbid that, but isn't that making too much
 use of the generosity? And when we stop offering free lunch, people
-say we have "burned out". If those who are making a profit give some
-of it back, then we can continue to offer free lunches. I think
-everyone would be happier that way, don't you? This is what I mean.
-You may feel there is less incentive to pay for software because,
-unlike lunch, which has substance, software is only information and
-has no substance. However, there are people of substance involved in
-the development and maintenance of software, and that resources of
-substance are committed for this purpose.
+say we have "burned out". Is it appropriate to call it a "burn out"
+when the resources to provide free lunch have been exhausted? If those
+who are making a profit give some of it back, then we can continue to
+offer free lunches. I think everyone would be happier that way, don't
+you? This is what I mean. Unlike receiving a free lunch that has
+substance, downloading software may seem like less of an incentive to
+pay a fee because you cannot see the face of the developer and the
+software is only information and not substance. However, there are
+real people involved in the development and maintenance of the
+software, and real resources are committed for this purpose.
 
 Some may argue that if that is the case, then we should just make the
-license noncommercial. However, if commercial use is prohibited, even
-with conditions, it will require complicated deliberations within the
-company, and commercial use will not occur at all. It is undeniable
-that OSS and free software have become popular because they can be
-used free of charge. Therefore, I believe that social benefit would be
-maximized by allowing nominally free commercial use, and by raising
-awareness that it is only natural to return a portion of the profits
-to the project as a matter of principle.
+license noncommercial. However, if we prohibit commercial use, even if
+conditionally, adopting the software will require complex
+deliberations within the company. As a result, commercial use will not
+occur at all. It is undeniable that OSS and free software have become
+popular because they can be used free of charge. But, if it says that
+receiving a free service does not obligate you to do anything, is it
+really appropriate to do absolutely nothing after receiving the free
+service?
+
+Therefore, I believe that social benefit would be maximized by
+allowing nominally free commercial use, and by raising awareness that
+it is only natural to return a portion of the profits to the project
+as a matter of principle.
 
 
 ## The guidelines
