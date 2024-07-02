@@ -6,7 +6,10 @@
 
 These guidelines summarize the standards of practice that the
 participating members of the project are expected to follow in order
-to facilitate the promotion and operation of the project.
+to facilitate the promotion and operation of the project. These
+guidelines are not a set of rules, and no penalties or other
+consequences for violations are set forth in this guideline. Each
+member may completely disregard these guidelines if he/she wishes.
 
 More specifically, one of the purposes of establishing these
 guidelines is to prevent conflicts among the members.
@@ -27,9 +30,32 @@ expect continuous maintenance of OSS, it is natural that a company
 that uses OSS commercially should bear a part of the development
 resources up to that point.
 
-These guidelines are not a set of rules, and no penalties or other
-consequences for violations are set forth in this guideline. Each
-member may completely disregard these guidelines if he/she wishes.
+Let me explain in simpler language. Imagine that you are offered a
+free lunch somewhere. In such a case, a rather large number of people
+would say, "Who is covering the cost of this lunch? Let me bear the
+cost of what I eat." But when it comes to using OSS, the number of
+such people is much smaller. And then there are those who sell what is
+provided free of charge to others at a price. Certainly, as a free
+lunch provider, we don't forbid that, but isn't that making too much
+use of the generosity? And when we stop offering free lunch, people
+say we have "burned out". If those who are making a profit give some
+of it back, then we can continue to offer free lunches. I think
+everyone would be happier that way, don't you? This is what I mean.
+You may feel there is less incentive to pay for software because,
+unlike lunch, which has substance, software is only information and
+has no substance. However, there are people of substance involved in
+the development and maintenance of software, and that resources of
+substance are committed for this purpose.
+
+Some may argue that if that is the case, then we should just make the
+license noncommercial. However, if commercial use is prohibited, even
+with conditions, it will require complicated deliberations within the
+company, and commercial use will not occur at all. It is undeniable
+that OSS and free software have become popular because they can be
+used free of charge. Therefore, I believe that social benefit would be
+maximized by allowing nominally free commercial use, and by raising
+awareness that it is only natural to return a portion of the profits
+to the project as a matter of principle.
 
 
 ## The guidelines
