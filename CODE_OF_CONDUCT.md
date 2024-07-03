@@ -1,5 +1,5 @@
 
-# TLFloat Community Guidelines (version 0.3)
+# TLFloat Community Guidelines (version 0.4)
 
 
 ## Purpose and positioning of these guidelines
@@ -16,19 +16,27 @@ guidelines is to prevent conflicts among the members.
 
 In addition, if a company is using this software for commercial
 purposes, such as bundling it with their products for sale, and wishes
-this software to be maintained continuously, they should provide
-financial support to this project. The "burn out" of OSS developers is
-a frequently discussed topic, but the real problem is that companies
-that use OSS commercially do not financially support open source
-projects. Development and maintenance of OSS cannot proceed unless
-someone contributes resources, and the role of providing resources
-free of charge should not be imposed on those who have been developing
-OSS. Also, by the time each prominent OSS has achieved usable
-performance by commercial standards, the developers or their employers
-have had to bear the development resources. Even if a company does not
-expect continuous maintenance of OSS, it should be natural that a
-company that uses OSS commercially should bear a part of the
-development resources up to that point.
+this software to be maintained continuously, we believe they should
+provide financial support to this project. The members of this project
+are asked to help raise awareness to make this happen. In particular,
+if you participate in this project as a member of a company that makes
+commercial use of this software, we would greatly appreciate your
+understanding of the purpose of these guidelines.
+
+
+## Rationale
+
+The "burnout" of OSS developers is a frequently discussed topic, but
+the real problem is that companies that use OSS commercially do not
+financially support open source projects. Development and maintenance
+of OSS cannot proceed unless someone contributes resources, and the
+role of providing resources free of charge should not be imposed on
+those who have been developing OSS. Also, by the time each prominent
+OSS has achieved usable performance by commercial standards, the
+developers or their employers have had to bear the development
+resources. Even if a company does not expect continuous maintenance of
+OSS, it should be natural that a company that uses OSS commercially
+bear a part of the development resources up to that point.
 
 Let me explain in simpler language. Imagine that you are offered a
 free lunch somewhere. In such a case, a rather large number of people
@@ -38,31 +46,59 @@ such people is much smaller. And then there are those who sell what is
 provided free of charge to others at a price. Certainly, as a free
 lunch provider, we don't forbid that, but isn't that making too much
 use of the generosity? And when we stop offering free lunch, people
-say we have "burned out". Is it appropriate to call it a "burn out"
+say we have "burned out". Is it appropriate to call it a "burnout"
 when the resources to provide free lunch have been exhausted? If those
 who are making a profit give some of it back, then we can continue to
 offer free lunches. I think everyone would be happier that way, don't
-you? This is what I mean. Unlike receiving a free lunch that has
-substance, downloading software may seem like less of an incentive to
-pay a fee because you cannot see the face of the developer and the
-software is only information and not substance. However, there are
-real people involved in the development and maintenance of the
-software, and real resources are committed for this purpose.
+you? This is what I mean.
+
+Unlike receiving a free lunch that has substance, downloading software
+may seem like less of an incentive to pay a fee because you cannot see
+the face of the developer and the software is only information and not
+substance. However, there are real people involved in the development
+and maintenance of the software, and real resources are committed for
+this purpose.
 
 Some may argue that if that is the case, then we should just make the
 license noncommercial. However, if we prohibit commercial use, even if
 conditionally, adopting the software will require complex
-deliberations within the company. As a result, commercial use will not
-occur at all. It is undeniable that OSS and free software have become
-popular because they can be used free of charge. But, if it says that
+deliberations within the company. Moreover, a large part of these
+deliberations is devoted to whether and how the software can be used
+free of charge. Companies are, after all, profit maximizing
+organizations, and the conclusion tends to be that what can be used
+for free is used for free to the maximum extent possible, while
+software that is not free for commercial use is not used much. There
+used to be many free-of-charge software products that prohibited
+commercial use, but they have been abandoned. This is, in a sense, the
+tragedy of the commons, and capitalism cannot optimize the use of
+OSS. A license that prohibits commercial use does not solve the
+problem either.
+
+It is undeniable that OSS and free software have become popular
+because they can be used free of charge. But, if it says that
 receiving a free service does not obligate you to do anything, is it
 really appropriate to do absolutely nothing after receiving the free
-service?
+service? If something is offered free of charge as a favor, it would
+be better to pay for it in some cases, even if it is clearly marked
+free of charge. And the amount needed by OSS developers should be
+small enough compared to what those companies usually spend on other
+deals. Curiously, there seems to be a tendency to understate labor
+costs that have already been agreed to be paid and to overstate new
+costs that will be incurred and paid externally.
 
-Therefore, I believe that social benefit would be maximized by
-allowing nominally free commercial use, and by raising awareness that
-it is only natural to return a portion of the profits to the project
-as a matter of principle.
+The problem of developer "burnout" becomes a problem because there is
+still commercial value in the software. If the software has no value
+anymore, it would not be called "burnout." In such a case, the project
+simply "fades away" without anyone noticing. Would you continue to
+work if no one pays you for the work you do even though there is a
+demand for your work? You would quit, wouldn't you? That is not
+usually called "burnout." It is not nice to talk about a user's
+problem as if it were the developer's problem.
+
+Therefore, I believe that social benefit can be maximized by allowing
+nominally free commercial use, and by raising awareness that it is
+only natural to return a portion of the profits to the project as a
+matter of principle.
 
 
 ## The guidelines
