@@ -1,30 +1,12 @@
 
-# TLFloat Community Guidelines (version 0.4)
+# TLFloat Community Guidelines (version 0.5)
+
+Copyright Naoki Shibata 2024.
+
+Distribution license for this particular work is not determined yet.
 
 
-## Purpose and positioning of these guidelines
-
-These guidelines summarize the standards of practice that the
-participating members of the project are expected to follow in order
-to facilitate the promotion and operation of the project. These
-guidelines are not a set of rules, and no penalties or other
-consequences for violations are set forth in this guideline. Each
-member may completely disregard these guidelines if he/she wishes.
-
-More specifically, one of the purposes of establishing these
-guidelines is to prevent conflicts among the members.
-
-In addition, if a company is using this software for commercial
-purposes, such as bundling it with their products for sale, and wishes
-this software to be maintained continuously, we believe they should
-provide financial support to this project. The members of this project
-are asked to help raise awareness to make this happen. In particular,
-if you participate in this project as a member of a company that makes
-commercial use of this software, we would greatly appreciate your
-understanding of the purpose of these guidelines.
-
-
-## Rationale
+## Preface
 
 The "burnout" of OSS developers is a frequently discussed topic, but
 the real problem is that companies that use OSS commercially do not
@@ -44,13 +26,13 @@ would say, "Who is covering the cost of this lunch? Let me bear the
 cost of what I eat." But when it comes to using OSS, the number of
 such people is much smaller. And then there are those who sell what is
 provided free of charge to others at a price. Certainly, as a free
-lunch provider, we don't forbid that, but isn't that making too much
-use of the generosity? And when we stop offering free lunch, people
-say we have "burned out". Is it appropriate to call it a "burnout"
-when the resources to provide free lunch have been exhausted? If those
-who are making a profit give some of it back, then we can continue to
-offer free lunches. I think everyone would be happier that way, don't
-you? This is what I mean.
+lunch provider, I don't forbid that, but isn't that making too much
+use of the generosity? And when I stop offering free lunch, people say
+I have "burned out." Is it appropriate to call it a "burnout" when the
+resources to provide free lunch have been exhausted? If those who are
+making a profit give some of it back, then I can continue to offer
+free lunches. I think everyone would be happier that way, don't you?
+This is what I mean.
 
 Unlike receiving a free lunch that has substance, downloading software
 may seem like less of an incentive to pay a fee because you cannot see
@@ -59,8 +41,8 @@ substance. However, there are real people involved in the development
 and maintenance of the software, and real resources are committed for
 this purpose.
 
-Some may argue that if that is the case, then we should just make the
-license noncommercial. However, if we prohibit commercial use, even if
+Some may argue that if that is the case, then I should just make the
+license noncommercial. However, if I prohibit commercial use, even if
 conditionally, adopting the software will require complex
 deliberations within the company. Moreover, a large part of these
 deliberations is devoted to whether and how the software can be used
@@ -69,10 +51,10 @@ organizations, and the conclusion tends to be that what can be used
 for free is used for free to the maximum extent possible, while
 software that is not free for commercial use is not used much. There
 used to be many free-of-charge software products that prohibited
-commercial use, but they have been abandoned. This is, in a sense, the
-tragedy of the commons, and capitalism cannot optimize the use of
-OSS. A license that prohibits commercial use does not solve the
-problem either.
+commercial use, but many of them were not used much and eventually
+abandoned. This is, in a sense, the tragedy of the commons, and
+capitalism cannot optimize the use of OSS. A license that prohibits
+commercial use does not solve the problem either.
 
 It is undeniable that OSS and free software have become popular
 because they can be used free of charge. But, if it says that
@@ -95,10 +77,43 @@ demand for your work? You would quit, wouldn't you? That is not
 usually called "burnout." It is not nice to talk about a user's
 problem as if it were the developer's problem.
 
-Therefore, I believe that social benefit can be maximized by allowing
-nominally free commercial use, and by raising awareness that it is
-only natural to return a portion of the profits to the project as a
-matter of principle.
+Therefore, I believe that social benefit can be maximized by nominally
+allowing companies to use software free of charge for commercial use,
+but still increasing awareness that a portion of the profits should be
+returned to the project as a matter of morality. And I expect
+companies to create and follow such a code of conduct.
+
+Don't worry. You and companies will not be banned from this project
+for violation.
+
+
+## Purpose and positioning of these guidelines
+
+These guidelines summarize the standards of practice that the
+participating members of the project are expected to follow in order
+to facilitate the promotion and operation of the project. These
+guidelines are not a set of rules, and no penalties or other
+consequences for violations are set forth in this guideline. Each
+member may completely disregard these guidelines if he/she wishes.
+
+The primary purpose of establishing these guidelines is to encourage
+companies that make commercial use of OSS or free software to create
+and adhere to the following code of conduct : if a company is making
+commercial use of OSS or free software, such as bundling it with their
+products for sale, and wishes the software to be maintained, they
+should provide continuous financial support for the project while the
+commercial use continues. The members of this project are asked to
+help raise awareness to make this happen. In particular, if you
+participate in this project as a member of a company that makes
+commercial use of this software, we would greatly appreciate your
+understanding of the purpose of these guidelines.
+
+The second purpose is to prevent conflicts among the members. Although
+this project is a software development project, political discussions
+may be sometimes required to keep the project moving forward. Some of
+the guidelines summarize the items that each member is expected to
+follow in order to avoid conflicts among members and to promote calm
+and smooth discussions.
 
 
 ## The guidelines
@@ -107,7 +122,7 @@ matter of principle.
 
 * Project members strive to promote the awareness that commercial use
   of open source or free software for free without any contribution is
-  free-riding and shameful.
+  free-riding and should be avoided whenever possible.
 
 * Project members strive to promote the awareness that if a company or
   other organization makes a profit from using open source or free
@@ -137,7 +152,7 @@ matter of principle.
 * Each member should refrain from posting a comment that is not in
   line with the project's objectives.
 
-* Each member of the project should not change the way he/she treat
+* Each member of the project should not change the way he/she treats
   another member for any of the following reasons.
   * Discriminatory reasons (attributes that were determined at the
     time of the person's birth and cannot be changed)
@@ -146,10 +161,10 @@ matter of principle.
   * Inequalities that existed in the past
 
 * Each member of the project should treat another member equally at
-  this point in time.
+  the time the action is taken.
   * In principle, affirmative action is not supported in this project.
     Imposing disadvantages on members who do not support affirmative
-    action is production of new inequities and should be avoided. If
+    action is production of new inequalities and should be avoided. If
     affirmative action must be taken, the disadvantage for it should
     be borne entirely by the supporters of affirmative action.
 
@@ -162,3 +177,8 @@ matter of principle.
 
 * Project members should not leave it up to the project maintainers to
   resolve the problems.
+  * The relationship between the maintainers and the other members is
+    not that of parents and children. The mainteners only have the
+    privileges of the websites related to the project and basically
+    what you cannot do is not possible for the maintainers either.
+
