@@ -1,9 +1,11 @@
 
-# TLFloat Community Guidelines (version 0.5)
+# Community guidelines to ensure fair rewards for OSS projects
 
-Copyright Naoki Shibata 2024.
+Version 0.6, 2024-07-07
 
-Distribution license for this particular work is not determined yet.
+Copyright Naoki Shibata 2024. https://github.com/shibatch/gtefr
+
+This document is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
 
 ## Preface
@@ -44,7 +46,10 @@ this purpose.
 Some may argue that if that is the case, then I should just make the
 license noncommercial. However, if I prohibit commercial use, even if
 conditionally, adopting the software will require complex
-deliberations within the company. Moreover, a large part of these
+deliberations within the company. If the company is required to pay a
+certain percentage of the profits earned, the paperwork for this would
+become cumbersome, and it would also be necessary to publish the
+figures on which the payment is based. A large part of these
 deliberations is devoted to whether and how the software can be used
 free of charge. Companies are, after all, profit maximizing
 organizations, and the conclusion tends to be that what can be used
@@ -62,8 +67,11 @@ receiving a free service does not obligate you to do anything, is it
 really appropriate to do absolutely nothing after receiving the free
 service? If something is offered free of charge as a favor, it would
 be better to pay for it in some cases, even if it is clearly marked
-free of charge. And the amount needed by OSS developers should be
-small enough compared to what those companies usually spend on other
+free of charge. In some cases, companies are making huge profits by
+using OSS and free software. Isn't it strange that it is normal not to
+pay for the use of OSS and free software at all even in such cases?
+And the amount needed by OSS developers should be small enough
+compared to what those companies usually spend on other
 deals. Curiously, there seems to be a tendency to understate labor
 costs that have already been agreed to be paid and to overstate new
 costs that will be incurred and paid externally.
@@ -87,26 +95,32 @@ Don't worry. You and companies will not be banned from this project
 for violation.
 
 
-## Purpose and positioning of these guidelines
+## Positioning and purpose of these guidelines
 
 These guidelines summarize the standards of practice that the
 participating members of the project are expected to follow in order
 to facilitate the promotion and operation of the project. These
 guidelines are not a set of rules, and no penalties or other
 consequences for violations are set forth in this guideline. Each
-member may completely disregard these guidelines if he/she wishes.
+member may completely disregard these guidelines if he/she wishes. To
+explain a little more for those who still feel uneasy about this, we
+recognize that if you are only using the products of this project, it
+does not mean that you are participating in the community, and you do
+not need to concern yourself with these community guidelines at all.
+In addition, there is no provision in the software distribution
+license that prohibits removal of these guidelines in derivative
+projects.
 
 The primary purpose of establishing these guidelines is to encourage
 companies that make commercial use of OSS or free software to create
 and adhere to the following code of conduct : if a company is making
 commercial use of OSS or free software, such as bundling it with their
-products for sale, and wishes the software to be maintained, they
-should provide continuous financial support for the project while the
-commercial use continues. The members of this project are asked to
-help raise awareness to make this happen. In particular, if you
-participate in this project as a member of a company that makes
-commercial use of this software, we would greatly appreciate your
-understanding of the purpose of these guidelines.
+products for sale, they should provide continuous financial support
+for the project while the commercial use continues. The members of
+this project are asked to help raise awareness to make this happen. In
+particular, if you participate in this project as a member of a
+company that makes commercial use of this software, we would greatly
+appreciate your understanding of the purpose of these guidelines.
 
 The second purpose is to prevent conflicts among the members. Although
 this project is a software development project, political discussions
@@ -124,24 +138,35 @@ and smooth discussions.
   of open source or free software for free without any contribution is
   free-riding and should be avoided whenever possible.
 
-* Project members strive to promote the awareness that if a company or
-  other organization makes a profit from using open source or free
-  software, it is natural for that organization to return a portion of
-  the profit to the relevant projects.
+* Project members strive to promote the awareness that it is natural
+  for companies and other organization that make a profit from the
+  commercial use of open source or free software to return a portion
+  of the profit to the relevant projects as long as the commercial use
+  continues.
 
 * Project members strive to promote the awareness that it is natural
-  for companies and other organizations to contribute to relevant
-  projects if they use open source or free software, and that those
-  organizations should give high recognition to their members who
-  contribute to open source or free software projects on the job.
+  for companies and other organizations that use open source or free
+  software to contribute to relevant projects, and the organizations
+  should give high recognition to their members who contribute to open
+  source or free software projects on the job.
+
+* Project members strive to promote that if a company agrees with the
+  intent of these guidelines, it should post a notice so that it can
+  be recognized by the general public.
 
 
 ### Compliance with laws
 
-* Each member shall comply with the laws of his/her own place of
+* Each member should comply with the laws of his/her own place of
   residence.
-  * Each member should abide by laws even if the laws do not have
-    penal provisions.
+  * Each member should abide by laws of his/her own place of residence
+    even if the laws do not have penal provisions.
+
+* Each member should not follow any request of anti-social groups or
+  cults.
+  * The terms "antisocial organization" and "cult" herein refer to
+    organizations officially recognized as such in each member's place
+    of residence. The same applies hereinafter.
 
 
 ### Keeping calm and logical discussion
@@ -158,6 +183,11 @@ and smooth discussions.
     time of the person's birth and cannot be changed)
   * Ideology or beliefs that are not relevant to the purpose of the
     project
+    * Whether or not each participant belongs to an antisocial group
+      or cult is always regarded as relevant to the purpose of the
+      project. The project may ban a participant who is found to be a
+      member of an anti-social organization or cult for the sole
+      reason of his/her membership in such an organization.
   * Inequalities that existed in the past
 
 * Each member of the project should treat another member equally at
