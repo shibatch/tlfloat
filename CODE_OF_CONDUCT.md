@@ -1,7 +1,7 @@
 
 # Community guidelines to ensure fair rewards for OSS projects
 
-Version 0.6, 2024-07-07
+Version 0.7, 2024-07-07
 
 Copyright Naoki Shibata 2024. https://github.com/shibatch/gtefr
 
@@ -9,6 +9,14 @@ This document is licensed under [CC BY-SA 4.0](https://creativecommons.org/licen
 
 
 ## Preface
+
+In OSS projects, software needs to be maintained continuously, and
+this requires a continuous effort to be devoted to the
+maintenance. However, OSS developers have little or no financial
+incentive to continue maintenance and development. As a result, OSS
+developers stop maintaining their projects much sooner than users
+expect, often abruptly. This problem is called the OSS developer
+"burnout" problem.
 
 The "burnout" of OSS developers is a frequently discussed topic, but
 the real problem is that companies that use OSS commercially do not
