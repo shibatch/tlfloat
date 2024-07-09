@@ -3,7 +3,7 @@
 
 Version 0.7, 2024-07-07
 
-Copyright Naoki Shibata 2024. https://github.com/shibatch/gtefr
+Copyright Naoki Shibata 2024. https://github.com/shibatch/nofreelunch
 
 This document is licensed under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
 
