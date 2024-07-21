@@ -37,6 +37,12 @@ namespace {
 	break;
       }
 
+      if (*fmt == '%') {
+	outlen += (*consumer)("%", 1, arg);
+	fmt++;
+	continue;
+      }
+
       // Read flags
 
       bool flag_left = false, flag_sign = false, flag_blank = false;

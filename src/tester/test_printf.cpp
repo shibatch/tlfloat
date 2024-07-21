@@ -935,9 +935,9 @@ using namespace std;
 int main(int argc, char **argv) {
   auto rng = createPreferredRNG();
   int var;
-  doTest("head %d [%*g] [%.*g] [%*.*g] %d tail", 123, 8, 100.1234567, 7, 101.1234567, 11, 9, 102.1234567, 321);
-  doTest("head %d [%*d] [%.*d] [%*.*d] %d tail", 123, 8, 100, 7, 101, 11, 9, 102, 321);
-  doTest("head %d [%*s] [%.*s] [%*.*s] %d tail", 123, 8, "abc", 7, "def", 11, 9, "ghi", 321);
+  doTest("head %d [%*g] [%.*g] [%*.*g] %% %d tail", 123, 8, 100.1234567, 7, 101.1234567, 11, 9, 102.1234567, 321);
+  doTest("head %d [%*d] [%.*d] [%*.*d] %%%d tail", 123, 8, 100, 7, 101, 11, 9, 102, 321);
+  doTest("head %d [%*s] [%.*s] [%*.*s] %d%% tail", 123, 8, "abc", 7, "def", 11, 9, "ghi", 321);
   doTest("head %.8d %hhd %hd %d %ld %lld %jd %zd %td %.4d tail",
 	 123, (signed char)1, (short int)2, (int)3, (long int)4, (long long int)5, (intmax_t)6, (size_t)7, (ptrdiff_t) 8, 321);
   doTest("head %.8d %hhd %hd %d %ld %lld %jd %zd %td %.4d tail",

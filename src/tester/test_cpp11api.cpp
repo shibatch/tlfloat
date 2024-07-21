@@ -527,6 +527,43 @@ void doTest(const string &s1, const string &s2) {
   checkStr("0x1p-16494", buf1, "FLT128_DENORM_MIN");
   tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", FLT128_EPSILON);
   checkStr("0x1p-112", buf1, "FLT128_EPSILON");
+
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_Eo);
+  checkStr("0x1.5bf0a8b1457695355fb8ac404e7a79e3b1738b079c5a6d2b53c26c8228dp+1", buf1, "TLFLOAT_M_Eo");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_LOG2Eo);
+  checkStr("0x1.71547652b82fe1777d0ffda0d23a7d11d6aef551bad2b4b1164a2cd9a34p+0", buf1, "TLFLOAT_M_LOG2Eo");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_LOG10Eo);
+  checkStr("0x1.bcb7b1526e50e32a6ab7555f5a67b8647dc68c048b934404747e5a89ef2p-2", buf1, "TLFLOAT_M_LOG10Eo");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_LN2o);
+  checkStr("0x1.62e42fefa39ef35793c7673007e5ed5e81e6864ce5316c5b141a2eb7175p-1", buf1, "TLFLOAT_M_LN2o");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_LN10o);
+  checkStr("0x1.26bb1bbb5551582dd4adac5705a61451c51fd9f3b4bbf21d078c3d0403ep+1", buf1, "TLFLOAT_M_LN10o");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_PIo);
+  checkStr("0x1.921fb54442d18469898cc51701b839a252049c1114cf98e804177d4c762p+1", buf1, "TLFLOAT_M_PIo");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_PI_2o);
+  checkStr("0x1.921fb54442d18469898cc51701b839a252049c1114cf98e804177d4c762p+0", buf1, "TLFLOAT_M_PI_2o");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_PI_4o);
+  checkStr("0x1.921fb54442d18469898cc51701b839a252049c1114cf98e804177d4c762p-1", buf1, "TLFLOAT_M_PI_4o");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_1_PIo);
+  checkStr("0x1.45f306dc9c882a53f84eafa3ea69bb81b6c52b3278872083fca2c757bd7p-2", buf1, "TLFLOAT_M_1_PIo");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_2_PIo);
+  checkStr("0x1.45f306dc9c882a53f84eafa3ea69bb81b6c52b3278872083fca2c757bd7p-1", buf1, "TLFLOAT_M_2_PIo");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_2_SQRTPIo);
+  checkStr("0x1.20dd750429b6d11ae3a914fed7fd8688281341d7587cea2e7342b06199dp+0", buf1, "TLFLOAT_M_2_SQRTPIo");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_SQRT2o);
+  checkStr("0x1.6a09e667f3bcc908b2fb1366ea957d3e3adec17512775099da2f590b066p+0", buf1, "TLFLOAT_M_SQRT2o");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_M_SQRT1_2o);
+  checkStr("0x1.6a09e667f3bcc908b2fb1366ea957d3e3adec17512775099da2f590b066p-1", buf1, "TLFLOAT_M_SQRT1_2o");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_FLT256_MAX);
+  checkStr("0x1.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffp+262143", buf1, "TLFLOAT_FLT256_MAX");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_FLT256_MIN);
+  checkStr("0x1p-262142", buf1, "TLFLOAT_FLT256_MIN");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_FLT256_DENORM_MIN);
+  checkStr("0x1p-262378", buf1, "TLFLOAT_FLT256_DENORM_MIN");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_FLT256_TRUE_MIN);
+  checkStr("0x1p-262378", buf1, "TLFLOAT_FLT256_TRUE_MIN");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%Oa", TLFLOAT_FLT256_EPSILON);
+  checkStr("0x1p-236", buf1, "TLFLOAT_FLT256_EPSILON");
 }
 
 tlfloat_octuple AGMo(int N) {
