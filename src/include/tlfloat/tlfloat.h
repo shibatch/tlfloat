@@ -675,12 +675,17 @@ struct tlfloat_quad {
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
   tlfloat_quad(const T& i) : value(tlfloat_cast_q_d((double)i)) {}
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
-  explicit operator T() const { return tlfloat_cast_d_q(value); }
+  explicit operator T() const { return (T)tlfloat_cast_d_q(value); }
 
   explicit tlfloat_quad(const tlfloat_int128_t_& i);
   explicit tlfloat_quad(const tlfloat_uint128_t_& u);
   explicit operator tlfloat_int128_t_() const;
   explicit operator tlfloat_uint128_t_() const;
+
+#if !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
+  explicit tlfloat_quad(const struct tlfloat_int128_t& i);
+  explicit tlfloat_quad(const struct tlfloat_uint128_t& u);
+#endif
 
   //
 
@@ -741,12 +746,17 @@ struct tlfloat_octuple {
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
   tlfloat_octuple(const T& i) : value(tlfloat_cast_o_d((double)i)) {}
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
-  explicit operator T() const { return tlfloat_cast_d_o(value); }
+  explicit operator T() const { return (T)tlfloat_cast_d_o(value); }
 
   tlfloat_octuple(const tlfloat_int128_t_& i);
   tlfloat_octuple(const tlfloat_uint128_t_& u);
   explicit operator tlfloat_int128_t_() const;
   explicit operator tlfloat_uint128_t_() const;
+
+#if !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
+  tlfloat_octuple(const struct tlfloat_int128_t& i);
+  tlfloat_octuple(const struct tlfloat_uint128_t& u);
+#endif
 
   //
 
@@ -884,9 +894,9 @@ struct tlfloat_uint128_t {
   template<typename T, typename std::enable_if<(std::is_integral<T>::value &&  std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
   tlfloat_uint128_t(const T& u) : value(tlfloat_cast_u128_u64(u)) {}
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && !std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
-  explicit operator T() const { tlfloat_int128_t_ v; memcpy(&v, &value, sizeof(v)); return tlfloat_cast_i64_i128(v); }
+  explicit operator T() const { tlfloat_int128_t_ v; memcpy(&v, &value, sizeof(v)); return (T)tlfloat_cast_i64_i128(v); }
   template<typename T, typename std::enable_if<(std::is_integral<T>::value &&  std::is_unsigned<T>::value && sizeof(T) <= 8), int>::type = 0>
-  explicit operator T() const { return tlfloat_cast_u64_u128(value); }
+  explicit operator T() const { return (T)tlfloat_cast_u64_u128(value); }
 
 #ifdef __BIGINT_HPP_INCLUDED__
   tlfloat_uint128_t(const tlfloat::BigUInt<7>& d) { memcpy((void *)this, (void *)&d, sizeof(*this)); }
@@ -949,6 +959,10 @@ inline tlfloat_octuple::tlfloat_octuple(const tlfloat_int128_t_& i) : value(tlfl
 inline tlfloat_octuple::tlfloat_octuple(const tlfloat_uint128_t_& u) : value(tlfloat_cast_o_u128(u)) {}
 inline tlfloat_octuple::operator tlfloat_int128_t_() const { return tlfloat_cast_i128_o(value); }
 inline tlfloat_octuple::operator tlfloat_uint128_t_() const { return tlfloat_cast_u128_o(value); }
+#if !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
+inline tlfloat_octuple::tlfloat_octuple(const struct tlfloat_int128_t& i) : value(tlfloat_cast_o_i128(i)) {}
+inline tlfloat_octuple::tlfloat_octuple(const struct tlfloat_uint128_t& u) : value(tlfloat_cast_o_u128(u)) {}
+#endif
 #endif
 
 #if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) || defined(TLFLOAT_DOXYGEN)
@@ -1080,6 +1094,11 @@ inline tlfloat_quad::tlfloat_quad(const tlfloat_int128_t_& i) : value(tlfloat_ca
 inline tlfloat_quad::tlfloat_quad(const tlfloat_uint128_t_& u) : value(tlfloat_cast_q_u128(u)) {}
 inline tlfloat_quad::operator tlfloat_int128_t_() const { return tlfloat_cast_i128_q(value); }
 inline tlfloat_quad::operator tlfloat_uint128_t_() const { return tlfloat_cast_u128_q(value); }
+
+#if !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
+inline tlfloat_quad::tlfloat_quad(const struct tlfloat_int128_t& i) : value(tlfloat_cast_q_i128(i)) {}
+inline tlfloat_quad::tlfloat_quad(const struct tlfloat_uint128_t& u) : value(tlfloat_cast_q_u128(u)) {}
+#endif
 
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_fmaq(const tlfloat_quad x, const tlfloat_quad y, const tlfloat_quad z) { return tlfloat_fmaq(tlfloat_quad_(x), tlfloat_quad_(y), tlfloat_quad_(z)); }
