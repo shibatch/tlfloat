@@ -227,9 +227,9 @@ void doTest(const string &s1, const string &s2) {
   check("f1 + q2", f1 + q2, d1 + d2);
   check("q1 + f2", q1 + f2, d1 + d2);
   check("i1 + q2", i1 + q2, i1 + d2);
-  check("j1 + q2", j1 + q2, (double)j1 + d2);
+  check("j1 + q2", (tlfloat_quad)j1 + q2, (double)j1 + d2);
   check("q1 + i2", q1 + i2, d1 + i2);
-  check("q1 + j2", q1 + j2, d1 + (double)j2);
+  check("q1 + j2", q1 + (tlfloat_quad)j2, d1 + (double)j2);
   q0 = q1; q0 += o2; check("q0 = q1; q0 += o2;", q0, d1 + d2);
   q0 = q1; q0 += q2; check("q0 = q1; q0 += q2;", q0, d1 + d2);
   q0 = q1; q0 += d2; check("q0 = q1; q0 += d2;", q0, d1 + d2);
@@ -241,9 +241,9 @@ void doTest(const string &s1, const string &s2) {
   check("f1 - q2", f1 - q2, d1 - d2);
   check("q1 - f2", q1 - f2, d1 - d2);
   check("i1 - q2", i1 - q2, i1 - d2);
-  check("j1 - q2", j1 - q2, (double)j1 - d2);
+  check("j1 - q2", (tlfloat_quad)j1 - q2, (double)j1 - d2);
   check("q1 - i2", q1 - i2, d1 - i2);
-  check("q1 - j2", q1 - j2, d1 - (double)j2);
+  check("q1 - j2", q1 - (tlfloat_quad)j2, d1 - (double)j2);
   q0 = q1; q0 -= o2; check("q0 = q1; q0 -= o2;", q0, d1 - d2);
   q0 = q1; q0 -= q2; check("q0 = q1; q0 -= q2;", q0, d1 - d2);
   q0 = q1; q0 -= d2; check("q0 = q1; q0 -= d2;", q0, d1 - d2);
@@ -255,9 +255,9 @@ void doTest(const string &s1, const string &s2) {
   check("f1 * q2", f1 * q2, d1 * d2);
   check("q1 * f2", q1 * f2, d1 * d2);
   check("i1 * q2", i1 * q2, i1 * d2);
-  check("j1 * q2", j1 * q2, (double)j1 * d2);
+  check("j1 * q2", (tlfloat_quad)j1 * q2, (double)j1 * d2);
   check("q1 * i2", q1 * i2, d1 * i2);
-  check("q1 * j2", q1 * j2, d1 * (double)j2);
+  check("q1 * j2", q1 * (tlfloat_quad)j2, d1 * (double)j2);
   q0 = q1; q0 *= o2; check("q0 = q1; q0 *= o2;", q0, d1 * d2);
   q0 = q1; q0 *= q2; check("q0 = q1; q0 *= q2;", q0, d1 * d2);
   q0 = q1; q0 *= d2; check("q0 = q1; q0 *= d2;", q0, d1 * d2);
@@ -269,9 +269,9 @@ void doTest(const string &s1, const string &s2) {
   check("f1 / q2", f1 / q2, d1 / d2);
   check("q1 / f2", q1 / f2, d1 / d2);
   check("i1 / q2", i1 / q2, i1 / d2);
-  check("j1 / q2", j1 / q2, (double)j1 / d2);
+  check("j1 / q2", (tlfloat_quad)j1 / q2, (double)j1 / d2);
   check("q1 / i2", q1 / i2, d1 / i2);
-  check("q1 / j2", q1 / j2, d1 / (double)j2);
+  check("q1 / j2", q1 / (tlfloat_quad)j2, d1 / (double)j2);
   q0 = q1; q0 /= o2; check("q0 = q1; q0 /= o2;", q0, d1 / d2);
   q0 = q1; q0 /= q2; check("q0 = q1; q0 /= q2;", q0, d1 / d2);
   q0 = q1; q0 /= d2; check("q0 = q1; q0 /= d2;", q0, d1 / d2);
