@@ -44,21 +44,16 @@ maintenance and development. As a result, OSS developers tend to stop
 maintaining their projects much sooner than users expect, often
 abruptly. This problem is called the OSS developer "burnout"
 problem. To make the OSS ecosystem sustainable, the cost of
-maintenance must continue to be supplied from somewhere. Needless to
-say, the burden of those costs should not be placed on the developers
-and maintainers.
+maintenance must continue to be supplied from somewhere. Downloading
+software may seem like less of an incentive to pay a fee because you
+cannot see the face of the developer and the software is only
+information and not substance. However, there are real people involved
+in the development and maintenance of the software, and real resources
+are committed for this purpose. Needless to say, the burden of those
+costs should not be placed on the developers and maintainers.
 
 
 ### Lack of funds is not the cause of the problem
-
-The problem of developer "burnout" becomes a problem because there is
-still commercial value in the software. If the software has no value
-anymore, it would not be called "burnout." In such a case, the project
-simply "fades away" without anyone noticing. In other words, the
-reason developers "burn out" is not because the funds are nowhere to
-be found, but because the funds do not reach them. In some cases,
-companies are making huge profits by using OSS. If we can get these
-funds to reach the developers, the problem can be solved.
 
 Let me explain in simpler language. Imagine that you are offered a
 free lunch somewhere. In such a case, a rather large number of people
@@ -68,17 +63,25 @@ such people is much smaller. And then there are those who sell what is
 provided free of charge to others at a price. Certainly, as a free
 lunch provider, I don't forbid that, but isn't that making too much
 use of the generosity? And when I stop offering free lunch, people say
-I have "burned out." Is it appropriate to call it a "burnout" when the
-resources to provide free lunch have been exhausted? If those who are
-making a profit give some of it back, then I can continue to offer
-free lunches. I think everyone would be happier that way, don't you?
+I have "burned out." For some reason, people take it for granted that
+I provide a free lunch and that everyone else should receive the lunch
+I provide without paying for it. Is it appropriate to call it a
+"burnout" when the ingredients to prepair free lunch have been
+exhausted? It doesn't have to be me who provides the ingredients for
+the free lunch, does it? If those who are making a profit give some of
+it back, then I can continue to offer free lunches. I think everyone
+would be happier that way, don't you?
 
-Unlike receiving a free lunch that has substance, downloading software
-may seem like less of an incentive to pay a fee because you cannot see
-the face of the developer and the software is only information and not
-substance. However, there are real people involved in the development
-and maintenance of the software, and real resources are committed for
-this purpose.
+The problem of developer "burnout" becomes a problem because there is
+still commercial value in the software. If the software has no value
+anymore, it would not be called "burnout." In such a case, the project
+simply "fades away" without anyone noticing. If no one needs free
+lunch anymore, then no one will have a problem when I stop providing
+free lunch. In other words, the reason developers "burn out" is not
+because the funds are nowhere to be found, but because the funds do
+not reach them. In some cases, companies are making huge profits by
+using OSS. If we can get these funds to reach the developers, the
+problem can be solved.
 
 
 ### Noncommercial license does not solve the problem
@@ -89,9 +92,9 @@ conditionally, adopting the software will require complex
 deliberations within the company. If the company is required to pay a
 certain percentage of the profits earned, the paperwork for this would
 become cumbersome, and it would also be necessary to publish the
-figures on which the payment is based. A large part of these
-deliberations is devoted to whether and how the software can be used
-free of charge.
+figures on which the payment is based. In reality, a large part of
+these deliberations is devoted to whether and how the software can be
+used free of charge.
 
 Here, I would like to explain another concept in economics. Consider
 the case where farmers graze cows on pastureland. If there are too
@@ -122,7 +125,8 @@ offer to make a donation, because even if only their company makes a
 donation, the result will not be much different if other companies do
 not also make donations. As a result, OSS developers have to go around
 on their own to find companies that use their software and ask them
-for donations. This structure of the problem is the same as the
+for donations. There is no way to even know what a reasonable donation
+amount would be. This structure of the problem is the same as the
 tragedy of the commons. A license that prohibits commercial use does
 not solve this problem.
 
@@ -212,31 +216,45 @@ a code of conduct, by its very nature, only prescribes the desired
 behavior of project participants, not the conditions for the use of
 the software. The existence of a code of conduct makes it possible to
 check whether each participant is behaving in a way that is desirable
-for the project. For companies, it is only when their own employees
-participate in a project that they need to comply with the intent of
-the code of conduct, which is usually long after the company has
-started using the software. What our guidelines are requesting is that
-each participant takes action to deter free-riding, and the fact that
-a participant's company is free-riding would only be highlighted if it
-becomes a large problem. In other words, the use of the software
-itself can be started easily, and minor violations can be
+for the project. If companies continue to free-ride on OSS, this will
+become visible to the public and subject to social criticism. It would
+be a serious PR loss for a company if it were to make the news that
+the company gets disciplined in a prominent OSS project. Therefore, we
+can expect that companies will voluntarily make contributions even
+without a request from the project side.
+
+What our guidelines require is that each participant takes action to
+discourage free-riding. Thus, even if a participant's company is
+free-riding, that company will not be immediately denounced. A
+company's free-riding will only be brought to attention if it becomes
+a problem over some extended period of time. For companies, it is only
+when their own employees participate in a project that they need to
+comply with the intent of the code of conduct, which is usually long
+after the company has started using the software. Thus, the use of the
+software itself can be started easily, and minor violations can be
 tolerated. In addition, companies can decide the budget for their
-contribution to OSS projects on their own discretion. This would mean,
-at first glance, that companies could continue to free-ride without
-worrying about the guidelines by silently continuing to use the
-software without having their employees participate in the
-project. However, for companies that use OSS extensively, not being
-involved in the projects at all would cause various practical
-disadvantages. In addition, if the status of OSS use and contribution
-to the project by each company becomes clear, the existence of large
-OSS user companies that continue to free-ride in silence will
-naturally emerge. This also means that only companies that use OSS on
-a large scale will be substantially affected by our guidelines. This
-has the added benefit of expanding the use of OSS by supporting
-companies that use OSS on a small scale. Rather than going around
+contribution to OSS projects on their own discretion.
+
+At first glance, this might seem to mean that companies can continue
+to free-ride without worrying about the guidelines by silently
+allowing their employees to continue using the software without having
+them participate in the project. However, for companies that use OSS
+extensively, not being involved in OSS projects at all would cause
+various practical disadvantages. In addition, if the status of OSS use
+and contribution to the project by each company becomes clear, the
+existence of large OSS user companies that continue to free-ride in
+silence will naturally emerge.
+
+This may also mean that little-known companies will not be subject to
+much public scrutiny, and only well-known companies that use OSS on a
+large scale will be significantly affected by the guidelines. However,
+this has the advantage of supporting companies that use OSS on a small
+scale, thereby expanding the use of OSS. Rather than going around
 pointing out every minor violation, we can expect to bring long-term
 benefits to the OSS ecosystem by fostering companies that use OSS on a
-large scale.
+large scale. What is important is visibility into the use of OSS in
+each company, and for this purpose, it may be reasonable to mandate a
+usage indication in the distribution license.
 
 You might be wondering why our guidelines target only companies, even
 though individuals are also free-riding. This is due to the
@@ -288,7 +306,7 @@ These guidelines summarize the standards of practice that the
 participating members of the project are expected to follow in order
 to facilitate the promotion and operation of the project. These
 guidelines are not a set of rules, and no penalties or other
-consequences for violations are set forth in this guideline. However,
+consequences for violations are set forth in the guidelines. However,
 it is possible that your opinion will not be respected within the
 community if you disagree with or violate these guidelines. Since
 there is no provision in the software distribution license prohibiting
@@ -313,7 +331,7 @@ and smooth discussions.
 
 ## The guidelines
 
-### Striving to change perceptions about the commercial use of OSS and free software
+### Striving to change perceptions about the use of OSS and free software
 
 * Project members strive to promote the public awareness that use of
   open source or free software for free without any contribution is
@@ -322,8 +340,9 @@ and smooth discussions.
 
 * Project members strive to promote the awareness that it is natural
   for companies that make a profit from the commercial use of open
-  source or free software to contribute to relevant projects. Here,
-  contribution to a project refers to the following items.
+  source or free software to make contribution commensurate with their
+  profit to relevant projects. Here, contribution to a project refers
+  to the following items.
 
   * Financial support
   * Contributing code or documentation
