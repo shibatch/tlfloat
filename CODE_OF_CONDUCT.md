@@ -21,28 +21,31 @@ maintenance of rivers? Flood control is essential to building a modern
 city, but it is almost impossible to limit the people who will benefit
 from flood control. If you pay for the maintenance of the river, your
 friends will automatically benefit from it too. Goods and services
-such as parks, public roads, fire protection, police and flood control
-are called public goods, and the cost of preventing people from using
-them is significantly high, making it difficult to collect a price for
-their use. If someone bears the cost and provides a public good, those
-who do not bear the cost can also receive the benefit. As a result,
-the incentive to bear the cost of providing public goods does not
-work, and everyone tries to get a free ride. In economics, a free
-rider is someone who enjoys a benefit without paying for it.
+such as parks, public roads, fire protection, police, flood control
+and knowledge are called public goods. A public good is defined as a
+good that is both non-excludable (anyone can access it) and
+non-rivalrous (one person’s use does not prevent another’s use). The
+cost of preventing people from using public goods is significantly
+high and it is difficult to collect a price for their use. If someone
+bears the cost and provides a public good, those who do not bear the
+cost can also receive the benefit. As a result, the incentive to bear
+the cost of providing public goods does not work, and everyone tries
+to get a free ride. In economics, a free rider is someone who enjoys a
+benefit without paying for it.
 
-Because OSS and free software (hereafter, OSS and free software are
-collectively referred to as OSS) are available free of charge, they
-have the characteristics of public goods and are being free-ridden by
-a large number of people and companies. It is undeniable that OSS has
-become popular because they can be free-ridden as much as people
-want. But, development and maintenance of OSS cannot proceed unless
-someone contributes resources. If no user pays for it, it is a natural
-consequence that maintenance will eventually cease to continue, which
-in essence means that the OSS ecosystem is not sustainable. OSS
-developers have little or no financial incentive to continue
-maintenance and development. As a result, OSS developers tend to stop
-maintaining their projects much sooner than users expect, often
-abruptly. This problem is called the OSS developer "burnout"
+OSS and free software (hereafter, OSS and free software are
+collectively referred to as OSS) are public goods because they are
+both non-excludable and non-rivalrous, and thus they are being
+free-ridden by a large number of people and companies. It is
+undeniable that OSS has become popular because they can be free-ridden
+as much as people want. But, development and maintenance of OSS cannot
+proceed unless someone contributes resources. If no user pays for it,
+it is a natural consequence that maintenance will eventually cease to
+continue, which in essence means that the OSS ecosystem is not
+sustainable. OSS developers have little or no financial incentive to
+continue maintenance and development. As a result, OSS developers tend
+to stop maintaining their projects much sooner than users expect,
+often abruptly. This problem is called the OSS developer "burnout"
 problem. To make the OSS ecosystem sustainable, the cost of
 maintenance must continue to be supplied from somewhere. Downloading
 software may seem like less of an incentive to pay a fee because you
@@ -59,18 +62,18 @@ Let me explain in simpler language. Imagine that you are offered a
 free lunch somewhere. In such a case, a rather large number of people
 would say, "Who is covering the cost of this lunch? Let me bear the
 cost of what I eat." But when it comes to using OSS, the number of
-such people is much smaller. And then there are those who sell what is
-provided free of charge to others at a price. Certainly, as a free
-lunch provider, I don't forbid that, but isn't that making too much
-use of the generosity? And when I stop offering free lunch, people say
-I have "burned out." For some reason, people take it for granted that
-I provide a free lunch and that everyone else should receive the lunch
-I provide without paying for it. Is it appropriate to call it a
-"burnout" when the ingredients to prepair free lunch have been
-exhausted? It doesn't have to be me who provides the ingredients for
-the free lunch, does it? If those who are making a profit give some of
-it back, then I can continue to offer free lunches. I think everyone
-would be happier that way, don't you?
+such people is much smaller. For some reason, people take it for
+granted that I provide a free lunch and that everyone else should
+receive the lunch I provide without paying for it. And then there are
+those who sell what is provided free of charge to others at a
+price. Certainly, as a free lunch provider, I don't forbid that, but
+isn't that making too much use of the generosity? And when I stop
+offering free lunch, people say I have "burned out." Is it appropriate
+to call it a "burnout" when the ingredients to prepair free lunch have
+been exhausted? It doesn't have to be me who provides the ingredients
+for the free lunch, does it? If those who are making a profit give
+some of it back, then I can continue to offer free lunches. I think
+everyone would be happier that way, don't you?
 
 The problem of developer "burnout" becomes a problem because there is
 still commercial value in the software. If the software has no value
@@ -223,6 +226,18 @@ the company gets disciplined in a prominent OSS project. Therefore, we
 can expect that companies will voluntarily make contributions even
 without a request from the project side.
 
+One of the purposes of creating these new guidelines is to lower the
+workload on the maintainers. Adopting our guidelines will only require
+little work on the project. What is required in the project is to
+ensure transparency in project management so that public scrutiny can
+be conducted. Our guidelines will not work well if the public thinks
+that opaque decisions made within the project are inevitable because
+they were made for some reason that cannnot be disclosed. For the
+guidelines to work well, the public must be able to judge the
+appropriateness of each decision made within the project. Transparency
+in project management would also have positive results in terms of
+ensuring diversity in the project.
+
 What our guidelines require is that each participant takes action to
 discourage free-riding. Thus, even if a participant's company is
 free-riding, that company will not be immediately denounced. A
@@ -372,6 +387,15 @@ and smooth discussions.
   * The terms "antisocial organization" and "cult" herein refer to
     organizations officially recognized as such in each member's place
     of residence. The same applies hereinafter.
+
+
+### Maintaining transparency in project operations
+
+* In engaging in activities within the project, each member should
+  make an effort to explain the basis for decisions in a manner that
+  the general public can understand. If the basis for a decision
+  cannot be disclosed, the reason why it cannot be disclosed should be
+  explained as much as possible.
 
 
 ### Keeping calm and logical discussion
