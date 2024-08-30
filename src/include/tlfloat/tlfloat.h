@@ -672,10 +672,14 @@ struct tlfloat_quad {
   explicit operator double() const { return tlfloat_cast_d_q(value); }
 
   // Conversion to/from integral types
-  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
-  tlfloat_quad(const T& i) : value(tlfloat_cast_q_d((double)i)) {}
-  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
-  explicit operator T() const { return (T)tlfloat_cast_d_q(value); }
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && (sizeof(T) < 8 || !std::is_unsigned<T>::value)), int>::type = 0>
+  tlfloat_quad(const T& i) : value(tlfloat_cast_q_i64(i)) {}
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && std::is_unsigned<T>::value && sizeof(T) == 8), int>::type = 0>
+  tlfloat_quad(const T& u) : value(tlfloat_cast_q_u64(u)) {}
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && (sizeof(T) < 8 || !std::is_unsigned<T>::value)), int>::type = 0>
+  explicit operator T() const { return tlfloat_cast_i64_q(value); }
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && std::is_unsigned<T>::value && sizeof(T) == 8), int>::type = 0>
+  explicit operator T() const { return tlfloat_cast_u64_q(value); }
 
   explicit tlfloat_quad(const tlfloat_int128_t_& i);
   explicit tlfloat_quad(const tlfloat_uint128_t_& u);
@@ -743,10 +747,14 @@ struct tlfloat_octuple {
   explicit operator double() const { return tlfloat_cast_d_o(value); }
 
   // Conversion to/from integral types
-  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
-  tlfloat_octuple(const T& i) : value(tlfloat_cast_o_d((double)i)) {}
-  template<typename T, typename std::enable_if<(std::is_integral<T>::value && sizeof(T) < 8), int>::type = 0>
-  explicit operator T() const { return (T)tlfloat_cast_d_o(value); }
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && (sizeof(T) < 8 || !std::is_unsigned<T>::value)), int>::type = 0>
+  tlfloat_octuple(const T& i) : value(tlfloat_cast_o_i64(i)) {}
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && std::is_unsigned<T>::value && sizeof(T) == 8), int>::type = 0>
+  tlfloat_octuple(const T& u) : value(tlfloat_cast_o_u64(u)) {}
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && (sizeof(T) < 8 || !std::is_unsigned<T>::value)), int>::type = 0>
+  explicit operator T() const { return tlfloat_cast_i64_o(value); }
+  template<typename T, typename std::enable_if<(std::is_integral<T>::value && std::is_unsigned<T>::value && sizeof(T) == 8), int>::type = 0>
+  explicit operator T() const { return tlfloat_cast_u64_o(value); }
 
   tlfloat_octuple(const tlfloat_int128_t_& i);
   tlfloat_octuple(const tlfloat_uint128_t_& u);

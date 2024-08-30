@@ -266,6 +266,13 @@ pipeline {
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j 8
+			 cd ..
+ 			 mkdir build2
+			 cd build2
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install2 -DBUILD_LIBS=False -DBUILD_UTILS=False ..
+			 cmake -E time ninja
+		         export CTEST_OUTPUT_ON_FAILURE=TRUE
+		         ctest -j 8
 			 '''
             	     }
                 }

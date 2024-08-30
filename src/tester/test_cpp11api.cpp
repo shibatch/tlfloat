@@ -124,6 +124,9 @@ void doTest(const string &s1, const string &s2) {
   tlfloat_int128_t j1 = tlfloat_strtoi128(s1.c_str(), NULL, 10);
   tlfloat_int128_t j2 = tlfloat_strtoi128(s2.c_str(), NULL, 10);
 
+  long long k1 = strtoll(s1.c_str(), NULL, 10);
+  long long k2 = strtoll(s2.c_str(), NULL, 10);
+
   check("tlfloat_stroo", o1, d1);
   check("tlfloat_stroq", q1, d1);
 
@@ -145,16 +148,19 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_octuple(f1)", (double)tlfloat_octuple(f1), d1);
   check("tlfloat_octuple(i1)", (double)tlfloat_octuple(i1), (double)i1);
   check("tlfloat_octuple(j1)", (double)tlfloat_octuple(j1), (double)j1);
+  check("tlfloat_octuple(k1)", (double)tlfloat_octuple(k1), (double)k1);
 
   check("tlfloat_quad(o1)", (double)tlfloat_quad(o1), d1);
   check("tlfloat_quad(d1)", (double)tlfloat_quad(d1), d1);
   check("tlfloat_quad(f1)", (double)tlfloat_quad(f1), d1);
   check("tlfloat_quad(i1)", (double)tlfloat_quad(i1), (double)i1);
   check("tlfloat_quad(j1)", (double)tlfloat_quad(j1), (double)j1);
+  check("tlfloat_quad(k1)", (double)tlfloat_quad(k1), (double)k1);
 
   check("tlfloat_int128_t(o1)", (double)tlfloat_int128_t(o1), (double)o1);
   check("o2d(i1)", o2d(i1), (double)i1);
   check("o2d(j1)", o2d(j1), (double)j1);
+  check("o2d(k1)", o2d(k1), (double)k1);
   check("tlfloat_int128_t(q1)", (double)tlfloat_int128_t(q1), (double)q1);
   check("o2d(q1)", o2d(q1), (double)q1);
   check("q2d(d1)", q2d(d1), d1);
@@ -166,13 +172,16 @@ void doTest(const string &s1, const string &s2) {
   check("o1 + f2", o1 + f2, d1 + d2);
   check("i1 + o2", i1 + o2, i1 + d2);
   check("j1 + o2", j1 + o2, (double)j1 + d2);
+  check("k1 + o2", k1 + o2, (double)k1 + d2);
   check("o1 + i2", o1 + i2, d1 + i2);
   check("o1 + j2", o1 + j2, d1 + (double)j2);
+  check("o1 + k2", o1 + k2, d1 + (double)k2);
   o0 = o1; o0 += o2; check("o0 = o1; o0 += o2;", o0, d1 + d2);
   o0 = o1; o0 += q2; check("o0 = o1; o0 += q2;", o0, d1 + d2);
   o0 = o1; o0 += d2; check("o0 = o1; o0 += d2;", o0, d1 + d2);
   o0 = o1; o0 += i2; check("o0 = o1; o0 += i2;", o0, d1 + i2);
   o0 = o1; o0 += j2; check("o0 = o1; o0 += j2;", o0, d1 + (double)j2);
+  o0 = o1; o0 += k2; check("o0 = o1; o0 += k2;", o0, d1 + (double)k2);
 
   o0 = o1; d0 = d1; check("o0 = o1; o0 ++;", o0++, d0++); check("o0 = o1; o0 ++; (2)", o0, d0);
   o0 = o1; d0 = d1; check("o0 = o1; ++ o0;", ++o0, ++d0); check("o0 = o1; ++ o0; (2)", o0, d0);
@@ -183,13 +192,16 @@ void doTest(const string &s1, const string &s2) {
   check("o1 - f2", o1 - f2, d1 - d2);
   check("i1 - o2", i1 - o2, i1 - d2);
   check("j1 - o2", j1 - o2, (double)j1 - d2);
+  check("k1 - o2", k1 - o2, (double)k1 - d2);
   check("o1 - i2", o1 - i2, d1 - i2);
   check("o1 - j2", o1 - j2, d1 - (double)j2);
+  check("o1 - k2", o1 - k2, d1 - (double)k2);
   o0 = o1; o0 -= o2; check("o0 = o1; o0 -= o2;", o0, d1 - d2);
   o0 = o1; o0 -= q2; check("o0 = o1; o0 -= q2;", o0, d1 - d2);
   o0 = o1; o0 -= d2; check("o0 = o1; o0 -= d2;", o0, d1 - d2);
   o0 = o1; o0 -= i2; check("o0 = o1; o0 -= i2;", o0, d1 - i2);
   o0 = o1; o0 -= j2; check("o0 = o1; o0 -= j2;", o0, d1 - (double)j2);
+  o0 = o1; o0 -= k2; check("o0 = o1; o0 -= k2;", o0, d1 - (double)k2);
 
   o0 = o1; d0 = d1; check("o0 = o1; o0 --;", o0--, d0--); check("o0 = o1; o0 --; (2)", o0, d0);
   o0 = o1; d0 = d1; check("o0 = o1; -- o0;", --o0, --d0); check("o0 = o1; -- o0; (2)", o0, d0);
@@ -200,13 +212,16 @@ void doTest(const string &s1, const string &s2) {
   check("o1 * f2", o1 * f2, d1 * d2);
   check("i1 * o2", i1 * o2, i1 * d2);
   check("j1 * o2", j1 * o2, (double)j1 * d2);
+  check("k1 * o2", k1 * o2, (double)k1 * d2);
   check("o1 * i2", o1 * i2, d1 * i2);
   check("o1 * j2", o1 * j2, d1 * (double)j2);
+  check("o1 * k2", o1 * k2, d1 * (double)k2);
   o0 = o1; o0 *= o2; check("o0 = o1; o0 *= o2;", o0, d1 * d2);
   o0 = o1; o0 *= q2; check("o0 = o1; o0 *= q2;", o0, d1 * d2);
   o0 = o1; o0 *= d2; check("o0 = o1; o0 *= d2;", o0, d1 * d2);
   o0 = o1; o0 *= i2; check("o0 = o1; o0 *= i2;", o0, d1 * i2);
   o0 = o1; o0 *= j2; check("o0 = o1; o0 *= j2;", o0, d1 * (double)j2);
+  o0 = o1; o0 *= k2; check("o0 = o1; o0 *= k2;", o0, d1 * (double)k2);
 
   check("o1 / o2", o1 / o2, d1 / d2);
   check("d1 / o2", d1 / o2, d1 / d2);
@@ -214,13 +229,16 @@ void doTest(const string &s1, const string &s2) {
   check("o1 / f2", o1 / f2, d1 / d2);
   check("i1 / o2", i1 / o2, i1 / d2);
   check("j1 / o2", j1 / o2, (double)j1 / d2);
+  check("k1 / o2", k1 / o2, (double)k1 / d2);
   check("o1 / i2", o1 / i2, d1 / i2);
   check("o1 / j2", o1 / j2, d1 / (double)j2);
+  check("o1 / k2", o1 / k2, d1 / (double)k2);
   o0 = o1; o0 /= o2; check("o0 = o1; o0 /= o2;", o0, d1 / d2);
   o0 = o1; o0 /= q2; check("o0 = o1; o0 /= q2;", o0, d1 / d2);
   o0 = o1; o0 /= d2; check("o0 = o1; o0 /= d2;", o0, d1 / d2);
   o0 = o1; o0 /= i2; check("o0 = o1; o0 /= i2;", o0, d1 / i2);
   o0 = o1; o0 /= j2; check("o0 = o1; o0 /= j2;", o0, d1 / (double)j2);
+  o0 = o1; o0 /= k2; check("o0 = o1; o0 /= k2;", o0, d1 / (double)k2);
 
   check("q1 + q2", q1 + q2, d1 + d2);
   check("d1 + q2", d1 + q2, d1 + d2);
@@ -228,13 +246,16 @@ void doTest(const string &s1, const string &s2) {
   check("q1 + f2", q1 + f2, d1 + d2);
   check("i1 + q2", i1 + q2, i1 + d2);
   check("j1 + q2", (tlfloat_quad)j1 + q2, (double)j1 + d2);
+  check("k1 + q2", (tlfloat_quad)k1 + q2, (double)k1 + d2);
   check("q1 + i2", q1 + i2, d1 + i2);
   check("q1 + j2", q1 + (tlfloat_quad)j2, d1 + (double)j2);
+  check("q1 + k2", q1 + (tlfloat_quad)k2, d1 + (double)k2);
   q0 = q1; q0 += o2; check("q0 = q1; q0 += o2;", q0, d1 + d2);
   q0 = q1; q0 += q2; check("q0 = q1; q0 += q2;", q0, d1 + d2);
   q0 = q1; q0 += d2; check("q0 = q1; q0 += d2;", q0, d1 + d2);
   q0 = q1; q0 += i2; check("q0 = q1; q0 += i2;", q0, d1 + i2);
   q0 = q1; q0 += j2; check("q0 = q1; q0 += j2;", q0, d1 + (double)j2);
+  q0 = q1; q0 += k2; check("q0 = q1; q0 += k2;", q0, d1 + (double)k2);
 
   check("q1 - q2", q1 - q2, d1 - d2);
   check("d1 - q2", d1 - q2, d1 - d2);
@@ -242,13 +263,16 @@ void doTest(const string &s1, const string &s2) {
   check("q1 - f2", q1 - f2, d1 - d2);
   check("i1 - q2", i1 - q2, i1 - d2);
   check("j1 - q2", (tlfloat_quad)j1 - q2, (double)j1 - d2);
+  check("k1 - q2", (tlfloat_quad)k1 - q2, (double)k1 - d2);
   check("q1 - i2", q1 - i2, d1 - i2);
   check("q1 - j2", q1 - (tlfloat_quad)j2, d1 - (double)j2);
+  check("q1 - k2", q1 - (tlfloat_quad)k2, d1 - (double)k2);
   q0 = q1; q0 -= o2; check("q0 = q1; q0 -= o2;", q0, d1 - d2);
   q0 = q1; q0 -= q2; check("q0 = q1; q0 -= q2;", q0, d1 - d2);
   q0 = q1; q0 -= d2; check("q0 = q1; q0 -= d2;", q0, d1 - d2);
   q0 = q1; q0 -= i2; check("q0 = q1; q0 -= i2;", q0, d1 - i2);
   q0 = q1; q0 -= j2; check("q0 = q1; q0 -= j2;", q0, d1 - (double)j2);
+  q0 = q1; q0 -= k2; check("q0 = q1; q0 -= k2;", q0, d1 - (double)k2);
 
   check("q1 * q2", q1 * q2, d1 * d2);
   check("d1 * q2", d1 * q2, d1 * d2);
@@ -256,13 +280,16 @@ void doTest(const string &s1, const string &s2) {
   check("q1 * f2", q1 * f2, d1 * d2);
   check("i1 * q2", i1 * q2, i1 * d2);
   check("j1 * q2", (tlfloat_quad)j1 * q2, (double)j1 * d2);
+  check("k1 * q2", (tlfloat_quad)k1 * q2, (double)k1 * d2);
   check("q1 * i2", q1 * i2, d1 * i2);
   check("q1 * j2", q1 * (tlfloat_quad)j2, d1 * (double)j2);
+  check("q1 * k2", q1 * (tlfloat_quad)k2, d1 * (double)k2);
   q0 = q1; q0 *= o2; check("q0 = q1; q0 *= o2;", q0, d1 * d2);
   q0 = q1; q0 *= q2; check("q0 = q1; q0 *= q2;", q0, d1 * d2);
   q0 = q1; q0 *= d2; check("q0 = q1; q0 *= d2;", q0, d1 * d2);
   q0 = q1; q0 *= i2; check("q0 = q1; q0 *= i2;", q0, d1 * i2);
   q0 = q1; q0 *= j2; check("q0 = q1; q0 *= j2;", q0, d1 * (double)j2);
+  q0 = q1; q0 *= k2; check("q0 = q1; q0 *= k2;", q0, d1 * (double)k2);
 
   check("q1 / q2", q1 / q2, d1 / d2);
   check("d1 / q2", d1 / q2, d1 / d2);
@@ -270,13 +297,16 @@ void doTest(const string &s1, const string &s2) {
   check("q1 / f2", q1 / f2, d1 / d2);
   check("i1 / q2", i1 / q2, i1 / d2);
   check("j1 / q2", (tlfloat_quad)j1 / q2, (double)j1 / d2);
+  check("k1 / q2", (tlfloat_quad)k1 / q2, (double)k1 / d2);
   check("q1 / i2", q1 / i2, d1 / i2);
   check("q1 / j2", q1 / (tlfloat_quad)j2, d1 / (double)j2);
+  check("q1 / k2", q1 / (tlfloat_quad)k2, d1 / (double)k2);
   q0 = q1; q0 /= o2; check("q0 = q1; q0 /= o2;", q0, d1 / d2);
   q0 = q1; q0 /= q2; check("q0 = q1; q0 /= q2;", q0, d1 / d2);
   q0 = q1; q0 /= d2; check("q0 = q1; q0 /= d2;", q0, d1 / d2);
   q0 = q1; q0 /= i2; check("q0 = q1; q0 /= i2;", q0, d1 / i2);
   q0 = q1; q0 /= j2; check("q0 = q1; q0 /= j2;", q0, d1 / (double)j2);
+  q0 = q1; q0 /= k2; check("q0 = q1; q0 /= k2;", q0, d1 / (double)k2);
 
   const int T = 4;
 
@@ -497,6 +527,13 @@ void doTest(const string &s1, const string &s2) {
   check("o1 < j2", o1 < j2, d1 < (double)j2);
   check("o1 <= j2", o1 <= j2, d1 <= (double)j2);
 
+  check("o1 == k2", o1 == k2, d1 == (double)k2);
+  check("o1 != k2", o1 != k2, d1 != (double)k2);
+  check("o1 > k2", o1 > k2, d1 > (double)k2);
+  check("o1 >= k2", o1 >= k2, d1 >= (double)k2);
+  check("o1 < k2", o1 < k2, d1 < (double)k2);
+  check("o1 <= k2", o1 <= k2, d1 <= (double)k2);
+
   check("+q1 == +q2", +q1 == +q2, +d1 == +d2);
   check("-q1 == -q2", -q1 == -q2, -d1 == -d2);
 
@@ -534,6 +571,13 @@ void doTest(const string &s1, const string &s2) {
   check("q1 >= j2", q1 >= (tlfloat_quad)j2, d1 >= (double)j2);
   check("q1 < j2", q1 < (tlfloat_quad)j2, d1 < (double)j2);
   check("q1 <= j2", q1 <= (tlfloat_quad)j2, d1 <= (double)j2);
+
+  check("q1 == k2", q1 == (tlfloat_quad)k2, d1 == (double)k2);
+  check("q1 != k2", q1 != (tlfloat_quad)k2, d1 != (double)k2);
+  check("q1 > k2", q1 > (tlfloat_quad)k2, d1 > (double)k2);
+  check("q1 >= k2", q1 >= (tlfloat_quad)k2, d1 >= (double)k2);
+  check("q1 < k2", q1 < (tlfloat_quad)k2, d1 < (double)k2);
+  check("q1 <= k2", q1 <= (tlfloat_quad)k2, d1 <= (double)k2);
 
 #if __cplusplus >= 202002L
   o1 = (tlfloat_octuple)tlfloat::Octuple(s1.c_str());

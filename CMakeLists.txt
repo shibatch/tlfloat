@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
+option(BUILD_LIBS "Build and install the library" ON)
 option(BUILD_TESTS "Build tests" ON)
+option(BUILD_UTILS "Build utilities" ON)
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_CUDA_TEST "Build CUDA tester" OFF)
 option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
@@ -15,8 +17,8 @@ set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is I
 #
 
 set(TLFLOAT_VERSION_MAJOR 1)
-set(TLFLOAT_VERSION_MINOR 3)
-set(TLFLOAT_VERSION_PATCHLEVEL 3)
+set(TLFLOAT_VERSION_MINOR 4)
+set(TLFLOAT_VERSION_PATCHLEVEL 0)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCHLEVEL})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
