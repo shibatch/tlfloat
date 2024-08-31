@@ -256,6 +256,21 @@ namespace tlfloat {
     };
 
     template<typename mant_t, typename longmant_t, int nbexp, int nbmant> class UnpackedFloat;
+
+    template<typename T, std::enable_if_t<(std::is_integral_v<T>), int> = 0>
+    static inline constexpr T bitmask(int b) { return (T(1) << b) - 1; }
+
+    template<typename T, std::enable_if_t<(!std::is_integral_v<T>), int> = 0>
+    static inline constexpr T bitmask(int b) {
+      T u;
+      for(int i=0;i<(int)sizeof(T) / 8;i++) {
+	uint64_t w = 0;
+	if (i <  (b >> 6)) w = 0xffffffffffffffffULL;
+	if (i == (b >> 6)) w = (1ULL << (b & 63))-1;
+	u.setWord(i, w);
+      }
+      return u;
+    }
   } // namespace detail
 
   template<typename Unpacked_t> class TLFloat;

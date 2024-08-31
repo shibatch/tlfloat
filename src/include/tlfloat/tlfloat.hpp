@@ -303,8 +303,15 @@ namespace tlfloat {
 
 	const bool subtract = lhs.sign != rhssign;
 
-	longmant_t lm = longmant_t(lhs.mant) << (ed > 0 ? sizeof(mant_t) * 8      : sizeof(mant_t) * 8 + ed);
-	longmant_t rm = longmant_t(rhs.mant) << (ed > 0 ? sizeof(mant_t) * 8 - ed : sizeof(mant_t) * 8     );
+	longmant_t lm, rm;
+	if (ed > 0) {
+	  lm = longmant_t(lhs.mant) << (sizeof(mant_t) * 8     );
+	  rm = longmant_t(rhs.mant) << (sizeof(mant_t) * 8 - ed);
+	} else {
+	  lm = longmant_t(lhs.mant) << (sizeof(mant_t) * 8 + ed);
+	  rm = longmant_t(rhs.mant) << (sizeof(mant_t) * 8     );
+	}
+
 	int exp = ed > 0 ? lhs.exp : rhs.exp;
 
 	longmant_t am = 0;
@@ -338,7 +345,7 @@ namespace tlfloat {
 	      exp = 0;
 	    }
 	  }
-	  am += ((longmant_t(1) << (sizeof(mant_t) * 8 + y - 1)) - 1) + bit(am, sizeof(mant_t) * 8 + y);
+	  am += bitmask<longmant_t>(sizeof(mant_t) * 8 + y - 1) + bit(am, sizeof(mant_t) * 8 + y);
 	  am >>= y;
 
 	  if (bit(am, (sizeof(mant_t) * 8) + nbmant + 1)) { am >>= 1; exp++; }
@@ -358,13 +365,12 @@ namespace tlfloat {
 	  if (lhs.isinf || rhs.isinf) return infinity(lhs.sign != rhs.sign);
 	}
 
-	int exp = lhs.exp + rhs.exp - expoffset();
 	longmant_t am = mul(lhs.mant, rhs.mant);
 
 	const int x = (int)clz(am) - ((int)sizeof(mant_t)*8 - nbmant) * 2;
 	am = am << (x + sizeof(mant_t)*8 - nbmant + 1);
 
-	exp -= x;
+	int exp = lhs.exp + rhs.exp - expoffset() - x;
 
 	int y = 0;
 	if constexpr (nbexp != 0) {
@@ -374,7 +380,7 @@ namespace tlfloat {
 	    exp = 0;
 	  }
 	}
-	am += ((longmant_t(1) << (sizeof(mant_t) * 8 + y - 1)) - 1) + bit(am, sizeof(mant_t) * 8 + y);
+	am += bitmask<longmant_t>(sizeof(mant_t) * 8 + y - 1) + bit(am, sizeof(mant_t) * 8 + y);
 	am >>= y;
 
 	if (bit(am, (sizeof(mant_t) * 8) + nbmant + 1)) { am >>= 1; exp++; }
@@ -433,7 +439,7 @@ namespace tlfloat {
 	    exp = 0;
 	  }
 	}
-	am += ((longmant_t(1) << (sizeof(mant_t) * 8 + y - 1)) - 1) + bit(am, sizeof(mant_t) * 8 + y);
+	am += bitmask<longmant_t>(sizeof(mant_t) * 8 + y - 1) + bit(am, sizeof(mant_t) * 8 + y);
 	am >>= y;
 
 	if (bit(am, (sizeof(mant_t) * 8) + nbmant + 1)) { am >>= 1; exp++; }
@@ -490,7 +496,7 @@ namespace tlfloat {
 	    amsb = am != 0;
 	    am = 0;
 	  } else {
-	    amsb = (((longmant_t(1) << (NGB - ed)) - 1) & am) != 0;
+	    amsb = (bitmask<longmant_t>(NGB - ed) & am) != 0;
 	    am = (am >> -ed) & ~((longmant_t(1) << NGB) - 1);
 	  }
 	} else {
@@ -498,7 +504,7 @@ namespace tlfloat {
 	    zmsb = zm != 0;
 	    zm = 0;
 	  } else {
-	    zmsb = (((longmant_t(1) << (NGB + ed)) - 1) & zm) != 0;
+	    zmsb = (bitmask<longmant_t>(NGB + ed) & zm) != 0;
 	    zm = (zm >> ed) & ~((longmant_t(1) << NGB) - 1);
 	  }
 	}
@@ -518,7 +524,7 @@ namespace tlfloat {
 	  am <<= x;
 	  exp -= x;
 	  const int y = (nbexp != 0 && exp < 0) ? -exp : 0;
-	  am += ((longmant_t(1) << (sizeof(mant_t) * 8 + y - 1)) - 1) + ((bit(am, sizeof(mant_t) * 8 + y) || psb) && !nsb);
+	  am += bitmask<longmant_t>(sizeof(mant_t) * 8 + y - 1) + (!nsb && (psb || bit(am, sizeof(mant_t) * 8 + y)));
 	  am >>= y;
 	}
 
@@ -706,7 +712,7 @@ namespace tlfloat {
 	  if constexpr (dsttype::nbexp_() != 0) {
 	    if (e >= (1 << dsttype::nbexp_()) - 2) isinf_ = true;
 	    if (e < 0) {
-	      sb = (m & ((mant_t(1) << -e) - 1)) != 0;
+	      sb = (m & bitmask<mant_t>(-e)) != 0;
 	      if (unsigned(-e) >= sizeof(mant_t)*8) { sb = m != 0; m = 0; }
 	      m >>= -e;
 	      e = 0;
@@ -786,7 +792,7 @@ namespace tlfloat {
 	if (s >= 0) {
 	  u = longmant_t(v) << s;
 	} else {
-	  sb = (((longmant_t(1) << (-s)) - 1) & v) != 0;
+	  sb = (bitmask<longmant_t>(-s) & v) != 0;
 	  u = v >> -s;
 	}
 	u += (((u >> (sizeof(mant_t) * 8)) & 1) || sb) + (longmant_t(1) << (sizeof(mant_t) * 8 - 1)) - 1;
@@ -807,7 +813,7 @@ namespace tlfloat {
 	if (s >= 0) {
 	  u = longmant_t(v) << s;
 	} else {
-	  sb = (((longmant_t(1) << (-s)) - 1) & v) != 0;
+	  sb = (bitmask<longmant_t>(-s) & v) != 0;
 	  u = longmant_t(v >> -s);
 	}
 	u += (((u >> (sizeof(mant_t) * 8)) & 1) || sb) + (longmant_t(1) << (sizeof(mant_t) * 8 - 1)) - 1;
@@ -827,7 +833,7 @@ namespace tlfloat {
 	if (s >= 0) {
 	  u = longmant_t(v) << s;
 	} else {
-	  sb = (((longmant_t(1) << (-s)) - 1) & v) != 0;
+	  sb = (bitmask<longmant_t>(-s) & v) != 0;
 	  u = longmant_t(v >> -s);
 	}
 	u += (((u >> (sizeof(mant_t) * 8)) & 1) || sb) + (longmant_t(1) << (sizeof(mant_t) * 8 - 1)) - 1;
@@ -849,7 +855,7 @@ namespace tlfloat {
 	if (f.exp < expoffset() - 1) return zero(f.sign);
 	int s = nbmant - (f.exp - expoffset() + 1);
 	UnpackedFloat r = f;
-	r.mant &= ~((mant_t(1) << s) - 1);
+	r.mant &= ~bitmask<mant_t>(s);
 	return r;
       }
 
@@ -862,8 +868,8 @@ namespace tlfloat {
 	}
 	int s = nbmant - (f.exp - expoffset() + 1);
 	UnpackedFloat r = f;
-	if (r.sign) r.mant += (mant_t(1) << s) - 1;
-	r.mant &= ~((mant_t(1) << s) - 1);
+	if (r.sign) r.mant += bitmask<mant_t>(s);
+	r.mant &= ~bitmask<mant_t>(s);
 	if (bit(r.mant, nbmant + 1)) { r.mant >>= 1; r.exp++; }
 	return r;
       }
@@ -877,8 +883,8 @@ namespace tlfloat {
 	}
 	int s = nbmant - (f.exp - expoffset() + 1);
 	UnpackedFloat r = f;
-	if (!r.sign) r.mant += (mant_t(1) << s) - 1;
-	r.mant &= ~((mant_t(1) << s) - 1);
+	if (!r.sign) r.mant += bitmask<mant_t>(s);
+	r.mant &= ~bitmask<mant_t>(s);
 	if (bit(r.mant, nbmant + 1)) { r.mant >>= 1; r.exp++; }
 	return r;
       }
@@ -918,7 +924,7 @@ namespace tlfloat {
 	longmant_t l = longmant_t(f.mant) << s0;
 	l = isqrt(l);
 	int s1 = sizeof(longmant_t) * 8 - nbmant - 1 - clz(l);
-	l += bit(l, s1) + (longmant_t(1) << (s1 - 1)) - 1;
+	l += bit(l, s1) + bitmask<longmant_t>(s1 - 1);
 	l -= ~l >> (sizeof(l) * 8 - 1);
 	mant_t m = mant_t(l >> s1);
 	if (bit(m, nbmant + 1)) { m >>= 1; x++; }
