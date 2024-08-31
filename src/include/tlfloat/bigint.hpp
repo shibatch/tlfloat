@@ -347,19 +347,27 @@ namespace tlfloat {
     }
 
     constexpr xpair<BigUInt, bool> inc() const {
-      auto rl = low.inc(), rh = high.inc();
+      auto rl = low.inc();
       xpair<BigUInt, bool> s(0, false);
       s.first.low  = rl.first;
-      s.first.high = rl.second ? rh.first : high;
-      s.second = rl.second ? rh.second : false;
+      s.first.high = high;
+      if (rl.second) {
+	auto rh = high.inc();
+	s.first.high = rh.first;
+	s.second = rh.second;
+      }
       return s;
     }
     constexpr xpair<BigUInt, bool> dec() const {
-      auto rl = low.dec(), rh = high.dec();
+      auto rl = low.dec();
       xpair<BigUInt, bool> s(0, false);
       s.first.low  = rl.first;
-      s.first.high = rl.second ? rh.first : high;
-      s.second = rl.second ? rh.second : false;
+      s.first.high = high;
+      if (rl.second) {
+	auto rh = high.dec();
+	s.first.high = rh.first;
+	s.second = rh.second;
+      }
       return s;
     }
     constexpr xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
@@ -480,12 +488,11 @@ namespace tlfloat {
     }
 
     constexpr unsigned clz() const {
-      unsigned z = high.clz();
-      if (z == (1 << (N-1))) return low.clz() + (1 << (N-1));
-      return z;
+      return high.isZero2() ? low.clz() + (1 << (N-1)) : high.clz();
     }
     constexpr unsigned ilogbp1() const { return (1U << N) - clz(); }
     constexpr bool isZero() const { return low.isZero() && high.isZero(); }
+    constexpr bool isZero2() const { return high.isZero2() && low.isZero2(); }
     constexpr bool isAllOne() const { return low.isAllOne() && high.isAllOne(); }
     constexpr bool msb() const { return high.msb(); }
     constexpr uint64_t getWord(unsigned idx) const {
@@ -579,12 +586,14 @@ namespace tlfloat {
     constexpr BigUInt operator~() const { return BigUInt(~high, ~low); }
 
     constexpr BigUInt operator<<(int n) const {
-      if (n >= (1 << N) || n <= -(1 << N)) return uint64_t(0);
-      if (n >= 0) {
+      if (n > 0) {
+	if (n >= (1 << N)) return uint64_t(0);
 	return BigUInt((high <<  n) | (low  >> ((1 << (N-1)) - n)) , (low <<  n));
-      } else {
+      } else if (n < 0) {
+	if (n <= -(1 << N)) return uint64_t(0);
 	return BigUInt((high >> -n) , (high << ((1 << (N-1)) + n)) | (low >> -n));
       }
+      return *this;
     }
     constexpr BigUInt operator>>(int n) const { return *this << -n; }
 
@@ -706,6 +715,8 @@ namespace tlfloat {
     constexpr BigUInt& operator|=(const rhstype& rhs) { *this = *this | BigUInt(rhs); return *this; }
     template<typename rhstype>
     constexpr BigUInt& operator^=(const rhstype& rhs) { *this = *this ^ BigUInt(rhs); return *this; }
+
+    constexpr BigUInt& operator+=(bool rhs) { if (rhs) *this = this->inc().first; return *this; }
 
     //
 
@@ -903,6 +914,7 @@ namespace tlfloat {
     constexpr explicit BigUInt(const uint64_t *p) : u64(*p) {}
 
     constexpr bool isZero() const { return u64 == 0; }
+    constexpr bool isZero2() const { return u64 == 0; }
     constexpr bool isAllOne() const { return u64 == ~uint64_t(0); }
     constexpr bool msb() const { return u64 >> 63; }
     constexpr uint64_t getWord(unsigned idx) const { return u64; }

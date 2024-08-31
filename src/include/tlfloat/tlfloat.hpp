@@ -279,8 +279,9 @@ namespace tlfloat {
 
       static constexpr UnpackedFloat addsub(const UnpackedFloat &lhs, const UnpackedFloat &rhs, bool negateRhs) {
 	const bool rhssign = rhs.sign != negateRhs;
+	const int ed = lhs.exp - rhs.exp;
 
-	if (lhs.iszero | lhs.isinf | lhs.isnan | rhs.iszero | rhs.isinf | rhs.isnan) {
+	if (lhs.iszero | lhs.isinf | lhs.isnan | rhs.iszero | rhs.isinf | rhs.isnan | (ed > +nbmant+2) | (ed < -nbmant-2)) {
 	  if (lhs.iszero && rhs.iszero)
 	    return UnpackedFloat(0, 0, lhs.sign && rhssign, true, false, false);
 
@@ -294,14 +295,13 @@ namespace tlfloat {
 	    if (lhs.isinf) return lhs;
 	    return UnpackedFloat(rhs.mant, rhs.exp, rhssign, rhs.iszero, rhs.isinf, rhs.isnan);
 	  }
+
+	  if (ed > +nbmant+2) return lhs;
+	  if (ed < -nbmant-2)
+	    return UnpackedFloat(rhs.mant, rhs.exp, rhssign, rhs.iszero, rhs.isinf, rhs.isnan);
 	}
 
-	const int ed = lhs.exp - rhs.exp;
 	const bool subtract = lhs.sign != rhssign;
-
-	if (ed > +nbmant+2) return lhs;
-	if (ed < -nbmant-2)
-	  return UnpackedFloat(rhs.mant, rhs.exp, rhssign, rhs.iszero, rhs.isinf, rhs.isnan);
 
 	longmant_t lm = longmant_t(lhs.mant) << (ed > 0 ? sizeof(mant_t) * 8      : sizeof(mant_t) * 8 + ed);
 	longmant_t rm = longmant_t(rhs.mant) << (ed > 0 ? sizeof(mant_t) * 8 - ed : sizeof(mant_t) * 8     );
