@@ -6,3 +6,26 @@ if (BUILD_UTILS)
 
   add_executable(genmathcoef genmathcoef.cpp)
 endif()
+
+if (BUILD_BENCH)
+  add_executable(bench_tlfloat_quad bench.cpp donothing.cpp)
+  target_compile_options(bench_tlfloat_quad PRIVATE ${BENCH_CXX_FLAGS})
+  target_compile_definitions(bench_tlfloat_quad PRIVATE TLFLOAT_ENABLE_INLINING=1 CONFIG_TLFLOAT_QUAD=1)
+
+  add_executable(bench_tlfloat_octuple bench.cpp donothing.cpp)
+  target_compile_options(bench_tlfloat_octuple PRIVATE ${BENCH_CXX_FLAGS})
+  target_compile_definitions(bench_tlfloat_octuple PRIVATE TLFLOAT_ENABLE_INLINING=1 CONFIG_TLFLOAT_OCTUPLE=1)
+
+  if (TLFLOAT_ENABLE_LIBQUADMATH)
+    add_executable(bench_libquadmath bench.cpp donothing.cpp)
+    target_link_libraries(bench_libquadmath quadmath)
+    target_compile_options(bench_libquadmath PRIVATE ${BENCH_CXX_FLAGS})
+    target_compile_definitions(bench_libquadmath PRIVATE TLFLOAT_ENABLE_INLINING=1 CONFIG_LIBQUADMATH=1)
+  endif()
+
+  if (TLFLOAT_LONGDOUBLE_IS_FLOAT128)
+    add_executable(bench_longdouble bench.cpp donothing.cpp)
+    target_compile_options(bench_longdouble PRIVATE ${BENCH_CXX_FLAGS})
+    target_compile_definitions(bench_longdouble PRIVATE TLFLOAT_ENABLE_INLINING=1 CONFIG_LONGDOUBLE=1)
+  endif()
+endif()

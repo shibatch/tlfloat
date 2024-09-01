@@ -214,6 +214,51 @@ $ ./a.out
 3.141592653589793238462643383279502884197169399375105820974944592307818
 ```
 
+### Benchmark results
+
+This software package includes a benchmark tool. This can be built by
+specifying `-DBUILD_BENCH=True` cmake option. Below are some results
+of the benchmarks.
+
+CPU: AMD Ryzen 9 7950X (turbo disabled)
+
+Compiler: gcc version 12.3.0 (Ubuntu 12.3.0-1ubuntu1~22.04)
+
+TLFloat
+
+```
+Measurement time     : 10 sec
+Addition             : 127.286 Mop/second
+Multiplication       : 121.331 Mop/second
+Division             : 21.6366 Mop/second
+Cast to/from double  : 209.89 Mop/second
+Compare              : 351.128 Mop/second
+FMA                  : 76.3312 Mop/second
+Square root          : 34.9049 Mop/second
+Sin                  : 2.44962 Mop/second
+Atan                 : 1.3023 Mop/second
+Exp                  : 1.34681 Mop/second
+Pow                  : 0.948909 Mop/second
+```
+
+libquadmath
+
+```
+Measurement time     : 10 sec
+Addition             : 92.4728 Mop/second
+Multiplication       : 87.1377 Mop/second
+Division             : 80.4436 Mop/second
+Cast to/from double  : 81.6885 Mop/second
+Compare              : 260.735 Mop/second
+FMA                  : 2.40885 Mop/second
+Square root          : 11.8831 Mop/second
+Sin                  : 4.05242 Mop/second
+Atan                 : 2.34445 Mop/second
+Exp                  : 1.8957 Mop/second
+Pow                  : 1.34179 Mop/second
+```
+
+
 ### Development plan
 
 * The following features will be added in future releases
@@ -225,7 +270,6 @@ $ ./a.out
   * Remaining math functions in math.h
   * BF16 support
   * Further optimization
-  * Benchmarking tools
 
 
 ### License

@@ -1,0 +1,186 @@
+#include <iostream>
+#include <chrono>
+#include <cstdint>
+#include <cstring>
+
+using namespace std;
+
+#if defined(CONFIG_TLFLOAT_QUAD)
+
+#include <tlfloat/tlmath.hpp>
+#define CONFIG "tlfloat quad"
+using namespace tlfloat;
+typedef Quad real;
+
+#define FMA	fma
+#define SQRT	sqrt
+#define SIN	sin
+#define ATAN	atan
+#define EXP	exp
+#define POW	pow
+
+#elif defined(CONFIG_TLFLOAT_OCTUPLE)
+
+#include <tlfloat/tlmath.hpp>
+#define CONFIG "tlfloat octuple"
+using namespace tlfloat;
+typedef Octuple real;
+
+#define FMA	fma
+#define SQRT	sqrt
+#define SIN	sin
+#define ATAN	atan
+#define EXP	exp
+#define POW	pow
+
+#elif defined(CONFIG_LIBQUADMATH)
+
+#define CONFIG "Libquadmath"
+#include <quadmath.h>
+typedef __float128 real;
+
+#define FMA	fmaq
+#define SQRT	sqrtq
+#define SIN	sinq
+#define ATAN	atanq
+#define EXP	expq
+#define POW	powq
+
+#elif defined(CONFIG_LONGDOUBLE)
+
+#define CONFIG "Native long double"
+#include <math.h>
+typedef long double real;
+
+#define FMA	fmal
+#define SQRT	sqrtl
+#define SIN	sinl
+#define ATAN	atanl
+#define EXP	expl
+#define POW	powl
+
+#else
+
+#define CONFIG "Native double"
+#include <math.h>
+typedef double real;
+
+#define FMA	fma
+#define SQRT	sqrt
+#define SIN	sin
+#define ATAN	atan
+#define EXP	exp
+#define POW	pow
+#endif
+
+const int K = 256;
+
+real W[K], X[K], Y[K], Z[K];
+bool B[K];
+
+static void funcAddSub() {
+  for(int i=0;i<K;i+=2) {
+    W[i+0] = X[i+0] + Y[i+0];
+    W[i+1] = X[i+1] - Y[i+1];
+  }
+}
+
+static void funcMul() {
+  for(int i=0;i<K;i++) W[i] = X[i] * Y[i];
+}
+
+static void funcDiv() {
+  for(int i=0;i<K;i++) W[i] = X[i] / Y[i];
+}
+
+static void funcCastDouble() {
+  for(int i=0;i<K;i++) W[i] = (double)X[i];
+}
+
+static void funcCompare() {
+  for(int i=0;i<K;i+=2) {
+    B[i+0] = X[i+0] == Y[i+0];
+    B[i+1] = X[i+1] >= Y[i+1];
+  }
+}
+
+static void funcFMA() {
+  for(int i=0;i<K;i++) W[i] = FMA(X[i], Y[i], Z[i]);
+}
+
+static void funcSqrt() {
+  for(int i=0;i<K;i++) W[i] = SQRT(X[i]);
+}
+
+static void funcSin() {
+  for(int i=0;i<K;i++) W[i] = SIN(X[i]);
+}
+
+static void funcAtan() {
+  for(int i=0;i<K;i++) W[i] = ATAN(X[i]);
+}
+
+static void funcExp() {
+  for(int i=0;i<K;i++) W[i] = EXP(X[i]);
+}
+
+static void funcPow() {
+  for(int i=0;i<K;i++) W[i] = POW(X[i], Y[i]);
+}
+
+void donothing();
+
+static inline int64_t timeus() {
+  return chrono::duration_cast<chrono::microseconds>
+    (chrono::system_clock::now() - chrono::system_clock::from_time_t(0)).count();
+}
+
+void measure(const char* mes, void (*func)(void), int opPerCall, int64_t sec_us) {
+  int64_t N = 10, t0, t1, t2, t3;
+
+  for(;;) {
+    t0 = timeus();
+    for(int64_t i=0;i<N;i++) { (*func)(); donothing(); }
+    t1 = timeus();
+    if (t1 - t0 > 100000) break;
+    N *= 10;
+  }
+
+  const int64_t M = N * sec_us / (t1 - t0);
+
+  t2 = timeus();
+  for(int64_t i=0;i<M;i++) { (*func)(); donothing(); }
+  t3 = timeus();
+
+  printf("%s : %g Mop/second\n", mes, M * opPerCall / double(t3 - t2));
+}
+
+int main(int argc, char **argv) {
+  int64_t sec_us = 1000000;
+  if (argc >= 2) sec_us = int64_t(atof(argv[1]) * 1000000);
+
+  for(int i=0;i<K;i++) {
+    X[i] = (0.1 + i * 0.0001) * ((i & 4) ? -1 : 1);
+    Y[i] = (0.2 + i * 0.0001) * ((i & 2) ? -1 : 1);
+    Z[i] = (0.3 + i * 0.0001) * ((i & 1) ? -1 : 1);
+  }
+
+  time_t t = time(NULL);
+  printf("Date                 : %s", ctime(&t));
+  printf("Config               : %s\n", CONFIG);
+  printf("Measurement time     : %g sec\n", sec_us / 1000000.0);
+
+  measure("Addition            ", funcAddSub     , K, sec_us);
+  measure("Multiplication      ", funcMul        , K, sec_us);
+  measure("Division            ", funcDiv        , K, sec_us);
+  measure("Cast to/from double ", funcCastDouble , K, sec_us);
+  measure("Compare             ", funcCompare    , K, sec_us);
+  measure("FMA                 ", funcFMA        , K, sec_us);
+  measure("Square root         ", funcSqrt       , K, sec_us);
+  measure("Sin                 ", funcSin        , K, sec_us);
+  measure("Atan                ", funcAtan       , K, sec_us);
+  measure("Exp                 ", funcExp        , K, sec_us);
+  measure("Pow                 ", funcPow        , K, sec_us);
+
+  exit(0);
+}

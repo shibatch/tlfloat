@@ -6,6 +6,8 @@
 #include <cmath>
 #include <ctime>
 
+#include "suppress.hpp"
+
 #include <tlfloat/detect.h>
 
 using namespace std;
@@ -329,6 +331,7 @@ string to_string(UINT128 value) {
 string to_string(INT128 value) {
   vector<char> s((1 << 7)/3 + 2);
   print(s.data(), value >= 0 ? value : -value);
+  s.data()[s.size()-1] = '\0';
   return (value >= 0 ? "" : "-") + string(s.data());
 }
 

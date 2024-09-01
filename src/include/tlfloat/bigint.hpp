@@ -28,6 +28,7 @@
 
 /*! \cond NO_DOCUMENTATION_WITH_DOXYGEN */
 #define TLFLOAT_NOINLINE
+#define TLFLOAT_INLINE
 /*! \endcond */
 
 #ifndef TLFLOAT_DISABLE_ARCH_OPTIMIZATION
@@ -44,6 +45,10 @@
 
 #if !defined(__CUDA_ARCH__)
 #define TLFLOAT_ENABLE_GNUC_CLZ
+#ifdef TLFLOAT_ENABLE_INLINING
+#undef TLFLOAT_INLINE
+#define TLFLOAT_INLINE __attribute__((always_inline))
+#endif
 #else
 #define TLFLOAT_ENABLE_CUDA_UMUL64HI
 #define TLFLOAT_ENABLE_CUDA_CLZ
@@ -63,6 +68,11 @@
 
 #define TLFLOAT_ENABLE_VCUMUL128
 #define TLFLOAT_ENABLE_VCBITSCANREVERSE
+
+#ifdef TLFLOAT_ENABLE_INLINING
+#undef TLFLOAT_INLINE
+#define TLFLOAT_INLINE __forceinline
+#endif
 #endif // #if !defined(__CUDA_ARCH__)
 #endif // #ifdef _MSC_VER
 #endif // #ifndef TLFLOAT_DISABLE_ARCH_OPTIMIZATION
@@ -77,7 +87,7 @@ namespace tlfloat {
   struct xpair {
     firsttype first;
     secondtype second;
-    constexpr xpair(const firsttype& f, const secondtype& s) : first(f), second(s) {}
+    constexpr TLFLOAT_INLINE xpair(const firsttype& f, const secondtype& s) : first(f), second(s) {}
   };
 
   namespace detail {
@@ -85,7 +95,7 @@ namespace tlfloat {
     struct xarray { T e[N]; };
 
 #if defined(TLFLOAT_ENABLE_X86INTRIN)
-    static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
 	xpair<uint64_t, bool> ret(0, false);
 	ret.second = _addcarry_u64(cin, lhs, rhs, (long long unsigned *)&ret.first);
@@ -98,7 +108,7 @@ namespace tlfloat {
       }
     }
 
-    static constexpr xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
 	xpair<uint64_t, bool> ret(0, false);
 	ret.second = _subborrow_u64(cin, lhs, rhs, (long long unsigned *)&ret.first);
@@ -111,24 +121,24 @@ namespace tlfloat {
       }
     }
 #elif defined(TLFLOAT_ENABLE_INT128_OPT)
-    static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       __uint128_t a = __uint128_t(lhs) + rhs + cin;
       return xpair<uint64_t, bool>(uint64_t(a), (a >> 64) != 0);
     }
 
-    static constexpr xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs) {
       __uint128_t a = __uint128_t(lhs) - rhs - cin;
       return xpair<uint64_t, bool>(uint64_t(a), (a >> 64) != 0);
     }
 #else
-    static constexpr xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
       uint64_t al = (lhs & 0xffffffff) + (rhs & 0xffffffff) + cin;
       lhs >>= 32; rhs >>= 32;
       uint64_t ah = (lhs & 0xffffffff) + (rhs & 0xffffffff) + ((al >> 32) != 0);
       return xpair<uint64_t, bool>((al & 0xffffffff) | (ah << 32), (ah >> 32) != 0);
     }
 
-    static constexpr xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs) {
       uint64_t al = (lhs & 0xffffffff) - (rhs & 0xffffffff) - cin;
       lhs >>= 32; rhs >>= 32;
       uint64_t ah = (lhs & 0xffffffff) - (rhs & 0xffffffff) - ((al >> 32) != 0);
@@ -137,7 +147,7 @@ namespace tlfloat {
 #endif
 
 #ifdef TLFLOAT_ENABLE_VCUMUL128
-    static constexpr xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
 	xpair<uint64_t, uint64_t> ret(0, 0);
 	ret.second = _umul128(lhs, rhs, &ret.first);
@@ -149,12 +159,12 @@ namespace tlfloat {
       return xpair<uint64_t, uint64_t> (ah * bh + (m >> 32) + ((al * bh) >> 32), lhs * rhs);
     }
 #elif defined(TLFLOAT_ENABLE_INT128_OPT)
-    static constexpr xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       __uint128_t m = lhs * __uint128_t(rhs);
       return xpair<uint64_t, uint64_t>(uint64_t(m >> 64), uint64_t(m));
     }
 #elif defined(TLFLOAT_ENABLE_CUDA_UMUL64HI)
-    static constexpr xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       if (!std::is_constant_evaluated()) {
 	return xpair<uint64_t, uint64_t>(__umul64hi(lhs, rhs), lhs * rhs);
       }
@@ -164,7 +174,7 @@ namespace tlfloat {
       return xpair<uint64_t, uint64_t> (ah * bh + (m >> 32) + ((al * bh) >> 32), lhs * rhs);
     }
 #else
-    static constexpr xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       uint64_t al = lhs & 0xffffffff, ah = lhs >> 32;
       uint64_t bl = rhs & 0xffffffff, bh = rhs >> 32;
       uint64_t m = ah * bl + ((al * bl) >> 32) + ((al * bh) & 0xffffffff);
@@ -173,7 +183,7 @@ namespace tlfloat {
 #endif
 
 #ifdef TLFLOAT_ENABLE_VCBITSCANREVERSE
-    static constexpr unsigned clz64(uint64_t u) {
+    static constexpr TLFLOAT_INLINE unsigned clz64(uint64_t u) {
       if (!std::is_constant_evaluated()) {
 	unsigned long idx = 0;
 	return _BitScanReverse64(&idx, u) ? (63 - idx) : 64;
@@ -190,9 +200,9 @@ namespace tlfloat {
       }
     }
 #elif defined(TLFLOAT_ENABLE_GNUC_CLZ)
-    static constexpr unsigned clz64(uint64_t u) { return u == 0 ? 64 : __builtin_clzll(u); }
+    static constexpr TLFLOAT_INLINE unsigned clz64(uint64_t u) { return u == 0 ? 64 : __builtin_clzll(u); }
 #elif defined(TLFLOAT_ENABLE_CUDA_CLZ)
-    static constexpr unsigned clz64(uint64_t u) {
+    static constexpr TLFLOAT_INLINE unsigned clz64(uint64_t u) {
       if (!std::is_constant_evaluated()) return __clzll(u);
       unsigned z = 0;
       if (u & 0xffffffff00000000ULL) u >>= 32; else z += 32;
@@ -205,7 +215,7 @@ namespace tlfloat {
       return z;
     }
 #else
-    static constexpr unsigned clz64(uint64_t u) {
+    static constexpr TLFLOAT_INLINE unsigned clz64(uint64_t u) {
       unsigned z = 0;
       if (u & 0xffffffff00000000ULL) u >>= 32; else z += 32;
       if (u & 0x00000000ffff0000ULL) u >>= 16; else z += 16;
@@ -258,10 +268,10 @@ namespace tlfloat {
     template<typename mant_t, typename longmant_t, int nbexp, int nbmant> class UnpackedFloat;
 
     template<typename T, std::enable_if_t<(std::is_integral_v<T>), int> = 0>
-    static inline constexpr T bitmask(int b) { return (T(1) << b) - 1; }
+    static inline constexpr TLFLOAT_INLINE T bitmask(int b) { return (T(1) << b) - 1; }
 
     template<typename T, std::enable_if_t<(!std::is_integral_v<T>), int> = 0>
-    static inline constexpr T bitmask(int b) {
+    static inline constexpr TLFLOAT_INLINE T bitmask(int b) {
       T u;
       for(int i=0;i<(int)sizeof(T) / 8;i++) {
 	uint64_t w = 0;
@@ -290,7 +300,7 @@ namespace tlfloat {
   public:
     BigUInt<N-1> low = 0, high = 0;
 
-    constexpr BigUInt(const BigUInt<N-1>& h, const BigUInt<N-1>& l) : low(l), high(h) {}
+    constexpr TLFLOAT_INLINE BigUInt(const BigUInt<N-1>& h, const BigUInt<N-1>& l) : low(l), high(h) {}
 
   private:
     template<int..., int K = N, std::enable_if_t<(K >= 10), int> = 0>
@@ -320,7 +330,7 @@ namespace tlfloat {
     }
 
     template<int..., int K = N, std::enable_if_t<(K == 8 || K == 9), int> = 0>
-    static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
+    static constexpr TLFLOAT_INLINE BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
       static_assert(sizeof(BigUInt) == (sizeof(uint64_t) << (N - 6)), "Class memory layout");
       if (std::is_constant_evaluated()) return BigUInt(lhs.mulhi(rhs), lhs * rhs);
       BigUInt ret(0);
@@ -356,12 +366,12 @@ namespace tlfloat {
     }
 
     template<int..., int K = N, std::enable_if_t<K == 7, int> = 0>
-    static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
+    static constexpr TLFLOAT_INLINE BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
       xpair<uint64_t, uint64_t> m = detail::mul128(lhs.u64, rhs.u64);
       return BigUInt(m.first, m.second);
     }
 
-    constexpr xpair<BigUInt, bool> inc() const {
+    constexpr TLFLOAT_INLINE xpair<BigUInt, bool> inc() const {
       auto rl = low.inc();
       xpair<BigUInt, bool> s(0, false);
       s.first.low  = rl.first;
@@ -373,7 +383,7 @@ namespace tlfloat {
       }
       return s;
     }
-    constexpr xpair<BigUInt, bool> dec() const {
+    constexpr TLFLOAT_INLINE xpair<BigUInt, bool> dec() const {
       auto rl = low.dec();
       xpair<BigUInt, bool> s(0, false);
       s.first.low  = rl.first;
@@ -385,7 +395,7 @@ namespace tlfloat {
       }
       return s;
     }
-    constexpr xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
+    constexpr TLFLOAT_INLINE xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
       auto rl = low.adc(rhs.low, c), rh = high.adc(rhs.high, rl.second);
       xpair<BigUInt, bool> s(0, false);
       s.first.high = rh.first;
@@ -393,7 +403,7 @@ namespace tlfloat {
       s.second = rh.second;
       return s;
     }
-    constexpr xpair<BigUInt, bool> sbc(const BigUInt& rhs, bool c) const {
+    constexpr TLFLOAT_INLINE xpair<BigUInt, bool> sbc(const BigUInt& rhs, bool c) const {
       auto rl = low.sbc(rhs.low, c), rh = high.sbc(rhs.high, rl.second);
       xpair<BigUInt, bool> s(0, false);
       s.first.high = rh.first;
@@ -402,23 +412,23 @@ namespace tlfloat {
       return s;
     }
 
-    constexpr BigUInt mulhi(const BigUInt& rhs) const {
+    constexpr TLFLOAT_INLINE BigUInt mulhi(const BigUInt& rhs) const {
       BigUInt ll = mul(low , rhs.low), lh = mul(low , rhs.high);
       BigUInt hl = mul(high, rhs.low);
       BigUInt m = hl + ll.high + lh.low, hh = mul(high, rhs.high);
       return hh + m.high + lh.high;
     }
 
-    constexpr BigUInt mulhiAprx(const BigUInt& rhs) const {
+    constexpr TLFLOAT_INLINE BigUInt mulhiAprx(const BigUInt& rhs) const {
       BigUInt hh = mul(high, rhs.high);
       BigUInt<N-1> lh = low.mulhiAprx(rhs.high), hl = high.mulhiAprx(rhs.low);
       return hh + hl + lh;
     }
-    constexpr BigUInt mulhiAprx2(const BigUInt<N-1>& rhs) const {
+    constexpr TLFLOAT_INLINE BigUInt mulhiAprx2(const BigUInt<N-1>& rhs) const {
       return mul(high, rhs) + low.mulhiAprx(rhs);
     }
 
-    constexpr BigUInt reciprocalAprx() const {
+    constexpr TLFLOAT_INLINE BigUInt reciprocalAprx() const {
       BigUInt<N-1> x((high + ((~high >> (sizeof(high)*8 - 1)) & 1)).reciprocalAprx());
       BigUInt y((-mulhiAprx2(x)).mulhiAprx2(x));
       return y + y;
@@ -430,47 +440,47 @@ namespace tlfloat {
     template<typename mant_t, typename longmant_t, int nbexp, int nbmant> friend class detail::UnpackedFloat;
     template<typename Unpacked_t> friend class TLFloat;
 
-    constexpr BigUInt() = default;
+    constexpr TLFLOAT_INLINE BigUInt() = default;
 
     /** Cast from any primitive unsigned integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
-    constexpr BigUInt(T u) : low(u), high(uint64_t(0)) {}
+    constexpr TLFLOAT_INLINE BigUInt(T u) : low(u), high(uint64_t(0)) {}
 
     /** Cast from any primitive signed integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
-    constexpr BigUInt(T i) : BigUInt(i < 0 ? (~BigUInt(0U) - uint64_t(-int64_t(i)) + 1U) : uint64_t(i)) {}
+    constexpr TLFLOAT_INLINE BigUInt(T i) : BigUInt(i < 0 ? (~BigUInt(0U) - uint64_t(-int64_t(i)) + 1U) : uint64_t(i)) {}
 
     /** Cast to any primitive unsigned integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
-    constexpr explicit operator T() const { return T(uint64_t(low)); }
+    constexpr TLFLOAT_INLINE explicit operator T() const { return T(uint64_t(low)); }
 
     /** Cast to any primitive signed integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
-    constexpr explicit operator T() const { return uint64_t(low); }
+    constexpr TLFLOAT_INLINE explicit operator T() const { return uint64_t(low); }
 
-    constexpr explicit operator bool() const { return !isZero(); }
+    constexpr TLFLOAT_INLINE explicit operator bool() const { return !isZero(); }
 
 #ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
-    constexpr BigUInt(__uint128_t u) : low(uint64_t(0)), high(uint64_t(0)) {
+    constexpr TLFLOAT_INLINE BigUInt(__uint128_t u) : low(uint64_t(0)), high(uint64_t(0)) {
       setWord(0, uint64_t(u & 0xffffffffffffffffULL)); setWord(1, uint64_t(u >> 64));
     }
-    constexpr explicit operator __uint128_t() const { return (__uint128_t(getWord(1)) << 64) + getWord(0); }
+    constexpr TLFLOAT_INLINE explicit operator __uint128_t() const { return (__uint128_t(getWord(1)) << 64) + getWord(0); }
 
-    constexpr explicit BigUInt(__int128_t u) : BigUInt(__uint128_t(u)) {}
-    constexpr explicit operator __int128_t() const { return __uint128_t(*this); }
+    constexpr TLFLOAT_INLINE explicit BigUInt(__int128_t u) : BigUInt(__uint128_t(u)) {}
+    constexpr TLFLOAT_INLINE explicit operator __int128_t() const { return __uint128_t(*this); }
 #endif
 
-    constexpr BigUInt(const BigUInt& m) = default;
-    constexpr explicit BigUInt(const BigUInt<N+1>& h) : low(h.low.low), high(h.low.high) {}
+    constexpr TLFLOAT_INLINE BigUInt(const BigUInt& m) = default;
+    constexpr TLFLOAT_INLINE explicit BigUInt(const BigUInt<N+1>& h) : low(h.low.low), high(h.low.high) {}
 
     template<int K, std::enable_if_t<(K < N)>* = nullptr>
-    constexpr BigUInt(const BigUInt<K>& l) : low(BigUInt<N-1>(l)), high(uint64_t(0)) {}
+    constexpr TLFLOAT_INLINE BigUInt(const BigUInt<K>& l) : low(BigUInt<N-1>(l)), high(uint64_t(0)) {}
     template<int K, std::enable_if_t<(K > (N+1))>* = nullptr>
-    constexpr explicit BigUInt(const BigUInt<K>& h) : BigUInt(BigUInt<N+1>(h)) {}
+    constexpr TLFLOAT_INLINE explicit BigUInt(const BigUInt<K>& h) : BigUInt(BigUInt<N+1>(h)) {}
 
-    constexpr BigUInt& operator=(const BigUInt &u) = default;
+    constexpr TLFLOAT_INLINE BigUInt& operator=(const BigUInt &u) = default;
 
-    constexpr BigUInt(const uint64_t *p) : low(p), high(p + (1 << (N - 7))) {}
+    constexpr TLFLOAT_INLINE BigUInt(const uint64_t *p) : low(p), high(p + (1 << (N - 7))) {}
 
     constexpr explicit BigUInt(double d) {
       int x = 0;
@@ -502,70 +512,70 @@ namespace tlfloat {
       return d1 + d3;
     }
 
-    constexpr unsigned clz() const {
+    constexpr TLFLOAT_INLINE unsigned clz() const {
       return high.isZero2() ? low.clz() + (1 << (N-1)) : high.clz();
     }
-    constexpr unsigned ilogbp1() const { return (1U << N) - clz(); }
-    constexpr bool isZero() const { return low.isZero() && high.isZero(); }
-    constexpr bool isZero2() const { return high.isZero2() && low.isZero2(); }
-    constexpr bool isAllOne() const { return low.isAllOne() && high.isAllOne(); }
-    constexpr bool msb() const { return high.msb(); }
-    constexpr uint64_t getWord(unsigned idx) const {
+    constexpr TLFLOAT_INLINE unsigned ilogbp1() const { return (1U << N) - clz(); }
+    constexpr TLFLOAT_INLINE bool isZero() const { return low.isZero() && high.isZero(); }
+    constexpr TLFLOAT_INLINE bool isZero2() const { return high.isZero2() && low.isZero2(); }
+    constexpr TLFLOAT_INLINE bool isAllOne() const { return low.isAllOne() && high.isAllOne(); }
+    constexpr TLFLOAT_INLINE bool msb() const { return high.msb(); }
+    constexpr TLFLOAT_INLINE uint64_t getWord(unsigned idx) const {
       return idx >= (1 << (N-7)) ? high.getWord(idx - (1 << (N-7))) : low.getWord(idx);
     }
-    constexpr void setWord(unsigned idx, uint64_t u) {
+    constexpr TLFLOAT_INLINE void setWord(unsigned idx, uint64_t u) {
       if (idx >= (1 << (N-7))) high.setWord(idx - (1 << (N-7)), u);
       else low.setWord(idx, u);
     }
-    constexpr bool bit(unsigned idx) const {
+    constexpr TLFLOAT_INLINE bool bit(unsigned idx) const {
       return (getWord(idx >> 6) >> (idx & 63)) & 1;
     }
 
-    constexpr BigUInt& operator++()    { *this = inc().first; return *this; }
-    constexpr BigUInt& operator--()    { *this = dec().first; return *this; }
-    constexpr BigUInt  operator++(int) { BigUInt t = *this; *this = inc().first; return t; }
-    constexpr BigUInt  operator--(int) { BigUInt t = *this; *this = dec().first; return t; }
+    constexpr TLFLOAT_INLINE BigUInt& operator++()    { *this = inc().first; return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator--()    { *this = dec().first; return *this; }
+    constexpr TLFLOAT_INLINE BigUInt  operator++(int) { BigUInt t = *this; *this = inc().first; return t; }
+    constexpr TLFLOAT_INLINE BigUInt  operator--(int) { BigUInt t = *this; *this = dec().first; return t; }
 
-    constexpr BigUInt operator+(const BigUInt& rhs) const { return adc(rhs, false).first; }
-    constexpr BigUInt operator+(const BigUInt<N-1>& rhs) const {
+    constexpr TLFLOAT_INLINE BigUInt operator+(const BigUInt& rhs) const { return adc(rhs, false).first; }
+    constexpr TLFLOAT_INLINE BigUInt operator+(const BigUInt<N-1>& rhs) const {
       auto rl = low.adc(rhs, false);
       auto rh = high.inc();
       return BigUInt(rl.second ? rh.first : high, rl.first);
     }
 
-    constexpr BigUInt operator-(const BigUInt& rhs) const { return sbc(rhs, false).first; }
-    constexpr BigUInt operator-(const BigUInt<N-1>& rhs) const {
+    constexpr TLFLOAT_INLINE BigUInt operator-(const BigUInt& rhs) const { return sbc(rhs, false).first; }
+    constexpr TLFLOAT_INLINE BigUInt operator-(const BigUInt<N-1>& rhs) const {
       auto rl = low.sbc(rhs, false);
       auto rh = high.dec();
       return BigUInt(rl.second ? rh.first : high, rl.first);
     }
 
-    constexpr BigUInt operator-() const {
+    constexpr TLFLOAT_INLINE BigUInt operator-() const {
       BigUInt r = ~*this;
       r = r.inc().first;
       return r;
     }
 
-    constexpr BigUInt operator+() const { return *this; }
+    constexpr TLFLOAT_INLINE BigUInt operator+() const { return *this; }
 
-    constexpr BigUInt operator*(const BigUInt& rhs) const {
+    constexpr TLFLOAT_INLINE BigUInt operator*(const BigUInt& rhs) const {
       BigUInt ll = mul(low, rhs.low), lh = mul(low, rhs.high);
       BigUInt hl = mul(high, rhs.low);
       return BigUInt(lh.low + hl.low + ll.high, ll.low);
     }
-    constexpr BigUInt operator*(const BigUInt<N-1>& rhs) const {
+    constexpr TLFLOAT_INLINE BigUInt operator*(const BigUInt<N-1>& rhs) const {
       BigUInt ll = mul(low, rhs), hl = mul(high, rhs);
       return BigUInt(hl.low + ll.high, ll.low);
     }
 
-    constexpr BigUInt operator/(const BigUInt& rhs) const {
+    constexpr TLFLOAT_INLINE BigUInt operator/(const BigUInt& rhs) const {
       if (rhs == 1) return *this;
       BigUInt q = this->mulhi(rhs.reciprocal());
       if (!(rhs > *this - q * rhs)) q++;
       return q;
     }
 
-    constexpr BigUInt operator%(const BigUInt& rhs) const {
+    constexpr TLFLOAT_INLINE BigUInt operator%(const BigUInt& rhs) const {
       BigUInt q = this->mulhi(rhs.reciprocal());
       BigUInt m = *this - q * rhs;
       if (!(rhs > m)) m -= rhs;
@@ -573,7 +583,7 @@ namespace tlfloat {
     }
 
     /** This method returns ((1 << N) / *this) */
-    constexpr BigUInt reciprocal() const {
+    constexpr TLFLOAT_INLINE BigUInt reciprocal() const {
       unsigned z = clz();
       BigUInt t0 = (*this << z).reciprocalAprx();
       if (z < (1 << N) - (1 << (N-4))) return t0 >> ((1 << N) - 1 - z);
@@ -581,26 +591,26 @@ namespace tlfloat {
       return t1 >> ((1 << N) - 2 - z);
     }
 
-    constexpr bool eq(BigUInt const& rhs) const { return low.eq(rhs.low) && high.eq(rhs.high); }
-    constexpr bool operator==(BigUInt const& rhs) const { return eq(rhs); }
-    constexpr bool operator!=(BigUInt const& rhs) const { return !eq(rhs); }
+    constexpr TLFLOAT_INLINE bool eq(BigUInt const& rhs) const { return low.eq(rhs.low) && high.eq(rhs.high); }
+    constexpr TLFLOAT_INLINE bool operator==(BigUInt const& rhs) const { return eq(rhs); }
+    constexpr TLFLOAT_INLINE bool operator!=(BigUInt const& rhs) const { return !eq(rhs); }
 
-    constexpr int compare(BigUInt const& rhs) const {
+    constexpr TLFLOAT_INLINE int compare(BigUInt const& rhs) const {
       int c = high.compare(rhs.high);
       if (c == 0) return low.compare(rhs.low);
       return c;
     }
-    constexpr bool operator> (BigUInt const& rhs) const { return compare(rhs) >  0; }
-    constexpr bool operator< (BigUInt const& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(BigUInt const& rhs) const { return !(*this > rhs); }
-    constexpr bool operator>=(BigUInt const& rhs) const { return !(*this < rhs); }
+    constexpr TLFLOAT_INLINE bool operator> (BigUInt const& rhs) const { return compare(rhs) >  0; }
+    constexpr TLFLOAT_INLINE bool operator< (BigUInt const& rhs) const { return rhs > *this; }
+    constexpr TLFLOAT_INLINE bool operator<=(BigUInt const& rhs) const { return !(*this > rhs); }
+    constexpr TLFLOAT_INLINE bool operator>=(BigUInt const& rhs) const { return !(*this < rhs); }
 
-    constexpr BigUInt operator&(const BigUInt& rhs) const { return BigUInt(high & rhs.high, low & rhs.low); }
-    constexpr BigUInt operator|(const BigUInt& rhs) const { return BigUInt(high | rhs.high, low | rhs.low); }
-    constexpr BigUInt operator^(const BigUInt& rhs) const { return BigUInt(high ^ rhs.high, low ^ rhs.low); }
-    constexpr BigUInt operator~() const { return BigUInt(~high, ~low); }
+    constexpr TLFLOAT_INLINE BigUInt operator&(const BigUInt& rhs) const { return BigUInt(high & rhs.high, low & rhs.low); }
+    constexpr TLFLOAT_INLINE BigUInt operator|(const BigUInt& rhs) const { return BigUInt(high | rhs.high, low | rhs.low); }
+    constexpr TLFLOAT_INLINE BigUInt operator^(const BigUInt& rhs) const { return BigUInt(high ^ rhs.high, low ^ rhs.low); }
+    constexpr TLFLOAT_INLINE BigUInt operator~() const { return BigUInt(~high, ~low); }
 
-    constexpr BigUInt operator<<(int n) const {
+    constexpr TLFLOAT_INLINE BigUInt operator<<(int n) const {
       if (n > 0) {
 	if (n >= (1 << N)) return uint64_t(0);
 	return BigUInt((high <<  n) | (low  >> ((1 << (N-1)) - n)) , (low <<  n));
@@ -610,133 +620,133 @@ namespace tlfloat {
       }
       return *this;
     }
-    constexpr BigUInt operator>>(int n) const { return *this << -n; }
+    constexpr TLFLOAT_INLINE BigUInt operator>>(int n) const { return *this << -n; }
 
-    constexpr BigUInt& operator<<=(int n) { *this = *this << n; return *this; }
-    constexpr BigUInt& operator>>=(int n) { *this = *this >> n; return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator<<=(int n) { *this = *this << n; return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator>>=(int n) { *this = *this >> n; return *this; }
 
     //
 
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigUInt operator+(const rhstype &rhs) const { return operator+(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigUInt operator+(const rhstype &rhs) const { return operator+(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigUInt operator-(const rhstype &rhs) const { return operator-(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigUInt operator-(const rhstype &rhs) const { return operator-(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigUInt operator*(const rhstype &rhs) const { return operator*(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigUInt operator*(const rhstype &rhs) const { return operator*(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigUInt operator/(const rhstype &rhs) const { return operator/(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigUInt operator/(const rhstype &rhs) const { return operator/(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigUInt operator%(const rhstype &rhs) const { return operator%(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigUInt operator%(const rhstype &rhs) const { return operator%(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigUInt operator&(const rhstype &rhs) const { return operator&(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigUInt operator&(const rhstype &rhs) const { return operator&(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigUInt operator|(const rhstype &rhs) const { return operator|(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigUInt operator|(const rhstype &rhs) const { return operator|(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigUInt operator^(const rhstype &rhs) const { return operator^(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigUInt operator^(const rhstype &rhs) const { return operator^(BigUInt(rhs)); }
 
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigUInt operator+(const lhstype c, const BigUInt& rhs) { return BigUInt(c) + rhs; }
+    constexpr TLFLOAT_INLINE friend BigUInt operator+(const lhstype c, const BigUInt& rhs) { return BigUInt(c) + rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigUInt operator-(const lhstype c, const BigUInt& rhs) { return BigUInt(c) - rhs; }
+    constexpr TLFLOAT_INLINE friend BigUInt operator-(const lhstype c, const BigUInt& rhs) { return BigUInt(c) - rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigUInt operator*(const lhstype c, const BigUInt& rhs) { return BigUInt(c) * rhs; }
+    constexpr TLFLOAT_INLINE friend BigUInt operator*(const lhstype c, const BigUInt& rhs) { return BigUInt(c) * rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigUInt operator/(const lhstype c, const BigUInt& rhs) { return BigUInt(c) / rhs; }
+    constexpr TLFLOAT_INLINE friend BigUInt operator/(const lhstype c, const BigUInt& rhs) { return BigUInt(c) / rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigUInt operator%(const lhstype c, const BigUInt& rhs) { return BigUInt(c) % rhs; }
+    constexpr TLFLOAT_INLINE friend BigUInt operator%(const lhstype c, const BigUInt& rhs) { return BigUInt(c) % rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigUInt operator&(const lhstype c, const BigUInt& rhs) { return BigUInt(c) & rhs; }
+    constexpr TLFLOAT_INLINE friend BigUInt operator&(const lhstype c, const BigUInt& rhs) { return BigUInt(c) & rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigUInt operator|(const lhstype c, const BigUInt& rhs) { return BigUInt(c) | rhs; }
+    constexpr TLFLOAT_INLINE friend BigUInt operator|(const lhstype c, const BigUInt& rhs) { return BigUInt(c) | rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigUInt operator^(const lhstype c, const BigUInt& rhs) { return BigUInt(c) ^ rhs; }
+    constexpr TLFLOAT_INLINE friend BigUInt operator^(const lhstype c, const BigUInt& rhs) { return BigUInt(c) ^ rhs; }
 
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator==(const rhstype& rhs) const { return operator==(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator==(const rhstype& rhs) const { return operator==(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator!=(const rhstype& rhs) const { return operator!=(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator!=(const rhstype& rhs) const { return operator!=(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator> (const rhstype& rhs) const { return operator> (BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator> (const rhstype& rhs) const { return operator> (BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator< (const rhstype& rhs) const { return operator< (BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator< (const rhstype& rhs) const { return operator< (BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator>=(const rhstype& rhs) const { return operator>=(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator>=(const rhstype& rhs) const { return operator>=(BigUInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator<=(const rhstype& rhs) const { return operator<=(BigUInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator<=(const rhstype& rhs) const { return operator<=(BigUInt(rhs)); }
 
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator==(const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) == rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator==(const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) == rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator!=(const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) != rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator!=(const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) != rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator> (const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) >  rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator> (const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) >  rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator< (const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) <  rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator< (const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) <  rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator>=(const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) >= rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator>=(const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) >= rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator<=(const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) <= rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator<=(const lhstype& lhs, const BigUInt& rhs) { return BigUInt(lhs) <= rhs; }
 
     //
 
     template<typename srctype>
-    constexpr BigUInt& operator=(const srctype& s) {
+    constexpr TLFLOAT_INLINE BigUInt& operator=(const srctype& s) {
       BigUInt n(s);
       *this = n;
       return *this;
     }
 
     template<typename rhstype>
-    constexpr BigUInt& operator+=(const rhstype& rhs) { *this = *this + BigUInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator+=(const rhstype& rhs) { *this = *this + BigUInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigUInt& operator-=(const rhstype& rhs) { *this = *this - BigUInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator-=(const rhstype& rhs) { *this = *this - BigUInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigUInt& operator*=(const rhstype& rhs) { *this = *this * BigUInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator*=(const rhstype& rhs) { *this = *this * BigUInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigUInt& operator/=(const rhstype& rhs) { *this = *this / BigUInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator/=(const rhstype& rhs) { *this = *this / BigUInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigUInt& operator%=(const rhstype& rhs) { *this = *this % BigUInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator%=(const rhstype& rhs) { *this = *this % BigUInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigUInt& operator&=(const rhstype& rhs) { *this = *this & BigUInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator&=(const rhstype& rhs) { *this = *this & BigUInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigUInt& operator|=(const rhstype& rhs) { *this = *this | BigUInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator|=(const rhstype& rhs) { *this = *this | BigUInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigUInt& operator^=(const rhstype& rhs) { *this = *this ^ BigUInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator^=(const rhstype& rhs) { *this = *this ^ BigUInt(rhs); return *this; }
 
-    constexpr BigUInt& operator+=(bool rhs) { if (rhs) *this = this->inc().first; return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator+=(bool rhs) { if (rhs) *this = this->inc().first; return *this; }
 
     //
 
     /** This method performs division and modulo at a time. Give rhs.reciprocal() as the second argument */
-    constexpr BigUInt divmod(const BigUInt& rhs, const BigUInt& recip, BigUInt* mod) const {
+    constexpr TLFLOAT_INLINE BigUInt divmod(const BigUInt& rhs, const BigUInt& recip, BigUInt* mod) const {
       if (rhs == 1) { *mod = 0; return *this; }
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
       if (!(rhs > m)) { q++; m = m - rhs; }
@@ -745,14 +755,14 @@ namespace tlfloat {
     }
 
     /** This method performs division and modulo at a time. Give rhs.reciprocal() as the second argument */
-    constexpr xpair<BigUInt, BigUInt> divmod(const BigUInt& rhs, const BigUInt& recip) const {
+    constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> divmod(const BigUInt& rhs, const BigUInt& recip) const {
       if (rhs == 1) xpair<BigUInt, BigUInt>(*this, 0);
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
       if (!(rhs > m)) { q++; m = m - rhs; }
       return xpair<BigUInt, BigUInt>(q, m);
     }
 
-    constexpr BigUInt mod(const BigUInt& rhs, const BigUInt& recip) const {
+    constexpr TLFLOAT_INLINE BigUInt mod(const BigUInt& rhs, const BigUInt& recip) const {
       if (rhs == 1) return 0;
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
       return m >= rhs ? m - rhs : m;
@@ -788,7 +798,7 @@ namespace tlfloat {
 
     //
 
-    constexpr BigUInt(const char *p_, const char **endptr = nullptr, const int base_ = 10) {
+    constexpr TLFLOAT_NOINLINE BigUInt(const char *p_, const char **endptr = nullptr, const int base_ = 10) {
       const char *p = p_;
       bool success = false;
       while(*p == ' ') p++;
@@ -887,26 +897,26 @@ namespace tlfloat {
     uint64_t u64 = 0;
 
   private:
-    constexpr xpair<BigUInt, bool> inc() const {
+    constexpr TLFLOAT_INLINE xpair<BigUInt, bool> inc() const {
       xpair<BigUInt, bool> s = { 0, false };
       s.first = u64 + 1;
       s.second = s.first == 0;
       return s;
     }
-    constexpr xpair<BigUInt, bool> dec() const {
+    constexpr TLFLOAT_INLINE xpair<BigUInt, bool> dec() const {
       xpair<BigUInt, bool> s = { 0, false };
       s.second = u64 == 0;
       s.first = u64 - 1;
       return s;
     }
-    constexpr xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
+    constexpr TLFLOAT_INLINE xpair<BigUInt, bool> adc(const BigUInt& rhs, bool c) const {
       xpair<BigUInt, bool> s = { 0, false };
       xpair<uint64_t, bool> ub = detail::adc64(c, u64, rhs.u64);
       s.first = ub.first;
       s.second = ub.second;
       return s;
     }
-    constexpr xpair<BigUInt, bool> sbc(const BigUInt& rhs, bool c) const {
+    constexpr TLFLOAT_INLINE xpair<BigUInt, bool> sbc(const BigUInt& rhs, bool c) const {
       xpair<BigUInt, bool> s = { 0, false };
       xpair<uint64_t, bool> ub = detail::sbc64(c, u64, rhs.u64);
       s.first = ub.first;
@@ -914,66 +924,66 @@ namespace tlfloat {
       return s;
     }
 
-    constexpr BigUInt reciprocalAprx() const {
+    constexpr TLFLOAT_INLINE BigUInt reciprocalAprx() const {
       BigUInt x(((~0ULL) / (u64 >> 32)) << 31);
       return (BigUInt(uint64_t(0)) - mulhi(x)).mulhi(x) << 1;
     }
 
-    constexpr BigUInt mulhi(const BigUInt& rhs) const { return detail::mul128(u64, rhs.u64).first; }
-    constexpr BigUInt mulhiAprx(const BigUInt& rhs) const { return mulhi(rhs); }
+    constexpr TLFLOAT_INLINE BigUInt mulhi(const BigUInt& rhs) const { return detail::mul128(u64, rhs.u64).first; }
+    constexpr TLFLOAT_INLINE BigUInt mulhiAprx(const BigUInt& rhs) const { return mulhi(rhs); }
 
   public:
     template<int> friend class BigUInt;
     template<int> friend class BigInt;
 
-    constexpr explicit BigUInt(const uint64_t *p) : u64(*p) {}
+    constexpr TLFLOAT_INLINE explicit BigUInt(const uint64_t *p) : u64(*p) {}
 
-    constexpr bool isZero() const { return u64 == 0; }
-    constexpr bool isZero2() const { return u64 == 0; }
-    constexpr bool isAllOne() const { return u64 == ~uint64_t(0); }
-    constexpr bool msb() const { return u64 >> 63; }
-    constexpr uint64_t getWord(unsigned idx) const { return u64; }
-    constexpr void setWord(unsigned idx, uint64_t u) { u64 = u; }
+    constexpr TLFLOAT_INLINE bool isZero() const { return u64 == 0; }
+    constexpr TLFLOAT_INLINE bool isZero2() const { return u64 == 0; }
+    constexpr TLFLOAT_INLINE bool isAllOne() const { return u64 == ~uint64_t(0); }
+    constexpr TLFLOAT_INLINE bool msb() const { return u64 >> 63; }
+    constexpr TLFLOAT_INLINE uint64_t getWord(unsigned idx) const { return u64; }
+    constexpr TLFLOAT_INLINE void setWord(unsigned idx, uint64_t u) { u64 = u; }
 
-    constexpr bool eq(BigUInt const& rhs) const { return u64 == rhs.u64; }
+    constexpr TLFLOAT_INLINE bool eq(BigUInt const& rhs) const { return u64 == rhs.u64; }
 
-    constexpr BigUInt& operator=(const BigUInt &u) = default;
+    constexpr TLFLOAT_INLINE BigUInt& operator=(const BigUInt &u) = default;
 
-    constexpr BigUInt operator+(const BigUInt& rhs) const { return u64 + rhs.u64; }
-    constexpr BigUInt operator-(const BigUInt& rhs) const { return u64 - rhs.u64; }
-    constexpr BigUInt operator*(const BigUInt& rhs) const { return u64 * rhs.u64; }
-    constexpr BigUInt operator/(const BigUInt& rhs) const { return u64 / rhs.u64; }
-    constexpr BigUInt operator%(const BigUInt& rhs) const { return u64 % rhs.u64; }
+    constexpr TLFLOAT_INLINE BigUInt operator+(const BigUInt& rhs) const { return u64 + rhs.u64; }
+    constexpr TLFLOAT_INLINE BigUInt operator-(const BigUInt& rhs) const { return u64 - rhs.u64; }
+    constexpr TLFLOAT_INLINE BigUInt operator*(const BigUInt& rhs) const { return u64 * rhs.u64; }
+    constexpr TLFLOAT_INLINE BigUInt operator/(const BigUInt& rhs) const { return u64 / rhs.u64; }
+    constexpr TLFLOAT_INLINE BigUInt operator%(const BigUInt& rhs) const { return u64 % rhs.u64; }
 
-    constexpr bool operator==(BigUInt const& rhs) const { return u64 == rhs.u64; }
-    constexpr bool operator!=(BigUInt const& rhs) const { return !(*this == rhs); }
-    constexpr bool operator> (BigUInt const& rhs) const { return u64 > rhs.u64; }
+    constexpr TLFLOAT_INLINE bool operator==(BigUInt const& rhs) const { return u64 == rhs.u64; }
+    constexpr TLFLOAT_INLINE bool operator!=(BigUInt const& rhs) const { return !(*this == rhs); }
+    constexpr TLFLOAT_INLINE bool operator> (BigUInt const& rhs) const { return u64 > rhs.u64; }
 
-    constexpr int compare(BigUInt const& rhs) const {
+    constexpr TLFLOAT_INLINE int compare(BigUInt const& rhs) const {
       if (u64 > rhs.u64) return +1;
       if (u64 < rhs.u64) return -1;
       return 0;
     }
 
-    constexpr BigUInt operator&(const BigUInt& rhs) const { return u64 & rhs.u64; }
-    constexpr BigUInt operator|(const BigUInt& rhs) const { return u64 | rhs.u64; }
-    constexpr BigUInt operator^(const BigUInt& rhs) const { return u64 ^ rhs.u64; }
-    constexpr BigUInt operator~()                      const { return ~u64; }
-    constexpr BigUInt operator<<(int n)                const {
+    constexpr TLFLOAT_INLINE BigUInt operator&(const BigUInt& rhs) const { return u64 & rhs.u64; }
+    constexpr TLFLOAT_INLINE BigUInt operator|(const BigUInt& rhs) const { return u64 | rhs.u64; }
+    constexpr TLFLOAT_INLINE BigUInt operator^(const BigUInt& rhs) const { return u64 ^ rhs.u64; }
+    constexpr TLFLOAT_INLINE BigUInt operator~()                      const { return ~u64; }
+    constexpr TLFLOAT_INLINE BigUInt operator<<(int n)                const {
       return (n > 63 || n < -63) ? 0 : n >= 0 ? (u64 << n) : (u64 >> -n);
     }
-    constexpr BigUInt operator>>(int n)                const { return *this << -n; }
-    constexpr unsigned clz() const { return detail::clz64(u64); }
+    constexpr TLFLOAT_INLINE BigUInt operator>>(int n)                const { return *this << -n; }
+    constexpr TLFLOAT_INLINE unsigned clz() const { return detail::clz64(u64); }
 
     //
 
-    constexpr BigUInt() = default;
-    constexpr BigUInt(const BigUInt &m) = default;
-    constexpr BigUInt(uint64_t u) : u64(u) {}
-    constexpr explicit operator unsigned long long int() const { return (unsigned long long)u64; }
-    constexpr explicit operator unsigned long int() const { return (unsigned long)u64; }
+    constexpr TLFLOAT_INLINE BigUInt() = default;
+    constexpr TLFLOAT_INLINE BigUInt(const BigUInt &m) = default;
+    constexpr TLFLOAT_INLINE BigUInt(uint64_t u) : u64(u) {}
+    constexpr TLFLOAT_INLINE explicit operator unsigned long long int() const { return (unsigned long long)u64; }
+    constexpr TLFLOAT_INLINE explicit operator unsigned long int() const { return (unsigned long)u64; }
 
-    constexpr BigUInt(const BigUInt<7>& h) : BigUInt(h.low) {}
+    constexpr TLFLOAT_INLINE BigUInt(const BigUInt<7>& h) : BigUInt(h.low) {}
   };
 
   /**
@@ -989,106 +999,106 @@ namespace tlfloat {
     template<int> friend class BigUInt;
     template<int> friend class BigInt;
   public:
-    constexpr BigInt() = default;
+    constexpr TLFLOAT_INLINE BigInt() = default;
 
     /** Cast from any primitive signed integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
-    constexpr BigInt(T i) : u(i < 0 ? -BigUInt<N>(uint64_t(-int64_t(i))) : BigUInt<N>(uint64_t(i))) {}
+    constexpr TLFLOAT_INLINE BigInt(T i) : u(i < 0 ? -BigUInt<N>(uint64_t(-int64_t(i))) : BigUInt<N>(uint64_t(i))) {}
 
     /** Cast from any primitive unsigned integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8), int> = 0>
-    constexpr BigInt(T u) : u(BigUInt<N>(u)) {}
+    constexpr TLFLOAT_INLINE BigInt(T u) : u(BigUInt<N>(u)) {}
 
     /** Cast to any primitive signed integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && !std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
-    constexpr explicit operator T() const { return T(u.getWord(0)); }
+    constexpr TLFLOAT_INLINE explicit operator T() const { return T(u.getWord(0)); }
 
     /** Cast to any primitive unsigned integer */
     template<typename T, std::enable_if_t<(std::is_integral_v<T> && std::is_unsigned_v<T> && sizeof(T) <= 8 && !std::is_same_v<T, bool>), int> = 0>
-    constexpr explicit operator T() const { return int64_t(*this); }
+    constexpr TLFLOAT_INLINE explicit operator T() const { return int64_t(*this); }
 
-    constexpr explicit operator bool() const { return !u.isZero(); }
+    constexpr TLFLOAT_INLINE explicit operator bool() const { return !u.isZero(); }
 
 #ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
-    constexpr BigInt(__int128_t u) : BigInt(BigUInt<N>(__uint128_t(u))) {}
-    constexpr explicit operator __int128_t() const { return (__int128_t)BigUInt<N>(*this); }
+    constexpr TLFLOAT_INLINE BigInt(__int128_t u) : BigInt(BigUInt<N>(__uint128_t(u))) {}
+    constexpr TLFLOAT_INLINE explicit operator __int128_t() const { return (__int128_t)BigUInt<N>(*this); }
 
-    constexpr explicit BigInt(__uint128_t u) : BigInt(BigUInt<N>(u)) {}
-    constexpr explicit operator __uint128_t() const { return (__uint128_t)BigUInt<N>(*this); }
+    constexpr TLFLOAT_INLINE explicit BigInt(__uint128_t u) : BigInt(BigUInt<N>(u)) {}
+    constexpr TLFLOAT_INLINE explicit operator __uint128_t() const { return (__uint128_t)BigUInt<N>(*this); }
 #endif
 
-    constexpr explicit BigInt(const BigUInt<N>& up) : u(up) {}
+    constexpr TLFLOAT_INLINE explicit BigInt(const BigUInt<N>& up) : u(up) {}
 
     template<int K, std::enable_if_t<(K < (N-1))>* = nullptr>
-    constexpr BigInt(const BigInt<K>& l) : BigInt(BigInt<N-1>(l)) {}
+    constexpr TLFLOAT_INLINE BigInt(const BigInt<K>& l) : BigInt(BigInt<N-1>(l)) {}
     template<int K, std::enable_if_t<(K == (N-1))>* = nullptr>
-    constexpr BigInt(const BigInt<K>& l) : 
+    constexpr TLFLOAT_INLINE BigInt(const BigInt<K>& l) : 
       u(BigUInt<N>(l.u.msb() ? ~BigUInt<N-1>(0) : BigUInt<N-1>(0), l.u)) {}
 
-    constexpr BigInt(const BigInt& m) = default;
+    constexpr TLFLOAT_INLINE BigInt(const BigInt& m) = default;
 
     template<int K, std::enable_if_t<(K == (N+1))>* = nullptr>
-    constexpr BigInt(const BigInt<K>& h) : u(BigUInt<N>(h.u.low)) {}
+    constexpr TLFLOAT_INLINE BigInt(const BigInt<K>& h) : u(BigUInt<N>(h.u.low)) {}
     template<int K, std::enable_if_t<(K > (N+1))>* = nullptr>
-    constexpr explicit BigInt(const BigInt<K>& h) : BigInt(BigInt<N+1>(h)) {}
+    constexpr TLFLOAT_INLINE explicit BigInt(const BigInt<K>& h) : BigInt(BigInt<N+1>(h)) {}
 
-    constexpr BigInt(const uint64_t *p) : u(p) {}
+    constexpr TLFLOAT_INLINE BigInt(const uint64_t *p) : u(p) {}
 
-    constexpr explicit BigInt(double d) : u(d < 0 ? -BigUInt<N>(-d) : BigUInt<N>(d)) {}
+    constexpr TLFLOAT_INLINE explicit BigInt(double d) : u(d < 0 ? -BigUInt<N>(-d) : BigUInt<N>(d)) {}
 
-    constexpr explicit operator double() const { return u.msb() ? -double(-u) : double(u); }
+    constexpr TLFLOAT_INLINE explicit operator double() const { return u.msb() ? -double(-u) : double(u); }
 
-    constexpr operator BigUInt<N>() const { return u; }
+    constexpr TLFLOAT_INLINE operator BigUInt<N>() const { return u; }
 
-    constexpr BigInt abs() const { return BigInt(u.msb() ? -u : u); }
+    constexpr TLFLOAT_INLINE BigInt abs() const { return BigInt(u.msb() ? -u : u); }
 
-    constexpr BigInt& operator=(const BigInt &ip) = default;
+    constexpr TLFLOAT_INLINE BigInt& operator=(const BigInt &ip) = default;
 
-    constexpr BigInt& operator++()    { u = u.inc().first; return *this; }
-    constexpr BigInt  operator++(int) { BigInt t = *this; u = u.inc().first; return t; }
-    constexpr BigInt& operator--()    { u = u.dec().first; return *this; }
-    constexpr BigInt  operator--(int) { BigInt t = *this; u = u.dec().first; return t; }
+    constexpr TLFLOAT_INLINE BigInt& operator++()    { u = u.inc().first; return *this; }
+    constexpr TLFLOAT_INLINE BigInt  operator++(int) { BigInt t = *this; u = u.inc().first; return t; }
+    constexpr TLFLOAT_INLINE BigInt& operator--()    { u = u.dec().first; return *this; }
+    constexpr TLFLOAT_INLINE BigInt  operator--(int) { BigInt t = *this; u = u.dec().first; return t; }
 
-    constexpr BigInt operator+(const BigInt& rhs) const { return BigInt(u + rhs.u); }
-    constexpr BigInt operator-(const BigInt& rhs) const { return BigInt(u - rhs.u); }
-    constexpr BigInt operator-()                  const { return BigInt(-u); }
-    constexpr BigInt operator+()                  const { return BigInt(u); }
-    constexpr BigInt operator*(const BigInt& rhs) const { return BigInt(u * rhs.u); }
+    constexpr TLFLOAT_INLINE BigInt operator+(const BigInt& rhs) const { return BigInt(u + rhs.u); }
+    constexpr TLFLOAT_INLINE BigInt operator-(const BigInt& rhs) const { return BigInt(u - rhs.u); }
+    constexpr TLFLOAT_INLINE BigInt operator-()                  const { return BigInt(-u); }
+    constexpr TLFLOAT_INLINE BigInt operator+()                  const { return BigInt(u); }
+    constexpr TLFLOAT_INLINE BigInt operator*(const BigInt& rhs) const { return BigInt(u * rhs.u); }
 
-    constexpr BigInt operator/(const BigInt& rhs) const {
+    constexpr TLFLOAT_INLINE BigInt operator/(const BigInt& rhs) const {
       BigUInt<N> m = abs().u / rhs.abs().u;
       return BigInt((u.msb() ^ rhs.u.msb()) ? -m : m);
     }
 
-    constexpr BigInt operator%(const BigInt& rhs) const {
+    constexpr TLFLOAT_INLINE BigInt operator%(const BigInt& rhs) const {
       BigUInt<N> m = abs().u % rhs.abs().u;
       return BigInt(u.msb() ? -m : m);
     }
 
-    constexpr bool isNegative() const { return u.msb(); }
-    constexpr bool isZero() const { return u.isZero(); }
+    constexpr TLFLOAT_INLINE bool isNegative() const { return u.msb(); }
+    constexpr TLFLOAT_INLINE bool isZero() const { return u.isZero(); }
 
-    constexpr BigInt divmod(const BigInt& rhs, const BigUInt<N>& recip, BigInt* mod) const {
+    constexpr TLFLOAT_INLINE BigInt divmod(const BigInt& rhs, const BigUInt<N>& recip, BigInt* mod) const {
       BigUInt<N> r, q = abs().u.divmod(rhs.abs().u, recip, &r);
       if (u.msb() ^ rhs.u.msb()) { q = -q; r = -r; }
       *mod = BigInt(r);
       return BigInt(q);
     }
 
-    constexpr BigInt pow(BigUInt<N> e, const BigUInt<N>& m = 0, BigUInt<N> recm = 0) const {
+    constexpr TLFLOAT_INLINE BigInt pow(BigUInt<N> e, const BigUInt<N>& m = 0, BigUInt<N> recm = 0) const {
       BigInt p = (BigInt)abs().u.pow(e, m, recm);
       if (isNegative() && (e.getWord(0) & 1) == 1) p = -p;
       return p;
     }
 
-    constexpr BigUInt<N> reciprocal() const { return u.reciprocal(); }
+    constexpr TLFLOAT_INLINE BigUInt<N> reciprocal() const { return u.reciprocal(); }
 
-    constexpr int64_t getWord(unsigned idx) const { return u.getWord(idx); }
+    constexpr TLFLOAT_INLINE int64_t getWord(unsigned idx) const { return u.getWord(idx); }
 
-    constexpr bool operator==(BigInt const& rhs) const { return u.eq(rhs.u); }
-    constexpr bool operator!=(BigInt const& rhs) const { return !u.eq(rhs.u); }
+    constexpr TLFLOAT_INLINE bool operator==(BigInt const& rhs) const { return u.eq(rhs.u); }
+    constexpr TLFLOAT_INLINE bool operator!=(BigInt const& rhs) const { return !u.eq(rhs.u); }
 
-    constexpr int compare(BigInt const& rhs) const {
+    constexpr TLFLOAT_INLINE int compare(BigInt const& rhs) const {
       if (u.msb()) {
 	if (!rhs.u.msb()) return -1;
 	return u.compare(rhs.u);
@@ -1097,144 +1107,144 @@ namespace tlfloat {
 	return u.compare(rhs.u);
       }
     }
-    constexpr bool operator> (BigInt const& rhs) const { return compare(rhs) > 0; }
-    constexpr bool operator< (BigInt const& rhs) const { return rhs > *this; }
-    constexpr bool operator<=(BigInt const& rhs) const { return !(*this > rhs); }
-    constexpr bool operator>=(BigInt const& rhs) const { return !(*this < rhs); }
+    constexpr TLFLOAT_INLINE bool operator> (BigInt const& rhs) const { return compare(rhs) > 0; }
+    constexpr TLFLOAT_INLINE bool operator< (BigInt const& rhs) const { return rhs > *this; }
+    constexpr TLFLOAT_INLINE bool operator<=(BigInt const& rhs) const { return !(*this > rhs); }
+    constexpr TLFLOAT_INLINE bool operator>=(BigInt const& rhs) const { return !(*this < rhs); }
 
-    constexpr BigInt operator&(const BigInt& rhs) const { return BigInt(u & rhs.u); }
-    constexpr BigInt operator|(const BigInt& rhs) const { return BigInt(u | rhs.u); }
-    constexpr BigInt operator^(const BigInt& rhs) const { return BigInt(u ^ rhs.u); }
-    constexpr BigInt operator~()                  const { return BigInt(~u); }
+    constexpr TLFLOAT_INLINE BigInt operator&(const BigInt& rhs) const { return BigInt(u & rhs.u); }
+    constexpr TLFLOAT_INLINE BigInt operator|(const BigInt& rhs) const { return BigInt(u | rhs.u); }
+    constexpr TLFLOAT_INLINE BigInt operator^(const BigInt& rhs) const { return BigInt(u ^ rhs.u); }
+    constexpr TLFLOAT_INLINE BigInt operator~()                  const { return BigInt(~u); }
 
-    constexpr BigInt operator>>(int n) const {
+    constexpr TLFLOAT_INLINE BigInt operator>>(int n) const {
       if (!u.msb()) return BigInt(u >> n);
       return BigInt((u >> n) | ((~BigUInt<N>(0)) << ((1 << N) - n)));
     }
-    constexpr BigInt  operator<<(int n) const { return BigInt(u << n); }
+    constexpr TLFLOAT_INLINE BigInt  operator<<(int n) const { return BigInt(u << n); }
 
-    constexpr BigInt& operator>>=(int n) { *this = *this >> n; return *this; }
-    constexpr BigInt& operator<<=(int n) { *this = *this << n; return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator>>=(int n) { *this = *this >> n; return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator<<=(int n) { *this = *this << n; return *this; }
 
     //
 
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigInt operator+(const rhstype &rhs) const { return operator+(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigInt operator+(const rhstype &rhs) const { return operator+(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigInt operator-(const rhstype &rhs) const { return operator-(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigInt operator-(const rhstype &rhs) const { return operator-(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigInt operator*(const rhstype &rhs) const { return operator*(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigInt operator*(const rhstype &rhs) const { return operator*(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigInt operator/(const rhstype &rhs) const { return operator/(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigInt operator/(const rhstype &rhs) const { return operator/(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigInt operator%(const rhstype &rhs) const { return operator%(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigInt operator%(const rhstype &rhs) const { return operator%(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigInt operator&(const rhstype &rhs) const { return operator&(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigInt operator&(const rhstype &rhs) const { return operator&(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigInt operator|(const rhstype &rhs) const { return operator|(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigInt operator|(const rhstype &rhs) const { return operator|(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr BigInt operator^(const rhstype &rhs) const { return operator^(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE BigInt operator^(const rhstype &rhs) const { return operator^(BigInt(rhs)); }
 
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigInt operator+(const lhstype c, const BigInt& rhs) { return BigInt(c) + rhs; }
+    constexpr TLFLOAT_INLINE friend BigInt operator+(const lhstype c, const BigInt& rhs) { return BigInt(c) + rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigInt operator-(const lhstype c, const BigInt& rhs) { return BigInt(c) - rhs; }
+    constexpr TLFLOAT_INLINE friend BigInt operator-(const lhstype c, const BigInt& rhs) { return BigInt(c) - rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigInt operator*(const lhstype c, const BigInt& rhs) { return BigInt(c) * rhs; }
+    constexpr TLFLOAT_INLINE friend BigInt operator*(const lhstype c, const BigInt& rhs) { return BigInt(c) * rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigInt operator/(const lhstype c, const BigInt& rhs) { return BigInt(c) / rhs; }
+    constexpr TLFLOAT_INLINE friend BigInt operator/(const lhstype c, const BigInt& rhs) { return BigInt(c) / rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigInt operator%(const lhstype c, const BigInt& rhs) { return BigInt(c) % rhs; }
+    constexpr TLFLOAT_INLINE friend BigInt operator%(const lhstype c, const BigInt& rhs) { return BigInt(c) % rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigInt operator&(const lhstype c, const BigInt& rhs) { return BigInt(c) & rhs; }
+    constexpr TLFLOAT_INLINE friend BigInt operator&(const lhstype c, const BigInt& rhs) { return BigInt(c) & rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigInt operator|(const lhstype c, const BigInt& rhs) { return BigInt(c) | rhs; }
+    constexpr TLFLOAT_INLINE friend BigInt operator|(const lhstype c, const BigInt& rhs) { return BigInt(c) | rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend BigInt operator^(const lhstype c, const BigInt& rhs) { return BigInt(c) ^ rhs; }
+    constexpr TLFLOAT_INLINE friend BigInt operator^(const lhstype c, const BigInt& rhs) { return BigInt(c) ^ rhs; }
 
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator==(const rhstype& rhs) const { return operator==(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator==(const rhstype& rhs) const { return operator==(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator!=(const rhstype& rhs) const { return operator!=(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator!=(const rhstype& rhs) const { return operator!=(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator> (const rhstype& rhs) const { return operator> (BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator> (const rhstype& rhs) const { return operator> (BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator< (const rhstype& rhs) const { return operator< (BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator< (const rhstype& rhs) const { return operator< (BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator>=(const rhstype& rhs) const { return operator>=(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator>=(const rhstype& rhs) const { return operator>=(BigInt(rhs)); }
     template<typename rhstype, std::enable_if_t<(
       std::is_integral_v<rhstype> || (sizeof(rhstype) < (8 << (N - 6)) && !std::is_floating_point_v<rhstype>)), int> = 0>
-    constexpr bool operator<=(const rhstype& rhs) const { return operator<=(BigInt(rhs)); }
+    constexpr TLFLOAT_INLINE bool operator<=(const rhstype& rhs) const { return operator<=(BigInt(rhs)); }
 
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator==(const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) == rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator==(const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) == rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator!=(const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) != rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator!=(const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) != rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator> (const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) >  rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator> (const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) >  rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator< (const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) <  rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator< (const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) <  rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator>=(const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) >= rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator>=(const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) >= rhs; }
     template<typename lhstype, std::enable_if_t<(
       std::is_integral_v<lhstype> || (sizeof(lhstype) < (8 << (N - 6)) && !std::is_floating_point_v<lhstype>)), int> = 0>
-    constexpr friend bool operator<=(const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) <= rhs; }
+    constexpr TLFLOAT_INLINE friend bool operator<=(const lhstype& lhs, const BigInt& rhs) { return BigInt(lhs) <= rhs; }
 
     //
 
     template<typename srctype>
-    constexpr BigInt& operator=(const srctype& s) {
+    constexpr TLFLOAT_INLINE BigInt& operator=(const srctype& s) {
       BigInt n(s);
       *this = n;
       return *this;
     }
 
     template<typename rhstype>
-    constexpr BigInt& operator+=(const rhstype& rhs) { *this = *this + BigInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator+=(const rhstype& rhs) { *this = *this + BigInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigInt& operator-=(const rhstype& rhs) { *this = *this - BigInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator-=(const rhstype& rhs) { *this = *this - BigInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigInt& operator*=(const rhstype& rhs) { *this = *this * BigInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator*=(const rhstype& rhs) { *this = *this * BigInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigInt& operator/=(const rhstype& rhs) { *this = *this / BigInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator/=(const rhstype& rhs) { *this = *this / BigInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigInt& operator%=(const rhstype& rhs) { *this = *this % BigInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator%=(const rhstype& rhs) { *this = *this % BigInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigInt& operator&=(const rhstype& rhs) { *this = *this & BigInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator&=(const rhstype& rhs) { *this = *this & BigInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigInt& operator|=(const rhstype& rhs) { *this = *this | BigInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator|=(const rhstype& rhs) { *this = *this | BigInt(rhs); return *this; }
     template<typename rhstype>
-    constexpr BigInt& operator^=(const rhstype& rhs) { *this = *this ^ BigInt(rhs); return *this; }
+    constexpr TLFLOAT_INLINE BigInt& operator^=(const rhstype& rhs) { *this = *this ^ BigInt(rhs); return *this; }
 
     //
 
-    constexpr BigInt(const char *p, const char **endptr = nullptr, const int base = 10) {
+    constexpr TLFLOAT_INLINE BigInt(const char *p, const char **endptr = nullptr, const int base = 10) {
       u = BigUInt<N>(p, endptr, base);
     }
 

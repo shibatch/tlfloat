@@ -45,7 +45,7 @@ namespace tlfloat {
       return negative ? -r : r;
     }
 
-    static constexpr double xsqrt(double d) {
+    static constexpr TLFLOAT_INLINE double xsqrt(double d) {
       if (std::is_constant_evaluated()) {
 	if (d == 0) return d;
 	if (d < 0) return NAN;
@@ -78,81 +78,81 @@ namespace tlfloat {
       static_assert(sizeof(longmant_t) == 2 * sizeof(mant_t));
 
       template<typename floattype>
-      static constexpr mant_t mantBits(const floattype& fl) {
+      static constexpr TLFLOAT_INLINE mant_t mantBits(const floattype& fl) {
 	return toBits(fl) & ((mant_t(1) << nbmant) - 1);
       }
 
       template<typename floattype>
-      static constexpr mant_t expBits(const floattype& fl) {
+      static constexpr TLFLOAT_INLINE mant_t expBits(const floattype& fl) {
 	return (toBits(fl) >> nbmant) & ((mant_t(1) << nbexp) - 1);
       }
 
       template<typename floattype>
-      static constexpr mant_t toBits(const floattype& f) {
+      static constexpr TLFLOAT_INLINE mant_t toBits(const floattype& f) {
 	static_assert(sizeof(floattype) == sizeof(mant_t));
 	return std::bit_cast<mant_t>(f);
       }
 
       template<typename floattype>
-      static constexpr floattype fromBits(const mant_t& u) {
+      static constexpr TLFLOAT_INLINE floattype fromBits(const mant_t& u) {
 	static_assert(sizeof(floattype) == sizeof(mant_t));
 	return std::bit_cast<floattype>(u);
       }
 
       //
 
-      static constexpr uint32_t mul(uint16_t x, uint16_t y) {
+      static constexpr TLFLOAT_INLINE uint32_t mul(uint16_t x, uint16_t y) {
 	return uint32_t(x) * uint32_t(y);
       }
 
-      static constexpr uint64_t mul(uint32_t x, uint32_t y) {
+      static constexpr TLFLOAT_INLINE uint64_t mul(uint32_t x, uint32_t y) {
 	return uint64_t(x) * uint64_t(y);
       }
 
-      static constexpr BigUInt<7> mul(uint64_t x, uint64_t y) {
+      static constexpr TLFLOAT_INLINE BigUInt<7> mul(uint64_t x, uint64_t y) {
 	return BigUInt<7>::mul(BigUInt<6>(x), BigUInt<6>(y));
       }
 
       template<int N>
-      static constexpr BigUInt<N+1> mul(const BigUInt<N>& x, const BigUInt<N>& y) {
+      static constexpr TLFLOAT_INLINE BigUInt<N+1> mul(const BigUInt<N>& x, const BigUInt<N>& y) {
 	return BigUInt<N+1>::mul(x, y);
       }
 
       //
 
-      static constexpr xpair<uint16_t, uint16_t> divmod(uint32_t x, uint16_t y) {
+      static constexpr TLFLOAT_INLINE xpair<uint16_t, uint16_t> divmod(uint32_t x, uint16_t y) {
 	return xpair<uint16_t, uint16_t> { uint16_t(x / y), uint16_t(x % y) };
       }
 
-      static constexpr xpair<uint32_t, uint32_t> divmod(uint64_t x, uint32_t y) {
+      static constexpr TLFLOAT_INLINE xpair<uint32_t, uint32_t> divmod(uint64_t x, uint32_t y) {
 	return xpair<uint32_t, uint32_t> { uint32_t(x / y), uint32_t(x % y) };
       }
 
       template<int N>
-      static constexpr xpair<BigUInt<N-1>, BigUInt<N-1>> divmod(const BigUInt<N>& x, const BigUInt<N-1>& y) {
+      static constexpr TLFLOAT_INLINE xpair<BigUInt<N-1>, BigUInt<N-1>> divmod(const BigUInt<N>& x, const BigUInt<N-1>& y) {
 	auto p = x.divmod(y, BigUInt<N>(y).reciprocal());
 	return xpair<BigUInt<N-1>, BigUInt<N-1>> { (BigUInt<N-1>)p.first, (BigUInt<N-1>)p.second };
       }
 
       //
 
-      static constexpr uint32_t isqrt(uint32_t s) {
+      static constexpr TLFLOAT_INLINE uint32_t isqrt(uint32_t s) {
 	uint64_t u = xsqrt(double(s) * (double)0x100000000ULL);
 	return u - (u >> 32);
       }
 
-      static constexpr unsigned long long isqrt(uint64_t s) {
+      static constexpr TLFLOAT_INLINE unsigned long long isqrt(uint64_t s) {
 	double d = xsqrt((double)uint64_t(s) * double(1ULL << 32) * double(1ULL << 32));
 	return d > 0x1.fffffffffffffp+63 ? UINT64_MAX : uint64_t(d); // nextafter((double)UINT64_MAX, 0)
       }
 
-      static constexpr unsigned long long isqrt(BigUInt<6> s) {
+      static constexpr TLFLOAT_INLINE unsigned long long isqrt(BigUInt<6> s) {
 	double d = xsqrt((double)uint64_t(s) * double(1ULL << 32) * double(1ULL << 32));
 	return d > 0x1.fffffffffffffp+63 ? UINT64_MAX : uint64_t(d);
       }
 
       template<int N>
-      static constexpr BigUInt<N> isqrt(BigUInt<N> s) {
+      static constexpr TLFLOAT_INLINE BigUInt<N> isqrt(BigUInt<N> s) {
 	if (!std::is_constant_evaluated()) assert(s >= (BigUInt<N>(1) << (sizeof(BigUInt<N>) * 8 - 2)));
 	BigUInt<N> x = BigUInt<N>(isqrt(s.high) | 1, 0);
 	x = (x >> 1) + s.mulhiAprx(x.reciprocalAprx());
@@ -166,25 +166,25 @@ namespace tlfloat {
       mant_t mant;
       bool sign, iszero, isinf, isnan;
 
-      static constexpr int expoffset() {
+      static constexpr TLFLOAT_INLINE int expoffset() {
 	if constexpr (nbexp != 0) return (1 << (nbexp - 1)) - 1;
 	return 0;
       }
-      static constexpr int nbexp_() { return nbexp; }
-      static constexpr int nbmant_() { return nbmant; }
-      static constexpr longmant_t longmant_t_() { return 0; }
-      static constexpr UnpackedFloat<mant_t, longmant_t, 0, sizeof(mant_t)*8-2> xUnpackedFloat() {
+      static constexpr TLFLOAT_INLINE int nbexp_() { return nbexp; }
+      static constexpr TLFLOAT_INLINE int nbmant_() { return nbmant; }
+      static constexpr TLFLOAT_INLINE longmant_t longmant_t_() { return 0; }
+      static constexpr TLFLOAT_INLINE UnpackedFloat<mant_t, longmant_t, 0, sizeof(mant_t)*8-2> xUnpackedFloat() {
 	return UnpackedFloat<mant_t, longmant_t, 0, sizeof(mant_t)*8-2>(0, 0, false, true, false, false);
       }
 
-      constexpr int32_t ilogb() const {
+      constexpr TLFLOAT_INLINE int32_t ilogb() const {
 	if (exp != 0) return exp - expoffset() + 1;
 	return (sizeof(mant_t) * 8 - nbmant_()) - clz(mant) - expoffset();
       }
 
-      friend constexpr UnpackedFloat fabs(UnpackedFloat x) { x.sign = 0; return x; }
+      friend constexpr TLFLOAT_INLINE UnpackedFloat fabs(UnpackedFloat x) { x.sign = 0; return x; }
 
-      friend constexpr UnpackedFloat ldexp_(UnpackedFloat x, const int e) {
+      friend constexpr TLFLOAT_INLINE UnpackedFloat ldexp_(UnpackedFloat x, const int e) {
 #if !(defined(__GNUC__) && !defined(__clang__))
 	static_assert(x.nbexp_() == 0);
 #endif
@@ -192,18 +192,18 @@ namespace tlfloat {
 	return x;
       }
 
-      friend constexpr UnpackedFloat ldexp(UnpackedFloat x, const int e) {
+      friend constexpr TLFLOAT_INLINE UnpackedFloat ldexp(UnpackedFloat x, const int e) {
 	return ldexp_(x.cast((decltype(UnpackedFloat::xUnpackedFloat())*) 0), e).cast((UnpackedFloat*) 0);
       }
 
-      friend constexpr xpair<UnpackedFloat, int> frexp_(UnpackedFloat x) {
+      friend constexpr TLFLOAT_INLINE xpair<UnpackedFloat, int> frexp_(UnpackedFloat x) {
 	static_assert(x.nbexp_() == 0);
 	xpair<UnpackedFloat, int> ret = { x, x.exp - expoffset() + 2 };
 	ret.first.exp = expoffset() - 2;
 	return ret;
       }
 
-      friend constexpr int cmp(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
+      friend constexpr TLFLOAT_INLINE int cmp(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
 	if (lhs.iszero && rhs.iszero) return 0;
 	if (rhs.iszero) return lhs.sign ? -1 :  1;
 	if (lhs.iszero) return rhs.sign ?  1 : -1;
@@ -216,35 +216,35 @@ namespace tlfloat {
 	return 0;
       }
 
-      static constexpr unsigned clz(uint64_t u) {
+      static constexpr TLFLOAT_INLINE unsigned clz(uint64_t u) {
 	return u == 0 ? 64 : clz64(u);
       }
 
 #ifdef TLFLOAT_ENABLE_GNUC_CLZ
-      static constexpr unsigned clz(uint32_t u) {
+      static constexpr TLFLOAT_INLINE unsigned clz(uint32_t u) {
 	return u == 0 ? 32 : __builtin_clz(u);
       }
 #else
-      static constexpr unsigned clz(uint32_t u) {
+      static constexpr TLFLOAT_INLINE unsigned clz(uint32_t u) {
 	return clz(uint64_t(u)) - 32;
       }
 #endif
 
-      static constexpr unsigned clz(uint16_t u) {
+      static constexpr TLFLOAT_INLINE unsigned clz(uint16_t u) {
 	return clz(uint32_t(u)) - 16;
       }
 
       template<int N>
-      static constexpr unsigned clz(const BigUInt<N>& u) {
+      static constexpr TLFLOAT_INLINE unsigned clz(const BigUInt<N>& u) {
 	return u.clz();
       }
 
       //
 
-      static constexpr bool bit(const uint64_t x, unsigned b) { return (x >> b) & 1; }
+      static constexpr TLFLOAT_INLINE bool bit(const uint64_t x, unsigned b) { return (x >> b) & 1; }
 
       template<int N>
-      static constexpr bool bit(const BigUInt<N>& x, unsigned b) { return x.bit(b); }
+      static constexpr TLFLOAT_INLINE bool bit(const BigUInt<N>& x, unsigned b) { return x.bit(b); }
 
       //
 
@@ -253,31 +253,31 @@ namespace tlfloat {
 	return (double)uf.cast((udouble *)nullptr);
       }
 
-      static constexpr UnpackedFloat nan() {
+      static constexpr TLFLOAT_INLINE UnpackedFloat nan() {
 	return UnpackedFloat((mant_t(3) << (nbmant - 1)), (1 << nbexp) - 2, false, false, false, true);
       }
 
-      static constexpr UnpackedFloat infinity(bool sign = false) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat infinity(bool sign = false) {
 	return UnpackedFloat(mant_t(1) << nbmant, (1 << nbexp) - 2, sign, false, true, false);
       }
 
-      static constexpr UnpackedFloat flt_true_min(bool sign = false) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat flt_true_min(bool sign = false) {
 	return UnpackedFloat(mant_t(1), 0, sign, false, false, false);
       }
 
-      static constexpr UnpackedFloat flt_min(bool sign = false) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat flt_min(bool sign = false) {
 	return UnpackedFloat(mant_t(1) << nbmant, 0, sign, false, false, false);
       }
 
-      static constexpr UnpackedFloat flt_max(bool sign = false) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat flt_max(bool sign = false) {
 	return UnpackedFloat((mant_t(2) << nbmant) - 1, (1 << nbexp) - 3, sign, false, false, false);
       }
 
-      static constexpr UnpackedFloat zero(bool sign = false) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat zero(bool sign = false) {
 	return UnpackedFloat(0, 0, sign, true, false, false);
       }
 
-      static constexpr UnpackedFloat addsub(const UnpackedFloat &lhs, const UnpackedFloat &rhs, bool negateRhs) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat addsub(const UnpackedFloat &lhs, const UnpackedFloat &rhs, bool negateRhs) {
 	const bool rhssign = rhs.sign != negateRhs;
 	const int ed = lhs.exp - rhs.exp;
 
@@ -356,7 +356,7 @@ namespace tlfloat {
 	return UnpackedFloat(mant_t(am), exp, resultsign, am == 0, nbexp != 0 && exp == (1 << nbexp) - 2, false);
       }
 
-      static constexpr UnpackedFloat mul(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat mul(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
 	if (int(lhs.isnan) | int(rhs.isnan) | (int(lhs.iszero) & int(rhs.isinf)) |
 	    (int(lhs.isinf) & int(rhs.iszero)) | int(lhs.isinf) | int(rhs.isinf)) {
 	  if (lhs.isnan) return lhs;
@@ -395,7 +395,7 @@ namespace tlfloat {
 	return UnpackedFloat(mant_t(am), exp, lhs.sign != rhs.sign, am == 0, nbexp != 0 && exp == (1 << nbexp) - 2, false);
       }
 
-      static constexpr UnpackedFloat div(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat div(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
 	if (lhs.isnan | lhs.isinf | rhs.isnan | rhs.iszero | rhs.isinf) {
 	  if (lhs.isnan) return lhs;
 	  if (rhs.isnan) return rhs;
@@ -543,15 +543,15 @@ namespace tlfloat {
 
       //
 
-      constexpr UnpackedFloat() = default;
-      constexpr UnpackedFloat(const UnpackedFloat&) = default;
-      constexpr UnpackedFloat& operator=(const UnpackedFloat&) = default;
+      constexpr TLFLOAT_INLINE UnpackedFloat() = default;
+      constexpr TLFLOAT_INLINE UnpackedFloat(const UnpackedFloat&) = default;
+      constexpr TLFLOAT_INLINE UnpackedFloat& operator=(const UnpackedFloat&) = default;
 
-      constexpr UnpackedFloat(const mant_t mant_, int32_t exp_, bool sign_, bool iszero_, bool isinf_, bool isnan_) :
+      constexpr TLFLOAT_INLINE UnpackedFloat(const mant_t mant_, int32_t exp_, bool sign_, bool iszero_, bool isinf_, bool isnan_) :
 	exp(exp_), mant(mant_), sign(sign_), iszero(iszero_), isinf(isinf_), isnan(isnan_) {
       }
 
-      explicit constexpr UnpackedFloat(const int i) { *this = castFromInt(i); }
+      explicit constexpr TLFLOAT_INLINE UnpackedFloat(const int i) { *this = castFromInt(i); }
 
       constexpr UnpackedFloat(const char *ptr, const char **endptr=nullptr) {
 	while(xisspace(*ptr)) ptr++;
@@ -675,7 +675,7 @@ namespace tlfloat {
       }
 
       template<typename floattype, std::enable_if_t<!std::is_pointer_v<floattype>, int> = 0>
-      constexpr UnpackedFloat(const floattype &fl) :
+      constexpr TLFLOAT_INLINE UnpackedFloat(const floattype &fl) :
 	exp(int32_t(expBits(fl) - (expBits(fl) != 0))),
 	mant(mantBits(fl) | (mant_t(expBits(fl) != 0) << nbmant)),
 	sign(toBits(fl) >> (sizeof(fl) * 8 - 1)),
@@ -686,7 +686,7 @@ namespace tlfloat {
       }
 
       template<typename floattype>
-      explicit constexpr operator floattype() const {
+      explicit constexpr TLFLOAT_INLINE operator floattype() const {
 	static_assert(sizeof(floattype) == sizeof(mant_t));
 	mant_t m = mant & ((mant_t(1) << nbmant) - 1);
 	m |= mant_t(sign) << (sizeof(mant_t) * 8 - 1);
@@ -695,7 +695,7 @@ namespace tlfloat {
       }
 
       template<typename dsttype>
-      constexpr dsttype cast(const dsttype *ptr) const {
+      constexpr TLFLOAT_INLINE dsttype cast(const dsttype *ptr) const {
 	typedef decltype(dsttype::mant) dmant_t;
 	if constexpr (dsttype::nbmant_() > nbmant) {
 	  int e = exp - expoffset() + dsttype::expoffset();
@@ -735,7 +735,7 @@ namespace tlfloat {
       }
 
       template<typename dsttype, std::enable_if_t<(std::is_integral_v<dsttype> && sizeof(dsttype) <= 8), int> = 0>
-      constexpr dsttype castToInt(const dsttype *ptr) const {
+      constexpr TLFLOAT_INLINE dsttype castToInt(const dsttype *ptr) const {
 	if (exp - expoffset() < -1) return 0;
 	if constexpr (std::is_unsigned_v<dsttype>) {
 	  if (sign && !iszero) return ~dsttype(0);
@@ -752,7 +752,7 @@ namespace tlfloat {
       }
 
       template<int N>
-      constexpr BigInt<N> castToInt(const BigInt<N> *ptr) const {
+      constexpr TLFLOAT_INLINE BigInt<N> castToInt(const BigInt<N> *ptr) const {
 	if (exp - expoffset() < -1) return 0;
 	if (exp - expoffset() >= int(sizeof(BigInt<N>)*8-2))
 	  return BigInt<N>(BigInt<N>(1) << (sizeof(BigInt<N>)*8-1));
@@ -762,7 +762,7 @@ namespace tlfloat {
       }
 
       template<int N>
-      constexpr BigUInt<N> castToInt(const BigUInt<N> *ptr) const {
+      constexpr TLFLOAT_INLINE BigUInt<N> castToInt(const BigUInt<N> *ptr) const {
 	if (exp - expoffset() < -1) return 0;
 	if (sign && !iszero) return ~BigUInt<N>(0);
 	if (exp - expoffset() >= int(sizeof(BigUInt<N>)*8-1)) return ~BigUInt<N>(0);
@@ -770,14 +770,14 @@ namespace tlfloat {
 	return s > 0 ? BigUInt<N>(mant >> s) : (BigUInt<N>(mant) << -s);
       }
 
-      constexpr uint64_t castToInt2() const {
+      constexpr TLFLOAT_INLINE uint64_t castToInt2() const {
 	int s = nbmant - (exp - expoffset() + 1);
 	if (s <= -int(sizeof(uint64_t))*8 || s >= int(sizeof(mant_t))*8) return 0;
 	return uint64_t(s > 0 ? (mant >> s) : (uint64_t(mant) << -s));
       }
 
       template<typename srctype, std::enable_if_t<(std::is_integral_v<srctype> && sizeof(srctype) <= 8), int> = 0>
-      static constexpr UnpackedFloat castFromInt(srctype src) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat castFromInt(srctype src) {
 	if (src == 0) return zero();
 	bool sign = false;
 	uint64_t v = src;
@@ -802,7 +802,7 @@ namespace tlfloat {
       }
 
       template<int N>
-      static constexpr UnpackedFloat castFromInt(BigInt<N> src) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat castFromInt(BigInt<N> src) {
 	if (src == 0) return zero();
 	bool sign = src < 0;
 	BigUInt<N> v = sign ? -src : src;
@@ -823,7 +823,7 @@ namespace tlfloat {
       }
 
       template<int N>
-      static constexpr UnpackedFloat castFromInt(BigUInt<N> src) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat castFromInt(BigUInt<N> src) {
 	if (src == 0) return zero();
 	BigUInt<N> v = src;
 	int x = sizeof(v) * 8 - clz(v);
@@ -843,10 +843,10 @@ namespace tlfloat {
       }
 
 #if defined(TLFLOAT_COMPILER_SUPPORTS_INT128) && !defined(__CUDA_ARCH__)
-      constexpr __int128_t  castToInt(const __int128_t  *ptr) const { return __int128_t (castToInt((BigInt<7>  *)0)); }
-      constexpr __uint128_t castToInt(const __uint128_t *ptr) const { return __uint128_t(castToInt((BigUInt<7> *)0)); }
-      static constexpr UnpackedFloat castFromInt(__int128_t  src) { return castFromInt(BigInt <7>(src)); }
-      static constexpr UnpackedFloat castFromInt(__uint128_t src) { return castFromInt(BigUInt<7>(src)); }
+      constexpr TLFLOAT_INLINE __int128_t  castToInt(const __int128_t  *ptr) const { return __int128_t (castToInt((BigInt<7>  *)0)); }
+      constexpr TLFLOAT_INLINE __uint128_t castToInt(const __uint128_t *ptr) const { return __uint128_t(castToInt((BigUInt<7> *)0)); }
+      static constexpr TLFLOAT_INLINE UnpackedFloat castFromInt(__int128_t  src) { return castFromInt(BigInt <7>(src)); }
+      static constexpr TLFLOAT_INLINE UnpackedFloat castFromInt(__uint128_t src) { return castFromInt(BigUInt<7>(src)); }
 #endif
 
       friend constexpr UnpackedFloat trunc(const UnpackedFloat &f) {
@@ -931,16 +931,16 @@ namespace tlfloat {
 	return UnpackedFloat(mant_t(m), (x + f.expoffset() + offset * 2 + 1) / 2 - offset - 1, false, m == 0, false, false);
       }
 
-      friend constexpr bool isint(const UnpackedFloat &f) {
+      friend constexpr TLFLOAT_INLINE bool isint(const UnpackedFloat &f) {
 	if (f.isinf || f.isnan) return false;
 	return trunc(f) == f;
       }
 
-      friend constexpr bool iseven(const UnpackedFloat &f) {
+      friend constexpr TLFLOAT_INLINE bool iseven(const UnpackedFloat &f) {
 	return isint(ldexp(f, -1));
       }
 
-      friend constexpr UnpackedFloat toward0(UnpackedFloat f) {
+      friend constexpr TLFLOAT_INLINE UnpackedFloat toward0(UnpackedFloat f) {
 	static_assert(f.nbexp_() == 0);
 	if (f.iszero || f.isinf || f.isnan) return f;
 	f.mant--;
@@ -953,38 +953,38 @@ namespace tlfloat {
 
       //
 
-      constexpr UnpackedFloat operator+() const { return UnpackedFloat(*this); }
-      constexpr UnpackedFloat operator-() const { return UnpackedFloat(mant, exp, !sign, iszero, isinf, isnan); }
+      constexpr TLFLOAT_INLINE UnpackedFloat operator+() const { return UnpackedFloat(*this); }
+      constexpr TLFLOAT_INLINE UnpackedFloat operator-() const { return UnpackedFloat(mant, exp, !sign, iszero, isinf, isnan); }
       constexpr UnpackedFloat operator+(const UnpackedFloat& rhs) const { return addsub(*this, rhs, false); }
       constexpr UnpackedFloat operator-(const UnpackedFloat& rhs) const { return addsub(*this, rhs, true); }
       constexpr UnpackedFloat operator*(const UnpackedFloat& rhs) const { return mul(*this, rhs); }
       constexpr UnpackedFloat operator/(const UnpackedFloat& rhs) const { return div(*this, rhs); }
 
-      constexpr bool operator==(const UnpackedFloat& rhs) const {
+      constexpr TLFLOAT_INLINE bool operator==(const UnpackedFloat& rhs) const {
 	if (isnan || rhs.isnan) return false;
 	return cmp(*this, rhs) == 0;
       }
 
-      constexpr bool operator!=(const UnpackedFloat& rhs) const {
+      constexpr TLFLOAT_INLINE bool operator!=(const UnpackedFloat& rhs) const {
 	return !((*this) == rhs);
       }
 
-      constexpr bool operator>(const UnpackedFloat& rhs) const {
+      constexpr TLFLOAT_INLINE bool operator>(const UnpackedFloat& rhs) const {
 	if (isnan || rhs.isnan) return false;
 	return cmp(*this, rhs) == 1;
       }
 
-      constexpr bool operator<(const UnpackedFloat& rhs) const {
+      constexpr TLFLOAT_INLINE bool operator<(const UnpackedFloat& rhs) const {
 	if (isnan || rhs.isnan) return false;
 	return cmp(*this, rhs) == -1;
       }
 
-      constexpr bool operator<=(const UnpackedFloat& rhs) const {
+      constexpr TLFLOAT_INLINE bool operator<=(const UnpackedFloat& rhs) const {
 	if (isnan || rhs.isnan) return false;
 	return cmp(*this, rhs) != 1;
       }
 
-      constexpr bool operator>=(const UnpackedFloat& rhs) const {
+      constexpr TLFLOAT_INLINE bool operator>=(const UnpackedFloat& rhs) const {
 	if (isnan || rhs.isnan) return false;
 	return cmp(*this, rhs) != -1;
       }
@@ -992,46 +992,46 @@ namespace tlfloat {
       //
 
       template<typename rhstype>
-      constexpr UnpackedFloat operator+(const rhstype& rhs) const { return *this + UnpackedFloat(rhs); }
+      constexpr TLFLOAT_INLINE UnpackedFloat operator+(const rhstype& rhs) const { return *this + UnpackedFloat(rhs); }
       template<typename rhstype>
-      constexpr UnpackedFloat operator-(const rhstype& rhs) const { return *this - UnpackedFloat(rhs); }
+      constexpr TLFLOAT_INLINE UnpackedFloat operator-(const rhstype& rhs) const { return *this - UnpackedFloat(rhs); }
       template<typename rhstype>
-      constexpr UnpackedFloat operator*(const rhstype& rhs) const { return *this * UnpackedFloat(rhs); }
+      constexpr TLFLOAT_INLINE UnpackedFloat operator*(const rhstype& rhs) const { return *this * UnpackedFloat(rhs); }
       template<typename rhstype>
       constexpr UnpackedFloat operator/(const rhstype& rhs) const { return *this / UnpackedFloat(rhs); }
 
       template<typename rhstype>
-      constexpr bool operator==(const rhstype& rhs) const { return *this == UnpackedFloat(rhs); }
+      constexpr TLFLOAT_INLINE bool operator==(const rhstype& rhs) const { return *this == UnpackedFloat(rhs); }
       template<typename rhstype>
-      constexpr bool operator!=(const rhstype& rhs) const { return *this != UnpackedFloat(rhs); }
+      constexpr TLFLOAT_INLINE bool operator!=(const rhstype& rhs) const { return *this != UnpackedFloat(rhs); }
       template<typename rhstype>
-      constexpr bool operator> (const rhstype& rhs) const { return *this >  UnpackedFloat(rhs); }
+      constexpr TLFLOAT_INLINE bool operator> (const rhstype& rhs) const { return *this >  UnpackedFloat(rhs); }
       template<typename rhstype>
-      constexpr bool operator< (const rhstype& rhs) const { return *this <  UnpackedFloat(rhs); }
+      constexpr TLFLOAT_INLINE bool operator< (const rhstype& rhs) const { return *this <  UnpackedFloat(rhs); }
       template<typename rhstype>
-      constexpr bool operator>=(const rhstype& rhs) const { return *this >= UnpackedFloat(rhs); }
+      constexpr TLFLOAT_INLINE bool operator>=(const rhstype& rhs) const { return *this >= UnpackedFloat(rhs); }
       template<typename rhstype>
-      constexpr bool operator<=(const rhstype& rhs) const { return *this <= UnpackedFloat(rhs); }
+      constexpr TLFLOAT_INLINE bool operator<=(const rhstype& rhs) const { return *this <= UnpackedFloat(rhs); }
 
       template<typename srctype>
-      constexpr UnpackedFloat& operator=(const srctype& s) {
+      constexpr TLFLOAT_INLINE UnpackedFloat& operator=(const srctype& s) {
 	UnpackedFloat n(s);
 	*this = n;
 	return *this;
       }
 
       template<typename rhstype>
-      constexpr UnpackedFloat& operator+=(const rhstype& rhs) { *this = *this + UnpackedFloat(rhs); return *this; }
+      constexpr TLFLOAT_INLINE UnpackedFloat& operator+=(const rhstype& rhs) { *this = *this + UnpackedFloat(rhs); return *this; }
       template<typename rhstype>
-      constexpr UnpackedFloat& operator-=(const rhstype& rhs) { *this = *this - UnpackedFloat(rhs); return *this; }
+      constexpr TLFLOAT_INLINE UnpackedFloat& operator-=(const rhstype& rhs) { *this = *this - UnpackedFloat(rhs); return *this; }
       template<typename rhstype>
-      constexpr UnpackedFloat& operator*=(const rhstype& rhs) { *this = *this * UnpackedFloat(rhs); return *this; }
+      constexpr TLFLOAT_INLINE UnpackedFloat& operator*=(const rhstype& rhs) { *this = *this * UnpackedFloat(rhs); return *this; }
       template<typename rhstype>
       constexpr UnpackedFloat& operator/=(const rhstype& rhs) { *this = *this / UnpackedFloat(rhs); return *this; }
 
       //
 
-      static constexpr UnpackedFloat exp10i(int a) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat exp10i(int a) {
 	bool negative = a < 0;
 	if (negative) a = -a;
 
@@ -1044,7 +1044,7 @@ namespace tlfloat {
 	return negative ? castFromInt(1) / r : r;
       }
 
-      friend constexpr int ilog10(const UnpackedFloat& a) { // returns floor(log10(a))
+      friend constexpr TLFLOAT_INLINE int ilog10(const UnpackedFloat& a) { // returns floor(log10(a))
 	int ret = rint(a.ilogb() * LOG10_2);
 	UnpackedFloat e = UnpackedFloat::exp10i(ret);
 	if (e > a) {
@@ -1280,59 +1280,59 @@ namespace tlfloat {
     mant_t m = 0;
 
     /** Returns NaN */
-    static constexpr TLFloat nan() { return Unpacked_t::nan(); }
+    static constexpr TLFLOAT_INLINE TLFloat nan() { return Unpacked_t::nan(); }
 
     /** Returns infinity of the given sign */
-    static constexpr TLFloat infinity(bool sign=false) { return Unpacked_t::infinity(sign); }
+    static constexpr TLFLOAT_INLINE TLFloat infinity(bool sign=false) { return Unpacked_t::infinity(sign); }
 
     /** Returns the minimum representative number of the given sign */
-    static constexpr TLFloat flt_true_min(bool sign=false) { return Unpacked_t::flt_true_min(sign); }
+    static constexpr TLFLOAT_INLINE TLFloat flt_true_min(bool sign=false) { return Unpacked_t::flt_true_min(sign); }
 
     /** Returns the minimum normalized number of the given sign */
-    static constexpr TLFloat flt_min(bool sign=false) { return Unpacked_t::flt_min(sign); }
+    static constexpr TLFLOAT_INLINE TLFloat flt_min(bool sign=false) { return Unpacked_t::flt_min(sign); }
 
     /** Returns the maximum representative number of the given sign */
-    static constexpr TLFloat flt_max(bool sign=false) { return Unpacked_t::flt_max(sign); }
+    static constexpr TLFLOAT_INLINE TLFloat flt_max(bool sign=false) { return Unpacked_t::flt_max(sign); }
 
     /** Returns the absolute value difference between 1.0 and the next representable value */
-    static constexpr TLFloat flt_epsilon() { return nextafter(TLFloat(1), 2) - 1; }
+    static constexpr TLFLOAT_INLINE TLFloat flt_epsilon() { return nextafter(TLFloat(1), 2) - 1; }
 
     /** Returns zero of the given sign */
-    static constexpr TLFloat zero(bool sign=false) { return Unpacked_t::zero(sign); }
+    static constexpr TLFLOAT_INLINE TLFloat zero(bool sign=false) { return Unpacked_t::zero(sign); }
 
-    constexpr TLFloat() = default;
-    constexpr TLFloat(const TLFloat&) = default;
-    constexpr TLFloat& operator=(const TLFloat&) = default;
+    constexpr TLFLOAT_INLINE TLFloat() = default;
+    constexpr TLFLOAT_INLINE TLFloat(const TLFloat&) = default;
+    constexpr TLFLOAT_INLINE TLFloat& operator=(const TLFloat&) = default;
 
-    constexpr Unpacked_t getUnpacked() const { return Unpacked_t(m); }
+    constexpr TLFLOAT_INLINE Unpacked_t getUnpacked() const { return Unpacked_t(m); }
 
-    static constexpr Unpacked_t to_Unpacked_t(TLFloat f = zero()) { return f.getUnpacked(); }
+    static constexpr TLFLOAT_INLINE Unpacked_t to_Unpacked_t(TLFloat f = zero()) { return f.getUnpacked(); }
 
     template<typename mant_t_, typename longmant_t_, int nbexp_, int nbmant_>
-    constexpr TLFloat(const detail::UnpackedFloat<mant_t_, longmant_t_, nbexp_, nbmant_> &tf) :
+    constexpr TLFLOAT_INLINE TLFloat(const detail::UnpackedFloat<mant_t_, longmant_t_, nbexp_, nbmant_> &tf) :
       m(mant_t(tf.cast((Unpacked_t *)0))) {}
 
     /** Cast from an instance of any TLFloat class */
     template<typename srctftype>
-    constexpr TLFloat(const TLFloat<srctftype>& s) :
+    constexpr TLFLOAT_INLINE TLFloat(const TLFloat<srctftype>& s) :
       TLFloat(s.getUnpacked().cast((const Unpacked_t *)nullptr)) {}
 
     /** Cast from any primitive integer type */
     template<typename inttype, std::enable_if_t<(std::is_integral_v<inttype>), int> = 0>
-    constexpr TLFloat(const inttype x) :
+    constexpr TLFLOAT_INLINE TLFloat(const inttype x) :
       TLFloat(Unpacked_t::castFromInt(x)) {}
 
     /** Cast to any primitive integer type */
     template<typename inttype, std::enable_if_t<(std::is_integral_v<inttype>), int> = 0>
-    constexpr operator inttype() const {
+    constexpr TLFLOAT_INLINE operator inttype() const {
       return getUnpacked().castToInt((const inttype *)nullptr);
     }
 
-    template<int N> constexpr TLFloat(const BigInt <N> x) : TLFloat(Unpacked_t::castFromInt(x)) {}
-    template<int N> constexpr TLFloat(const BigUInt<N> x) : TLFloat(Unpacked_t::castFromInt(x)) {}
+    template<int N> constexpr TLFLOAT_INLINE TLFloat(const BigInt <N> x) : TLFloat(Unpacked_t::castFromInt(x)) {}
+    template<int N> constexpr TLFLOAT_INLINE TLFloat(const BigUInt<N> x) : TLFloat(Unpacked_t::castFromInt(x)) {}
 
-    template<int N> constexpr operator BigInt <N>() const { return getUnpacked().castToInt((const BigInt <N> *)nullptr); }
-    template<int N> constexpr operator BigUInt<N>() const { return getUnpacked().castToInt((const BigUInt<N> *)nullptr); }
+    template<int N> constexpr TLFLOAT_INLINE operator BigInt <N>() const { return getUnpacked().castToInt((const BigInt <N> *)nullptr); }
+    template<int N> constexpr TLFLOAT_INLINE operator BigUInt<N>() const { return getUnpacked().castToInt((const BigUInt<N> *)nullptr); }
 
     constexpr TLFloat(const double d) {
       if constexpr (sizeof(mant_t) == sizeof(double)) {
@@ -1355,13 +1355,13 @@ namespace tlfloat {
     /** Any non-integer object is bitcast to a TLFloat type of the same size with this constructor */
     template<typename fptype,
       std::enable_if_t<(sizeof(fptype)==sizeof(mant_t) && (std::is_floating_point_v<fptype> || (!std::is_pointer_v<fptype> && !std::is_integral_v<fptype>))), int> = 0>
-    constexpr TLFloat(const fptype& s) {
+    constexpr TLFLOAT_INLINE TLFloat(const fptype& s) {
       m = std::bit_cast<mant_t>(s);
     }
 
     template<typename fptype,
       std::enable_if_t<(sizeof(fptype)==sizeof(mant_t) && (std::is_floating_point_v<fptype> || (!std::is_pointer_v<fptype> && !std::is_integral_v<fptype>))), int> = 0>
-    explicit constexpr operator fptype() const {
+    explicit constexpr TLFLOAT_INLINE operator fptype() const {
       static_assert(sizeof(mant_t) == sizeof(fptype));
       return std::bit_cast<fptype>(m);
     }
@@ -1371,7 +1371,7 @@ namespace tlfloat {
       *this = TLFloat(xUnpacked_t(ptr, endptr).cast((Unpacked_t *)nullptr));
     }
 
-    explicit constexpr operator Unpacked_t() const { return Unpacked_t(m); }
+    explicit constexpr TLFLOAT_INLINE operator Unpacked_t() const { return Unpacked_t(m); }
 
     explicit constexpr operator double() const {
       if constexpr (sizeof(mant_t) == sizeof(double)) {
@@ -1391,13 +1391,13 @@ namespace tlfloat {
       }
     }
 
-    constexpr TLFloat operator-() const {
+    constexpr TLFLOAT_INLINE TLFloat operator-() const {
       TLFloat n(*this);
       n.m ^= mant_t(1) << (sizeof(mant_t)*8-1);
       return n;
     }
 
-    constexpr TLFloat operator+() const { return TLFloat(*this); }
+    constexpr TLFLOAT_INLINE TLFloat operator+() const { return TLFloat(*this); }
 
     /** This function performs addition of two floating point numbers. This function returns correctly rounded results. */
     constexpr TLFloat operator+(const TLFloat& rhs) const { return getUnpacked() + rhs.getUnpacked(); }
@@ -1462,13 +1462,13 @@ namespace tlfloat {
     }
 
     /** This function has the same functionality as the corresponding function in math.h. */
-    friend constexpr bool signbit(const TLFloat& u) {
+    friend constexpr TLFLOAT_INLINE bool signbit(const TLFloat& u) {
       TLFloat n(u);
       return Unpacked_t::bit(n.m, sizeof(mant_t) * 8 - 1);
     }
-    friend constexpr bool iszero(const TLFloat& u) { return u.getUnpacked().iszero; }
-    friend constexpr bool isint(const TLFloat& u) { return isint(u.getUnpacked()); }
-    friend constexpr bool iseven(const TLFloat& u) { return iseven(u.getUnpacked()); }
+    friend constexpr TLFLOAT_INLINE bool iszero(const TLFloat& u) { return u.getUnpacked().iszero; }
+    friend constexpr TLFLOAT_INLINE bool isint(const TLFloat& u) { return isint(u.getUnpacked()); }
+    friend constexpr TLFLOAT_INLINE bool iseven(const TLFloat& u) { return iseven(u.getUnpacked()); }
 
     /** This function performs the fused multiply-add operation of floating point numbers. This function returns correctly rounded results. */
     friend constexpr TLFloat fma(const TLFloat& x, const TLFloat& y, const TLFloat& z) {
@@ -1476,95 +1476,95 @@ namespace tlfloat {
     }
 
     /** This function performs ordered comparison of two floating point numbers. */
-    constexpr bool operator==(const TLFloat& rhs) const { return getUnpacked() == rhs.getUnpacked(); }
+    constexpr TLFLOAT_INLINE bool operator==(const TLFloat& rhs) const { return getUnpacked() == rhs.getUnpacked(); }
 
     /** This function performs ordered comparison of two floating point numbers. */
-    constexpr bool operator!=(const TLFloat& rhs) const { return getUnpacked() != rhs.getUnpacked(); }
+    constexpr TLFLOAT_INLINE bool operator!=(const TLFloat& rhs) const { return getUnpacked() != rhs.getUnpacked(); }
 
     /** This function performs ordered comparison of two floating point numbers. */
-    constexpr bool operator> (const TLFloat& rhs) const { return getUnpacked() >  rhs.getUnpacked(); }
+    constexpr TLFLOAT_INLINE bool operator> (const TLFloat& rhs) const { return getUnpacked() >  rhs.getUnpacked(); }
 
     /** This function performs ordered comparison of two floating point numbers. */
-    constexpr bool operator< (const TLFloat& rhs) const { return getUnpacked() <  rhs.getUnpacked(); }
+    constexpr TLFLOAT_INLINE bool operator< (const TLFloat& rhs) const { return getUnpacked() <  rhs.getUnpacked(); }
 
     /** This function performs ordered comparison of two floating point numbers. */
-    constexpr bool operator>=(const TLFloat& rhs) const { return getUnpacked() >= rhs.getUnpacked(); }
+    constexpr TLFLOAT_INLINE bool operator>=(const TLFloat& rhs) const { return getUnpacked() >= rhs.getUnpacked(); }
 
     /** This function performs ordered comparison of two floating point numbers. */
-    constexpr bool operator<=(const TLFloat& rhs) const { return getUnpacked() <= rhs.getUnpacked(); }
+    constexpr TLFLOAT_INLINE bool operator<=(const TLFloat& rhs) const { return getUnpacked() <= rhs.getUnpacked(); }
 
     //
 
     template<typename srctype>
-    constexpr TLFloat& operator=(const srctype& s) {
+    constexpr TLFLOAT_INLINE TLFloat& operator=(const srctype& s) {
       TLFloat n(s);
       *this = n;
       return *this;
     }
 
     template<typename rhstype>
-    constexpr TLFloat& operator+=(const rhstype& rhs) { *this = *this + TLFloat(rhs); return *this; }
+    constexpr TLFLOAT_INLINE TLFloat& operator+=(const rhstype& rhs) { *this = *this + TLFloat(rhs); return *this; }
     template<typename rhstype>
-    constexpr TLFloat& operator-=(const rhstype& rhs) { *this = *this - TLFloat(rhs); return *this; }
+    constexpr TLFLOAT_INLINE TLFloat& operator-=(const rhstype& rhs) { *this = *this - TLFloat(rhs); return *this; }
     template<typename rhstype>
-    constexpr TLFloat& operator*=(const rhstype& rhs) { *this = *this * TLFloat(rhs); return *this; }
+    constexpr TLFLOAT_INLINE TLFloat& operator*=(const rhstype& rhs) { *this = *this * TLFloat(rhs); return *this; }
     template<typename rhstype>
     constexpr TLFloat& operator/=(const rhstype& rhs) { *this = *this / TLFloat(rhs); return *this; }
 
-    constexpr TLFloat& operator++()    { *this += 1; return *this; }
-    constexpr TLFloat& operator--()    { *this -= 1; return *this; }
-    constexpr TLFloat  operator++(int) { TLFloat t = *this; *this += 1; return t; }
-    constexpr TLFloat  operator--(int) { TLFloat t = *this; *this -= 1; return t; }
+    constexpr TLFLOAT_INLINE TLFloat& operator++()    { *this += 1; return *this; }
+    constexpr TLFLOAT_INLINE TLFloat& operator--()    { *this -= 1; return *this; }
+    constexpr TLFLOAT_INLINE TLFloat  operator++(int) { TLFloat t = *this; *this += 1; return t; }
+    constexpr TLFLOAT_INLINE TLFloat  operator--(int) { TLFloat t = *this; *this -= 1; return t; }
 
     //
 
     // Double + int, Double + float, Double + Float
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
-    constexpr TLFloat operator+(const rhstype& rhs) const { return *this + TLFloat(rhs); }
+    constexpr TLFLOAT_INLINE TLFloat operator+(const rhstype& rhs) const { return *this + TLFloat(rhs); }
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
-    constexpr TLFloat operator-(const rhstype& rhs) const { return *this - TLFloat(rhs); }
+    constexpr TLFLOAT_INLINE TLFloat operator-(const rhstype& rhs) const { return *this - TLFloat(rhs); }
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
-    constexpr TLFloat operator*(const rhstype& rhs) const { return *this * TLFloat(rhs); }
+    constexpr TLFLOAT_INLINE TLFloat operator*(const rhstype& rhs) const { return *this * TLFloat(rhs); }
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
     constexpr TLFloat operator/(const rhstype& rhs) const { return *this / TLFloat(rhs); }
 
     // int + Double, float + Double, Float + Double
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
-    friend constexpr TLFloat operator+(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) + rhs; }
+    friend constexpr TLFLOAT_INLINE TLFloat operator+(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) + rhs; }
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
-    friend constexpr TLFloat operator-(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) - rhs; }
+    friend constexpr TLFLOAT_INLINE TLFloat operator-(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) - rhs; }
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
-    friend constexpr TLFloat operator*(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) * rhs; }
+    friend constexpr TLFLOAT_INLINE TLFloat operator*(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) * rhs; }
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
     friend constexpr TLFloat operator/(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) / rhs; }
 
     // Double == int, Double == float, Double == Float
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
-    constexpr bool operator==(const rhstype& rhs) const { return *this == TLFloat(rhs); }
+    constexpr TLFLOAT_INLINE bool operator==(const rhstype& rhs) const { return *this == TLFloat(rhs); }
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
-    constexpr bool operator!=(const rhstype& rhs) const { return *this != TLFloat(rhs); }
+    constexpr TLFLOAT_INLINE bool operator!=(const rhstype& rhs) const { return *this != TLFloat(rhs); }
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
-    constexpr bool operator> (const rhstype& rhs) const { return *this >  TLFloat(rhs); }
+    constexpr TLFLOAT_INLINE bool operator> (const rhstype& rhs) const { return *this >  TLFloat(rhs); }
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
-    constexpr bool operator< (const rhstype& rhs) const { return *this <  TLFloat(rhs); }
+    constexpr TLFLOAT_INLINE bool operator< (const rhstype& rhs) const { return *this <  TLFloat(rhs); }
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
-    constexpr bool operator>=(const rhstype& rhs) const { return *this >= TLFloat(rhs); }
+    constexpr TLFLOAT_INLINE bool operator>=(const rhstype& rhs) const { return *this >= TLFloat(rhs); }
     template<typename rhstype, std::enable_if_t<(std::is_integral_v<rhstype> || sizeof(rhstype) <= sizeof(mant_t)), int> = 0>
-    constexpr bool operator<=(const rhstype& rhs) const { return *this <= TLFloat(rhs); }
+    constexpr TLFLOAT_INLINE bool operator<=(const rhstype& rhs) const { return *this <= TLFloat(rhs); }
 
     // int == Double, float == Double, Float == Double
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
-    friend constexpr bool operator==(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) == rhs; }
+    friend constexpr TLFLOAT_INLINE bool operator==(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) == rhs; }
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
-    friend constexpr bool operator!=(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) != rhs; }
+    friend constexpr TLFLOAT_INLINE bool operator!=(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) != rhs; }
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
-    friend constexpr bool operator> (const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) >  rhs; }
+    friend constexpr TLFLOAT_INLINE bool operator> (const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) >  rhs; }
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
-    friend constexpr bool operator< (const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) <  rhs; }
+    friend constexpr TLFLOAT_INLINE bool operator< (const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) <  rhs; }
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
-    friend constexpr bool operator>=(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) >= rhs; }
+    friend constexpr TLFLOAT_INLINE bool operator>=(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) >= rhs; }
     template<typename lhstype, std::enable_if_t<(std::is_integral_v<lhstype> || sizeof(lhstype) <= sizeof(mant_t)), int> = 0>
-    friend constexpr bool operator<=(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) <= rhs; }
+    friend constexpr TLFLOAT_INLINE bool operator<=(const lhstype& lhs, const TLFloat &rhs) { return TLFloat(lhs) <= rhs; }
 
     //
 

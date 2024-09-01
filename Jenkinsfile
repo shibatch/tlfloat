@@ -199,7 +199,7 @@ pipeline {
 			 rm -rf build
  			 mkdir build
 			 cd build
-			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_BENCH=True ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j 8
@@ -262,7 +262,7 @@ pipeline {
 			 rm -rf build
  			 mkdir build
 			 cd build
-			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_BENCH=True ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j 8
