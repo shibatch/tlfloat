@@ -14,6 +14,7 @@ typedef Quad real;
 
 #define FMA	fma
 #define SQRT	sqrt
+#define RINT    rint
 #define SIN	sin
 #define ATAN	atan
 #define EXP	exp
@@ -28,6 +29,7 @@ typedef Octuple real;
 
 #define FMA	fma
 #define SQRT	sqrt
+#define RINT    rint
 #define SIN	sin
 #define ATAN	atan
 #define EXP	exp
@@ -41,6 +43,7 @@ typedef __float128 real;
 
 #define FMA	fmaq
 #define SQRT	sqrtq
+#define RINT    rintq
 #define SIN	sinq
 #define ATAN	atanq
 #define EXP	expq
@@ -54,6 +57,7 @@ typedef long double real;
 
 #define FMA	fmal
 #define SQRT	sqrtl
+#define RINT    rintl
 #define SIN	sinl
 #define ATAN	atanl
 #define EXP	expl
@@ -67,6 +71,7 @@ typedef double real;
 
 #define FMA	fma
 #define SQRT	sqrt
+#define RINT    rint
 #define SIN	sin
 #define ATAN	atan
 #define EXP	exp
@@ -112,6 +117,10 @@ static void funcSqrt() {
   for(int i=0;i<K;i++) W[i] = SQRT(X[i]);
 }
 
+static void funcRint() {
+  for(int i=0;i<K;i++) W[i] = RINT(X[i]);
+}
+
 static void funcSin() {
   for(int i=0;i<K;i++) W[i] = SIN(X[i]);
 }
@@ -143,7 +152,7 @@ void measure(const char* mes, void (*func)(void), int opPerCall, int64_t sec_us)
     for(int64_t i=0;i<N;i++) { (*func)(); donothing(); }
     t1 = timeus();
     if (t1 - t0 > 100000) break;
-    N *= 10;
+    N *= 2;
   }
 
   const int64_t M = N * sec_us / (t1 - t0);
@@ -152,7 +161,7 @@ void measure(const char* mes, void (*func)(void), int opPerCall, int64_t sec_us)
   for(int64_t i=0;i<M;i++) { (*func)(); donothing(); }
   t3 = timeus();
 
-  printf("%s : %g Mop/second\n", mes, M * opPerCall / double(t3 - t2));
+  printf("%s : %g Mops/second\n", mes, M * opPerCall / double(t3 - t2));
 }
 
 int main(int argc, char **argv) {
@@ -160,9 +169,9 @@ int main(int argc, char **argv) {
   if (argc >= 2) sec_us = int64_t(atof(argv[1]) * 1000000);
 
   for(int i=0;i<K;i++) {
-    X[i] = (0.1 + i * 0.0001) * ((i & 4) ? -1 : 1);
-    Y[i] = (0.2 + i * 0.0001) * ((i & 2) ? -1 : 1);
-    Z[i] = (0.3 + i * 0.0001) * ((i & 1) ? -1 : 1);
+    X[i] = (1 + i * 0.001) * ((i & 4) ? -1 : 1) / real(10);
+    Y[i] = (2 + i * 0.001) * ((i & 2) ? -1 : 1) / real(10);
+    Z[i] = (3 + i * 0.001) * ((i & 1) ? -1 : 1) / real(10);
   }
 
   time_t t = time(NULL);
@@ -177,6 +186,7 @@ int main(int argc, char **argv) {
   measure("Compare             ", funcCompare    , K, sec_us);
   measure("FMA                 ", funcFMA        , K, sec_us);
   measure("Square root         ", funcSqrt       , K, sec_us);
+  measure("Rint                ", funcRint       , K, sec_us);
   measure("Sin                 ", funcSin        , K, sec_us);
   measure("Atan                ", funcAtan       , K, sec_us);
   measure("Exp                 ", funcExp        , K, sec_us);

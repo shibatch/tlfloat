@@ -224,38 +224,42 @@ CPU: AMD Ryzen 9 7950X (turbo disabled)
 
 Compiler: gcc version 12.3.0 (Ubuntu 12.3.0-1ubuntu1~22.04)
 
-TLFloat
+TLFloat Quad
 
 ```
+Config               : tlfloat quad
 Measurement time     : 10 sec
-Addition             : 127.286 Mop/second
-Multiplication       : 121.331 Mop/second
-Division             : 21.6366 Mop/second
-Cast to/from double  : 209.89 Mop/second
-Compare              : 351.128 Mop/second
-FMA                  : 76.3312 Mop/second
-Square root          : 34.9049 Mop/second
-Sin                  : 2.44962 Mop/second
-Atan                 : 1.3023 Mop/second
-Exp                  : 1.34681 Mop/second
-Pow                  : 0.948909 Mop/second
+Addition             : 126.276 Mops/second
+Multiplication       : 121.558 Mops/second
+Division             : 21.3083 Mops/second
+Cast to/from double  : 210.811 Mops/second
+Compare              : 349.309 Mops/second
+FMA                  : 79.3782 Mops/second
+Square root          : 35.2694 Mops/second
+Rint                 : 416.364 Mops/second
+Sin                  : 2.44763 Mops/second
+Atan                 : 1.30991 Mops/second
+Exp                  : 1.40848 Mops/second
+Pow                  : 0.946258 Mops/second
 ```
 
 libquadmath
 
 ```
+Config               : Libquadmath
 Measurement time     : 10 sec
-Addition             : 92.4728 Mop/second
-Multiplication       : 87.1377 Mop/second
-Division             : 80.4436 Mop/second
-Cast to/from double  : 81.6885 Mop/second
-Compare              : 260.735 Mop/second
-FMA                  : 2.40885 Mop/second
-Square root          : 11.8831 Mop/second
-Sin                  : 4.05242 Mop/second
-Atan                 : 2.34445 Mop/second
-Exp                  : 1.8957 Mop/second
-Pow                  : 1.34179 Mop/second
+Addition             : 90.2234 Mops/second
+Multiplication       : 74.2182 Mops/second
+Division             : 83.3925 Mops/second
+Cast to/from double  : 78.1327 Mops/second
+Compare              : 272.084 Mops/second
+FMA                  : 2.24491 Mops/second
+Square root          : 12.1595 Mops/second
+Rint                 : 36.0805 Mops/second
+Sin                  : 4.17695 Mops/second
+Atan                 : 2.43314 Mops/second
+Exp                  : 1.97359 Mops/second
+Pow                  : 1.38477 Mops/second
 ```
 
 
