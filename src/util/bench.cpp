@@ -2,6 +2,7 @@
 #include <chrono>
 #include <cstdint>
 #include <cstring>
+#include <tlfloat/tlfloatversion.hpp>
 
 using namespace std;
 
@@ -18,6 +19,7 @@ typedef Quad real;
 #define SIN	sin
 #define ATAN	atan
 #define EXP	exp
+#define LOG	log
 #define POW	pow
 
 #elif defined(CONFIG_TLFLOAT_OCTUPLE)
@@ -33,6 +35,7 @@ typedef Octuple real;
 #define SIN	sin
 #define ATAN	atan
 #define EXP	exp
+#define LOG	log
 #define POW	pow
 
 #elif defined(CONFIG_LIBQUADMATH)
@@ -47,6 +50,7 @@ typedef __float128 real;
 #define SIN	sinq
 #define ATAN	atanq
 #define EXP	expq
+#define LOG	logq
 #define POW	powq
 
 #elif defined(CONFIG_LONGDOUBLE)
@@ -61,6 +65,7 @@ typedef long double real;
 #define SIN	sinl
 #define ATAN	atanl
 #define EXP	expl
+#define LOG	logl
 #define POW	powl
 
 #else
@@ -75,12 +80,13 @@ typedef double real;
 #define SIN	sin
 #define ATAN	atan
 #define EXP	exp
+#define LOG	log
 #define POW	pow
 #endif
 
 const int K = 256;
 
-real W[K], X[K], Y[K], Z[K];
+real W[K], X[K], Y[K], Z[K], H[K];
 bool B[K];
 
 static void funcAddSub() {
@@ -99,7 +105,7 @@ static void funcDiv() {
 }
 
 static void funcCastDouble() {
-  for(int i=0;i<K;i++) W[i] = (double)X[i];
+  for(int i=0;i<K;i++) W[i] = (double)H[i];
 }
 
 static void funcCompare() {
@@ -114,11 +120,11 @@ static void funcFMA() {
 }
 
 static void funcSqrt() {
-  for(int i=0;i<K;i++) W[i] = SQRT(X[i]);
+  for(int i=0;i<K;i++) W[i] = SQRT(H[i]);
 }
 
 static void funcRint() {
-  for(int i=0;i<K;i++) W[i] = RINT(X[i]);
+  for(int i=0;i<K;i++) W[i] = RINT(H[i]);
 }
 
 static void funcSin() {
@@ -126,11 +132,15 @@ static void funcSin() {
 }
 
 static void funcAtan() {
-  for(int i=0;i<K;i++) W[i] = ATAN(X[i]);
+  for(int i=0;i<K;i++) W[i] = ATAN(H[i]);
 }
 
 static void funcExp() {
   for(int i=0;i<K;i++) W[i] = EXP(X[i]);
+}
+
+static void funcLog() {
+  for(int i=0;i<K;i++) W[i] = LOG(H[i]);
 }
 
 static void funcPow() {
@@ -169,13 +179,15 @@ int main(int argc, char **argv) {
   if (argc >= 2) sec_us = int64_t(atof(argv[1]) * 1000000);
 
   for(int i=0;i<K;i++) {
-    X[i] = (1 + i * 0.001) * ((i & 4) ? -1 : 1) / real(10);
-    Y[i] = (2 + i * 0.001) * ((i & 2) ? -1 : 1) / real(10);
-    Z[i] = (3 + i * 0.001) * ((i & 1) ? -1 : 1) / real(10);
+    X[i] = (33 + i * 0.001) * ((i & 4) ? -1 : 1) / real(10);
+    Y[i] = (22 + i * 0.001) * ((i & 2) ? -1 : 1) / real(10);
+    Z[i] = (11 + i * 0.001) * ((i & 1) ? -1 : 1) / real(10);
+    H[i] = (real(1.234567890123456e+10) + real(9.8765432109876543e+5) * i) / real(10);
   }
 
   time_t t = time(NULL);
   printf("Date                 : %s", ctime(&t));
+  printf("TLFloat version      : %d.%d.%d\n", TLFLOAT_VERSION_MAJOR, TLFLOAT_VERSION_MINOR, TLFLOAT_VERSION_PATCHLEVEL);
   printf("Config               : %s\n", CONFIG);
   printf("Measurement time     : %g sec\n", sec_us / 1000000.0);
 
@@ -190,6 +202,7 @@ int main(int argc, char **argv) {
   measure("Sin                 ", funcSin        , K, sec_us);
   measure("Atan                ", funcAtan       , K, sec_us);
   measure("Exp                 ", funcExp        , K, sec_us);
+  measure("Log                 ", funcLog        , K, sec_us);
   measure("Pow                 ", funcPow        , K, sec_us);
 
   exit(0);
