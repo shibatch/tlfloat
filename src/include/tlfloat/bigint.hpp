@@ -591,6 +591,14 @@ namespace tlfloat {
       return t1 >> ((1 << N) - 2 - z);
     }
 
+    /** This method returns approximation of (((1 << (N*2))-1) / ((1 << ((1 << N)-1)) | *this) - (1 << ((1 << N)))) */
+    constexpr TLFLOAT_INLINE BigUInt reciprocal2() const {
+      BigUInt t0 = ((BigUInt(1) << ((1 << N)-1)) | *this);
+      BigUInt t1 = t0.reciprocalAprx() << 1;
+      BigUInt t2 = -t0.mulhi(t1);
+      return t2.mulhi(t1) + (-t0).mulhi(t1) + (t2 - t0);
+    }
+
     constexpr TLFLOAT_INLINE bool eq(BigUInt const& rhs) const { return low.eq(rhs.low) && high.eq(rhs.high); }
     constexpr TLFLOAT_INLINE bool operator==(BigUInt const& rhs) const { return eq(rhs); }
     constexpr TLFLOAT_INLINE bool operator!=(BigUInt const& rhs) const { return !eq(rhs); }
@@ -760,6 +768,21 @@ namespace tlfloat {
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
       if (!(rhs > m)) { q++; m = m - rhs; }
       return xpair<BigUInt, BigUInt>(q, m);
+    }
+
+    /** This method finds the quotient and remainder of (*this << ((1
+	<< N)-1)) divided by (rhs | (1 << ((1 << N)-1))) at a time. Give
+	rhs.reciprocal2() as the second argument. */
+    constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> divmod2(const BigUInt& rhs, const BigUInt& recip2) const {
+      BigUInt q = (mulhi(recip2) >> 1) + (*this >> 1);
+      BigUInt rhs2 = rhs | (BigUInt(1) << ((1 << N)-1));
+      BigUInt<N+1> r = (BigUInt<N+1>(*this) << ((1 << N)-1)) - BigUInt<N+1>::mul(q, rhs2);
+      if (r.bit((1 << (N+1))-1)) {
+	q--; r += rhs2;
+      } else if (!(rhs2 > r)) {
+	q++; r -= rhs2;
+      }
+      return xpair<BigUInt, BigUInt>(q, (BigUInt)r);
     }
 
     constexpr TLFLOAT_INLINE BigUInt mod(const BigUInt& rhs, const BigUInt& recip) const {
@@ -955,6 +978,12 @@ namespace tlfloat {
     constexpr TLFLOAT_INLINE BigUInt operator/(const BigUInt& rhs) const { return u64 / rhs.u64; }
     constexpr TLFLOAT_INLINE BigUInt operator%(const BigUInt& rhs) const { return u64 % rhs.u64; }
 
+    constexpr TLFLOAT_INLINE BigUInt operator-() const { return 1 + ~u64; }
+    constexpr TLFLOAT_INLINE BigUInt& operator++() { *this = u64+1; return *this; }
+    constexpr TLFLOAT_INLINE BigUInt& operator--() { *this = u64-1; return *this; }
+    constexpr TLFLOAT_INLINE BigUInt operator++(int) { BigUInt t = *this; *this = u64+1; return t; }
+    constexpr TLFLOAT_INLINE BigUInt operator--(int) { BigUInt t = *this; *this = u64-1; return t; }
+
     constexpr TLFLOAT_INLINE bool operator==(BigUInt const& rhs) const { return u64 == rhs.u64; }
     constexpr TLFLOAT_INLINE bool operator!=(BigUInt const& rhs) const { return !(*this == rhs); }
     constexpr TLFLOAT_INLINE bool operator> (BigUInt const& rhs) const { return u64 > rhs.u64; }
@@ -984,6 +1013,25 @@ namespace tlfloat {
     constexpr TLFLOAT_INLINE explicit operator unsigned long int() const { return (unsigned long)u64; }
 
     constexpr TLFLOAT_INLINE BigUInt(const BigUInt<7>& h) : BigUInt(h.low) {}
+
+    constexpr TLFLOAT_INLINE BigUInt reciprocal2() const {
+      BigUInt t0 = ((BigUInt(1) << ((1 << 6)-1)) | *this);
+      BigUInt t1 = t0.reciprocalAprx() << 1;
+      BigUInt t2 = -t0.mulhi(t1);
+      return t2.mulhi(t1) + (-t0).mulhi(t1) + (t2 - t0);
+    }
+
+    constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> divmod2(const BigUInt& rhs, const BigUInt& recip2) const {
+      BigUInt q = (mulhi(recip2) >> 1) + (*this >> 1);
+      BigUInt rhs2 = rhs | (BigUInt(1) << ((1 << 6)-1));
+      BigUInt<7> r = (BigUInt<7>(*this) << ((1 << 6)-1)) - BigUInt<7>::mul(q, rhs2);
+      if (r.bit((1 << 7)-1)) {
+	q--; r += rhs2;
+      } else if (!(rhs2 > r)) {
+	q++; r -= rhs2;
+      }
+      return xpair<BigUInt, BigUInt>(q, (BigUInt)r);
+    }
   };
 
   /**
@@ -1375,7 +1423,7 @@ namespace tlfloat {
     int base = 10;
     if ((f & os.hex) != 0) { typespec = 'x'; base = 16; }
     if ((f & os.oct) != 0) { typespec = 'o'; base = 8; }
-    BigInt<N>::snprint(buf.data(), buf.size(), BigInt<N>(u), typespec, os.width(), os.precision(), base, 1 << N,
+    BigInt<N>::snprint(buf.data(), buf.size(), BigInt<N>(u), typespec, os.width(), -1, base, 1 << N,
 		       false, false, false, (f & std::ios::left) != 0, false, (f & std::ios::uppercase) != 0);
     return os << buf.data();
   }
@@ -1394,7 +1442,7 @@ namespace tlfloat {
     int base = 10;
     if ((f & os.hex) != 0) { typespec = 'x'; base = 16; }
     if ((f & os.oct) != 0) { typespec = 'o'; base = 8; }
-    BigInt<N>::snprint(buf.data(), buf.size(), d, typespec, os.width(), os.precision(), base, 1 << N,
+    BigInt<N>::snprint(buf.data(), buf.size(), d, typespec, os.width(), -1, base, 1 << N,
 		       false, false, false, (f & std::ios::left) != 0, false, (f & std::ios::uppercase) != 0);
     return os << buf.data();
   }

@@ -120,18 +120,24 @@ namespace tlfloat {
 
       //
 
-      static constexpr TLFLOAT_INLINE xpair<uint16_t, uint16_t> divmod(uint32_t x, uint16_t y) {
+      static constexpr TLFLOAT_INLINE xpair<uint16_t, uint16_t> divmod2(uint16_t x_, uint16_t y_) {
+	uint32_t x = uint32_t(x_) << 15, y = y_ | (uint32_t(1) << 15);
 	return xpair<uint16_t, uint16_t> { uint16_t(x / y), uint16_t(x % y) };
       }
 
-      static constexpr TLFLOAT_INLINE xpair<uint32_t, uint32_t> divmod(uint64_t x, uint32_t y) {
+      static constexpr TLFLOAT_INLINE xpair<uint32_t, uint32_t> divmod2(uint32_t x_, uint32_t y_) {
+	uint64_t x = uint64_t(x_) << 31, y = y_ | (uint64_t(1) << 31);
 	return xpair<uint32_t, uint32_t> { uint32_t(x / y), uint32_t(x % y) };
       }
 
+      static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod2(uint64_t x, uint64_t y) {
+	auto a = BigUInt<6>(x).divmod2(y, BigUInt<6>(y).reciprocal2());
+	return xpair<uint64_t, uint64_t> { a.first.u64, a.second.u64 };
+      }
+
       template<int N>
-      static constexpr TLFLOAT_INLINE xpair<BigUInt<N-1>, BigUInt<N-1>> divmod(const BigUInt<N>& x, const BigUInt<N-1>& y) {
-	auto p = x.divmod(y, BigUInt<N>(y).reciprocal());
-	return xpair<BigUInt<N-1>, BigUInt<N-1>> { (BigUInt<N-1>)p.first, (BigUInt<N-1>)p.second };
+      static constexpr TLFLOAT_INLINE xpair<BigUInt<N>, BigUInt<N>> divmod2(const BigUInt<N>& x, const BigUInt<N>& y) {
+	return x.divmod2(y, y.reciprocal2());
       }
 
       //
@@ -412,19 +418,19 @@ namespace tlfloat {
 	}
 
 	int exp = lhs.exp - rhs.exp + expoffset() - 1;
-	int sl = clz(lhs.mant) + nbmant + 1 - sizeof(mant_t) * 8 + 1;
-	int sr = clz(rhs.mant) + nbmant + 1 - sizeof(mant_t) * 8;
-	exp -= sl - sr;
+	int sl = clz(lhs.mant);
+	int sr = clz(rhs.mant);
+	exp -= sl + 1 - sr;
 
-	auto p = divmod(longmant_t(lhs.mant) << (sl + nbmant), rhs.mant << sr);
-	longmant_t am = longmant_t(p.first) << (sizeof(mant_t)*8);
+	auto p = divmod2(mant_t(lhs.mant << sl), mant_t(rhs.mant << sr));
+	longmant_t am = longmant_t(p.first) << (nbmant + 2);
 
-	if (mant_t(p.second) * 2 > (rhs.mant << sr)) { 
-	  am += longmant_t(3) << (sizeof(mant_t)*8 - 2);
-	} else if (mant_t(p.second) * 2 == (rhs.mant << sr)) { 
-	  am += longmant_t(2) << (sizeof(mant_t)*8 - 2);
-	} else if (mant_t(p.second) != 0) {
-	  am += longmant_t(1) << (sizeof(mant_t)*8 - 2);
+	if (p.second > (rhs.mant << (sr - 1))) { 
+	  am += longmant_t(3) << nbmant;
+	} else if (p.second * 2 == (rhs.mant << (sr - 1))) { 
+	  am += longmant_t(2) << nbmant;
+	} else if (p.second != 0) {
+	  am += longmant_t(1) << nbmant;
 	}
 
 	const int x = clz(am) - nbexp;
