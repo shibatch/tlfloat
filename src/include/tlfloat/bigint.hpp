@@ -880,7 +880,7 @@ namespace tlfloat {
 
     /** This method performs division and modulo at a time. Give rhs.reciprocal() as the second argument */
     constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> divmod(const BigUInt& rhs, const BigUInt& recip) const {
-      if (rhs == 1) xpair<BigUInt, BigUInt>(*this, 0);
+      if (rhs == 1) return xpair<BigUInt, BigUInt>(*this, 0);
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
       if (!(rhs > m)) { q++; m = m - rhs; }
       return xpair<BigUInt, BigUInt>(q, m);

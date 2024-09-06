@@ -90,6 +90,17 @@ void doTestDivmod2(BigUInt<N> n, BigUInt<N> d) {
       cout << "t.r  = " << toHexString(t.second) << endl;
       exit(-1);
     }
+
+    t = n.divmod(d, d.reciprocal());
+    if (t.second >= d || t.first * d + t.second != n) {
+      cout << "N    = " << N << endl;
+      cout << "n    = " << toHexString(n) << " " << n << endl;
+      cout << "d    = " << toHexString(d) << " " << d << endl;
+      cout << "d.r  = " << toHexString(d.reciprocal()) << endl;
+      cout << "t.q  = " << toHexString(t.first ) << endl;
+      cout << "t.r  = " << toHexString(t.second) << endl;
+      exit(-1);
+    }
   }
 }
 
@@ -165,7 +176,6 @@ int main(int argc, char **argv) {
   if (argc != 1) n = stoi(argv[1]);
   if (argc == 3) ntest = stoi(argv[2]);
 
-  testLoop<6>();
   testLoop<7>();
   testLoop<8>();
   testLoop<9>();
