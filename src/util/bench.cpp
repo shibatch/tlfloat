@@ -38,6 +38,36 @@ typedef Octuple real;
 #define LOG	log
 #define POW	pow
 
+#elif defined(CONFIG_TLFLOAT_QUAD_CAPI)
+
+#include <tlfloat/tlfloat.h>
+#define CONFIG "tlfloat quad C API"
+typedef tlfloat_quad real;
+
+#define FMA	tlfloat_fmaq
+#define SQRT	tlfloat_sqrtq
+#define RINT    tlfloat_rintq
+#define SIN	tlfloat_sinq
+#define ATAN	tlfloat_atanq
+#define EXP	tlfloat_expq
+#define LOG	tlfloat_logq
+#define POW	tlfloat_powq
+
+#elif defined(CONFIG_TLFLOAT_OCTUPLE_CAPI)
+
+#include <tlfloat/tlfloat.h>
+#define CONFIG "tlfloat octuple C API"
+typedef tlfloat_octuple real;
+
+#define FMA	tlfloat_fmao
+#define SQRT	tlfloat_sqrto
+#define RINT    tlfloat_rinto
+#define SIN	tlfloat_sino
+#define ATAN	tlfloat_atano
+#define EXP	tlfloat_expo
+#define LOG	tlfloat_logo
+#define POW	tlfloat_powo
+
 #elif defined(CONFIG_LIBQUADMATH)
 
 #define CONFIG "Libquadmath"

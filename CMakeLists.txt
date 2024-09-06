@@ -4,7 +4,7 @@ option(BUILD_LIBS "Build and install the library" ON)
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_UTILS "Build utilities" ON)
 option(BUILD_BENCH "Build benchmarking tools" OFF)
-option(ENABLE_INLINING "Enable extensive function inlining" OFF)
+option(ENABLE_INLINING "Enable extensive function inlining" ON)
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_CUDA_TEST "Build CUDA tester" OFF)
 option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
@@ -20,7 +20,7 @@ set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is I
 
 set(TLFLOAT_VERSION_MAJOR 1)
 set(TLFLOAT_VERSION_MINOR 6)
-set(TLFLOAT_VERSION_PATCHLEVEL 1)
+set(TLFLOAT_VERSION_PATCHLEVEL 2)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCHLEVEL})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
@@ -164,8 +164,9 @@ CHECK_CXX_SOURCE_COMPILES("
 #include <mpfr.h>
 int main() {}" TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 
-set(CMAKE_REQUIRED_LIBRARIES quadmath)
-CHECK_CXX_SOURCE_COMPILES("
+if (TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
+  set(CMAKE_REQUIRED_LIBRARIES quadmath)
+  CHECK_CXX_SOURCE_COMPILES("
 #define MPFR_WANT_FLOAT128
 #include <cstdio>
 #include <quadmath.h>
@@ -173,7 +174,8 @@ int main(int argc, char **argv) {
 __float128 f = atof(argv[1]);
 printf(\"%g\", (double)sinq(f));
 }" TLFLOAT_ENABLE_LIBQUADMATH)
-set(CMAKE_REQUIRED_LIBRARIES)
+  set(CMAKE_REQUIRED_LIBRARIES)
+endif()
 
 # Setting up memory-leak checks
 
@@ -188,8 +190,8 @@ endif()
 # Compiler options
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fcompare-debug-second -fconstexpr-ops-limit=1000000000 --param=max-vartrack-size=1000000000")
-  set(BENCH_CXX_FLAGS "-funroll-loops;--param=max-unroll-times=1000000;--param=max-variable-expansions-in-unroller=65536;--inline-limit=1000000")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fcompare-debug-second -fconstexpr-ops-limit=1000000000")
+  set(INLINE_CXX_FLAGS "--inline-limit=1000000")
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "i[3-6]86")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse -msse2")
   endif()
@@ -208,7 +210,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   endif()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fconstexpr-steps=1000000000")
-  set(BENCH_CXX_FLAGS "-mllvm;-inline-threshold=100000")
+  set(INLINE_CXX_FLAGS "-mllvm;-inline-threshold=100000")
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "i[3-6]86")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mfpmath=sse -msse2")
   endif()
@@ -229,10 +231,10 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT WIN32)
   endif()
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /clang:-fconstexpr-steps=1000000000")
-  set(BENCH_CXX_FLAGS "/clang:-mllvm;/clang:-inline-threshold=100000")
+  set(INLINE_CXX_FLAGS "/clang:-mllvm;/clang:-inline-threshold=100000")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /constexpr:steps1000000000")
-  set(BENCH_CXX_FLAGS "")
+  set(INLINE_CXX_FLAGS "")
 endif()
 
 string(TOLOWER "${CMAKE_BUILD_TYPE}" LC_CMAKE_BUILD_TYPE)
