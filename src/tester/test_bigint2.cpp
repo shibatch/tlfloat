@@ -53,8 +53,22 @@ void doTestRec2(BigUInt<N> d) {
 
 template<int N>
 void doTestDivmod2(BigUInt<N> n, BigUInt<N> d) {
-  auto t = n.divmod2(d, d.reciprocal2());
   auto c = xdivmod(n, d);
+
+  auto t = n.divmod2(d, d.reciprocal2());
+  if (c.first != t.first || c.second != t.second) {
+    cout << "N    = " << N << endl;
+    cout << "n    = " << toHexString(n) << " " << n << endl;
+    cout << "d    = " << toHexString(d) << " " << d << endl;
+    cout << "d.r2 = " << toHexString(d.reciprocal2()) << endl;
+    cout << "t.q  = " << toHexString(t.first ) << endl;
+    cout << "c.q  = " << toHexString(c.first ) << endl;
+    cout << "t.r  = " << toHexString(t.second) << endl;
+    cout << "c.r  = " << toHexString(c.second) << endl;
+    exit(-1);
+  }
+
+  t = n.divmod2(d);
   if (c.first != t.first || c.second != t.second) {
     cout << "N   = " << N << endl;
     cout << "n   = " << toHexString(n) << " " << n << endl;

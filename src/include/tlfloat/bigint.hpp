@@ -37,6 +37,7 @@
 #if defined(__x86_64__) && !defined(__CUDA_ARCH__)
 #include <x86intrin.h>
 #define TLFLOAT_ENABLE_X86INTRIN
+#define TLFLOAT_ENABLE_ASM_GNU
 #endif
 
 #if defined(TLFLOAT_COMPILER_SUPPORTS_INT128) && !defined(__CUDA_ARCH__)
@@ -227,6 +228,61 @@ namespace tlfloat {
       return z;
     }
 #endif
+
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod128_64_(uint64_t nh_, uint64_t nl_, uint64_t d_) {
+      assert(nh_ < d_);
+
+      const int s = clz64(d_);
+      const uint64_t nh = (nh_ << s) | (s == 0 ? 0 : (nl_ >> (64 - s))), nl = nl_ << s, d = d_ << s;
+
+      uint64_t dm0q = nh / (d >> 32), dm0r = nh % (d >> 32);
+
+      if ((dm0q >> 32) || dm0q * (d & 0xffffffff) > (dm0r << 32) + (nl >> 32)) {
+	dm0q--;
+	if (!((dm0r += (d >> 32)) >> 32) &&
+	    ((dm0q >> 32) || dm0q * (d & 0xffffffff) > (dm0r << 32) + (nl >> 32))) dm0q--;
+      }
+
+      const uint64_t n2 = (nh << 32) + (nl >> 32) - dm0q * d;
+
+      uint64_t dm1q = n2 / (d >> 32), dm1r = n2 % (d >> 32);
+
+      if ((dm1q >> 32) || dm1q * (d & 0xffffffff) > (dm1r << 32) + (nl & 0xffffffff)) {
+	dm1q--;
+	if (!((dm1r += (d >> 32)) >> 32) &&
+	    ((dm1q >> 32) || dm1q * (d & 0xffffffff) > (dm1r << 32) + (nl & 0xffffffff))) dm1q--;
+      }
+
+      return xpair<uint64_t, uint64_t> {
+	((uint64_t)dm0q << 32) + dm1q, (((n2 << 32) + (nl & 0xffffffff)) - dm1q * d) >> s
+      };
+    }
+
+#if defined(__x86_64__) && defined(TLFLOAT_ENABLE_ASM_GNU)
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod128_64(uint64_t nh, uint64_t nl, uint64_t d) {
+      assert(nh < d);
+      if (!std::is_constant_evaluated()) {
+	uint64_t r, q;
+	__asm__("divq %2\n"
+		: "=d" (r), "=a" (q)
+		: "rm" (d), "d" (nh), "a" (nl));
+	return xpair<uint64_t, uint64_t>(q, r);
+      } else {
+	return divmod128_64_(nh, nl, d);
+      }
+    }
+#elif defined(TLFLOAT_ENABLE_INT128_OPT)
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod128_64(uint64_t nh, uint64_t nl, uint64_t d) {
+      assert(nh < d);
+      __uint128_t n = (__uint128_t(nh) << 64) | nl;
+      return xpair<uint64_t, uint64_t>{ uint64_t(n / d), uint64_t(n % d) };
+    }
+#else
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod128_64(uint64_t nh, uint64_t nl, uint64_t d) {
+      assert(nh < d);
+      return divmod128_64_(nh, nl, d);
+    }
+#endif // #if defined(__x86_64__) && defined(TLFLOAT_ENABLE_ASM_GNU) && 
 
     template<typename T>
     class SafeArray {
@@ -432,6 +488,68 @@ namespace tlfloat {
       BigUInt<N-1> x((high + ((~high >> (sizeof(high)*8 - 1)) & 1)).reciprocalAprx());
       BigUInt y((-mulhiAprx2(x)).mulhiAprx2(x));
       return y + y;
+    }
+
+    /*
+      In Volume 2: Seminumerical Algorithms, Chapter 4.3:
+      Multiple-Precision Arithmetic of The Art of Computer Programming,
+      Donald Ervin Knuth presents "Algorithm D (Division of nonnegative
+      integers)":
+    */
+    static constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> div(BigUInt<N+1> n_, const BigUInt d_) {
+      assert(n_.high < d_);
+
+      const int s = d_.clz();
+      const BigUInt<N+1> n = n_ << s;
+      const BigUInt d = d_ << s;
+
+      BigUInt<N> on0 = n.high;
+      int dm0of = 0;
+      if (on0.high >= d.high) {
+	dm0of++; on0 -= d.high;
+	if (on0.high >= d.high) {
+	  dm0of++; on0 -= d.high;
+	  if (on0.high >= d.high) { dm0of++; on0 -= d.high; }
+	}
+      }
+
+      auto dm0 = BigUInt<N-1>::div(on0, d.high);
+      BigUInt<N> dm0q = BigUInt<N>(dm0.first) + dm0of, dm0r = dm0.second;
+
+      if (!(dm0q >> (1 << (N-1))).isZero() ||
+	  mul(dm0q.low, d.low) > BigUInt(dm0r.low, n.low.high)) {
+	dm0q--;
+	if (((dm0r += d.high) >> (1 << (N-1))).isZero() &&
+	    (!(dm0q >> (1 << (N-1))).isZero() ||
+	     mul(dm0q.low, d.low) > BigUInt(dm0r.low, n.low.high))) dm0q--;
+      }
+
+      const BigUInt n2 = BigUInt(n.high.low, n.low.high) - dm0q * d;
+
+      BigUInt<N> on1 = n2;
+      int dm1of = 0;
+      if (on1.high >= d.high) {
+	dm1of++; on1 -= d.high;
+	if (on1.high >= d.high) {
+	  dm1of++; on1 -= d.high;
+	  if (on1.high >= d.high) { dm1of++; on1 -= d.high; }
+	}
+      }
+
+      auto dm1 = BigUInt<N-1>::div(on1, d.high);
+      BigUInt<N> dm1q = BigUInt<N>(dm1.first) + dm1of, dm1r = dm1.second;
+
+      if (!(dm1q >> (1 << (N-1))).isZero() ||
+	  mul(dm1q.low, d.low) > BigUInt(dm1r.low, n.low.low)) {
+	dm1q--;
+	if (((dm1r += d.high) >> (1 << (N-1))).isZero() &&
+	    (!(dm1q >> (1 << (N-1))).isZero() ||
+	     mul(dm1q.low, d.low) > BigUInt(dm1r.low, n.low.low))) dm1q--;
+      }
+
+      return xpair<BigUInt, BigUInt> {
+	BigUInt(dm0q.low, dm1q.low), (BigUInt(n2.low, n.low.low) - dm1q * d) >> s
+      };
     }
 
   public:
@@ -785,6 +903,12 @@ namespace tlfloat {
       return xpair<BigUInt, BigUInt>(q, (BigUInt)r);
     }
 
+    /** This method finds the quotient and remainder of (*this << ((1
+	<< N)-1)) divided by (rhs | (1 << ((1 << N)-1))) at a time. */
+    constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> divmod2(const BigUInt& rhs) const {
+      return div(BigUInt<N+1>(*this) << ((1 << N)-1), rhs | (BigUInt(1) << ((1 << N)-1)));
+    }
+
     constexpr TLFLOAT_INLINE BigUInt mod(const BigUInt& rhs, const BigUInt& recip) const {
       if (rhs == 1) return 0;
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
@@ -955,6 +1079,12 @@ namespace tlfloat {
     constexpr TLFLOAT_INLINE BigUInt mulhi(const BigUInt& rhs) const { return detail::mul128(u64, rhs.u64).first; }
     constexpr TLFLOAT_INLINE BigUInt mulhiAprx(const BigUInt& rhs) const { return mulhi(rhs); }
 
+    static constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> div(BigUInt<7> u, BigUInt d) {
+      assert(u.high.u64 < d.u64);
+      auto a = detail::divmod128_64(u.high.u64, u.low.u64, d.u64);
+      return xpair<BigUInt, BigUInt> { a.first, a.second };
+    }
+
   public:
     template<int> friend class BigUInt;
     template<int> friend class BigInt;
@@ -987,6 +1117,24 @@ namespace tlfloat {
     constexpr TLFLOAT_INLINE bool operator==(BigUInt const& rhs) const { return u64 == rhs.u64; }
     constexpr TLFLOAT_INLINE bool operator!=(BigUInt const& rhs) const { return !(*this == rhs); }
     constexpr TLFLOAT_INLINE bool operator> (BigUInt const& rhs) const { return u64 > rhs.u64; }
+    constexpr TLFLOAT_INLINE bool operator>=(BigUInt const& rhs) const { return u64 >= rhs.u64; }
+
+    template<typename rhstype>
+    constexpr TLFLOAT_INLINE BigUInt& operator+=(const rhstype& rhs) { *this = *this + BigUInt(rhs); return *this; }
+    template<typename rhstype>
+    constexpr TLFLOAT_INLINE BigUInt& operator-=(const rhstype& rhs) { *this = *this - BigUInt(rhs); return *this; }
+    template<typename rhstype>
+    constexpr TLFLOAT_INLINE BigUInt& operator*=(const rhstype& rhs) { *this = *this * BigUInt(rhs); return *this; }
+    template<typename rhstype>
+    constexpr TLFLOAT_INLINE BigUInt& operator/=(const rhstype& rhs) { *this = *this / BigUInt(rhs); return *this; }
+    template<typename rhstype>
+    constexpr TLFLOAT_INLINE BigUInt& operator%=(const rhstype& rhs) { *this = *this % BigUInt(rhs); return *this; }
+    template<typename rhstype>
+    constexpr TLFLOAT_INLINE BigUInt& operator&=(const rhstype& rhs) { *this = *this & BigUInt(rhs); return *this; }
+    template<typename rhstype>
+    constexpr TLFLOAT_INLINE BigUInt& operator|=(const rhstype& rhs) { *this = *this | BigUInt(rhs); return *this; }
+    template<typename rhstype>
+    constexpr TLFLOAT_INLINE BigUInt& operator^=(const rhstype& rhs) { *this = *this ^ BigUInt(rhs); return *this; }
 
     constexpr TLFLOAT_INLINE int compare(BigUInt const& rhs) const {
       if (u64 > rhs.u64) return +1;
@@ -1031,6 +1179,10 @@ namespace tlfloat {
 	q++; r -= rhs2;
       }
       return xpair<BigUInt, BigUInt>(q, (BigUInt)r);
+    }
+
+    constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> divmod2(const BigUInt& rhs) const {
+      return div(BigUInt<7>(*this) << ((1 << 6)-1), rhs | (1ULL << ((1 << 6)-1)));
     }
   };
 
