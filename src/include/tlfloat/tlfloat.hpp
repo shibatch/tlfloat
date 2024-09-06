@@ -131,13 +131,21 @@ namespace tlfloat {
       }
 
       static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod2(uint64_t x, uint64_t y) {
+#if defined(_MSC_VER) && !defined(__clang__) // This is required to avoid ICE
+	auto a = BigUInt<6>(x).divmod2(y, BigUInt<6>(y).reciprocal2());
+#else
 	auto a = BigUInt<6>(x).divmod2(y);
+#endif
 	return xpair<uint64_t, uint64_t> { a.first.u64, a.second.u64 };
       }
 
       template<int N>
       static constexpr TLFLOAT_INLINE xpair<BigUInt<N>, BigUInt<N>> divmod2(const BigUInt<N>& x, const BigUInt<N>& y) {
+#if defined(_MSC_VER) && !defined(__clang__) // This is required to avoid ICE
+	return x.divmod2(y, y.reciprocal2());
+#else
 	return x.divmod2(y);
+#endif
       }
 
       //
