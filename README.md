@@ -227,43 +227,43 @@ Compiler: gcc version 12.3.0 (Ubuntu 12.3.0-1ubuntu1~22.04)
 TLFloat Quad
 
 ```
-TLFloat version      : 1.6.1
+TLFloat version      : 1.6.2
 Config               : tlfloat quad
 Measurement time     : 10 sec
-Addition             : 140.494 Mops/second
-Multiplication       : 120.771 Mops/second
-Division             : 59.4532 Mops/second
-Cast to/from double  : 207.878 Mops/second
-Compare              : 343.444 Mops/second
-FMA                  : 80.1267 Mops/second
-Square root          : 18.2372 Mops/second
-Rint                 : 228.66 Mops/second
-Sin                  : 2.44631 Mops/second
-Atan                 : 1.55149 Mops/second
-Exp                  : 1.19672 Mops/second
-Log                  : 2.09894 Mops/second
-Pow                  : 1.02865 Mops/second
+Addition             : 143.985 Mops/second
+Multiplication       : 120.157 Mops/second
+Division             : 61.105 Mops/second
+Cast to/from double  : 206.241 Mops/second
+Compare              : 350.293 Mops/second
+FMA                  : 79.3951 Mops/second
+Square root          : 18.5579 Mops/second
+Rint                 : 220.772 Mops/second
+Sin                  : 2.55957 Mops/second
+Atan                 : 1.54787 Mops/second
+Exp                  : 1.38229 Mops/second
+Log                  : 2.12536 Mops/second
+Pow                  : 1.02007 Mops/second
 ```
 
 GNU libquadmath
 
 ```
-TLFloat version      : 1.6.1
+TLFloat version      : 1.6.2
 Config               : Libquadmath
 Measurement time     : 10 sec
-Addition             : 96.9033 Mops/second
-Multiplication       : 74.9654 Mops/second
-Division             : 83.7102 Mops/second
-Cast to/from double  : 76.5479 Mops/second
-Compare              : 273.475 Mops/second
-FMA                  : 2.29795 Mops/second
-Square root          : 7.40216 Mops/second
-Rint                 : 42.6198 Mops/second
-Sin                  : 1.82679 Mops/second
-Atan                 : 3.03022 Mops/second
-Exp                  : 1.92777 Mops/second
-Log                  : 1.88239 Mops/second
-Pow                  : 1.37526 Mops/second
+Addition             : 95.2788 Mops/second
+Multiplication       : 74.0397 Mops/second
+Division             : 77.3629 Mops/second
+Cast to/from double  : 75.6435 Mops/second
+Compare              : 264.902 Mops/second
+FMA                  : 2.27194 Mops/second
+Square root          : 7.32047 Mops/second
+Rint                 : 41.9931 Mops/second
+Sin                  : 1.79815 Mops/second
+Atan                 : 2.9876 Mops/second
+Exp                  : 1.90213 Mops/second
+Log                  : 1.85797 Mops/second
+Pow                  : 1.35634 Mops/second
 ```
 
 

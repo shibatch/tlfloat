@@ -101,6 +101,25 @@ namespace tlfloat {
 
       //
 
+      static constexpr TLFLOAT_INLINE int icmp(uint16_t x, uint16_t y) {
+	return x > y ? 1 : (x < y ? -1 : 0);
+      }
+
+      static constexpr TLFLOAT_INLINE int icmp(uint32_t x, uint32_t y) {
+	return x > y ? 1 : (x < y ? -1 : 0);
+      }
+
+      static constexpr TLFLOAT_INLINE int icmp(uint64_t x, uint64_t y) {
+	return x > y ? 1 : (x < y ? -1 : 0);
+      }
+
+      template<int N>
+      static constexpr TLFLOAT_INLINE int icmp(const BigUInt<N>& x, const BigUInt<N>& y) {
+	return x.compare(y);
+      }
+
+      //
+
       static constexpr TLFLOAT_INLINE uint32_t mul(uint16_t x, uint16_t y) {
 	return uint32_t(x) * uint32_t(y);
       }
@@ -433,13 +452,9 @@ namespace tlfloat {
 	auto p = divmod2(mant_t(lhs.mant << sl), mant_t(rhs.mant << sr));
 	longmant_t am = longmant_t(p.first) << (nbmant + 2);
 
-	if (p.second > (rhs.mant << (sr - 1))) { 
-	  am += longmant_t(3) << nbmant;
-	} else if (p.second * 2 == (rhs.mant << (sr - 1))) { 
-	  am += longmant_t(2) << nbmant;
-	} else if (p.second != 0) {
-	  am += longmant_t(1) << nbmant;
-	}
+	int c = icmp(p.second, rhs.mant << (sr - 1));
+	c = c >= 0 ? c + 2 : p.second != 0 ? 1 : 0;
+	am += longmant_t(c) << nbmant;
 
 	const int x = clz(am) - nbexp;
 	am = x >= 0 ? (am << (x & (sizeof(am)*8-1))) : (am >> -x);
