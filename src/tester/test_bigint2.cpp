@@ -25,7 +25,7 @@ static_assert(is_trivially_copyable_v<BigInt<9>> == true);
 static_assert(is_trivially_copyable_v<BigInt<10>> == true);
 
 template<int N>
-xpair<BigUInt<N+1>, BigUInt<N+1>> xdivmod(BigUInt<N> n, BigUInt<N> d) {
+xpair<BigUInt<N+1>, BigUInt<N+1>> xdivmod2(BigUInt<N> n, BigUInt<N> d) {
   BigUInt<N+1> xn = BigUInt<N+1>(n) << ((1 << N) - 1);
   BigUInt<N+1> xd = d | (BigUInt<N+1>(1) << ((1 << N)-1));
   return xpair<BigUInt<N+1>, BigUInt<N+1>>(BigUInt<N+1>(xn / xd), BigUInt<N+1>(xn % xd));
@@ -53,7 +53,7 @@ void doTestRec2(BigUInt<N> d) {
 
 template<int N>
 void doTestDivmod2(BigUInt<N> n, BigUInt<N> d) {
-  auto c = xdivmod(n, d);
+  auto c = xdivmod2(n, d);
 
   auto t = n.divmod2(d, d.reciprocal2());
   if (c.first != t.first || c.second != t.second) {
@@ -78,6 +78,18 @@ void doTestDivmod2(BigUInt<N> n, BigUInt<N> d) {
     cout << "t.r = " << toHexString(t.second) << endl;
     cout << "c.r = " << toHexString(c.second) << endl;
     exit(-1);
+  }
+
+  if (d != 0) {
+    t = n.divmod(d);
+    if (t.second >= d || t.first * d + t.second != n) {
+      cout << "N    = " << N << endl;
+      cout << "n    = " << toHexString(n) << " " << n << endl;
+      cout << "d    = " << toHexString(d) << " " << d << endl;
+      cout << "t.q  = " << toHexString(t.first ) << endl;
+      cout << "t.r  = " << toHexString(t.second) << endl;
+      exit(-1);
+    }
   }
 }
 

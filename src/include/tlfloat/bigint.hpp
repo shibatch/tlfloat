@@ -32,7 +32,7 @@
 /*! \endcond */
 
 #ifndef TLFLOAT_DISABLE_ARCH_OPTIMIZATION
-#if defined(__GNUC__) || defined(__clang__)
+#if defined(__GNUC__) || (defined(__clang__) && !defined(_MSC_VER))
 
 #if defined(__x86_64__) && !defined(__CUDA_ARCH__)
 #include <x86intrin.h>
@@ -57,7 +57,7 @@
 
 #undef TLFLOAT_NOINLINE
 #define TLFLOAT_NOINLINE __attribute__((noinline))
-#endif // #if defined(__GNUC__) || defined(__clang__)
+#endif // #if defined(__GNUC__) || (defined(__clang__) && !defined(_MSC_VER))
 
 #ifdef _MSC_VER
 #if !defined(__CUDA_ARCH__)
@@ -72,8 +72,12 @@
 
 #ifdef TLFLOAT_ENABLE_INLINING
 #undef TLFLOAT_INLINE
+#if !defined(__clang__)
 #define TLFLOAT_INLINE __forceinline
+#else
+#define TLFLOAT_INLINE __attribute__((always_inline))
 #endif
+#endif // #ifdef TLFLOAT_ENABLE_INLINING
 #endif // #if !defined(__CUDA_ARCH__)
 #endif // #ifdef _MSC_VER
 #endif // #ifndef TLFLOAT_DISABLE_ARCH_OPTIMIZATION
@@ -687,17 +691,11 @@ namespace tlfloat {
     }
 
     constexpr TLFLOAT_INLINE BigUInt operator/(const BigUInt& rhs) const {
-      if (rhs == 1) return *this;
-      BigUInt q = this->mulhi(rhs.reciprocal());
-      if (!(rhs > *this - q * rhs)) q++;
-      return q;
+      return div(*this, rhs).first;
     }
 
     constexpr TLFLOAT_INLINE BigUInt operator%(const BigUInt& rhs) const {
-      BigUInt q = this->mulhi(rhs.reciprocal());
-      BigUInt m = *this - q * rhs;
-      if (!(rhs > m)) m -= rhs;
-      return m;
+      return div(*this, rhs).second;
     }
 
     /** This method returns ((1 << N) / *this) */
@@ -886,6 +884,11 @@ namespace tlfloat {
       BigUInt q = this->mulhi(recip), m = *this - q * rhs;
       if (!(rhs > m)) { q++; m = m - rhs; }
       return xpair<BigUInt, BigUInt>(q, m);
+    }
+
+    /** This method performs division and modulo at a time. */
+    constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> divmod(const BigUInt& rhs) const {
+      return div(*this, rhs);
     }
 
     /** This method finds the quotient and remainder of (*this << ((1
@@ -1183,6 +1186,10 @@ namespace tlfloat {
 
     constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> divmod2(const BigUInt& rhs) const {
       return div(BigUInt<7>(*this) << ((1 << 6)-1), rhs | (1ULL << ((1 << 6)-1)));
+    }
+
+    constexpr TLFLOAT_INLINE xpair<BigUInt, BigUInt> divmod(const BigUInt& rhs) const {
+      return xpair<BigUInt, BigUInt> { *this / rhs, *this % rhs };
     }
   };
 

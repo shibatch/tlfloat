@@ -1,5 +1,6 @@
 @echo off
 set CLANGINSTALLDIR=%VCINSTALLDIR%Tools\Llvm\x64
+set INSTALLDIR=tlfloat_install
 
 if NOT exist winbuild-clang.bat exit /b 255
 
@@ -13,8 +14,6 @@ echo Cannot find "%CLANGINSTALLDIR%\bin\clang.exe"
 echo Edit this batch file to set CLANGINSTALLDIR correctly.
 exit /b 255
 )
-
-set INSTALLDIR=tlfloat_install
 
 if %VSCMD_ARG_HOST_ARCH%==x86 call "%VCINSTALLDIR%Auxiliary\Build\vcvars64.bat"
 
