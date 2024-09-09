@@ -187,6 +187,7 @@ if (BUILD_LIBS)
 
     add_executable(test_cpp11api20 test_cpp11api.cpp)
     target_link_libraries(test_cpp11api20 tlfloat)
+    set_target_properties(test_cpp11api20 PROPERTIES CXX_EXTENSIONS OFF)
     add_test(NAME test_cpp11api20 COMMAND test_cpp11api20)
     set_tests_properties(test_cpp11api20 PROPERTIES COST "1")
   endif()
