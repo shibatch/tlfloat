@@ -2,7 +2,7 @@
 #include <chrono>
 #include <cstdint>
 #include <cstring>
-#include <tlfloat/tlfloatversion.hpp>
+#include <tlfloat/tlfloatconfig.hpp>
 
 using namespace std;
 

@@ -415,6 +415,24 @@ int main(int argc, char **argv) {
   doTest<Float, tan>("Float tan", rf, xf);
   doTest<Half, tan>("Half tan", rh, xh);
 
+  doTest<Octuple, sinpi>("Octuple sinpi", ro, xo);
+  doTest<Quad, sinpi>("Quad sinpi", rq, xq);
+  doTest<Double, sinpi>("Double sinpi", rd, xd);
+  doTest<Float, sinpi>("Float sinpi", rf, xf);
+  doTest<Half, sinpi>("Half sinpi", rh, xh);
+
+  doTest<Octuple, cospi>("Octuple cospi", ro, xo);
+  doTest<Quad, cospi>("Quad cospi", rq, xq);
+  doTest<Double, cospi>("Double cospi", rd, xd);
+  doTest<Float, cospi>("Float cospi", rf, xf);
+  doTest<Half, cospi>("Half cospi", rh, xh);
+
+  doTest<Octuple, tanpi>("Octuple tanpi", ro, xo);
+  doTest<Quad, tanpi>("Quad tanpi", rq, xq);
+  doTest<Double, tanpi>("Double tanpi", rd, xd);
+  doTest<Float, tanpi>("Float tanpi", rf, xf);
+  doTest<Half, tanpi>("Half tanpi", rh, xh);
+
   doTest<Octuple, atan2>("Octuple atan2", ro, xo, yo);
   doTest<Quad, atan2>("Quad atan2", rq, xq, yq);
   doTest<Double, atan2>("Double atan2", rd, xd, yd);
