@@ -1335,22 +1335,37 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
   static inline constexpr Octuple lgamma(const Octuple& x, bool *sign = 0) { return detail::lgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -15, 33, 2>(x, sign); }
 
+  /** This function returns sin(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Half sinpi(const Half& a) { return detail::sinpi<Half, detail::xhalf, 2>(a); }
+  /** This function returns sin(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Float sinpi(const Float& a) { return detail::sinpi<Float, detail::xfloat, 4>(a); }
+  /** This function returns sin(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Double sinpi(const Double& a) { return detail::sinpi<Double, detail::xdouble, 9>(a); }
+  /** This function returns sin(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Quad sinpi(const Quad& a) { return detail::sinpi<Quad, detail::xquad, 14>(a); }
+  /** This function returns sin(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple sinpi(const Octuple& a) { return detail::sinpi<Octuple, detail::xoctuple, 25>(a); }
 
+  /** This function returns cos(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Half cospi(const Half& a) { return detail::cospi<Half, detail::xhalf, 2>(a); }
+  /** This function returns cos(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Float cospi(const Float& a) { return detail::cospi<Float, detail::xfloat, 4>(a); }
+  /** This function returns cos(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Double cospi(const Double& a) { return detail::cospi<Double, detail::xdouble, 9>(a); }
+  /** This function returns cos(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Quad cospi(const Quad& a) { return detail::cospi<Quad, detail::xquad, 14>(a); }
+  /** This function returns cos(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple cospi(const Octuple& a) { return detail::cospi<Octuple, detail::xoctuple, 25>(a); }
 
+  /** This function returns tan(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Half tanpi(const Half& a) { return detail::tanpi<Half, detail::xhalf, 5, 0>(a); }
+  /** This function returns tan(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Float tanpi(const Float& a) { return detail::tanpi<Float, detail::xfloat, 9, 0>(a); }
+  /** This function returns tan(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Double tanpi(const Double& a) { return detail::tanpi<Double, detail::xdouble, 11, 1>(a); }
+  /** This function returns tan(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Quad tanpi(const Quad& a) { return detail::tanpi<Quad, detail::xquad, 16, 2>(a); }
+  /** This function returns tan(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple tanpi(const Octuple& a) { return detail::tanpi<Octuple, detail::xoctuple, 25, 3>(a); }
 }
 #endif // #ifndef __TLMATH_HPP_INCLUDED__
