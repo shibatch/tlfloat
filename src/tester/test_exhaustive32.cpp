@@ -57,10 +57,10 @@ int main(int argc, char **argv) {
 
   #pragma omp parallel for
   for(uint64_t u64=0;u64 < 0x100000000ULL;u64++) {
-    if ((u64 & 0xffffff) == 0xffffff) {
+    if ((u64 & 0xfffff) == 0xfffff) {
       progress++;
       int k = progress;
-      printf(" %d / 4096\n", k);
+      printf("%5d / 4096\r", k);
       fflush(stdout);
     }
     uint32_t u = ((u64 << 16) | (u64 >> 16)) & 0xffffffff;

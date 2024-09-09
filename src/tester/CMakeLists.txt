@@ -47,12 +47,12 @@ if (INSTALL_CONTINUOUS_TESTERS)
 endif()
 
 add_executable(test_hash test_hash.cpp)
-add_test(NAME test_hash COMMAND test_hash 44d3a23db296c9fc051a5a840da665275b14a2c1903c8ca1da7880588bf0c2d2)
+add_test(NAME test_hash COMMAND test_hash 73aabab9b968750a42459cef0ec1e1170160b1762713b9eceffa7f0d6555e11f)
 set_tests_properties(test_hash PROPERTIES COST "2")
 
 add_executable(test_hash_noopt test_hash.cpp)
 target_compile_definitions(test_hash_noopt PRIVATE TLFLOAT_DISABLE_ARCH_OPTIMIZATION=1)
-add_test(NAME test_hash_noopt COMMAND test_hash_noopt 44d3a23db296c9fc051a5a840da665275b14a2c1903c8ca1da7880588bf0c2d2)
+add_test(NAME test_hash_noopt COMMAND test_hash_noopt 73aabab9b968750a42459cef0ec1e1170160b1762713b9eceffa7f0d6555e11f)
 set_tests_properties(test_hash_noopt PROPERTIES COST "2")
 
 if (BUILD_LIBS)

@@ -980,11 +980,11 @@ namespace tlfloat {
 	return f;
       }
 
-      friend constexpr int intlsb(const UnpackedFloat &f) {
+      friend constexpr int32_t intlsb(const UnpackedFloat &f) {
 	if (f.iszero || f.isinf || f.isnan) return 0;
 	int s = nbmant - (f.exp - expoffset() + 1);
-	if (s >= int(sizeof(f.mant)*8) || s <= -int(sizeof(f.mant)*8)) return 0;
-	int m = s >= 0 ? int(f.mant >> s) : int(f.mant << -s);
+	if (s >= int(sizeof(f.mant)*8) || s <= -int(sizeof(uint16_t)*8)) return 0;
+	int m = s >= 0 ? uint16_t(f.mant >> s) : (uint16_t(f.mant) << -s);
 	return f.sign ? -m-1 : m;
       }
 
