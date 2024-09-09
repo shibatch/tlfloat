@@ -4,7 +4,7 @@
 #include <time.h>
 #include <math.h>
 
-#include <tlfloat/detect.h>
+#include <detect.h>
 
 #if defined(TLFLOAT_ENABLE_LIBQUADMATH)
 #include <quadmath.h>
@@ -251,6 +251,21 @@ int main(int argc, char **argv) {
   checkStr(buf0, buf1, "quadmath tanq");
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Og", tlfloat_tano(o0));
   checkStr(buf0, buf1, "quadmath tano");
+
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.6Qg", tlfloat_sinpiq(q0));
+  checkStr("0.376871", buf1, "quadmath sinpiq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.6Og", tlfloat_sinpio(o0));
+  checkStr("0.376871", buf1, "quadmath sinpio");
+
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.6Qg", tlfloat_cospiq(q0));
+  checkStr("0.926266", buf1, "quadmath cospiq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.6Og", tlfloat_cospio(o0));
+  checkStr("0.926266", buf1, "quadmath cospio");
+
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.6Qg", tlfloat_tanpiq(q0));
+  checkStr("0.406871", buf1, "quadmath tanpiq");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.6Og", tlfloat_tanpio(o0));
+  checkStr("0.406871", buf1, "quadmath tanpio");
 
   quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", asinq(q0));
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_asinq(q0));

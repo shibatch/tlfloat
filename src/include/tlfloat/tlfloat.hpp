@@ -980,6 +980,14 @@ namespace tlfloat {
 	return f;
       }
 
+      friend constexpr int intlsb(const UnpackedFloat &f) {
+	if (f.iszero || f.isinf || f.isnan) return 0;
+	int s = nbmant - (f.exp - expoffset() + 1);
+	if (s >= int(sizeof(f.mant)*8) || s <= -int(sizeof(f.mant)*8)) return 0;
+	int m = s >= 0 ? int(f.mant >> s) : int(f.mant << -s);
+	return f.sign ? -m-1 : m;
+      }
+
       //
 
       constexpr TLFLOAT_INLINE UnpackedFloat operator+() const { return UnpackedFloat(*this); }

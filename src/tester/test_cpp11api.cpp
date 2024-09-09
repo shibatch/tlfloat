@@ -320,6 +320,11 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_sino(o1)", tlfloat_sino(o1), sin(d1), T);
   check("tlfloat_coso(o1)", tlfloat_coso(o1), cos(d1), T);
   check("tlfloat_tano(o1)", tlfloat_tano(o1), tan(d1), T);
+  if (trunc(d1*2) != d1*2) {
+    check("tlfloat_sinpio(o1)", tlfloat_sinpio(o1), sin(M_PI*d1), T);
+    check("tlfloat_cospio(o1)", tlfloat_cospio(o1), cos(M_PI*d1), T);
+    check("tlfloat_tanpio(o1)", tlfloat_tanpio(o1), tan(M_PI*d1), T);
+  }
   check("tlfloat_asino(o1)", tlfloat_asino(o1), asin(d1), T);
   check("tlfloat_acoso(o1)", tlfloat_acoso(o1), acos(d1), T);
   check("tlfloat_atano(o1)", tlfloat_atano(o1), atan(d1), T);
@@ -378,6 +383,11 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_sinq(q1)", tlfloat_sinq(q1), sin(d1), T);
   check("tlfloat_cosq(q1)", tlfloat_cosq(q1), cos(d1), T);
   check("tlfloat_tanq(q1)", tlfloat_tanq(q1), tan(d1), T);
+  if (trunc(d1*2) != d1*2) {
+    check("tlfloat_sinpiq(q1)", tlfloat_sinpiq(q1), sin(M_PI*d1), T);
+    check("tlfloat_cospiq(q1)", tlfloat_cospiq(q1), cos(M_PI*d1), T);
+    check("tlfloat_tanpiq(q1)", tlfloat_tanpiq(q1), tan(M_PI*d1), T);
+  }
   check("tlfloat_asinq(q1)", tlfloat_asinq(q1), asin(d1), T);
   check("tlfloat_acosq(q1)", tlfloat_acosq(q1), acos(d1), T);
   check("tlfloat_atanq(q1)", tlfloat_atanq(q1), atan(d1), T);

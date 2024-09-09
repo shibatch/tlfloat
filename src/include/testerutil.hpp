@@ -8,7 +8,7 @@
 
 #include "suppress.hpp"
 
-#include <tlfloat/detect.h>
+#include <detect.h>
 
 using namespace std;
 using namespace tlfloat;

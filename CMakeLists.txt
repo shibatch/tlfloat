@@ -19,8 +19,8 @@ set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is I
 #
 
 set(TLFLOAT_VERSION_MAJOR 1)
-set(TLFLOAT_VERSION_MINOR 6)
-set(TLFLOAT_VERSION_PATCHLEVEL 2)
+set(TLFLOAT_VERSION_MINOR 7)
+set(TLFLOAT_VERSION_PATCHLEVEL 0)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCHLEVEL})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
@@ -159,10 +159,22 @@ CHECK_CXX_SOURCE_COMPILES("
 #endif
 int main(int argc, char **argv) {}" BUILDING_WITH_GLIBC)
 
+if (LIB_MPFR)
+set(CMAKE_REQUIRED_LIBRARIES ${LIB_MPFR})
 CHECK_CXX_SOURCE_COMPILES("
 #define MPFR_WANT_FLOAT128
 #include <mpfr.h>
 int main() {}" TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+
+CHECK_CXX_SOURCE_COMPILES("
+#include <mpfr.h>
+int main() {
+mpfr_t mx;
+mpfr_sinpi(mx, mx, GMP_RNDN);
+}"
+TLFLOAT_ENABLE_MPFR_SINPI)
+set(CMAKE_REQUIRED_LIBRARIES)
+endif()
 
 if (TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
   set(CMAKE_REQUIRED_LIBRARIES quadmath)
@@ -288,11 +300,11 @@ endif()
 
 #
 
-configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/tlfloatversion.hpp.in"
-  "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatversion.hpp" @ONLY)
+configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/tlfloatconfig.hpp.in"
+  "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatconfig.hpp" @ONLY)
 
-configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/detect.h.in"
-  "${PROJECT_BINARY_DIR}/include/tlfloat/detect.h" @ONLY)
+configure_file("${PROJECT_SOURCE_DIR}/src/include/detect.h.in"
+  "${PROJECT_BINARY_DIR}/include/detect.h" @ONLY)
 
 #
 

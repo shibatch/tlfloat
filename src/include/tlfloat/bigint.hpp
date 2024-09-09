@@ -7,7 +7,7 @@
 #include <cstring>
 #include <cassert>
 
-#include <tlfloat/tlfloatversion.hpp>
+#include <tlfloat/tlfloatconfig.hpp>
 
 #if defined(TLFLOAT_DOXYGEN)
 /** All architecture-specific optimizations (e.g., use of intrinsic functions) are disabled if this macro is defined */

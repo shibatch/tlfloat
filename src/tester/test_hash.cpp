@@ -343,6 +343,24 @@ int main(int argc, char **argv) {
   computeHash<Float, tan>("Float tan", rf, xf, fp, mode);
   computeHash<Half, tan>("Half tan", rh, xh, fp, mode);
 
+  computeHash<Octuple, sinpi>("Octuple sinpi", ro, xo, fp, mode);
+  computeHash<Quad, sinpi>("Quad sinpi", rq, xq, fp, mode);
+  computeHash<Double, sinpi>("Double sinpi", rd, xd, fp, mode);
+  computeHash<Float, sinpi>("Float sinpi", rf, xf, fp, mode);
+  computeHash<Half, sinpi>("Half sinpi", rh, xh, fp, mode);
+
+  computeHash<Octuple, cospi>("Octuple cospi", ro, xo, fp, mode);
+  computeHash<Quad, cospi>("Quad cospi", rq, xq, fp, mode);
+  computeHash<Double, cospi>("Double cospi", rd, xd, fp, mode);
+  computeHash<Float, cospi>("Float cospi", rf, xf, fp, mode);
+  computeHash<Half, cospi>("Half cospi", rh, xh, fp, mode);
+
+  computeHash<Octuple, tanpi>("Octuple tanpi", ro, xo, fp, mode);
+  computeHash<Quad, tanpi>("Quad tanpi", rq, xq, fp, mode);
+  computeHash<Double, tanpi>("Double tanpi", rd, xd, fp, mode);
+  computeHash<Float, tanpi>("Float tanpi", rf, xf, fp, mode);
+  computeHash<Half, tanpi>("Half tanpi", rh, xh, fp, mode);
+
   computeHash<Octuple, atan2>("Octuple atan2", ro, xo, yo, fp, mode);
   computeHash<Quad, atan2>("Quad atan2", rq, xq, yq, fp, mode);
   computeHash<Double, atan2>("Double atan2", rd, xd, yd, fp, mode);

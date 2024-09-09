@@ -26,4 +26,19 @@ extern "C" {
   double tlfloat_tan(const double x) { return (double)tan(Double(x)); }
   tlfloat_quad_ tlfloat_tanq(const tlfloat_quad_ x) { return (tlfloat_quad_)tan(Quad(x)); }
   tlfloat_octuple_ tlfloat_tano(const tlfloat_octuple_ x) { return (tlfloat_octuple_)tan(Octuple(x)); }
+
+  float tlfloat_sinpif(const float x) { return (float)sinpi(Float(x)); }
+  double tlfloat_sinpi(const double x) { return (double)sinpi(Double(x)); }
+  tlfloat_quad_ tlfloat_sinpiq(const tlfloat_quad_ x) { return (tlfloat_quad_)sinpi(Quad(x)); }
+  tlfloat_octuple_ tlfloat_sinpio(const tlfloat_octuple_ x) { return (tlfloat_octuple_)sinpi(Octuple(x)); }
+
+  float tlfloat_cospif(const float x) { return (float)cospi(Float(x)); }
+  double tlfloat_cospi(const double x) { return (double)cospi(Double(x)); }
+  tlfloat_quad_ tlfloat_cospiq(const tlfloat_quad_ x) { return (tlfloat_quad_)cospi(Quad(x)); }
+  tlfloat_octuple_ tlfloat_cospio(const tlfloat_octuple_ x) { return (tlfloat_octuple_)cospi(Octuple(x)); }
+
+  float tlfloat_tanpif(const float x) { return (float)tanpi(Float(x)); }
+  double tlfloat_tanpi(const double x) { return (double)tanpi(Double(x)); }
+  tlfloat_quad_ tlfloat_tanpiq(const tlfloat_quad_ x) { return (tlfloat_quad_)tanpi(Quad(x)); }
+  tlfloat_octuple_ tlfloat_tanpio(const tlfloat_octuple_ x) { return (tlfloat_octuple_)tanpi(Octuple(x)); }
 }

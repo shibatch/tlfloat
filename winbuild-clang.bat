@@ -1,5 +1,4 @@
 @echo off
-set CLANGINSTALLDIR=%VCINSTALLDIR%Tools\Llvm\x64
 set INSTALLDIR=tlfloat_install
 
 if NOT exist winbuild-clang.bat exit /b 255
@@ -9,9 +8,11 @@ echo Run this batch file from Developer Command Prompt for VS 20XX
 exit /b 255
 )
 
-if NOT exist "%CLANGINSTALLDIR%\bin\clang.exe" (
-echo Cannot find "%CLANGINSTALLDIR%\bin\clang.exe"
-echo Edit this batch file to set CLANGINSTALLDIR correctly.
+if "%CLANGINSTALLDIR%"=="" set CLANGINSTALLDIR=%VCINSTALLDIR%Tools\Llvm\x64
+
+if NOT exist "%CLANGINSTALLDIR%\bin\clang-cl.exe" (
+echo Cannot find "%CLANGINSTALLDIR%\bin\clang-cl.exe"
+echo Please set CLANGINSTALLDIR correctly.
 exit /b 255
 )
 

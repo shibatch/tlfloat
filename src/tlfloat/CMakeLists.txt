@@ -9,7 +9,7 @@ if (BUILD_LIBS)
   target_link_libraries(tlfloat tlfloat_inline)
 
   set(INCLUDEDIR "${PROJECT_SOURCE_DIR}/src/include")
-  set(VERFILE "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatversion.hpp")
+  set(VERFILE "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatconfig.hpp")
   set_target_properties(tlfloat PROPERTIES
     VERSION ${TLFLOAT_VERSION}
     SOVERSION ${TLFLOAT_SOVERSION}
@@ -25,7 +25,7 @@ if (BUILD_LIBS)
 else(BUILD_LIBS)
 
   set(INCLUDEDIR "${PROJECT_SOURCE_DIR}/src/include")
-  set(VERFILE "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatversion.hpp")
+  set(VERFILE "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatconfig.hpp")
   install(
     FILES "${INCLUDEDIR}/tlfloat/bigint.hpp" "${INCLUDEDIR}/tlfloat/rpitab.hpp" "${INCLUDEDIR}/tlfloat/tlfloat.hpp" "${INCLUDEDIR}/tlfloat/tlmath.hpp" "${INCLUDEDIR}/tlfloat/tlmathcoef.hpp" "${INCLUDEDIR}/tlfloat/tlfloat.h" "${VERFILE}"
     DESTINATION "${CMAKE_INSTALL_PREFIX}/include/tlfloat"

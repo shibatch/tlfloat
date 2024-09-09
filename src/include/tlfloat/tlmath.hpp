@@ -256,7 +256,7 @@ namespace tlfloat {
     //
 
     template<typename Unpacked_t, unsigned N, unsigned M>
-    static constexpr Unpacked_t tan_(const Unpacked_t& a) {
+    static constexpr xpair<Unpacked_t, Unpacked_t> tan_(const Unpacked_t& a) {
       const xpair<Unpacked_t, int> p = ph<Unpacked_t>(a, 1);
 
       Unpacked_t x = ldexp_(p.first, -1-int(M)), y;
@@ -279,7 +279,7 @@ namespace tlfloat {
 
       if (p.second & 1) { d = x; x = y; y = -d; }
 
-      return x / y;
+      return xpair<Unpacked_t, Unpacked_t> { x, y };
     }
 
     template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
@@ -287,7 +287,65 @@ namespace tlfloat {
       if (isnan(a)) return a;
       if (isinf(a)) return tlfloat_t::nan();
       auto y = tan_<Unpacked_t, N, M>(a.getUnpacked().cast((const Unpacked_t *)nullptr));
-      return tlfloat_t(y.cast((const decltype(a.getUnpacked()) *)nullptr));
+      return tlfloat_t((y.first / y.second).cast((const decltype(a.getUnpacked()) *)nullptr));
+    }
+
+    //
+
+    template<typename Unpacked_t, unsigned N>
+    static constexpr Unpacked_t sinpi_(const Unpacked_t& a) {
+      constexpr xarray<Unpacked_t, N+1> sinCoef = genSinCoef<Unpacked_t, N>();
+      const Unpacked_t p = const_M_PI_<Unpacked_t>() * a;
+      Unpacked_t d = sinCoef.e[N];
+      for(int i=N-1;i>=0;i--) d = Unpacked_t::fma(d, -p * p, sinCoef.e[i]);
+      return d * -p;
+    }
+
+    template<typename Unpacked_t, unsigned N>
+    static constexpr Unpacked_t cospi_(const Unpacked_t& a) {
+      constexpr xarray<Unpacked_t, N+2> cosCoef = genCosCoef<Unpacked_t, N>();
+      const Unpacked_t p = const_M_PI_<Unpacked_t>() * a;
+      Unpacked_t d = cosCoef.e[N+1];
+      for(int i=N-0;i>=0;i--) d = Unpacked_t::fma(d, -p * p, cosCoef.e[i]);
+      return d;
+    }
+
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N>
+    static constexpr tlfloat_t sinpi(const tlfloat_t& a) {
+      if (isnan(a) || iszero(a)) return a;
+      if (isinf(a)) return tlfloat_t::nan();
+      auto x = ldexp_(a.getUnpacked().cast((const Unpacked_t *)nullptr), 1), y = ldexp_(x - round(x), -1);
+      int lx = intlsb(ldexp_(x, 1));
+      if (((lx >= 0 && (lx & 3) == 0) || (lx < 0 && (lx & 3) == 3)) && isint(x)) return Unpacked_t::zero(x.sign);
+      Unpacked_t z = ((lx+3)&2) ? sinpi_<Unpacked_t, N>(y) : cospi_<Unpacked_t, N>(y);
+      if ((lx+7)&4) z.sign = !z.sign;
+      return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
+    }
+
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N>
+    static constexpr tlfloat_t cospi(const tlfloat_t& a) {
+      if (isnan(a)) return a;
+      if (isinf(a)) return tlfloat_t::nan();
+      auto x = ldexp_(a.getUnpacked().cast((const Unpacked_t *)nullptr), 1), y = ldexp_(x - round(x), -1);
+      int lx = intlsb(ldexp_(x, 1));
+      if (!((lx+3)&2) && y.iszero) return Unpacked_t::zero(false);
+      Unpacked_t z = ((lx+3)&2) ? cospi_<Unpacked_t, N>(y) : sinpi_<Unpacked_t, N>(y);
+      if ((lx+1)&4) z.sign = !z.sign;
+      return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
+    }
+
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
+    static constexpr tlfloat_t tanpi(const tlfloat_t& a) {
+      if (isnan(a) || iszero(a)) return a;
+      if (isinf(a)) return tlfloat_t::nan();
+      auto x = ldexp_(a.getUnpacked().cast((const Unpacked_t *)nullptr), 1), y = ldexp_(x - round(x), -1);
+      int lx = intlsb(ldexp_(x, 1));
+      if (((lx >= 0 && (lx & 3) == 0) || (lx < 0 && (lx & 3) == 3)) && isint(x)) return Unpacked_t::zero(lx & 4);
+      auto p = tan_<Unpacked_t, N, M>(const_M_PI_<Unpacked_t>() * y);
+      auto z = ((lx+1)&2) ? p.second / p.first : p.first / p.second;
+      if (z.isinf) z.sign = !(lx & 4);
+      if ((lx+1)&2) z.sign = !z.sign;
+      return tlfloat_t(z.cast((const decltype(a.getUnpacked()) *)nullptr));
     }
 
     //
@@ -1276,5 +1334,23 @@ namespace tlfloat {
   static inline constexpr Quad lgamma(const Quad& x, bool *sign = 0) { return detail::lgamma<Quad, detail::xoctuple, 20, 35, 15, 23, 0, 0, 20, 1>(x, sign); }
   /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
   static inline constexpr Octuple lgamma(const Octuple& x, bool *sign = 0) { return detail::lgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -15, 33, 2>(x, sign); }
+
+  static inline constexpr Half sinpi(const Half& a) { return detail::sinpi<Half, detail::xhalf, 2>(a); }
+  static inline constexpr Float sinpi(const Float& a) { return detail::sinpi<Float, detail::xfloat, 4>(a); }
+  static inline constexpr Double sinpi(const Double& a) { return detail::sinpi<Double, detail::xdouble, 9>(a); }
+  static inline constexpr Quad sinpi(const Quad& a) { return detail::sinpi<Quad, detail::xquad, 14>(a); }
+  static inline constexpr Octuple sinpi(const Octuple& a) { return detail::sinpi<Octuple, detail::xoctuple, 25>(a); }
+
+  static inline constexpr Half cospi(const Half& a) { return detail::cospi<Half, detail::xhalf, 2>(a); }
+  static inline constexpr Float cospi(const Float& a) { return detail::cospi<Float, detail::xfloat, 4>(a); }
+  static inline constexpr Double cospi(const Double& a) { return detail::cospi<Double, detail::xdouble, 9>(a); }
+  static inline constexpr Quad cospi(const Quad& a) { return detail::cospi<Quad, detail::xquad, 14>(a); }
+  static inline constexpr Octuple cospi(const Octuple& a) { return detail::cospi<Octuple, detail::xoctuple, 25>(a); }
+
+  static inline constexpr Half tanpi(const Half& a) { return detail::tanpi<Half, detail::xhalf, 5, 0>(a); }
+  static inline constexpr Float tanpi(const Float& a) { return detail::tanpi<Float, detail::xfloat, 9, 0>(a); }
+  static inline constexpr Double tanpi(const Double& a) { return detail::tanpi<Double, detail::xdouble, 11, 1>(a); }
+  static inline constexpr Quad tanpi(const Quad& a) { return detail::tanpi<Quad, detail::xquad, 16, 2>(a); }
+  static inline constexpr Octuple tanpi(const Octuple& a) { return detail::tanpi<Octuple, detail::xoctuple, 25, 3>(a); }
 }
 #endif // #ifndef __TLMATH_HPP_INCLUDED__

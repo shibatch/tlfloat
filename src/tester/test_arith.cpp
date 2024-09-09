@@ -8,7 +8,7 @@
 #include <cfloat>
 #include <climits>
 
-#include <tlfloat/detect.h>
+#include <detect.h>
 #include <suppress.hpp>
 
 #include <tlfloat/tlfloat.hpp>

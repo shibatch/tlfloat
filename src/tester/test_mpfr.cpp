@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <cfloat>
 
-#include <tlfloat/detect.h>
+#include <detect.h>
 
 #if defined(TLFLOAT_ENABLE_LIBQUADMATH)
 #include <quadmath.h>
@@ -222,6 +222,65 @@ int main(int argc, char **argv) {
 	    exit(-1);
 	  }
 	}
+
+#ifdef TLFLOAT_ENABLE_MPFR_SINPI
+	{
+	  float r = (float)sinpi(Float(x));
+	  ufloat xfr = Float(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_sinpi(mx, mx, GMP_RNDN);
+	  float c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
+	  if (ulp > 0.55) {
+	    printf("\nfloat sinpi\n");
+	    printf("ulp = %g\n", ulp);
+	    printf("x = %.8g\n", x);
+	    printf("t = %.8g\n", r);
+	    printf("c = %.8g\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  float r = (float)cospi(Float(x));
+	  ufloat xfr = Float(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_cospi(mx, mx, GMP_RNDN);
+	  float c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
+	  if (ulp > 0.55) {
+	    printf("\nfloat cospi\n");
+	    printf("ulp = %g\n", ulp);
+	    printf("x = %.8g\n", x);
+	    printf("t = %.8g\n", r);
+	    printf("c = %.8g\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  float r = (float)tanpi(Float(x));
+	  ufloat xfr = Float(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_tanpi(mx, mx, GMP_RNDN);
+	  float c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
+	  if (ulp > 0.56) {
+	    printf("\nfloat tanpi\n");
+	    printf("ulp = %g\n", ulp);
+	    printf("x = %.8g\n", x);
+	    printf("t = %.8g\n", r);
+	    printf("c = %.8g\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+#endif
 #endif
 
 #if defined(TEST_FLOAT) && defined(TEST_INVTRIG)
@@ -1006,6 +1065,65 @@ int main(int argc, char **argv) {
 	    exit(-1);
 	  }
 	}
+
+#ifdef TLFLOAT_ENABLE_MPFR_SINPI
+	{
+	  double r = (double)sinpi(Double(x));
+	  udouble xfr = Double(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_sinpi(mx, mx, GMP_RNDN);
+	  double c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
+	  if (ulp > 0.506) {
+	    printf("\ndouble sinpi\n");
+	    printf("ulp = %g\n", ulp);
+	    printf("x = %.20lg\n", x);
+	    printf("t = %.20lg\n", r);
+	    printf("c = %.20lg\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  double r = (double)cospi(Double(x));
+	  udouble xfr = Double(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_cospi(mx, mx, GMP_RNDN);
+	  double c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
+	  if (ulp > 0.506) {
+	    printf("\ndouble cospi\n");
+	    printf("ulp = %lg\n", ulp);
+	    printf("x = %.20lg\n", x);
+	    printf("t = %.20lg\n", r);
+	    printf("c = %.20lg\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  double r = (double)tanpi(Double(x));
+	  udouble xfr = Double(r).getUnpacked();
+
+	  mpfr_set_d(mx, x, GMP_RNDN);
+	  mpfr_tanpi(mx, mx, GMP_RNDN);
+	  double c = mpfr_get_d(mx, GMP_RNDN);
+	  double ulp = countULP(xfr, mx, udouble::flt_true_min(), udouble::flt_max());
+	  if (ulp > 0.51) {
+	    printf("\ndouble tanpi\n");
+	    printf("ulp = %lg\n", ulp);
+	    printf("x = %.20lg\n", x);
+	    printf("t = %.20lg\n", r);
+	    printf("c = %.20lg\n\n", c);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+#endif
 #endif
 
 #if defined(TEST_DOUBLE) && defined(TEST_INVTRIG)
@@ -1967,6 +2085,95 @@ int main(int argc, char **argv) {
 	    exit(-1);
 	  }
 	}
+
+#ifdef TLFLOAT_ENABLE_MPFR_SINPI
+	{
+	  quad_ r = (quad_)sinpi(Quad(x));
+	  uquad xfr = Quad(r).getUnpacked();
+
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+#endif
+	  mpfr_sinpi(mx, mx, GMP_RNDN);
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
+	  if (ulp > 0.501) {
+	    printf("\nquad sinpi\n");
+	    printf("ulp = %g\n", ulp);
+	    cout << "x = " << x << endl;
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
+	    cout << "r = " << r << endl;
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  quad_ r = (quad_)cospi(Quad(x));
+	  uquad xfr = Quad(r).getUnpacked();
+
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+#endif
+	  mpfr_cospi(mx, mx, GMP_RNDN);
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
+	  if (ulp > 0.501) {
+	    printf("\nquad cospi\n");
+	    printf("ulp = %g\n", ulp);
+	    cout << "x = " << x << endl;
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
+	    cout << "r = " << r << endl;
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  quad_ r = (quad_)tanpi(Quad(x));
+	  uquad xfr = Quad(r).getUnpacked();
+
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+	  mpfr_set_float128(mx, x, GMP_RNDN);
+#else
+	  mpfr_set_unpacked(mx, Quad(x).getUnpacked(), GMP_RNDN);
+#endif
+	  mpfr_tanpi(mx, mx, GMP_RNDN);
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+	  quad_ c = mpfr_get_float128(mx, GMP_RNDN);
+#endif
+	  double ulp = countULP(xfr, mx, uquad::flt_true_min(), uquad::flt_max());
+	  if (ulp > 0.501) {
+	    printf("\nquad tanpi\n");
+	    printf("ulp = %g\n", ulp);
+	    cout << "x = " << x << endl;
+#if defined(ENABLE_QUAD) && defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
+	    cout << "c = " << c << endl;
+#else
+	    cout << "c = " << to_string(mx, 72) << endl;
+#endif
+	    cout << "r = " << r << endl;
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+#endif
 #endif
 
 #if defined(TEST_QUAD) && defined(TEST_INVTRIG)
@@ -3168,6 +3375,62 @@ int main(int argc, char **argv) {
 	    exit(-1);
 	  }
 	}
+
+#ifdef TLFLOAT_ENABLE_MPFR_SINPI
+	{
+	  Octuple r = sinpi(Octuple(x));
+	  uoctuple xcr = r.getUnpacked();
+
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_sinpi(mx, mx, GMP_RNDN);
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
+	  if (ulp > 0.5002) {
+	    printf("\noctuple sinpi\n");
+	    cout << "x = " << x << endl;
+	    cout << "c = " << to_string(mx, 72) << endl;
+	    cout << "r = " << to_string(r , 72) << " : " << to_string_d(Octuple(r).getUnpacked()) << endl;
+	    printf("ulp = %g\n", ulp);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  Octuple r = cospi(Octuple(x));
+	  uoctuple xcr = r.getUnpacked();
+
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_cospi(mx, mx, GMP_RNDN);
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
+	  if (ulp > 0.5002) {
+	    printf("\noctuple cospi\n");
+	    cout << "x = " << x << endl;
+	    cout << "c = " << to_string(mx, 72) << endl;
+	    cout << "r = " << to_string(r , 72) << " : " << to_string_d(Octuple(r).getUnpacked()) << endl;
+	    printf("ulp = %g\n", ulp);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+
+	{
+	  Octuple r = tanpi(Octuple(x));
+	  uoctuple xcr = r.getUnpacked();
+
+	  mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	  mpfr_tanpi(mx, mx, GMP_RNDN);
+	  double ulp = countULP(xcr, mx, uoctuple::flt_true_min(), uoctuple::flt_max());
+	  if (ulp > 0.5002) {
+	    printf("\noctuple tanpi\n");
+	    cout << "x = " << x << endl;
+	    cout << "c = " << to_string(mx, 72) << endl;
+	    cout << "r = " << to_string(r , 72) << " : " << to_string_d(Octuple(r).getUnpacked()) << endl;
+	    printf("ulp = %g\n", ulp);
+	    cout << "NG" << endl;
+	    exit(-1);
+	  }
+	}
+#endif
 #endif
 
 #if defined(TEST_OCTUPLE) && defined(TEST_INVTRIG)

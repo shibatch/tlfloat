@@ -2,7 +2,7 @@
 #include <atomic>
 #include <cstdint>
 
-#include <tlfloat/detect.h>
+#include <detect.h>
 
 #if defined(TLFLOAT_ENABLE_LIBQUADMATH)
 #include <quadmath.h>
@@ -41,6 +41,7 @@ int main(int argc, char **argv) {
 #endif
   double maxulp_sqrt_ = 0, maxulp_sqrt = 0.5;
   double maxulp_sin = 0.5, maxulp_cos = 0.5, maxulp_tan = 0.5;
+  double maxulp_sinpi = 0.5, maxulp_cospi = 0.5, maxulp_tanpi = 0.5;
   double maxulp_asin = 0.5, maxulp_acos = 0.5, maxulp_atan = 0.5;
   double maxulp_exp = 0.5, maxulp_expm1 = 0.5;
   double maxulp_exp2 = 0.5, maxulp_exp10 = 0.5;
@@ -185,6 +186,68 @@ int main(int argc, char **argv) {
 	}
 	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
       }
+
+#ifdef TLFLOAT_ENABLE_MPFR_SINPI
+      {
+	float r = (float)sinpi(Float(x));
+	ufloat xfr = Float(r).getUnpacked();
+
+	mpfr_set_d(mx, x, GMP_RNDN);
+	mpfr_sinpi(mx, mx, GMP_RNDN);
+	float c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
+	if (ulp > maxulp_sinpi) {
+	  maxulp_sinpi = ulp;
+	  printf("\nsinpi\n");
+	  printf("ulp = %g\n", ulp);
+	  printf("x = %.8g\n", x);
+	  printf("t = %.8g\n", r);
+	  printf("c = %.8g\n\n", c);
+	  fflush(stdout);
+	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
+      }
+
+      {
+	float r = (float)cospi(Float(x));
+	ufloat xfr = Float(r).getUnpacked();
+
+	mpfr_set_d(mx, x, GMP_RNDN);
+	mpfr_cospi(mx, mx, GMP_RNDN);
+	float c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
+	if (ulp > maxulp_cospi) {
+	  maxulp_cospi = ulp;
+	  printf("\ncospi\n");
+	  printf("ulp = %g\n", ulp);
+	  printf("x = %.8g\n", x);
+	  printf("t = %.8g\n", r);
+	  printf("c = %.8g\n\n", c);
+	  fflush(stdout);
+	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
+      }
+
+      {
+	float r = (float)tanpi(Float(x));
+	ufloat xfr = Float(r).getUnpacked();
+
+	mpfr_set_d(mx, x, GMP_RNDN);
+	mpfr_tanpi(mx, mx, GMP_RNDN);
+	float c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xfr, mx, ufloat::flt_true_min(), ufloat::flt_max());
+	if (ulp > maxulp_tanpi) {
+	  maxulp_tanpi = ulp;
+	  printf("\ntanpi\n");
+	  printf("ulp = %g\n", ulp);
+	  printf("x = %.8g\n", x);
+	  printf("t = %.8g\n", r);
+	  printf("c = %.8g\n\n", c);
+	  fflush(stdout);
+	}
+	if (ulp >= 1.0) { printf("NG\n"); exit(-1); }
+      }
+#endif
 #endif
 
 #ifdef TEST_INVTRIG

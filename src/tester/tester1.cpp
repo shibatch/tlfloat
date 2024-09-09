@@ -3,7 +3,7 @@
 #include <sstream>
 #include <cstdio>
 
-#include <tlfloat/detect.h>
+#include <detect.h>
 
 #if defined(TLFLOAT_ENABLE_LIBQUADMATH)
 #include <quadmath.h>
@@ -72,7 +72,7 @@ void doTest(const char *mes, T a1, mpfr_t &mr, mpfr_t &ma1) {
 
   mpfr_set_unpacked(ma1, a1.getUnpacked(), GMP_RNDN);
   mpfrFunc(mr, ma1, GMP_RNDN);
-  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::flt_true_min(), Unpacked_t::flt_max(), true);
+  double ulp = countULP(r.getUnpacked(), mr, Unpacked_t::flt_true_min(), Unpacked_t::flt_max(), fabs(double(a1)) < 2);
 
   if (ulp <= 1.0) return;
 
@@ -247,6 +247,26 @@ int main(int argc, char **argv) {
     doTest<Double, tan, mpfr_tan>("Double tan", dvalues[index0], mr, ma1);
     doTest<Quad, tan, mpfr_tan>("Quad tan", qvalues[index0], mr, ma1);
     doTest<Octuple, tan, mpfr_tan>("Octuple tan", ovalues[index0], mr, ma1);
+
+#ifdef TLFLOAT_ENABLE_MPFR_SINPI
+    doTest<Half, sinpi, mpfr_sinpi>("Half sinpi", hvalues[index0], mr, ma1);
+    doTest<Float, sinpi, mpfr_sinpi>("Float sinpi", fvalues[index0], mr, ma1);
+    doTest<Double, sinpi, mpfr_sinpi>("Double sinpi", dvalues[index0], mr, ma1);
+    doTest<Quad, sinpi, mpfr_sinpi>("Quad sinpi", qvalues[index0], mr, ma1);
+    doTest<Octuple, sinpi, mpfr_sinpi>("Octuple sinpi", ovalues[index0], mr, ma1);
+
+    doTest<Half, cospi, mpfr_cospi>("Half cospi", hvalues[index0], mr, ma1);
+    doTest<Float, cospi, mpfr_cospi>("Float cospi", fvalues[index0], mr, ma1);
+    doTest<Double, cospi, mpfr_cospi>("Double cospi", dvalues[index0], mr, ma1);
+    doTest<Quad, cospi, mpfr_cospi>("Quad cospi", qvalues[index0], mr, ma1);
+    doTest<Octuple, cospi, mpfr_cospi>("Octuple cospi", ovalues[index0], mr, ma1);
+
+    doTest<Half, tanpi, mpfr_tanpi>("Half tanpi", hvalues[index0], mr, ma1);
+    doTest<Float, tanpi, mpfr_tanpi>("Float tanpi", fvalues[index0], mr, ma1);
+    doTest<Double, tanpi, mpfr_tanpi>("Double tanpi", dvalues[index0], mr, ma1);
+    doTest<Quad, tanpi, mpfr_tanpi>("Quad tanpi", qvalues[index0], mr, ma1);
+    doTest<Octuple, tanpi, mpfr_tanpi>("Octuple tanpi", ovalues[index0], mr, ma1);
+#endif
 
     doTest<Half, asin, mpfr_asin>("Half asin", hvalues[index0], mr, ma1);
     doTest<Float, asin, mpfr_asin>("Float asin", fvalues[index0], mr, ma1);

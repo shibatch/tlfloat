@@ -3,7 +3,7 @@
 #include <signal.h>
 #include <arm_fp16.h>
 
-#include <tlfloat/detect.h>
+#include <detect.h>
 
 #if defined(TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 #define MPFR_WANT_FLOAT128
@@ -143,6 +143,65 @@ int main(int argc, char **argv) {
 	  exit(-1);
 	}
       }
+
+#ifdef TLFLOAT_ENABLE_MPFR_SINPI
+      {
+	Half r = sinpi(x);
+	uhalf xcr = r.getUnpacked();
+
+	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	mpfr_sinpi(mx, mx, GMP_RNDN);
+	double c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
+	if (ulp > 0.7) {
+	  printf("\nhalf sinpi\n");
+	  cout << "x = " << (__fp16)x << endl;
+	  cout << "c = " << c << endl;
+	  cout << "r = " << (__fp16)r << " : " << to_string_d(Half(r).getUnpacked()) << endl;
+	  printf("ulp = %g\n", ulp);
+	  cout << "NG" << endl;
+	  exit(-1);
+	}
+      }
+
+      {
+	Half r = cospi(x);
+	uhalf xcr = r.getUnpacked();
+
+	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	mpfr_cospi(mx, mx, GMP_RNDN);
+	double c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
+	if (ulp > 0.7) {
+	  printf("\nhalf cospi\n");
+	  cout << "x = " << (__fp16)x << endl;
+	  cout << "c = " << c << endl;
+	  cout << "r = " << (__fp16)r << " : " << to_string_d(Half(r).getUnpacked()) << endl;
+	  printf("ulp = %g\n", ulp);
+	  cout << "NG" << endl;
+	  exit(-1);
+	}
+      }
+
+      {
+	Half r = tanpi(x);
+	uhalf xcr = r.getUnpacked();
+
+	mpfr_set_unpacked(mx, x.getUnpacked(), GMP_RNDN);
+	mpfr_tanpi(mx, mx, GMP_RNDN);
+	double c = mpfr_get_d(mx, GMP_RNDN);
+	double ulp = countULP(xcr, mx, uhalf::flt_true_min(), uhalf::flt_max());
+	if (ulp > 0.7) {
+	  printf("\nhalf tanpi\n");
+	  cout << "x = " << (__fp16)x << endl;
+	  cout << "c = " << c << endl;
+	  cout << "r = " << (__fp16)r << " : " << to_string_d(Half(r).getUnpacked()) << endl;
+	  printf("ulp = %g\n", ulp);
+	  cout << "NG" << endl;
+	  exit(-1);
+	}
+      }
+#endif
 #endif
 
 #ifdef TEST_INVTRIG
