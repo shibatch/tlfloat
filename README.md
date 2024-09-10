@@ -57,8 +57,10 @@ integer class templates are also included in this library.
 * Implements most of the math.h functions
   * Arithmetic operations, comparison, cast operations
   * fma, sqrt, hypot, cbrt, fmod, remainder, remquo
-  * sin, cos, tan, asin, acos, atan, atan2
-  * log, log2, log10, log1p, exp, exp2, exp10, expm1, pow
+  * sin, cos, tan, sinpi, cospi, tanpi
+  * asin, acos, atan, atan2
+  * log, log2, log10, log1p
+  * exp, exp2, exp10, expm1, pow
   * sinh, cosh, tanh, asinh, acosh, atanh
   * erf, erfc, tgamma
   * trunc, floor, ceil, round, rint

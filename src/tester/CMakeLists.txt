@@ -162,6 +162,7 @@ endif()
 if (BUILD_LIBS)
   add_library(test_octuple_obj OBJECT test_octuple.cpp)
   target_compile_definitions(test_octuple_obj PRIVATE TLFLOAT_NO_LIBSTDCXX=1)
+  target_compile_options(test_octuple_obj PRIVATE ${NOEXCEPT_CXX_FLAGS})
   set_target_properties(test_octuple_obj PROPERTIES LINKER_LANGUAGE C)
 
   add_executable(test_octuple test_octuple_dummy.c)
@@ -178,7 +179,9 @@ if (BUILD_LIBS)
   set_target_properties(test_capi PROPERTIES LINKER_LANGUAGE C)
   add_test(NAME test_capi COMMAND test_capi)
 
-  if(NOT "${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten")
+  if(NOT (("${CMAKE_SYSTEM_NAME}" STREQUAL "Emscripten") OR
+          (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND
+           CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "14.0.0")))
     add_executable(test_cpp11api test_cpp11api.cpp)
     target_link_libraries(test_cpp11api tlfloat)
     set_target_properties(test_cpp11api PROPERTIES CXX_STANDARD 11)
@@ -187,7 +190,6 @@ if (BUILD_LIBS)
 
     add_executable(test_cpp11api20 test_cpp11api.cpp)
     target_link_libraries(test_cpp11api20 tlfloat)
-    set_target_properties(test_cpp11api20 PROPERTIES CXX_EXTENSIONS OFF)
     add_test(NAME test_cpp11api20 COMMAND test_cpp11api20)
     set_tests_properties(test_cpp11api20 PROPERTIES COST "1")
   endif()
