@@ -1,5 +1,6 @@
 #include <iostream>
 #include <chrono>
+#include <thread>
 #include <cstdint>
 #include <cstring>
 #include <tlfloat/tlfloatconfig.hpp>
@@ -196,6 +197,8 @@ void measure(const char* mes, void (*func)(void), int opPerCall, int64_t sec_us)
   }
 
   const int64_t M = N * sec_us / (t1 - t0);
+
+  this_thread::sleep_for(chrono::microseconds(sec_us));
 
   t2 = timeus();
   for(int64_t i=0;i<M;i++) { (*func)(); donothing(); }
