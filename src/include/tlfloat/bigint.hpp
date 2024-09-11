@@ -106,6 +106,20 @@ namespace tlfloat {
       return xpair<uint64_t, bool>((al & 0xffffffff) | (ah << 32), (ah >> 32) != 0);
     }
 
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
+      if (std::is_constant_evaluated()) return adc64_(cin, lhs, rhs);
+#if defined(TLFLOAT_ENABLE_X86INTRIN)
+      xpair<uint64_t, bool> ret(0, false);
+      ret.second = _addcarry_u64(cin, lhs, rhs, (long long unsigned *)&ret.first);
+      return ret;
+#elif defined(TLFLOAT_ENABLE_INT128_OPT)
+      __uint128_t a = __uint128_t(lhs) + rhs + cin;
+      return xpair<uint64_t, bool>(uint64_t(a), (a >> 64) != 0);
+#else
+      return adc64_(cin, lhs, rhs);
+#endif
+    }
+
     static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> sbc64_(bool cin, uint64_t lhs, uint64_t rhs) {
       uint64_t al = (lhs & 0xffffffff) - (rhs & 0xffffffff) - cin;
       lhs >>= 32; rhs >>= 32;
@@ -113,39 +127,19 @@ namespace tlfloat {
       return xpair<uint64_t, bool>((al & 0xffffffff) | (ah << 32), (ah >> 32) != 0);
     }
 
-#if defined(TLFLOAT_ENABLE_X86INTRIN)
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
-      if (std::is_constant_evaluated()) return adc64_(cin, lhs, rhs);
-      xpair<uint64_t, bool> ret(0, false);
-      ret.second = _addcarry_u64(cin, lhs, rhs, (long long unsigned *)&ret.first);
-      return ret;
-    }
-
     static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs) {
       if (std::is_constant_evaluated()) return sbc64_(cin, lhs, rhs);
+#if defined(TLFLOAT_ENABLE_X86INTRIN)
       xpair<uint64_t, bool> ret(0, false);
       ret.second = _subborrow_u64(cin, lhs, rhs, (long long unsigned *)&ret.first);
       return ret;
-    }
 #elif defined(TLFLOAT_ENABLE_INT128_OPT)
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
-      __uint128_t a = __uint128_t(lhs) + rhs + cin;
-      return xpair<uint64_t, bool>(uint64_t(a), (a >> 64) != 0);
-    }
-
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs) {
       __uint128_t a = __uint128_t(lhs) - rhs - cin;
       return xpair<uint64_t, bool>(uint64_t(a), (a >> 64) != 0);
-    }
 #else
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> adc64(bool cin, uint64_t lhs, uint64_t rhs) {
-      return adc64_(cin, lhs, rhs);
-    }
-
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, bool> sbc64(bool cin, uint64_t lhs, uint64_t rhs) {
       return sbc64_(cin, lhs, rhs);
-    }
 #endif
+    }
 
     static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> mul128_(uint64_t lhs, uint64_t rhs) {
       uint64_t al = lhs & 0xffffffff, ah = lhs >> 32;
@@ -153,28 +147,22 @@ namespace tlfloat {
       uint64_t m = ah * bl + ((al * bl) >> 32) + ((al * bh) & 0xffffffff);
       return xpair<uint64_t, uint64_t> (ah * bh + (m >> 32) + ((al * bh) >> 32), lhs * rhs);
     }
-#ifdef TLFLOAT_ENABLE_VCUMUL128
+
     static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       if (std::is_constant_evaluated()) return mul128_(lhs, rhs);
+#ifdef TLFLOAT_ENABLE_VCUMUL128
       xpair<uint64_t, uint64_t> ret(0, 0);
       ret.second = _umul128(lhs, rhs, &ret.first);
       return ret;
-    }
 #elif defined(TLFLOAT_ENABLE_INT128_OPT)
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       __uint128_t m = lhs * __uint128_t(rhs);
       return xpair<uint64_t, uint64_t>(uint64_t(m >> 64), uint64_t(m));
-    }
 #elif defined(TLFLOAT_ENABLE_CUDA_UMUL64HI)
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
-      if (std::is_constant_evaluated()) return mul128_(lhs, rhs);
       return xpair<uint64_t, uint64_t>(__umul64hi(lhs, rhs), lhs * rhs);
-    }
 #else
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> mul128(uint64_t lhs, uint64_t rhs) {
       return mul128_(lhs, rhs);
-    }
 #endif
+    }
 
     static constexpr TLFLOAT_INLINE unsigned clz64_(uint64_t u) {
       unsigned z = 0;
@@ -187,22 +175,20 @@ namespace tlfloat {
       if (!u) z++;
       return z;
     }
-#ifdef TLFLOAT_ENABLE_VCBITSCANREVERSE
+
     static constexpr TLFLOAT_INLINE unsigned clz64(uint64_t u) {
       if (std::is_constant_evaluated()) return clz64_(u);
+#ifdef TLFLOAT_ENABLE_VCBITSCANREVERSE
       unsigned long idx = 0;
       return _BitScanReverse64(&idx, u) ? (63 - idx) : 64;
-    }
 #elif defined(TLFLOAT_ENABLE_GNUC_CLZ)
-    static constexpr TLFLOAT_INLINE unsigned clz64(uint64_t u) { return u == 0 ? 64 : __builtin_clzll(u); }
+      return u == 0 ? 64 : __builtin_clzll(u);
 #elif defined(TLFLOAT_ENABLE_CUDA_CLZ)
-    static constexpr TLFLOAT_INLINE unsigned clz64(uint64_t u) {
-      if (std::is_constant_evaluated()) return clz64_(u);
       return __clzll(u);
-    }
 #else
-    static constexpr TLFLOAT_INLINE unsigned clz64(uint64_t u) { return clz64_(u); }
+      return clz64_(u);
 #endif
+    }
 
     static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod128_64_(uint64_t nh_, uint64_t nl_, uint64_t d_) {
       assert(nh_ < d_);
@@ -235,28 +221,22 @@ namespace tlfloat {
       };
     }
 
-#if defined(__x86_64__) && defined(TLFLOAT_ENABLE_ASM_GNU)
     static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod128_64(uint64_t nh, uint64_t nl, uint64_t d) {
       assert(nh < d);
       if (std::is_constant_evaluated()) return divmod128_64_(nh, nl, d);
+#if defined(__x86_64__) && defined(TLFLOAT_ENABLE_ASM_GNU)
       uint64_t r, q;
       __asm__("divq %2\n"
 	      : "=d" (r), "=a" (q)
 	      : "rm" (d), "d" (nh), "a" (nl));
       return xpair<uint64_t, uint64_t>(q, r);
-    }
 #elif defined(TLFLOAT_ENABLE_INT128_OPT)
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod128_64(uint64_t nh, uint64_t nl, uint64_t d) {
-      assert(nh < d);
       __uint128_t n = (__uint128_t(nh) << 64) | nl;
-      return xpair<uint64_t, uint64_t>{ uint64_t(n / d), uint64_t(n % d) };
-    }
+      return xpair<uint64_t, uint64_t> { uint64_t(n / d), uint64_t(n % d) };
 #else
-    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod128_64(uint64_t nh, uint64_t nl, uint64_t d) {
-      assert(nh < d);
       return divmod128_64_(nh, nl, d);
+#endif
     }
-#endif // #if defined(__x86_64__) && defined(TLFLOAT_ENABLE_ASM_GNU) && 
 
     template<typename T>
     class SafeArray {
@@ -333,6 +313,7 @@ namespace tlfloat {
     constexpr TLFLOAT_INLINE BigUInt(const BigUInt<N-1>& h, const BigUInt<N-1>& l) : low(l), high(h) {}
 
   private:
+    // Karatsuba algorithm
     template<int..., int K = N, std::enable_if_t<(K >= 10), int> = 0>
     static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
       static_assert(sizeof(BigUInt) == (sizeof(uint64_t) << (N - 6)), "Class memory layout");
