@@ -159,11 +159,11 @@ void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
 
   converter128 cnv0(high0, low0);
   BigUInt<7> i0 = cnv0.bi;
-  __uint128_t b0 = cnv0.i128;
+  __uint128_t b0 = cnv0.u128;
 
   converter128 cnv1(high1, low1);
   BigUInt<7> i1 = cnv1.bi;
-  __uint128_t b1 = cnv1.i128;
+  __uint128_t b1 = cnv1.u128;
 
   if (double(i0) != double(b0)) {
     cerr << i0 << endl;

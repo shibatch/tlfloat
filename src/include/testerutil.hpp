@@ -1116,7 +1116,14 @@ vector<T> genTestValues(unsigned n, shared_ptr<RNG> rng) {
 #ifdef __BIGINT_HPP_INCLUDED__
 struct converter128 {
   BigInt<7> bi;
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
   __int128_t i128;
+  __uint128_t u128;
+#endif
+#ifdef __TLFLOAT_H_INCLUDED__
+  tlfloat_int128_t ti128;
+  tlfloat_uint128_t tu128;
+#endif
 
   converter128(uint64_t high, uint64_t low) {
 #if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
@@ -1125,7 +1132,14 @@ struct converter128 {
     uint64_t u[2] = { high, low };
 #endif
     memcpy(&bi, u, sizeof(bi));
+#ifdef TLFLOAT_COMPILER_SUPPORTS_INT128
     memcpy(&i128, u, sizeof(i128));
+    memcpy(&u128, u, sizeof(u128));
+#endif
+#ifdef __TLFLOAT_H_INCLUDED__
+    memcpy(&ti128, u, sizeof(ti128));
+    memcpy(&tu128, u, sizeof(tu128));
+#endif
   }
 };
 #endif
