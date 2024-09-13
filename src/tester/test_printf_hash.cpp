@@ -27,7 +27,7 @@ void doTest(const char *fmt, ...) {
   int rett = tlfloat_vsnprintf(strt, sizeof(strt), fmt, ap);
   va_end(ap);
 
-  sha256.append((void *)&rett, sizeof(rett));
+  sha256.appendWord((void *)&rett, sizeof(rett));
   sha256.append((void *)strt, strlen(strt)+1);
   if (fp) { fwrite((void *)strt, strlen(strt), 1, fp); fputc((int)'\n', fp); }
 }
@@ -55,7 +55,7 @@ void testem(double val, int cmpprec=10) {
 		       types[i]);
 	      lt = tlfloat_snprintf(test, 100, fmt, T(val));
 
-	      sha256.append((void *)&lt, sizeof(lt));
+	      sha256.appendWord((void *)&lt, sizeof(lt));
 	      sha256.append((void *)test, strlen(test)+1);
 	      if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
@@ -71,7 +71,7 @@ void testem(double val, int cmpprec=10) {
 			 width, nbits, types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, T(val));
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
@@ -86,7 +86,7 @@ void testem(double val, int cmpprec=10) {
 			 nbits, types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, width, T(val));
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
@@ -105,7 +105,7 @@ void testem(double val, int cmpprec=10) {
 			   width, prec, nbits, types[i]);
 		  lt = tlfloat_snprintf(test, 100, fmt, T(val));
 
-		  sha256.append((void *)&lt, sizeof(lt));
+		  sha256.appendWord((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
 		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
@@ -120,7 +120,7 @@ void testem(double val, int cmpprec=10) {
 			   nbits, types[i]);
 		  lt = tlfloat_snprintf(test, 100, fmt, width, prec, T(val));
 
-		  sha256.append((void *)&lt, sizeof(lt));
+		  sha256.appendWord((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
 		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 		}
@@ -134,7 +134,7 @@ void testem(double val, int cmpprec=10) {
 			 prec, nbits, types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, T(val));
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
@@ -149,7 +149,7 @@ void testem(double val, int cmpprec=10) {
 			 nbits, types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, prec, T(val));
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
@@ -181,7 +181,7 @@ void testem32(int32_t val) {
 		       types[i]);
 	      lt = tlfloat_snprintf(test, 100, fmt, val);
 
-	      sha256.append((void *)&lt, sizeof(lt));
+	      sha256.appendWord((void *)&lt, sizeof(lt));
 	      sha256.append((void *)test, strlen(test)+1);
 	      if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
@@ -199,7 +199,7 @@ void testem32(int32_t val) {
 			 width, types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, val);
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
@@ -214,7 +214,7 @@ void testem32(int32_t val) {
 			 types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, width, val);
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
@@ -232,7 +232,7 @@ void testem32(int32_t val) {
 			    width, prec, types[i]);
 		  lt = tlfloat_snprintf(test, 100, fmt, val);
 
-		  sha256.append((void *)&lt, sizeof(lt));
+		  sha256.appendWord((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
 		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
@@ -247,7 +247,7 @@ void testem32(int32_t val) {
 			    types[i]);
 		  lt = tlfloat_snprintf(test, 100, fmt, width, prec, val);
 
-		  sha256.append((void *)&lt, sizeof(lt));
+		  sha256.appendWord((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
 		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 		}
@@ -261,7 +261,7 @@ void testem32(int32_t val) {
 			 prec, types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, val);
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
@@ -276,7 +276,7 @@ void testem32(int32_t val) {
 			 types[i]);
 		lt = tlfloat_snprintf(test, 100, fmt, prec, val);
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
@@ -308,7 +308,7 @@ void testem64(int64_t val) {
 		       types2[i]);
 	      lt = tlfloat_snprintf(test, 98, fmt, val);
 
-	      sha256.append((void *)&lt, sizeof(lt));
+	      sha256.appendWord((void *)&lt, sizeof(lt));
 	      sha256.append((void *)test, strlen(test)+1);
 	      if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 
@@ -323,7 +323,7 @@ void testem64(int64_t val) {
 			 width, types2[i]);
 		lt = tlfloat_snprintf(test, 98, fmt, val);
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }
@@ -341,7 +341,7 @@ void testem64(int64_t val) {
 			    width, prec, types2[i]);
 		  lt = tlfloat_snprintf(test, 98, fmt, val);
 
-		  sha256.append((void *)&lt, sizeof(lt));
+		  sha256.appendWord((void *)&lt, sizeof(lt));
 		  sha256.append((void *)test, strlen(test)+1);
 		  if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 		}
@@ -355,7 +355,7 @@ void testem64(int64_t val) {
 			 prec, types2[i]);
 		lt = tlfloat_snprintf(test, 98, fmt, val);
 
-		sha256.append((void *)&lt, sizeof(lt));
+		sha256.appendWord((void *)&lt, sizeof(lt));
 		sha256.append((void *)test, strlen(test)+1);
 		if (fp) { fwrite((void *)test, strlen(test), 1, fp); fputc((int)'\n', fp); }
 	      }

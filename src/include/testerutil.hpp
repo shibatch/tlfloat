@@ -51,6 +51,22 @@ public:
     for(int i=0;i<(int)len;i++) dst[i] = (u >> (i * 8)) & 0xff;
   }
 
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
+  void nextBytesW(unsigned char *dst, size_t len) { nextBytes(dst, len); }
+#else
+  void nextBytesW(unsigned char * const dst, const size_t len_) {
+    int len = len_, index = 0;
+    while(len >= 8) {
+      uint64_t u = next64();
+      for(int i=0;i<8;i++) dst[len_-1-i-index] = (u >> (i * 8)) & 0xff;
+      index += 8;
+      len -= 8;
+    }
+    uint64_t u = next(uint32_t(len * 8));
+    for(int i=0;i<(int)len;i++) dst[len_-1-i-index] = (u >> (i * 8)) & 0xff;
+  }
+#endif
+
   unsigned clz64(uint64_t u) {
     unsigned z = 0;
     if (u & 0xffffffff00000000ULL) u >>= 32; else z += 32;
@@ -276,6 +292,18 @@ public:
     }
   }
 
+  void appendWord(const void *src, size_t n_bytes) {
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
+    for(size_t i = 0;i < n_bytes;i++) {
+      append_byte(((const uint8_t*)src)[i]);
+    }
+#else
+    for(int i = int(n_bytes)-1;i >= 0;i--) {
+      append_byte(((const uint8_t*)src)[i]);
+    }
+#endif
+  }
+
   void finalize() {
     uint64_t nb = n_bits;
 
@@ -348,11 +376,11 @@ public:
   static tlfloat::BigUInt<N> genRand(tlfloat::BigUInt<N> bound, shared_ptr<RNG> rng) {
     tlfloat::BigUInt<N> r = 0;
     if (bound == 0) {
-      rng->nextBytes((unsigned char *)&r, sizeof(r));
+      rng->nextBytesW((unsigned char *)&r, sizeof(r));
     } else {
       unsigned b = (bound - 1).ilogbp1();
       tlfloat::BigUInt<N> u = tlfloat::BigUInt<N>(1) << b;
-      rng->nextBytes((unsigned char *)&r, (b >> 6) << 3);
+      rng->nextBytesW((unsigned char *)&r, (b >> 6) << 3);
       r.setWord(b >> 6, rng->next(b & ((1 << 6)-1)));
 
       while(r >= bound) {
@@ -718,7 +746,7 @@ float rndf(shared_ptr<RNG> rng) {
   } else if (r < 32) {
     for(;;) {
       float f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (!isfinite(f)) continue;
       if (-1 <= f && f <= 1) continue;
       f = rintf(f) * M_PI / 2;
@@ -733,13 +761,13 @@ float rndf(shared_ptr<RNG> rng) {
   } else if (r < 64) {
     for(;;) {
       float f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (isfinite(f)) return rndint(rng) + f;
     }
   } else {
     for(;;) {
       float f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (isfinite(f)) return f;
     }
   }
@@ -793,13 +821,13 @@ double rndd(shared_ptr<RNG> rng) {
     return a[rng->nextLT(sizeof(a)/sizeof(double))];
   } else if (r < 32) {
     for(;;) {
-      float f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      double f;
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (!isfinite(f)) continue;
       if (-1 <= f && f <= 1) continue;
-      f = rintf(f) * M_PI / 2;
+      f = rint(f) * M_PI / 2;
 
-      int32_t u;
+      int64_t u;
       memcpy((void *)&u, (void *)&f, sizeof(u));
       u += int(rng->nextLT(5)) - 2;
       memcpy((void *)&f, (void *)&u, sizeof(f));
@@ -809,13 +837,13 @@ double rndd(shared_ptr<RNG> rng) {
   } else if (r < 64) {
     for(;;) {
       double f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (isfinite(f)) return rndint(rng) + f;
     }
   } else {
     for(;;) {
       double f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (isfinite(f)) return f;
     }
   }
@@ -852,7 +880,7 @@ Quad rndQ(shared_ptr<RNG> rng) {
   } else if (r < 32) {
     for(;;) {
       Quad f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (!finite(f)) continue;
       if (-1 <= f && f <= 1) continue;
       f = rint(f) * M_PIo_ / 2;
@@ -867,13 +895,13 @@ Quad rndQ(shared_ptr<RNG> rng) {
   } else if (r < 64) {
     for(;;) {
       Quad f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (finite(f)) return rndint(rng) + f;
     }
   } else {
     for(;;) {
       Quad f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (finite(f)) return f;
     }
   }
@@ -929,7 +957,7 @@ Octuple rndo(shared_ptr<RNG> rng) {
   } else if (r < 32) {
     for(;;) {
       Octuple f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (!finite(f)) continue;
       if (-1 <= f && f <= 1) continue;
       f = rint(f) * M_PIo_ / 2;
@@ -944,13 +972,13 @@ Octuple rndo(shared_ptr<RNG> rng) {
   } else if (r < 64) {
     for(;;) {
       Octuple f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (finite(f)) return rndint(rng) + f;
     }
   } else {
     for(;;) {
       Octuple f;
-      rng->nextBytes((unsigned char *)&f, sizeof(f));
+      rng->nextBytesW((unsigned char *)&f, sizeof(f));
       if (finite(f)) return f;
     }
   }
@@ -1078,9 +1106,41 @@ vector<T> genTestValues(unsigned n, shared_ptr<RNG> rng) {
 
   while(ret.size() < n) {
     T f;
-    rng->nextBytes((unsigned char *)&f, sizeof(f));
+    rng->nextBytesW((unsigned char *)&f, sizeof(f));
     ret.push_back(f);
   }
 
   return ret;
+}
+
+#ifdef __BIGINT_HPP_INCLUDED__
+struct converter128 {
+  BigInt<7> bi;
+  __int128_t i128;
+
+  converter128(uint64_t high, uint64_t low) {
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
+    uint64_t u[2] = { low, high };
+#else
+    uint64_t u[2] = { high, low };
+#endif
+    memcpy(&bi, u, sizeof(bi));
+    memcpy(&i128, u, sizeof(i128));
+  }
+};
+#endif
+
+size_t fwrite_(const void *ptr, size_t size, size_t nmemb, FILE *fp) {
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
+  return fwrite(ptr, size, nmemb, fp);
+#else
+  size_t z = 0;
+  for(size_t m=0;m<nmemb;m++) {
+    for(size_t s=0;s<size;s++) {
+      if (fwrite(&((uint8_t *)ptr)[(m+1) * size - 1 - s], 1, 1, fp) == 0) return z;
+      z++;
+    }
+  }
+  return z;
+#endif
 }

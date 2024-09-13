@@ -58,7 +58,7 @@ set_tests_properties(test_hash_noopt PROPERTIES COST "2")
 if (BUILD_LIBS)
   add_executable(test_printf_hash test_printf_hash.cpp)
   target_link_libraries(test_printf_hash tlfloat)
-  add_test(NAME test_printf_hash COMMAND test_printf_hash 19afa79b7328d55c90a0f2a885d1b5cb304a094c312551815fa43ff94488e277)
+  add_test(NAME test_printf_hash COMMAND test_printf_hash 146049308de4fe3b025cbc775fda8dd4e81a602bf4ea04d3f860abee96a9ac5b)
   set_tests_properties(test_printf_hash PROPERTIES COST "2")
 endif()
 

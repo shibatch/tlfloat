@@ -82,6 +82,15 @@
 #endif // #ifdef _MSC_VER
 #endif // #ifndef TLFLOAT_DISABLE_ARCH_OPTIMIZATION
 
+#if defined(__BYTE_ORDER__) && (__BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wreorder"
+#endif
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wreorder"
+#endif
+#endif
+
 /// TLFloat library defines all C++ classes and functions in tlfloat namespace
 namespace tlfloat {
   /**
@@ -308,13 +317,18 @@ namespace tlfloat {
     static_assert(sizeof(unsigned int) == 4, "unsigned int must be 32-bit");
     static_assert(sizeof(int) == 4, "int must be 32-bit");
   public:
+
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
     BigUInt<N-1> low = 0, high = 0;
+#else
+    BigUInt<N-1> high = 0, low = 0;
+#endif
 
     constexpr TLFLOAT_INLINE BigUInt(const BigUInt<N-1>& h, const BigUInt<N-1>& l) : low(l), high(h) {}
 
   private:
     // Karatsuba algorithm
-    template<int..., int K = N, std::enable_if_t<(K >= 10), int> = 0>
+    template<int..., int K = N, std::enable_if_t<(K >= 10 && std::endian::native == std::endian::little), int> = 0>
     static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
       static_assert(sizeof(BigUInt) == (sizeof(uint64_t) << (N - 6)), "Class memory layout");
       if (std::is_constant_evaluated()) return BigUInt(lhs.mulhi(rhs), lhs * rhs);
@@ -340,7 +354,7 @@ namespace tlfloat {
       return BigUInt(z2, z0) + (BigUInt(z1c - t.second, t.first) << (1 << (N-2)));
     }
 
-    template<int..., int K = N, std::enable_if_t<(K == 8 || K == 9), int> = 0>
+    template<int..., int K = N, std::enable_if_t<((K == 8 || K == 9) && std::endian::native == std::endian::little), int> = 0>
     static constexpr TLFLOAT_INLINE BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
       static_assert(sizeof(BigUInt) == (sizeof(uint64_t) << (N - 6)), "Class memory layout");
       if (std::is_constant_evaluated()) return BigUInt(lhs.mulhi(rhs), lhs * rhs);
@@ -374,6 +388,11 @@ namespace tlfloat {
       }
       pret[n*2-1] = uint64_t(al);
       return ret;
+    }
+
+    template<int..., int K = N, std::enable_if_t<(K > 7 && std::endian::native == std::endian::big), int> = 0>
+    static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
+      return BigUInt(lhs.mulhi(rhs), lhs * rhs);
     }
 
     template<int..., int K = N, std::enable_if_t<K == 7, int> = 0>

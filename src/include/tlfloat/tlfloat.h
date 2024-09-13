@@ -1027,7 +1027,11 @@ inline tlfloat_octuple::tlfloat_octuple(const struct tlfloat_uint128_t& u) : val
 #define TLFLOAT_FLT128_TRUE_MIN 0x0.0000000000000000000000000001p-16382L
 #define TLFLOAT_FLT128_EPSILON 0x1p-112L
 #elif defined(__cplusplus)
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 static inline constexpr tlfloat_quad_ tlfloat_constq(uint64_t h, uint64_t l) { return tlfloat_quad_ { l, h }; }
+#else
+static inline constexpr tlfloat_quad_ tlfloat_constq(uint64_t h, uint64_t l) { return tlfloat_quad_ { h, l }; }
+#endif
 
 #define TLFLOAT_M_Eq tlfloat_constq( 0x40005bf0a8b14576, 0x95355fb8ac404e7a )
 #define TLFLOAT_M_LOG2Eq tlfloat_constq( 0x3fff71547652b82f, 0xe1777d0ffda0d23a )
@@ -1048,6 +1052,8 @@ static inline constexpr tlfloat_quad_ tlfloat_constq(uint64_t h, uint64_t l) { r
 #define TLFLOAT_FLT128_TRUE_MIN tlfloat_constq( 0x0000000000000000, 0x0000000000000001 )
 #define TLFLOAT_FLT128_EPSILON tlfloat_constq( 0x3f8f000000000000, 0x0000000000000000 )
 #elif defined(__STDC_VERSION__)
+
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 #define TLFLOAT_M_Eq ((tlfloat_quad_) { 0x95355fb8ac404e7a, 0x40005bf0a8b14576 })
 #define TLFLOAT_M_LOG2Eq ((tlfloat_quad_) { 0xe1777d0ffda0d23a, 0x3fff71547652b82f })
 #define TLFLOAT_M_LOG10Eq ((tlfloat_quad_) { 0xe32a6ab7555f5a68, 0x3ffdbcb7b1526e50 })
@@ -1066,10 +1072,35 @@ static inline constexpr tlfloat_quad_ tlfloat_constq(uint64_t h, uint64_t l) { r
 #define TLFLOAT_FLT128_DENORM_MIN ((tlfloat_quad_) { 0x0000000000000001, 0x0000000000000000 })
 #define TLFLOAT_FLT128_TRUE_MIN ((tlfloat_quad_) { 0x0000000000000001, 0x0000000000000000 })
 #define TLFLOAT_FLT128_EPSILON ((tlfloat_quad_) { 0x0000000000000000, 0x3f8f000000000000 })
+#else
+#define TLFLOAT_M_Eq ((tlfloat_quad_) { 0x40005bf0a8b14576, 0x95355fb8ac404e7a })
+#define TLFLOAT_M_LOG2Eq ((tlfloat_quad_) { 0x3fff71547652b82f, 0xe1777d0ffda0d23a })
+#define TLFLOAT_M_LOG10Eq ((tlfloat_quad_) { 0x3ffdbcb7b1526e50, 0xe32a6ab7555f5a68 })
+#define TLFLOAT_M_LN2q ((tlfloat_quad_) { 0x3ffe62e42fefa39e, 0xf35793c7673007e6 })
+#define TLFLOAT_M_LN10q ((tlfloat_quad_) { 0x400026bb1bbb5551, 0x582dd4adac5705a6 })
+#define TLFLOAT_M_PIq ((const tlfloat_quad_) { 0x4000921fb54442d1, 0x8469898cc51701b8 })
+#define TLFLOAT_M_PI_2q ((tlfloat_quad_) { 0x3fff921fb54442d1, 0x8469898cc51701b8 })
+#define TLFLOAT_M_PI_4q ((tlfloat_quad_) { 0x3ffe921fb54442d1, 0x8469898cc51701b8 })
+#define TLFLOAT_M_1_PIq ((tlfloat_quad_) { 0x3ffd45f306dc9c88, 0x2a53f84eafa3ea6a })
+#define TLFLOAT_M_2_PIq ((tlfloat_quad_) { 0x3ffe45f306dc9c88, 0x2a53f84eafa3ea6a })
+#define TLFLOAT_M_2_SQRTPIq ((tlfloat_quad_) { 0x3fff20dd750429b6, 0xd11ae3a914fed7fe })
+#define TLFLOAT_M_SQRT2q ((tlfloat_quad_) { 0x3fff6a09e667f3bc, 0xc908b2fb1366ea95 })
+#define TLFLOAT_M_SQRT1_2q ((tlfloat_quad_) { 0x3ffe6a09e667f3bc, 0xc908b2fb1366ea95 })
+#define TLFLOAT_FLT128_MAX ((tlfloat_quad_) { 0x7ffeffffffffffff, 0xffffffffffffffff })
+#define TLFLOAT_FLT128_MIN ((tlfloat_quad_) { 0x0001000000000000, 0x0000000000000000 })
+#define TLFLOAT_FLT128_DENORM_MIN ((tlfloat_quad_) { 0x0000000000000000, 0x0000000000000001 })
+#define TLFLOAT_FLT128_TRUE_MIN ((tlfloat_quad_) { 0x0000000000000000, 0x0000000000000001 })
+#define TLFLOAT_FLT128_EPSILON ((tlfloat_quad_) { 0x3f8f000000000000, 0x0000000000000000 })
+#endif
+
 #endif
 
 #if defined(__cplusplus)
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 static inline constexpr tlfloat_octuple_ tlfloat_consto(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3) { return tlfloat_octuple_ { w3, w2, w1, w0 }; }
+#else
+static inline constexpr tlfloat_octuple_ tlfloat_consto(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3) { return tlfloat_octuple_ { w0, w1, w2, w3 }; }
+#endif
 
 #define TLFLOAT_M_Eo tlfloat_consto(0x400005bf0a8b1457LL, 0x695355fb8ac404e7LL, 0xa79e3b1738b079c5LL, 0xa6d2b53c26c8228dLL)
 #define TLFLOAT_M_LOG2Eo tlfloat_consto(0x3ffff71547652b82LL, 0xfe1777d0ffda0d23LL, 0xa7d11d6aef551badLL, 0x2b4b1164a2cd9a34LL)
@@ -1089,7 +1120,10 @@ static inline constexpr tlfloat_octuple_ tlfloat_consto(uint64_t w0, uint64_t w1
 #define TLFLOAT_FLT256_DENORM_MIN tlfloat_consto(0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000001LL)
 #define TLFLOAT_FLT256_TRUE_MIN tlfloat_consto(0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000001LL)
 #define TLFLOAT_FLT256_EPSILON tlfloat_consto(0x3ff1300000000000LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL)
+
 #elif defined(__STDC_VERSION__)
+
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 #define TLFLOAT_M_Eo ((tlfloat_octuple_) { 0xa6d2b53c26c8228dLL, 0xa79e3b1738b079c5LL, 0x695355fb8ac404e7LL, 0x400005bf0a8b1457LL })
 #define TLFLOAT_M_LOG2Eo ((tlfloat_octuple_) { 0x2b4b1164a2cd9a34LL, 0xa7d11d6aef551badLL, 0xfe1777d0ffda0d23LL, 0x3ffff71547652b82LL })
 #define TLFLOAT_M_LOG10Eo ((tlfloat_octuple_) { 0x34404747e5a89ef2LL, 0x7b8647dc68c048b9LL, 0x0e32a6ab7555f5a6LL, 0x3fffdbcb7b1526e5LL })
@@ -1108,6 +1142,27 @@ static inline constexpr tlfloat_octuple_ tlfloat_consto(uint64_t w0, uint64_t w1
 #define TLFLOAT_FLT256_DENORM_MIN ((tlfloat_octuple_) { 0x0000000000000001LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL })
 #define TLFLOAT_FLT256_TRUE_MIN ((tlfloat_octuple_) { 0x0000000000000001LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL })
 #define TLFLOAT_FLT256_EPSILON ((tlfloat_octuple_) { 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x3ff1300000000000LL })
+#else
+#define TLFLOAT_M_Eo ((tlfloat_octuple_) { 0x400005bf0a8b1457LL, 0x695355fb8ac404e7LL, 0xa79e3b1738b079c5LL, 0xa6d2b53c26c8228dLL })
+#define TLFLOAT_M_LOG2Eo ((tlfloat_octuple_) { 0x3ffff71547652b82LL, 0xfe1777d0ffda0d23LL, 0xa7d11d6aef551badLL, 0x2b4b1164a2cd9a34LL })
+#define TLFLOAT_M_LOG10Eo ((tlfloat_octuple_) { 0x3fffdbcb7b1526e5LL, 0x0e32a6ab7555f5a6LL, 0x7b8647dc68c048b9LL, 0x34404747e5a89ef2LL })
+#define TLFLOAT_M_LN2o ((tlfloat_octuple_) { 0x3fffe62e42fefa39LL, 0xef35793c7673007eLL, 0x5ed5e81e6864ce53LL, 0x16c5b141a2eb7175LL })
+#define TLFLOAT_M_LN10o ((tlfloat_octuple_) { 0x4000026bb1bbb555LL, 0x1582dd4adac5705aLL, 0x61451c51fd9f3b4bLL, 0xbf21d078c3d0403eLL })
+#define TLFLOAT_M_PIo ((tlfloat_octuple_) { 0x40000921fb54442dLL, 0x18469898cc51701bLL, 0x839a252049c1114cLL, 0xf98e804177d4c762LL })
+#define TLFLOAT_M_PI_2o ((tlfloat_octuple_) { 0x3ffff921fb54442dLL, 0x18469898cc51701bLL, 0x839a252049c1114cLL, 0xf98e804177d4c762LL })
+#define TLFLOAT_M_PI_4o ((tlfloat_octuple_) { 0x3fffe921fb54442dLL, 0x18469898cc51701bLL, 0x839a252049c1114cLL, 0xf98e804177d4c762LL })
+#define TLFLOAT_M_1_PIo ((tlfloat_octuple_) { 0x3fffd45f306dc9c8LL, 0x82a53f84eafa3ea6LL, 0x9bb81b6c52b32788LL, 0x72083fca2c757bd7LL })
+#define TLFLOAT_M_2_PIo ((tlfloat_octuple_) { 0x3fffe45f306dc9c8LL, 0x82a53f84eafa3ea6LL, 0x9bb81b6c52b32788LL, 0x72083fca2c757bd7LL })
+#define TLFLOAT_M_2_SQRTPIo ((tlfloat_octuple_) { 0x3ffff20dd750429bLL, 0x6d11ae3a914fed7fLL, 0xd8688281341d7587LL, 0xcea2e7342b06199dLL })
+#define TLFLOAT_M_SQRT2o ((tlfloat_octuple_) { 0x3ffff6a09e667f3bLL, 0xcc908b2fb1366ea9LL, 0x57d3e3adec175127LL, 0x75099da2f590b066LL })
+#define TLFLOAT_M_SQRT1_2o ((tlfloat_octuple_) { 0x3fffe6a09e667f3bLL, 0xcc908b2fb1366ea9LL, 0x57d3e3adec175127LL, 0x75099da2f590b066LL })
+#define TLFLOAT_FLT256_MAX ((tlfloat_octuple_) { 0x7fffefffffffffffLL, 0xffffffffffffffffLL, 0xffffffffffffffffLL, 0xffffffffffffffffLL })
+#define TLFLOAT_FLT256_MIN ((tlfloat_octuple_) { 0x0000100000000000LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL })
+#define TLFLOAT_FLT256_DENORM_MIN ((tlfloat_octuple_) { 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000001LL })
+#define TLFLOAT_FLT256_TRUE_MIN ((tlfloat_octuple_) { 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000001LL })
+#define TLFLOAT_FLT256_EPSILON ((tlfloat_octuple_) { 0x3ff1300000000000LL, 0x0000000000000000LL, 0x0000000000000000LL, 0x0000000000000000LL })
+#endif
+
 #endif
 
 #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)

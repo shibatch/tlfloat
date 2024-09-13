@@ -18,7 +18,7 @@ template<typename T>
 T rnd(shared_ptr<RNG> rng) {
   for(;;) {
     T f;
-    rng->nextBytes((unsigned char *)&f, sizeof(f));
+    rng->nextBytesW((unsigned char *)&f, sizeof(f));
     if (finite(f)) return f;
   }
 }
@@ -33,10 +33,10 @@ void computeHash(const char *mes, T *r, T *x, FILE *fp=nullptr, int mode=0) {
   for (int i = 0; i < N; i++) {
     T f = func(x[i]);
     if (mode == 0) {
-      sha256.append((void *)&f.m, sizeof(f.m));
+      sha256.appendWord((void *)&f.m, sizeof(f.m));
     } else if (mode == 1) {
-      fwrite((void *)&x[i].m, sizeof(x[i].m), 1, fp);
-      fwrite((void *)&f.m, sizeof(f.m), 1, fp);
+      fwrite_((void *)&x[i].m, sizeof(x[i].m), 1, fp);
+      fwrite_((void *)&f.m, sizeof(f.m), 1, fp);
     } else if (mode == 2) {
       T t = 0;
       if (fread((void *)&t, sizeof(t), 1, fp) != 1 || t.m != x[i].m) {
@@ -62,9 +62,9 @@ void computeHash(const char *mes, T *r, T *x, T *y, FILE *fp=nullptr, int mode=0
   for (int i = 0; i < N; i++) {
     T f = func(x[i], y[i]);
     if (mode == 0) {
-      sha256.append((void *)&f.m, sizeof(f.m));
+      sha256.appendWord((void *)&f.m, sizeof(f.m));
     } else if (mode == 1) {
-      fwrite((void *)&f.m, sizeof(f.m), 1, fp);
+      fwrite_((void *)&f.m, sizeof(f.m), 1, fp);
     } else if (mode == 2) {
       T t = 0;
       if (fread((void *)&t, sizeof(t), 1, fp) != 1 || t.m != f.m) {
@@ -86,11 +86,11 @@ void computeHash(const char *mes, T *r, T *x, T *y, FILE *fp=nullptr, int mode=0
   for (int i = 0; i < N; i++) {
     xpair<T, int64_t> p = func(x[i], y[i]);
     if (mode == 0) {
-      sha256.append((void *)&p.first.m, sizeof(p.first.m));
-      sha256.append((void *)&p.second, sizeof(p.second));
+      sha256.appendWord((void *)&p.first.m, sizeof(p.first.m));
+      sha256.appendWord((void *)&p.second, sizeof(p.second));
     } else if (mode == 1) {
-      fwrite((void *)&p.first.m, sizeof(p.first.m), 1, fp);
-      fwrite((void *)&p.second, sizeof(p.second), 1, fp);
+      fwrite_((void *)&p.first.m, sizeof(p.first.m), 1, fp);
+      fwrite_((void *)&p.second, sizeof(p.second), 1, fp);
     } else if (mode == 2) {
       T t = 0;
       size_t s0 = fread((void *)&t, sizeof(t), 1, fp);
@@ -115,9 +115,9 @@ void computeHash(const char *mes, T *r, T *x, T *y, T *z, FILE *fp=nullptr, int 
   for (int i = 0; i < N; i++) {
     T f = func(x[i], y[i], z[i]);
     if (mode == 0) {
-      sha256.append((void *)&f.m, sizeof(f.m));
+      sha256.appendWord((void *)&f.m, sizeof(f.m));
     } else if (mode == 1) {
-      fwrite((void *)&f.m, sizeof(f.m), 1, fp);
+      fwrite_((void *)&f.m, sizeof(f.m), 1, fp);
     } else if (mode == 2) {
       T t = 0;
       if (fread((void *)&t, sizeof(t), 1, fp) != 1 || t.m != f.m) {

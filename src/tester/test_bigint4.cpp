@@ -37,23 +37,13 @@ void checks(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
 	 (unsigned long long)high1, (unsigned long long)low1, d);
 #endif
 
-  union converter {
-  public:
-    converter() {}
-    uint64_t u[2];
-    BigInt<7> bi;
-    tlfloat_int128_t i128;
-  };
+  converter128 cnv0(high0, low0);
+  BigInt<7> i0 = cnv0.bi;
+  tlfloat_int128_t b0 = cnv0.i128;
 
-  converter cnv;
-
-  cnv.u[0] = low0; cnv.u[1] = high0;
-  BigInt<7> i0 = cnv.bi;
-  tlfloat_int128_t b0 = cnv.i128;
-
-  cnv.u[0] = low1; cnv.u[1] = high1;
-  BigInt<7> i1 = cnv.bi;
-  tlfloat_int128_t b1 = cnv.i128;
+  converter128 cnv1(high1, low1);
+  BigInt<7> i1 = cnv1.bi;
+  tlfloat_int128_t b1 = cnv1.i128;
 
   if (!equal(i0, b0)) e("checks : cast with union");
   if (!equal((BigInt<7>)b0, b0)) e("checks : cast BigInt<7> <- tlfloat_int128_t");
@@ -174,23 +164,13 @@ void checku(uint64_t high0, uint64_t low0, uint64_t high1, uint64_t low1, double
 	 (unsigned long long)high1, (unsigned long long)low1, d);
 #endif
 
-  union converter {
-  public:
-    converter() {}
-    int64_t u[2];
-    BigUInt<7> bi;
-    tlfloat_uint128_t i128;
-  };
+  converter128 cnv0(high0, low0);
+  BigUInt<7> i0 = cnv0.bi;
+  tlfloat_uint128_t b0 = cnv0.i128;
 
-  converter cnv;
-
-  cnv.u[0] = low0; cnv.u[1] = high0;
-  BigUInt<7> i0 = cnv.bi;
-  tlfloat_uint128_t b0 = cnv.i128;
-
-  cnv.u[0] = low1; cnv.u[1] = high1;
-  BigUInt<7> i1 = cnv.bi;
-  tlfloat_uint128_t b1 = cnv.i128;
+  converter128 cnv1(high1, low1);
+  BigUInt<7> i1 = cnv1.bi;
+  tlfloat_uint128_t b1 = cnv1.i128;
 
   if (!equal(i0, b0)) e("checku : cast with union");
   if (!equal((BigUInt<7>)b0, b0)) e("checku : cast BigUInt<7> <- tlfloat_uint128_t");

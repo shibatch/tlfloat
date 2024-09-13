@@ -276,7 +276,6 @@ Pow                  : 1.26533 Mops/second
   * More testing
     * Add more testers for I/O functions
   * Interoperability with SLEEF
-  * Big endian support
   * Remaining math functions in math.h
   * BF16 support
   * Further optimization
