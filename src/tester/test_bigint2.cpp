@@ -106,6 +106,9 @@ void doTestDivmod2(BigUInt<N> n, BigUInt<N> d) {
 
 template<int N>
 void testLoop() {
+  cout << "<" << N << ">";
+  fflush(stdout);
+
   for(int i=0;i<(1 << N);i++) {
     BigUInt<N> d = BigUInt<N>(1) << i;
     doTestRec2(d-1);

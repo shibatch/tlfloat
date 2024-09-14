@@ -328,9 +328,8 @@ namespace tlfloat {
 
   private:
     // Karatsuba algorithm
-    template<int..., int K = N, std::enable_if_t<(K >= 10 && std::endian::native == std::endian::little), int> = 0>
+    template<int..., int K = N, std::enable_if_t<(K >= 10), int> = 0>
     static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
-      static_assert(sizeof(BigUInt) == (sizeof(uint64_t) << (N - 6)), "Class memory layout");
       if (std::is_constant_evaluated()) return BigUInt(lhs.mulhi(rhs), lhs * rhs);
       if (lhs.isZero() || rhs.isZero()) return BigUInt(0);
       if (lhs.isAllOne() && rhs.isAllOne()) return BigUInt(~BigUInt<N-1>(1), BigUInt<N-1>(1));
@@ -354,45 +353,38 @@ namespace tlfloat {
       return BigUInt(z2, z0) + (BigUInt(z1c - t.second, t.first) << (1 << (N-2)));
     }
 
-    template<int..., int K = N, std::enable_if_t<((K == 8 || K == 9) && std::endian::native == std::endian::little), int> = 0>
+    template<int..., int K = N, std::enable_if_t<(K == 8 || K == 9), int> = 0>
     static constexpr TLFLOAT_INLINE BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
-      static_assert(sizeof(BigUInt) == (sizeof(uint64_t) << (N - 6)), "Class memory layout");
       if (std::is_constant_evaluated()) return BigUInt(lhs.mulhi(rhs), lhs * rhs);
       BigUInt ret(0);
-      uint64_t *plhs = (uint64_t *)&lhs, *prhs = (uint64_t *)&rhs, *pret = (uint64_t *)&ret;
       uint64_t ah = 0, am = 0, al = 0;
       const unsigned n = 1 << (N - 7);
       for(unsigned i=0;i<n;i++) {
 	for(unsigned j=0;j<=i;j++) {
-	  xpair<uint64_t, uint64_t> m = detail::mul128(plhs[j], prhs[i - j]);
+	  xpair<uint64_t, uint64_t> m = detail::mul128(lhs.getWord(j), rhs.getWord(i - j));
 	  xpair<uint64_t, bool> ub = detail::adc64(false, m.second, al);
 	  al = ub.first;
 	  ub = detail::adc64(ub.second, m.first, am);
 	  am = ub.first;
 	  ah += ub.second;
 	}
-	pret[i] = uint64_t(al);
+	ret.setWord(i, uint64_t(al));
 	al = am; am = ah; ah = 0;
       }
       for(unsigned i=n;i<n*2-1;i++) {
 	for(unsigned j=i-(n-1);j<n;j++) {
-	  xpair<uint64_t, uint64_t> m = detail::mul128(plhs[j], prhs[i - j]);
+	  xpair<uint64_t, uint64_t> m = detail::mul128(lhs.getWord(j), rhs.getWord(i - j));
 	  xpair<uint64_t, bool> ub = detail::adc64(false, m.second, al);
 	  al = ub.first;
 	  ub = detail::adc64(ub.second, m.first, am);
 	  am = ub.first;
 	  ah += ub.second;
 	}
-	pret[i] = uint64_t(al);
+	ret.setWord(i, uint64_t(al));
 	al = am; am = ah; ah = 0;
       }
-      pret[n*2-1] = uint64_t(al);
+      ret.setWord(n*2-1, uint64_t(al));
       return ret;
-    }
-
-    template<int..., int K = N, std::enable_if_t<(K > 7 && std::endian::native == std::endian::big), int> = 0>
-    static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
-      return BigUInt(lhs.mulhi(rhs), lhs * rhs);
     }
 
     template<int..., int K = N, std::enable_if_t<K == 7, int> = 0>
@@ -613,9 +605,11 @@ namespace tlfloat {
     constexpr TLFLOAT_INLINE bool isAllOne() const { return low.isAllOne() && high.isAllOne(); }
     constexpr TLFLOAT_INLINE bool msb() const { return high.msb(); }
     constexpr TLFLOAT_INLINE uint64_t getWord(unsigned idx) const {
+      if (idx >= (1 << (N-6))) return 0;
       return idx >= (1 << (N-7)) ? high.getWord(idx - (1 << (N-7))) : low.getWord(idx);
     }
     constexpr TLFLOAT_INLINE void setWord(unsigned idx, uint64_t u) {
+      if (idx >= (1 << (N-6))) return;
       if (idx >= (1 << (N-7))) high.setWord(idx - (1 << (N-7)), u);
       else low.setWord(idx, u);
     }

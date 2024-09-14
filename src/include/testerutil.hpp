@@ -380,7 +380,11 @@ public:
     } else {
       unsigned b = (bound - 1).ilogbp1();
       tlfloat::BigUInt<N> u = tlfloat::BigUInt<N>(1) << b;
+#if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
       rng->nextBytesW((unsigned char *)&r, (b >> 6) << 3);
+#else
+      rng->nextBytesW((unsigned char *)&r + sizeof(r) - ((b >> 6) << 3), (b >> 6) << 3);
+#endif
       r.setWord(b >> 6, rng->next(b & ((1 << 6)-1)));
 
       while(r >= bound) {
