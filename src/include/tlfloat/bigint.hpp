@@ -287,10 +287,10 @@ namespace tlfloat {
     template<typename mant_t, typename longmant_t, int nbexp, int nbmant> class UnpackedFloat;
 
     template<typename T, std::enable_if_t<(std::is_integral_v<T>), int> = 0>
-    static inline constexpr TLFLOAT_INLINE T bitmask(int b) { return (T(1) << b) - 1; }
+    static constexpr TLFLOAT_INLINE T bitmask(int b) { return (T(1) << b) - 1; }
 
     template<typename T, std::enable_if_t<(!std::is_integral_v<T>), int> = 0>
-    static inline constexpr TLFLOAT_INLINE T bitmask(int b) {
+    static constexpr TLFLOAT_INLINE T bitmask(int b) {
       T u;
       for(int i=0;i<(int)sizeof(T) / 8;i++) {
 	uint64_t w = 0;
@@ -329,7 +329,7 @@ namespace tlfloat {
   private:
     // Karatsuba algorithm
     template<int..., int K = N, std::enable_if_t<(K >= 10), int> = 0>
-    static constexpr BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
+    static constexpr inline BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
       if (std::is_constant_evaluated()) return BigUInt(lhs.mulhi(rhs), lhs * rhs);
       if (lhs.isZero() || rhs.isZero()) return BigUInt(0);
       if (lhs.isAllOne() && rhs.isAllOne()) return BigUInt(~BigUInt<N-1>(1), BigUInt<N-1>(1));

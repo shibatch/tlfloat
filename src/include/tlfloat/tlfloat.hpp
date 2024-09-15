@@ -15,7 +15,7 @@
 
 namespace tlfloat {
   namespace detail {
-    static const double LOG10_2 = 0.30102999566398119521; // log(2)/log(10)
+    static const double LOG10_2_ = 0.30102999566398119521; // log(2)/log(10)
 
     static constexpr bool xisspace(int c) { return c == ' ' || c == '\f' || c == '\n' || c == '\r' || c == '\t' || c == '\v'; }
     static constexpr bool xisdigit(int c) { return '0' <= c && c <= '9'; }
@@ -1082,7 +1082,7 @@ namespace tlfloat {
       }
 
       friend constexpr TLFLOAT_INLINE int ilog10(const UnpackedFloat& a) { // returns floor(log10(a))
-	int ret = rint(a.ilogb() * LOG10_2);
+	int ret = rint(a.ilogb() * LOG10_2_);
 	UnpackedFloat e = UnpackedFloat::exp10i(ret);
 	if (e > a) {
 	  ret--;

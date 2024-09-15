@@ -34,19 +34,19 @@ to get a free ride. In economics, a free rider is someone who enjoys a
 benefit without paying for it.
 
 OSS and free software (hereafter, OSS and free software are
-collectively referred to as OSS) are public goods because they are
+collectively referred to as FOSS) are public goods because they are
 both non-excludable and non-rivalrous, and thus they are being
 free-ridden by a large number of people and companies. It is
-undeniable that OSS has become popular because they can be free-ridden
-as much as people want. But, development and maintenance of OSS cannot
+undeniable that FOSS has become popular because they can be free-ridden
+as much as people want. But, development and maintenance of FOSS cannot
 proceed unless someone contributes resources. If no user pays for it,
 it is a natural consequence that maintenance will eventually cease to
-continue, which in essence means that the OSS ecosystem is not
-sustainable. OSS developers have little or no financial incentive to
-continue maintenance and development. As a result, OSS developers tend
+continue, which in essence means that the FOSS ecosystem is not
+sustainable. FOSS developers have little or no financial incentive to
+continue maintenance and development. As a result, FOSS developers tend
 to stop maintaining their projects much sooner than users expect,
-often abruptly. This problem is called the OSS developer "burnout"
-problem. To make the OSS ecosystem sustainable, the cost of
+often abruptly. This problem is called the FOSS developer "burnout"
+problem. To make the FOSS ecosystem sustainable, the cost of
 maintenance must continue to be supplied from somewhere. Downloading
 software may seem like less of an incentive to pay a fee because you
 cannot see the face of the developer and the software is only
@@ -61,7 +61,7 @@ costs should not be placed on the developers and maintainers.
 Let me explain in simpler language. Imagine that you are offered a
 free lunch somewhere. In such a case, a rather large number of people
 would say, "Who is covering the cost of this lunch? Let me bear the
-cost of what I eat." But when it comes to using OSS, the number of
+cost of what I eat." But when it comes to using FOSS, the number of
 such people is much smaller. For some reason, people take it for
 granted that I provide a free lunch and that everyone else should
 receive the lunch I provide without paying for it. And then there are
@@ -88,7 +88,7 @@ lunch anymore, then no one will have a problem when I stop providing
 free lunch. In other words, the reason developers "burn out" is not
 because the funds are nowhere to be found, but because the funds do
 not reach them. In some cases, companies are making huge profits by
-using OSS. If we can get these funds to reach the developers, the
+using FOSS. If we can get these funds to reach the developers, the
 problem can be solved.
 
 
@@ -100,7 +100,7 @@ conditionally, adopting the software will require complex
 deliberations within the company. The story is relatively simple if
 the number of computers that will run the software is known in advance
 and only that number of licenses need to be purchased. However, the
-use of OSS is not limited to this. One of the advantages of OSS is
+use of FOSS is not limited to this. One of the advantages of FOSS is
 that it can be easily adopted when the number of computers running the
 software is not known in advance. If a license server were to be set
 up to monitor software usage, there would be increased hassles with
@@ -129,9 +129,9 @@ used to be many free-of-charge software products that prohibited
 commercial use, but many of them were not used much and eventually
 abandoned. In other words, whether the license prohibits commercial
 use or not, the developers will not be paid after all. From a
-different perspective, this means that the pasture of OSS developers
+different perspective, this means that the pasture of FOSS developers
 is being exploited until it becomes desolate. Even if each company is
-aware of the fact that it is exploiting OSS developers, it has little
+aware of the fact that it is exploiting FOSS developers, it has little
 incentive to stop, because even if one company stops, others will
 continue, and the result will be the same. Thus, it is unlikely that a
 company will voluntarily offer to make a donation, because even if
@@ -140,7 +140,7 @@ different if other companies do not also make donations. This
 structure of the problem is the same as the tragedy of the commons. A
 license that prohibits commercial use does not solve this problem.
 
-OSS developers have to go around on their own to find companies that
+FOSS developers have to go around on their own to find companies that
 use their software and ask them for donations. There is no way to even
 know what a reasonable donation amount would be. In order to maximize
 shareholder profit, companies tend to refrain from activities that
@@ -148,8 +148,8 @@ would benefit other companies, and as a result, they are often
 reluctant to contribute to society as a whole. Often a company needs a
 particular reason as to why it makes a particular contribution. In
 other words, a company needs an explanation of how its contribution
-will specifically benefit the company. However, most OSS products are
-not designed to benefit a specific company. OSS projects cannot be run
+will specifically benefit the company. However, most FOSS products are
+not designed to benefit a specific company. FOSS projects cannot be run
 only by members who participate from companies who think only of their
 own convenience. It is not surprising that contributions made under a
 declaration that only contributions beneficial to a particular
@@ -158,7 +158,7 @@ organization can be made are less appreciated.
 
 ### Code of conduct comes to rescue
 
-To begin with, the general public only understands that OSS is
+To begin with, the general public only understands that FOSS is
 software that can be used for free, and there is no recognition that
 the general public is free-riding on various resources provided by
 developers. There is a general lack of awareness that if everyone
@@ -166,7 +166,7 @@ continues to free-ride, those resources will quickly run out and the
 project will not last long. On the other hand, companies need a reason
 to pay for software that is labeled as free to use. In other words,
 there must be some logical framework for the manager to persuade his
-or her bosses to do this. For OSS developers, the only place to write
+or her bosses to do this. For FOSS developers, the only place to write
 such a prohibition on free-riding was in the distribution
 license. However, since the distribution license is legally binding,
 even the slightest restriction on the conditions of use would prevent
@@ -176,10 +176,10 @@ Codes of conduct are not considered legally binding, and their
 contents are often unchecked by corporate legal departments.
 Nevertheless, their contents are similar to rules, and they are
 presented alongside distribution licenses. Incorporating a code of
-conduct into OSS has already been established to some
+conduct into FOSS has already been established to some
 extent. Originally, a code of conduct was a series of practices that a
 company requires its employees to adhere to. Since this has expanded
-to OSS projects, we can expect that there is little risk of companies
+to FOSS projects, we can expect that there is little risk of companies
 completely ignoring it. A code of conduct is a set of rules that
 defines the normative behavior and responsibilities of individuals,
 parties, and groups. In other words, a code of conduct is a definition
@@ -208,9 +208,9 @@ assumes, of course, that members do not lie.
 ### How our guidelines work
 
 Community Guidelines for Sustainability of Open-Source Ecosystem are a
-code of conduct aiming to alleviate the burnout problems of OSS
+code of conduct aiming to alleviate the burnout problems of FOSS
 developers. Our guidelines use the nature of the code of conduct
-described above to discourage free-riding on OSS projects. Since a
+described above to discourage free-riding on FOSS projects. Since a
 code of conduct defines desirable and undesirable behaviors of project
 members, it is not possible to directly ask companies to comply with
 the code. Therefore, our guidelines ask members representing a company
@@ -220,11 +220,11 @@ to free-ride, that member can be regarded as not making sufficient
 efforts to ensure that the company does not free-ride. In addition,
 our guidelines do not require only that each company does not
 free-ride on projects that have adopted our guidelines, but also that
-they do not free-ride on OSS projects in general. As there becomes
+they do not free-ride on FOSS projects in general. As there becomes
 greater public awareness of the importance of discouraging free-riding
-in order to sustain OSS projects, it will become more difficult for
+in order to sustain FOSS projects, it will become more difficult for
 companies to openly disagree with our guidelines. As more projects
-adopt our guidelines, we can expect that free-riding on OSS projects
+adopt our guidelines, we can expect that free-riding on FOSS projects
 in general will be discouraged.
 
 Now, based on the above, will this scheme really work? What is most
@@ -241,10 +241,10 @@ a code of conduct, by its very nature, only prescribes the desired
 behavior of project members, not the conditions for the use of the
 software. The existence of a code of conduct makes it possible to
 check whether each member is behaving in a way that is desirable for
-the project. If companies continue to free-ride on OSS, this will
+the project. If companies continue to free-ride on FOSS, this will
 become visible to the public and subject to social criticism. It would
 be a serious PR loss for a company if it were to make the news that
-the company gets disciplined in a prominent OSS project. Therefore, we
+the company gets disciplined in a prominent FOSS project. Therefore, we
 can expect that companies will voluntarily make contributions even
 without a request from the project side.
 
@@ -270,26 +270,26 @@ comply with the intent of the code of conduct, which is usually long
 after the company has started using the software. Thus, the use of the
 software itself can be started easily, and minor violations can be
 tolerated. In addition, companies can decide the budget for their
-contribution to OSS projects on their own discretion.
+contribution to FOSS projects on their own discretion.
 
 At first glance, this might seem to mean that companies can continue
 to free-ride without worrying about the guidelines by silently
 allowing their employees to continue using the software without having
-them participate in the project. However, for companies that use OSS
-extensively, not being involved in OSS projects at all would cause
-various practical disadvantages. In addition, if the status of OSS use
+them participate in the project. However, for companies that use FOSS
+extensively, not being involved in FOSS projects at all would cause
+various practical disadvantages. In addition, if the status of FOSS use
 and contribution to the project by each company becomes clear, the
-existence of large OSS user companies that continue to free-ride in
+existence of large FOSS user companies that continue to free-ride in
 silence will naturally emerge.
 
 This may also mean that little-known companies will not be subject to
-much public scrutiny, and only well-known companies that use OSS on a
+much public scrutiny, and only well-known companies that use FOSS on a
 large scale will be significantly affected by the guidelines. However,
-this has the advantage of supporting companies that use OSS on a small
-scale, thereby expanding the use of OSS. Rather than going around
+this has the advantage of supporting companies that use FOSS on a small
+scale, thereby expanding the use of FOSS. Rather than going around
 pointing out every minor violation, we can expect to bring long-term
-benefits to the OSS ecosystem by fostering companies that use OSS on a
-large scale. What is important is visibility into the use of OSS in
+benefits to the FOSS ecosystem by fostering companies that use FOSS on a
+large scale. What is important is visibility into the use of FOSS in
 each company, and for this purpose, it may be reasonable to mandate a
 usage indication in the distribution license.
 
@@ -315,26 +315,26 @@ are also included in the scope of free-ride deterrence. It is
 ultimately public scrutiny that determines whether the objectives of
 the guidelines are being followed. Also, the project has its own
 policy and philosophy independent of this. Educational and research
-institutions are generally believed to support OSS operations directly
+institutions are generally believed to support FOSS operations directly
 or indirectly by the nature of their work. Thus, it can be assumed
 that whether they are taking specific actions to deter free-riding is
 not an issue. In reality, however, in many cases, even educational and
-research institutions do not support OSS operations in their work
-content. Some institutions clearly disregard their contribution to OSS
+research institutions do not support FOSS operations in their work
+content. Some institutions clearly disregard their contribution to FOSS
 projects. In such cases, free-riding should be considered a problem
 even for educational and research institutions. I hope that the status
-of support for OSS by educational and research institutions, including
+of support for FOSS by educational and research institutions, including
 indirect ones, will become visible.
 
 There is another reason why companies should pay for the maintenance
-of OSS. Public goods such as flood control and public road
+of FOSS. Public goods such as flood control and public road
 construction are usually paid for by taxpayers. However, if we try to
-do the same with OSS maintenance, we will undoubtedly see terrible
-results. Because it is difficult to evaluate which OSS is useful,
+do the same with FOSS maintenance, we will undoubtedly see terrible
+results. Because it is difficult to evaluate which FOSS is useful,
 large amounts of taxpayer money will be spent on maintenance of
 software that no one has ever heard of. There is also a problem that
 it is difficult to coordinate among the countries to which the members
-belong, since the development of OSS takes place across countries. By
+belong, since the development of FOSS takes place across countries. By
 having companies fund software that is valuable to them, we can expect
 that truly valuable software will be funded.
 
@@ -363,7 +363,7 @@ actions of the member.
 ## The guidelines
 
 The primary purpose for establishing our guidelines is to improve the
-sustainability of the OSS ecosystem by encouraging companies that
+sustainability of the FOSS ecosystem by encouraging companies that
 directly benefit from the commercial use of OSS or free software to
 contribute to the relevant projects to serve society as a whole. The
 members of the project are asked to help raise awareness to make this
