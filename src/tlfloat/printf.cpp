@@ -2,6 +2,10 @@
 #include <cctype>
 #include <cstdarg>
 
+#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 14)
+#include <printf.h>
+#endif
+
 #include "suppress.hpp"
 
 #define TLFLOAT_NO_LIBSTDCXX
@@ -108,7 +112,7 @@ namespace {
 	}
       } else {
 	int pl = 0;
-	if (*fmt == 'h' || *fmt == 'l' || *fmt == 'j' || *fmt == 'z' || *fmt == 't' || *fmt == 'L' || *fmt == 'Q' || *fmt == 'O') {
+	if (*fmt == 'h' || *fmt == 'l' || *fmt == 'j' || *fmt == 'z' || *fmt == 't' || *fmt == 'L' || *fmt == 'Q' || *fmt == 'P' || *fmt == 'O') {
 	  size_prefix = *fmt;
 	  pl = 1;
 	}
@@ -141,6 +145,14 @@ namespace {
 	  if (nbits == 0) {
 	    if (size_prefix == 'Q') {
 	      Quad value = std::bit_cast<Quad>(va_arg(ap, tlfloat_quad_));
+	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
+	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
+				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
+	      if (ret < 0) { errorflag = 1; break; }
+	      outlen += (*consumer)(xbuf, strlen(xbuf), arg);
+	      subfmt_processed = true;
+	    } else if (size_prefix == 'P') {
+	      Quad value = std::bit_cast<Quad>(*(tlfloat_quad_ *)va_arg(ap, tlfloat_quad_ *));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
 				flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper);
@@ -451,4 +463,87 @@ extern "C" {
     memcpy(&r, &b, sizeof(r));
     return r;
   }
+
+#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 14)
+  static int pa_quad = -1;
+  static int printf_Qmodifier = -1, printf_Pmodifier = -1;
+
+  static void tlfloat_quad_va(void *ptr, va_list *ap) { 
+    *(tlfloat_quad_ *)ptr = va_arg(*ap, tlfloat_quad_);
+  }
+
+  static int printf_arginfo(const struct printf_info *info, size_t n, int *argtypes, int *s) {
+    if (info->user & printf_Qmodifier) {
+      argtypes[0] = pa_quad;
+      return 1;
+    } else if (info->user & printf_Pmodifier) {
+      argtypes[0] = PA_FLAG_PTR | pa_quad;
+      return 1;
+    }
+    return -1;
+  }
+
+  static int printf_arginfo2(const struct printf_info *info, size_t n, int *argtypes) {
+    if (info->user & printf_Qmodifier) {
+      argtypes[0] = pa_quad;
+      return 1;
+    } else if (info->user & printf_Pmodifier) {
+      argtypes[0] = PA_FLAG_PTR | pa_quad;
+      return 1;
+    }
+    return -1;
+  }
+
+  static int printf_output(FILE *fp, const struct printf_info *info, const void *const *args) {
+    if (!(info->user & printf_Qmodifier || info->user & printf_Pmodifier)) return -2;
+
+    const int XBUFSIZE = 1000;
+    char *xbuf = (char *)malloc(XBUFSIZE+10);
+    int len = -1;
+
+    len = snprint(xbuf, XBUFSIZE, Quad(**(const tlfloat_quad_ **)args[0]).getUnpacked(),
+		  tolower(info->spec), info->width, info->prec,
+		  info->showsign, info->space, info->alt, info->left, false, isupper(info->spec));
+
+    size_t wlen = fwrite(xbuf, 1, len, fp);
+
+    free(xbuf);
+
+    return (int)wlen;
+  }
+#endif // #if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 14)
 }
+
+#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 14)
+extern "C" {
+  int tlfloat_registerPrintfHook() {
+    if ((printf_Qmodifier = register_printf_modifier(L"Q")) == -1) return -1;
+    if ((printf_Pmodifier = register_printf_modifier(L"P")) == -1) return -1;
+
+    pa_quad = register_printf_type(tlfloat_quad_va);
+    if (pa_quad == -1) return -2;
+
+    if (register_printf_specifier('a', printf_output, printf_arginfo)) return -3;
+    if (register_printf_specifier('e', printf_output, printf_arginfo)) return -4;
+    if (register_printf_specifier('f', printf_output, printf_arginfo)) return -5;
+    if (register_printf_specifier('g', printf_output, printf_arginfo)) return -6;
+    if (register_printf_specifier('A', printf_output, printf_arginfo)) return -7;
+    if (register_printf_specifier('E', printf_output, printf_arginfo)) return -8;
+    if (register_printf_specifier('F', printf_output, printf_arginfo)) return -9;
+    if (register_printf_specifier('G', printf_output, printf_arginfo)) return -10;
+
+    return 0;
+  }
+
+  void tlfloat_unregisterPrintfHook() {
+    register_printf_specifier('a', NULL, NULL);
+    register_printf_specifier('e', NULL, NULL);
+    register_printf_specifier('f', NULL, NULL);
+    register_printf_specifier('g', NULL, NULL);
+    register_printf_specifier('A', NULL, NULL);
+    register_printf_specifier('E', NULL, NULL);
+    register_printf_specifier('F', NULL, NULL);
+    register_printf_specifier('G', NULL, NULL);
+  }
+}
+#endif // #if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 14)

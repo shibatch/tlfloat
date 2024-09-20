@@ -96,6 +96,16 @@ extern "C" {
   /** See explanation for tlfloat_printf() */
   int tlfloat_vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 
+#if defined(TLFLOAT_DOXYGEN) || __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 14)
+  /** On systems with GLIBC, printf hooks can be registered by calling
+      this function. This function should only be used for backward
+      compatibility only. Please use tlfloat_printf functions. */
+  int tlfloat_registerPrintfHook();
+
+  /** Unregister printf hooks */
+  void tlfloat_unregisterPrintfHook();
+#endif
+
   /** The tlfloat_strtod family of functions provides functionality equivalent to the standard strtod family of functions,
    * but corresponds to the types defined in the TLFloat library. */
   double tlfloat_strtod(const char *, const char **);

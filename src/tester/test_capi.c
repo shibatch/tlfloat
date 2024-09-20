@@ -180,12 +180,14 @@ int main(int argc, char **argv) {
 
   const char *endptr = NULL, *oneTenth = "0.1";
 
-  tlfloat_snprintf(buf0, sizeof(buf0), "%.8g", tlfloat_strtod(oneTenth, &endptr));
+  checkInt(tlfloat_snprintf(buf0, sizeof(buf0), "%.8g", tlfloat_strtod(oneTenth, &endptr)), 3,
+	   "Return value of tlfloat_snprintf 1");
   checkStr(buf0, "0.1", "strtod");
 
   checkInt(endptr - oneTenth, 3, "tlfloat_strtod endptr");
 
-  tlfloat_snprintf(buf0, sizeof(buf0), "%.8g", tlfloat_sin(tlfloat_strtod("0.1", NULL)));
+  checkInt(tlfloat_snprintf(buf0, sizeof(buf0), "%.8g", tlfloat_sin(tlfloat_strtod("0.1", NULL))), 11,
+	   "Return value of tlfloat_snprintf 2");
   checkStr(buf0, "0.099833417", "sin");
 
   tlfloat_snprintf(buf0, sizeof(buf0), "%.8Qg", tlfloat_strtoq("0.1", NULL));
@@ -202,6 +204,24 @@ int main(int argc, char **argv) {
 
   quadmath_snprintf(buf0, sizeof(buf0), "%.8Qg", strtoflt128("0.1", NULL));
   checkStr(buf0, "0.1", "quadmath_snprintf");
+
+  {
+    tlfloat_quad q = tlfloat_strtoq("0.1", NULL);
+    tlfloat_snprintf(buf0, sizeof(buf0), "%.8Pg", &q);
+    checkStr(buf0, "0.1", "strtoq ptr");
+
+    q = tlfloat_sinq(tlfloat_strtoq("0.1", NULL));
+    tlfloat_snprintf(buf0, sizeof(buf0), "%.8Pg", &q);
+    checkStr(buf0, "0.099833417", "sinq ptr");
+
+    q = strtoflt128("0.1", NULL);
+    tlfloat_snprintf(buf0, sizeof(buf0), "%.8Pg", &q);
+    checkStr(buf0, "0.1", "quadmath strtoflt128 ptr");
+
+    q = sinq(strtoflt128("0.1", NULL));
+    tlfloat_snprintf(buf0, sizeof(buf0), "%.8Pg", &q);
+    checkStr(buf0, "0.099833417", "quadmath sinq val ptr");
+  }
 
 #ifdef TLFLOAT_COMPILER_SUPPORTS_FLOAT128
   tlfloat_snprintf(buf0, sizeof(buf0), "%.8Qg", (__float128)1.0 / (__float128)10.0);
@@ -473,6 +493,54 @@ int main(int argc, char **argv) {
   quadmath_snprintf(buf0, sizeof(buf0), "%.24Qg", nextafterq(q0, q2));
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_nextafterq(q0, q2));
   checkStr(buf0, buf1, "quadmath nextafterq");
+
+#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ > 13)
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic ignored "-Wformat"
+#pragma GCC diagnostic ignored "-Wformat-extra-args"
+#endif
+#if defined(__clang__)
+#pragma clang diagnostic ignored "-Wformat-invalid-specifier"
+#endif
+
+  checkInt(tlfloat_registerPrintfHook(), 0, "tlfloat_registerPrintfHook()");
+
+  {
+    tlfloat_quad q = tlfloat_strtoq("0.1", NULL);
+    checkInt(snprintf(buf0, sizeof(buf0), "%.8Qg", q), 3, "snprintf hook 1");
+    checkStr(buf0, "0.1", "strtoq hook");
+
+    q = tlfloat_sinq(tlfloat_strtoq("0.1", NULL));
+    checkInt(snprintf(buf0, sizeof(buf0), "%.8Qg", q), 11, "snprintf hook 2");
+    checkStr(buf0, "0.099833417", "sinq hook");
+
+    q = strtoflt128("0.1", NULL);
+    checkInt(snprintf(buf0, sizeof(buf0), "%.8Qg", q), 3, "snprintf hook 3");
+    checkStr(buf0, "0.1", "quadmath strtoflt128 hook");
+
+    q = sinq(strtoflt128("0.1", NULL));
+    checkInt(snprintf(buf0, sizeof(buf0), "%.8Qg", q), 11, "snprintf hook 4");
+    checkStr(buf0, "0.099833417", "quadmath sinq val hook");
+
+    q = tlfloat_strtoq("0.1", NULL);
+    checkInt(snprintf(buf0, sizeof(buf0), "%.8Pg", &q), 3, "snprintf hook 5");
+    checkStr(buf0, "0.1", "strtoq ptr hook");
+
+    q = tlfloat_sinq(tlfloat_strtoq("0.1", NULL));
+    checkInt(snprintf(buf0, sizeof(buf0), "%.8Pg", &q), 11, "snprintf hook 6");
+    checkStr(buf0, "0.099833417", "sinq ptr hook");
+
+    q = strtoflt128("0.1", NULL);
+    checkInt(snprintf(buf0, sizeof(buf0), "%.8Pg", &q), 3, "snprintf hook 7");
+    checkStr(buf0, "0.1", "quadmath strtoflt128 ptr hook");
+
+    q = sinq(strtoflt128("0.1", NULL));
+    checkInt(snprintf(buf0, sizeof(buf0), "%.8Pg", &q), 11, "snprintf hook 8");
+    checkStr(buf0, "0.099833417", "quadmath sinq val ptr hook");
+  }
+
+  tlfloat_unregisterPrintfHook();
+#endif
 
 #ifdef __STDC_VERSION__
   tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_Eq);
