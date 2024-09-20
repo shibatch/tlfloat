@@ -97,9 +97,9 @@ extern "C" {
   int tlfloat_vsnprintf(char *str, size_t size, const char *fmt, va_list ap);
 
 #if defined(TLFLOAT_DOXYGEN) || __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 14)
-  /** On systems with GLIBC, printf hooks can be registered by calling
-      this function. This function should only be used for backward
-      compatibility only. Please use tlfloat_printf functions. */
+  /** This functionality is experimental. Please use tlfloat_printf
+      functions instead. On systems with GLIBC, printf hooks can be
+      registered by calling this function.  */
   int tlfloat_registerPrintfHook();
 
   /** Unregister printf hooks */

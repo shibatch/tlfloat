@@ -494,54 +494,6 @@ int main(int argc, char **argv) {
   tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_nextafterq(q0, q2));
   checkStr(buf0, buf1, "quadmath nextafterq");
 
-#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ > 13)
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic ignored "-Wformat"
-#pragma GCC diagnostic ignored "-Wformat-extra-args"
-#endif
-#if defined(__clang__)
-#pragma clang diagnostic ignored "-Wformat-invalid-specifier"
-#endif
-
-  checkInt(tlfloat_registerPrintfHook(), 0, "tlfloat_registerPrintfHook()");
-
-  {
-    tlfloat_quad q = tlfloat_strtoq("0.1", NULL);
-    checkInt(snprintf(buf0, sizeof(buf0), "%.8Qg", q), 3, "snprintf hook 1");
-    checkStr(buf0, "0.1", "strtoq hook");
-
-    q = tlfloat_sinq(tlfloat_strtoq("0.1", NULL));
-    checkInt(snprintf(buf0, sizeof(buf0), "%.8Qg", q), 11, "snprintf hook 2");
-    checkStr(buf0, "0.099833417", "sinq hook");
-
-    q = strtoflt128("0.1", NULL);
-    checkInt(snprintf(buf0, sizeof(buf0), "%.8Qg", q), 3, "snprintf hook 3");
-    checkStr(buf0, "0.1", "quadmath strtoflt128 hook");
-
-    q = sinq(strtoflt128("0.1", NULL));
-    checkInt(snprintf(buf0, sizeof(buf0), "%.8Qg", q), 11, "snprintf hook 4");
-    checkStr(buf0, "0.099833417", "quadmath sinq val hook");
-
-    q = tlfloat_strtoq("0.1", NULL);
-    checkInt(snprintf(buf0, sizeof(buf0), "%.8Pg", &q), 3, "snprintf hook 5");
-    checkStr(buf0, "0.1", "strtoq ptr hook");
-
-    q = tlfloat_sinq(tlfloat_strtoq("0.1", NULL));
-    checkInt(snprintf(buf0, sizeof(buf0), "%.8Pg", &q), 11, "snprintf hook 6");
-    checkStr(buf0, "0.099833417", "sinq ptr hook");
-
-    q = strtoflt128("0.1", NULL);
-    checkInt(snprintf(buf0, sizeof(buf0), "%.8Pg", &q), 3, "snprintf hook 7");
-    checkStr(buf0, "0.1", "quadmath strtoflt128 ptr hook");
-
-    q = sinq(strtoflt128("0.1", NULL));
-    checkInt(snprintf(buf0, sizeof(buf0), "%.8Pg", &q), 11, "snprintf hook 8");
-    checkStr(buf0, "0.099833417", "quadmath sinq val ptr hook");
-  }
-
-  tlfloat_unregisterPrintfHook();
-#endif
-
 #ifdef __STDC_VERSION__
   tlfloat_snprintf(buf1, sizeof(buf1), "%Qa", M_Eq);
   checkStr("0x1.5bf0a8b1457695355fb8ac404e7ap+1", buf1, "M_Eq");

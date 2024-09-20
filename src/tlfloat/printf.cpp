@@ -469,21 +469,10 @@ extern "C" {
   static int printf_Qmodifier = -1, printf_Pmodifier = -1;
 
   static void tlfloat_quad_va(void *ptr, va_list *ap) { 
-    *(tlfloat_quad_ *)ptr = va_arg(*ap, tlfloat_quad_);
+    *(tlfloat_quad *)ptr = va_arg(*ap, tlfloat_quad);
   }
 
   static int printf_arginfo(const struct printf_info *info, size_t n, int *argtypes, int *s) {
-    if (info->user & printf_Qmodifier) {
-      argtypes[0] = pa_quad;
-      return 1;
-    } else if (info->user & printf_Pmodifier) {
-      argtypes[0] = PA_FLAG_PTR | pa_quad;
-      return 1;
-    }
-    return -1;
-  }
-
-  static int printf_arginfo2(const struct printf_info *info, size_t n, int *argtypes) {
     if (info->user & printf_Qmodifier) {
       argtypes[0] = pa_quad;
       return 1;
@@ -501,7 +490,7 @@ extern "C" {
     char *xbuf = (char *)malloc(XBUFSIZE+10);
     int len = -1;
 
-    len = snprint(xbuf, XBUFSIZE, Quad(**(const tlfloat_quad_ **)args[0]).getUnpacked(),
+    len = snprint(xbuf, XBUFSIZE, Quad(**(const tlfloat_quad **)args[0]).getUnpacked(),
 		  tolower(info->spec), info->width, info->prec,
 		  info->showsign, info->space, info->alt, info->left, false, isupper(info->spec));
 
