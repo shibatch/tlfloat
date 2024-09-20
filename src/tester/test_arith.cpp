@@ -22,11 +22,6 @@ using namespace std;
 using namespace tlfloat;
 using namespace tlfloat::detail;
 
-static_assert(is_trivially_copyable_v<Float> == true);
-static_assert(is_trivially_copyable_v<Double> == true);
-static_assert(is_trivially_copyable_v<Quad> == true);
-static_assert(is_trivially_copyable_v<Octuple> == true);
-
 static_assert(Float::flt_min() == FLT_MIN);
 static_assert(Float::flt_true_min() == FLT_TRUE_MIN);
 static_assert(Float::flt_max() == FLT_MAX);

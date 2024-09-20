@@ -1527,6 +1527,28 @@ namespace tlfloat {
       return length;
     }
   };
+
+  static_assert(sizeof(BigUInt< 6>) == (1 << ( 6-3)));
+  static_assert(sizeof(BigUInt< 7>) == (1 << ( 7-3)));
+  static_assert(sizeof(BigUInt< 8>) == (1 << ( 8-3)));
+  static_assert(sizeof(BigUInt< 9>) == (1 << ( 9-3)));
+  static_assert(sizeof(BigUInt<10>) == (1 << (10-3)));
+
+  static_assert(sizeof(BigInt< 7>) == (1 << ( 7-3)));
+  static_assert(sizeof(BigInt< 8>) == (1 << ( 8-3)));
+  static_assert(sizeof(BigInt< 9>) == (1 << ( 9-3)));
+  static_assert(sizeof(BigInt<10>) == (1 << (10-3)));
+
+  static_assert(std::is_trivially_copyable_v<BigUInt<6>>);
+  static_assert(std::is_trivially_copyable_v<BigUInt<7>>);
+  static_assert(std::is_trivially_copyable_v<BigUInt<8>>);
+  static_assert(std::is_trivially_copyable_v<BigUInt<9>>);
+  static_assert(std::is_trivially_copyable_v<BigUInt<10>>);
+
+  static_assert(std::is_trivially_copyable_v<BigInt<7>>);
+  static_assert(std::is_trivially_copyable_v<BigInt<8>>);
+  static_assert(std::is_trivially_copyable_v<BigInt<9>>);
+  static_assert(std::is_trivially_copyable_v<BigInt<10>>);
 }
 
 #if defined(TLFLOAT_DOXYGEN) || !defined(TLFLOAT_NO_LIBSTDCXX)

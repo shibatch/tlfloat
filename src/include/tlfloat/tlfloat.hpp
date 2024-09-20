@@ -1757,5 +1757,17 @@ namespace tlfloat {
   typedef TLFloat<detail::UnpackedFloat<uint64_t, BigUInt<7>, 11, 52>> Double; ///< This class represents a double-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
   typedef TLFloat<detail::UnpackedFloat<BigUInt<7>, BigUInt<8>, 15, 112>> Quad; ///< This class represents a quadruple-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
   typedef TLFloat<detail::UnpackedFloat<BigUInt<8>, BigUInt<9>, 19, 236>> Octuple; ///< This class represents a octuple-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
+
+  static_assert(sizeof(Half) == 2);
+  static_assert(sizeof(Float) == 4);
+  static_assert(sizeof(Double) == 8);
+  static_assert(sizeof(Quad) == 16);
+  static_assert(sizeof(Octuple) == 32);
+
+  static_assert(std::is_trivially_copyable_v<Half>);
+  static_assert(std::is_trivially_copyable_v<Float>);
+  static_assert(std::is_trivially_copyable_v<Double>);
+  static_assert(std::is_trivially_copyable_v<Quad>);
+  static_assert(std::is_trivially_copyable_v<Octuple>);
 } // namespace tlfloat
 #endif // #ifndef __TLFLOAT_HPP_INCLUDED__

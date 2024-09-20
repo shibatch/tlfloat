@@ -14,16 +14,6 @@
 using namespace std;
 using namespace tlfloat;
 
-static_assert(is_trivially_copyable_v<BigUInt<6>> == true);
-static_assert(is_trivially_copyable_v<BigUInt<7>> == true);
-static_assert(is_trivially_copyable_v<BigUInt<8>> == true);
-static_assert(is_trivially_copyable_v<BigUInt<9>> == true);
-static_assert(is_trivially_copyable_v<BigUInt<10>> == true);
-static_assert(is_trivially_copyable_v<BigInt<7>> == true);
-static_assert(is_trivially_copyable_v<BigInt<8>> == true);
-static_assert(is_trivially_copyable_v<BigInt<9>> == true);
-static_assert(is_trivially_copyable_v<BigInt<10>> == true);
-
 template<int N>
 xpair<BigUInt<N+1>, BigUInt<N+1>> xdivmod2(BigUInt<N> n, BigUInt<N> d) {
   BigUInt<N+1> xn = BigUInt<N+1>(n) << ((1 << N) - 1);

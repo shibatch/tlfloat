@@ -1893,6 +1893,9 @@ namespace tlfloat {
   }
 #endif
 }
+
+static_assert(sizeof(tlfloat_quad) == 16, "sizeof(tlfloat_quad)");
+static_assert(sizeof(tlfloat_octuple) == 32, "sizeof(tlfloat_octuple)");
 #endif // #if defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
 
 //

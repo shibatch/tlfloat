@@ -1,7 +1,7 @@
 
 # Community Guidelines for Sustainability of Open-Source Ecosystem
 
-Version 0.8, 2024-08-??
+Version 0.8, 2024-09-19
 
 Copyright Naoki Shibata 2024. https://github.com/shibatch/nofreelunch
 
@@ -322,9 +322,15 @@ not an issue. In reality, however, in many cases, even educational and
 research institutions do not support FOSS operations in their work
 content. Some institutions clearly disregard their contribution to FOSS
 projects. In such cases, free-riding should be considered a problem
-even for educational and research institutions. I hope that the status
-of support for FOSS by educational and research institutions, including
-indirect ones, will become visible.
+even for educational and research institutions. In addition, if FOSS
+plays an important role in a research project with a large research
+budget, it is only natural that the research project should make a
+commensurate contribution to the associated FOSS project. When
+applying for a research budget, the cost of the contribution to the
+relevant projects of the FOSS to be used in the research should be
+accounted for. I hope that the status of support for FOSS by
+educational and research institutions, including indirect ones, will
+become visible.
 
 There is another reason why companies should pay for the maintenance
 of FOSS. Public goods such as flood control and public road
@@ -385,7 +391,7 @@ and smooth discussions.
   not last long.
 
 * Project members strive to promote the awareness that it is natural
-  for companies that make a profit from the commercial use of open
+  for organizations that make a profit from the commercial use of open
   source or free software to make contribution commensurate with the
   increased profits from the use of the software to relevant projects,
   where the contribution is made in order for the project to serve
@@ -399,6 +405,11 @@ and smooth discussions.
   * Providing in-kind equipment, services, and software necessary to
     run the project
   * Providing any other items needed for the project
+
+* Project members strive to promote the awareness that organizations
+  that benefit from the commercial use of open source or free software
+  should voluntarily and actively offer to contribute to the projects,
+  not wait until they are asked to do so by the projects.
 
 * Project members strive to promote that companies should give high
   recognition to their members who contribute to open source or free
