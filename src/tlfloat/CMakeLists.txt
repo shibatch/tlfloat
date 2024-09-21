@@ -8,7 +8,7 @@ if (BUILD_LIBS)
 
   add_library(tlfloat printf.cpp)
   target_compile_options(tlfloat PRIVATE ${NOEXCEPT_CXX_FLAGS})
-  target_link_libraries(tlfloat tlfloat_inline)
+  target_link_libraries(tlfloat PRIVATE tlfloat_inline)
 
   set(INCLUDEDIR "${PROJECT_SOURCE_DIR}/src/include")
   set(VERFILE "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatconfig.hpp")
@@ -18,9 +18,10 @@ if (BUILD_LIBS)
     PUBLIC_HEADER "${INCLUDEDIR}/tlfloat/bigint.hpp;${INCLUDEDIR}/tlfloat/rpitab.hpp;${INCLUDEDIR}/tlfloat/tlfloat.hpp;${INCLUDEDIR}/tlfloat/tlmath.hpp;${INCLUDEDIR}/tlfloat/tlmathcoef.hpp;${INCLUDEDIR}/tlfloat/tlfloat.h;${VERFILE}"
     )
   install(
-    TARGETS tlfloat
+    TARGETS tlfloat tlfloat_inline
+    EXPORT tlfloatTargets
     LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-    PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_PREFIX}/include/tlfloat"
+    PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/tlfloat"
     COMPONENT tlfloat_Development
     )
 
@@ -30,9 +31,30 @@ else(BUILD_LIBS)
   set(VERFILE "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatconfig.hpp")
   install(
     FILES "${INCLUDEDIR}/tlfloat/bigint.hpp" "${INCLUDEDIR}/tlfloat/rpitab.hpp" "${INCLUDEDIR}/tlfloat/tlfloat.hpp" "${INCLUDEDIR}/tlfloat/tlmath.hpp" "${INCLUDEDIR}/tlfloat/tlmathcoef.hpp" "${INCLUDEDIR}/tlfloat/tlfloat.h" "${VERFILE}"
-    DESTINATION "${CMAKE_INSTALL_PREFIX}/include/tlfloat"
+    EXPORT tlfloatTargets
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/tlfloat"
     )
 
 endif(BUILD_LIBS)
 
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/tlfloat.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/tlfloat.pc" @ONLY)
+install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/tlfloat.pc"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
+    COMPONENT tlfloat_Development
+)
 
+if (FALSE)
+  # Currently disabled because I still don't fully understand how this works
+
+  configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/tlfloatConfig.cmake.in" "${CMAKE_CURRENT_BINARY_DIR}/tlfloatConfig.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/tlfloat"
+    )
+
+  install(
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/tlfloatConfig.cmake"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/tlfloat"
+    COMPONENT tlfloat_Development
+    )
+endif()

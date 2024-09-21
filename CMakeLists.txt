@@ -59,6 +59,8 @@ if (NOT EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
   endif()
 endif()
 
+include(GNUInstallDirs)
+
 # Include packages
 
 if (NOT CMAKE_CROSSCOMPILING)
@@ -85,9 +87,6 @@ if (NOT LIBM)
 endif()
 
 find_package(OpenMP)
-
-set(INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}/")
-set(INSTALL_BINDIR "${INSTALL_PREFIX}bin")
 
 # Detect compiler capabilities
 
@@ -309,6 +308,34 @@ configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/tlfloatconfig.hpp.in"
 
 configure_file("${PROJECT_SOURCE_DIR}/src/include/detect.h.in"
   "${PROJECT_BINARY_DIR}/include/detect.h" @ONLY)
+
+# Install CMake package config
+
+if (FALSE)
+  # Currently disabled because I still don't fully understand how this works
+
+  include(CMakePackageConfigHelpers)
+
+  write_basic_package_version_file(
+    tlfloatConfigVersion.cmake
+    VERSION "${TLFLOAT_VERSION}"
+    COMPATIBILITY SameMajorVersion
+    )
+
+  install(
+    EXPORT tlfloatTargets
+    FILE tlfloatConfigVersion.cmake
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/tlfloat"
+    COMPONENT tlfloat_Development
+    )
+
+  install(
+    EXPORT tlfloatTargets
+    NAMESPACE tlfloat::
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/tlfloat"
+    COMPONENT tlfloat_Development
+    )
+endif()
 
 #
 

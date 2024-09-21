@@ -1,0 +1,9 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+includedir=@CMAKE_INSTALL_FULL_INCLUDEDIR@
+
+Name: TLFloat
+Description: C++ template library for floating point operations
+Version: @TLFLOAT_VERSION@
+Cflags: -I${includedir}
+Libs: -L${libdir} -ltlfloat
