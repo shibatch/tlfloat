@@ -66,6 +66,17 @@ static void check(const string& msg, int x, int y) {
   exit(-1);
 }
 
+static void check_ilogb(const string& msg, int t, int c) {
+  if (t == TLFLOAT_FP_ILOGB0 && c == FP_ILOGB0) return;
+  if (t == TLFLOAT_FP_ILOGBNAN && c == FP_ILOGBNAN) return;
+  if (t == c) return;
+
+  cout << "NG " << msg << endl;
+  printf("t : %d\n", t);
+  printf("c : %d\n", c);
+  exit(-1);
+}
+
 static void check(const string& msg, bool x, bool y) {
   check(msg, (int)x, (int)y);
 }
@@ -361,7 +372,7 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_remquoo(o1, o2, &quo) remainder", tlfloat_remquoo(o1, o2, &qt), remquo(d1, d2, &qc), T);
   checkQuo("tlfloat_remquoo(o1, o2, &quo) quo", qt, qc);
 #endif
-  check("tlfloat_ilogbo(o1)", tlfloat_ilogbo(o1), ilogb(d1));
+  check_ilogb("tlfloat_ilogbo(o1)", tlfloat_ilogbo(o1), ilogb(d1));
   check("tlfloat_isnano(o1)", (bool)tlfloat_isnano(o1), (bool)isnan(d1));
   check("tlfloat_isinfo(o1)", (bool)tlfloat_isinfo(o1), (bool)isinf(d1));
   check("tlfloat_finiteo(o1)", (bool)tlfloat_finiteo(o1), (bool)finite_(d1));
@@ -424,7 +435,7 @@ void doTest(const string &s1, const string &s2) {
   check("tlfloat_remquoq(q1, q2, &quo) remainder", tlfloat_remquoq(q1, q2, &qt), remquo(d1, d2, &qc), T);
   checkQuo("tlfloat_remquoq(q1, q2, &quo) quo", qt, qc);
 #endif
-  check("tlfloat_ilogbq(q1)", tlfloat_ilogbq(q1), ilogb(d1));
+  check_ilogb("tlfloat_ilogbq(q1)", tlfloat_ilogbq(q1), ilogb(d1));
   check("tlfloat_isnanq(q1)", (bool)tlfloat_isnanq(q1), (bool)isnan(d1));
   check("tlfloat_isinfq(q1)", (bool)tlfloat_isinfq(q1), (bool)isinf(d1));
   check("tlfloat_finiteq(q1)", (bool)tlfloat_finiteq(q1), (bool)finite_(d1));
@@ -489,7 +500,7 @@ void doTest(const string &s1, const string &s2) {
   check("remquoq(q1, q2, &quo) remainder", remquoq(q1, q2, &qt), remquo(d1, d2, &qc), T);
   checkQuo("remquoq(q1, q2, &quo) quo", qt, qc);
 #endif
-  check("ilogbq(q1)", ilogbq(q1), ilogb(d1));
+  check_ilogb("ilogbq(q1)", ilogbq(q1), ilogb(d1));
   check("isnanq(q1)", (bool)isnanq(q1), (bool)isnan(d1));
   check("isinfq(q1)", (bool)isinfq(q1), (bool)isinf(d1));
   check("finiteq(q1)", (bool)finiteq(q1), (bool)finite_(d1));

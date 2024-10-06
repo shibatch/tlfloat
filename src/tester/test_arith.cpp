@@ -898,13 +898,17 @@ int main(int argc, char **argv) {
     static const quad qp1k = (quad)(0x1p+512) * (quad)(0x1p+512), qn1k = (quad)(0x1p-1024);
 
     if ((i & 3) == 0) {
-      if (ilogbq(q1) != ilogb(Quad(q1))) {
-	cout << "ilogb" << endl;
-	cout << "q1: " << q1  << " : " << to_string_d(uquad(q1)) << endl;
-	cout << "c : " << ilogbq(q1) << endl;
-	cout << "t : " << ilogb(Quad(q1)) << endl;
-	cout << "NG" << endl;
-	exit(-1);
+      {
+	int c = ilogbq(q1), t = ilogb(Quad(q1));
+	if (!(t == c) && !(t == TLFLOAT_FP_ILOGB0 && c == FP_ILOGB0) &&
+	    !(t == TLFLOAT_FP_ILOGBNAN && c == FP_ILOGBNAN)) {
+	  cout << "ilogb" << endl;
+	  cout << "q1: " << q1  << " : " << to_string_d(uquad(q1)) << endl;
+	  cout << "c : " << c << endl;
+	  cout << "t : " << t << endl;
+	  cout << "NG" << endl;
+	  exit(-1);
+	}
       }
 
       if (qn1k * 1e-300 < q1 && q1 < qp1k * 1e+300 && !cmpq((quad)sqrt(Quad(q1)), sqrtq(q1), 1)) {
