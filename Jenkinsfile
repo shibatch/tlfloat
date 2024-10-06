@@ -5,7 +5,7 @@ pipeline {
         stage('Preamble') {
             parallel {
                 stage('x86_64 linux clang-18') {
-            	     agent { label 'x86_64 && ubuntu22 && cuda' }
+            	     agent { label 'x86_64 && ubuntu24 && cuda' }
                      options { skipDefaultCheckout() }
             	     steps {
                          cleanWs()
@@ -14,8 +14,7 @@ pipeline {
                 	 echo "x86_64 clang-18 on" `hostname`
 			 export CC=clang-18
 			 export CXX=clang++-18
-			 export CUDACXX=/opt/cuda-12.4/bin/nvcc
-			 rm -rf build
+			 export CUDACXX=/opt/cuda-12.6/bin/nvcc
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_CUDA_TEST=True ..
@@ -27,7 +26,7 @@ pipeline {
                 }
 
                 stage('x86_64 linux emscripten') {
-            	     agent { label 'x86_64 && ubuntu22 && emscripten' }
+            	     agent { label 'x86_64 && ubuntu24 && emscripten' }
                      options { skipDefaultCheckout() }
             	     steps {
                          cleanWs()
@@ -38,7 +37,6 @@ pipeline {
 			 ~/opt/emsdk/emsdk install latest
 			 ~/opt/emsdk/emsdk activate latest
 			 source ~/opt/emsdk/emsdk_env.sh
-			 rm -rf build
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=$EMSDK/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake -DSET_COMPILER_SUPPORTS_INT128=False -DSET_COMPILER_SUPPORTS_FLOAT128=False -DSET_LONGDOUBLE_IS_FLOAT128=False ..
@@ -57,7 +55,6 @@ pipeline {
                          checkout scm
 	    	     	 sh '''
                 	 echo "x86_64 freebsd on" `hostname`
-			 rm -rf build
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_ASAN=False ..
@@ -68,17 +65,16 @@ pipeline {
             	     }
                 }
 
-                stage('x86_64 linux gcc-11') {
-            	     agent { label 'x86_64 && ubuntu22' }
+                stage('x86_64 linux gcc-13') {
+            	     agent { label 'x86_64 && ubuntu24' }
                      options { skipDefaultCheckout() }
             	     steps {
                          cleanWs()
                          checkout scm
 	    	     	 sh '''
-                	 echo "x86_64 gcc-11 on" `hostname`
-			 export CC=gcc-11
-			 export CXX=g++-11
-			 rm -rf build
+                	 echo "x86_64 gcc-13 on" `hostname`
+			 export CC=gcc-13
+			 export CXX=g++-13
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_ASAN=True ..
@@ -99,7 +95,6 @@ pipeline {
                 	 echo "aarch64 gcc-11 on" `hostname`
 			 export CC=gcc-11
 			 export CXX=g++-11
-			 rm -rf build
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
@@ -120,7 +115,6 @@ pipeline {
                 	 echo "aarch64 clang-18 on" `hostname`
 			 export CC=clang-18
 			 export CXX=clang++-18
-			 rm -rf build
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_ASAN=True ..
@@ -141,7 +135,6 @@ pipeline {
                 	 echo "arm32 gcc-12 on" `hostname`
 			 export CC=gcc-12
 			 export CXX=g++-12
-			 rm -rf build
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
@@ -196,7 +189,6 @@ pipeline {
 			 eval "$(/opt/homebrew/bin/brew shellenv)"
 			 export CC=gcc-13
 			 export CXX=g++-13
-			 rm -rf build
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_BENCH=True -DENABLE_INLINING=True ..
@@ -217,7 +209,6 @@ pipeline {
                 	 echo "i386 gcc-12 on" `hostname`
 			 export CC=gcc-12
 			 export CXX=g++-12
-			 rm -rf build
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
@@ -238,7 +229,6 @@ pipeline {
                 	 echo "riscv gcc-13 on" `hostname`
 			 export CC=gcc-13
 			 export CXX=g++-13
-			 rm -rf build
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
@@ -259,7 +249,6 @@ pipeline {
 			 eval "$(/opt/homebrew/bin/brew shellenv)"
 			 export CC=/opt/homebrew/opt/llvm@17/bin/clang-17
 			 export CXX=/opt/homebrew/opt/llvm@17/bin/clang++
-			 rm -rf build
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DBUILD_BENCH=True -DENABLE_INLINING=True ..

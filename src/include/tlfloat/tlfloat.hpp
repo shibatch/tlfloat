@@ -11,6 +11,8 @@
 #define TLFLOAT_FP_ZERO 2
 #define TLFLOAT_FP_SUBNORMAL 3
 #define TLFLOAT_FP_NORMAL 4
+#define TLFLOAT_FP_ILOGB0 ((int)0x80000000)
+#define TLFLOAT_FP_ILOGBNAN ((int)2147483647)
 #endif
 
 namespace tlfloat {
@@ -1609,9 +1611,9 @@ namespace tlfloat {
     friend constexpr int32_t ilogb(const TLFloat& f) {
       auto u = f.getUnpacked();
       if (u.isinf) return 2147483647;
-      if (u.isnan) return FP_ILOGBNAN;
+      if (u.isnan) return TLFLOAT_FP_ILOGBNAN;
       if (u.exp != 0) return u.exp - Unpacked_t::expoffset() + 1;
-      if (u.mant == 0) return FP_ILOGB0;
+      if (u.mant == 0) return TLFLOAT_FP_ILOGB0;
       return (sizeof(mant_t) * 8 - Unpacked_t::nbmant_()) - Unpacked_t::clz(u.mant) - Unpacked_t::expoffset();
     }
 

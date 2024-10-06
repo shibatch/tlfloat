@@ -31,7 +31,6 @@ else(BUILD_LIBS)
   set(VERFILE "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatconfig.hpp")
   install(
     FILES "${INCLUDEDIR}/tlfloat/bigint.hpp" "${INCLUDEDIR}/tlfloat/rpitab.hpp" "${INCLUDEDIR}/tlfloat/tlfloat.hpp" "${INCLUDEDIR}/tlfloat/tlmath.hpp" "${INCLUDEDIR}/tlfloat/tlmathcoef.hpp" "${INCLUDEDIR}/tlfloat/tlfloat.h" "${VERFILE}"
-    EXPORT tlfloatTargets
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/tlfloat"
     )
 
