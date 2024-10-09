@@ -265,6 +265,22 @@ pipeline {
 			 '''
             	     }
                 }
+
+                stage('x86_64 windows clang-cl') {
+            	     agent { label 'windows11 && vs2022' }
+                     options { skipDefaultCheckout() }
+            	     steps {
+                         cleanWs()
+                         checkout scm
+		     	 bat """
+			 call "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Auxiliary\\Build\\vcvars64.bat"
+			 if not %ERRORLEVEL% == 0 exit /b %ERRORLEVEL%
+			 call "winbuild-clang-cl.bat" -DCMAKE_BUILD_TYPE=Release
+			 exit /b %ERRORLEVEL%
+			 """
+		     }
+		}
+
             }
         }
     }
