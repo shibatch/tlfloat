@@ -223,7 +223,12 @@ namespace tlfloat {
 #if !(defined(__GNUC__) && !defined(__clang__))
 	static_assert(x.nbexp_() == 0);
 #endif
-	if (!x.iszero) x.exp += e;
+	if (!x.iszero) {
+	  int64_t y = x.exp + (int64_t)e;
+	  if (y < INT32_MIN) return zero(x.sign);
+	  if (y > INT32_MAX) return infinity(x.sign);
+	  x.exp = y;
+	}
 	return x;
       }
 
@@ -729,16 +734,16 @@ namespace tlfloat {
       constexpr TLFLOAT_INLINE dsttype cast(const dsttype *ptr) const {
 	typedef decltype(dsttype::mant) dmant_t;
 	if constexpr (dsttype::nbmant_() > nbmant) {
-	  int e = exp - expoffset() + dsttype::expoffset();
+	  int64_t e = (int64_t)exp - expoffset() + dsttype::expoffset();
 	  const int x = clz(mant) - (sizeof(mant_t) * 8 - nbmant - 1);
 	  e -= x;
 	  dmant_t m = dmant_t(mant) << (dsttype::nbmant_() - nbmant + x);
 	  if (isinf || isnan) e = (1 << dsttype::nbexp_()) - 2;
 	  if (iszero) e = 0;
-	  return dsttype(m, e, sign, iszero, isinf, isnan);
+	  return dsttype(m, (int)e, sign, iszero, isinf, isnan);
 	} else if constexpr (dsttype::nbmant_() < nbmant) {
 	  bool isinf_ = isinf, sb = false;
-	  int e = exp - expoffset() + dsttype::expoffset();
+	  int64_t e = (int64_t)exp - expoffset() + dsttype::expoffset();
 	  mant_t m = mant;
 	  if constexpr (dsttype::nbexp_() != 0) {
 	    if (e >= (1 << dsttype::nbexp_()) - 2) isinf_ = true;
@@ -759,7 +764,7 @@ namespace tlfloat {
 	  bool iszero_ = iszero;
 	  if (dmant_t(m) == 0) iszero_ = true;
 	  if (iszero_) e = 0;
-	  return dsttype(dmant_t(m), e, sign, iszero_, isinf_, isnan);
+	  return dsttype(dmant_t(m), (int)e, sign, iszero_, isinf_, isnan);
 	} else {
 	  return dsttype(mant, exp, sign, iszero, isinf, isnan);
 	}

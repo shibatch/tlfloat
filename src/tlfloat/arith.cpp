@@ -12,15 +12,23 @@
 using namespace tlfloat;
 
 extern "C" {
+  float tlfloat_addf(const float x, const float y) { return (float)(Float(x) + Float(y)); }
+  double tlfloat_add(const double x, const double y) { return (double)(Double(x) + Double(y)); }
   tlfloat_quad_ tlfloat_addq(const tlfloat_quad_ x, const tlfloat_quad_ y) { return (tlfloat_quad_)(Quad(x) + Quad(y)); }
   tlfloat_octuple_ tlfloat_addo(const tlfloat_octuple_ x, const tlfloat_octuple_ y) { return (tlfloat_octuple_)(Octuple(x) + Octuple(y)); }
 
+  float tlfloat_subf(const float x, const float y) { return (float)(Float(x) - Float(y)); }
+  double tlfloat_sub(const double x, const double y) { return (double)(Double(x) - Double(y)); }
   tlfloat_quad_ tlfloat_subq(const tlfloat_quad_ x, const tlfloat_quad_ y) { return (tlfloat_quad_)(Quad(x) - Quad(y)); }
   tlfloat_octuple_ tlfloat_subo(const tlfloat_octuple_ x, const tlfloat_octuple_ y) { return (tlfloat_octuple_)(Octuple(x) - Octuple(y)); }
 
+  float tlfloat_mulf(const float x, const float y) { return (float)(Float(x) * Float(y)); }
+  double tlfloat_mul(const double x, const double y) { return (double)(Double(x) * Double(y)); }
   tlfloat_quad_ tlfloat_mulq(const tlfloat_quad_ x, const tlfloat_quad_ y) { return (tlfloat_quad_)(Quad(x) * Quad(y)); }
   tlfloat_octuple_ tlfloat_mulo(const tlfloat_octuple_ x, const tlfloat_octuple_ y) { return (tlfloat_octuple_)(Octuple(x) * Octuple(y)); }
 
+  float tlfloat_divf(const float x, const float y) { return (float)(Float(x) / Float(y)); }
+  double tlfloat_div(const double x, const double y) { return (double)(Double(x) / Double(y)); }
   tlfloat_quad_ tlfloat_divq(const tlfloat_quad_ x, const tlfloat_quad_ y) { return (tlfloat_quad_)(Quad(x) / Quad(y)); }
   tlfloat_octuple_ tlfloat_divo(const tlfloat_octuple_ x, const tlfloat_octuple_ y) { return (tlfloat_octuple_)(Octuple(x) / Octuple(y)); }
 
@@ -37,7 +45,7 @@ extern "C" {
   //
 
   float tlfloat_negf(const float x) { return (float)-Float(x); }
-  double tlfloat_negs(const double x) { return (double)-Double(x); }
+  double tlfloat_neg(const double x) { return (double)-Double(x); }
   tlfloat_quad_ tlfloat_negq(const tlfloat_quad_ x) { return (tlfloat_quad_)-Quad(x); }
   tlfloat_octuple_ tlfloat_nego(const tlfloat_octuple_ x) { return (tlfloat_octuple_)-Octuple(x); }
 

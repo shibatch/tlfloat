@@ -255,23 +255,36 @@ extern "C" {
 
   //
 
+  float tlfloat_addf(const float x, const float y);
+  double tlfloat_add(const double x, const double y);
   /** This function performs addition of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad_ tlfloat_addq(const tlfloat_quad_ x, const tlfloat_quad_ y);
   /** This function performs addition of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_addo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+
+  float tlfloat_subf(const float x, const float y);
+  double tlfloat_sub(const double x, const double y);
   /** This function performs subtraction of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad_ tlfloat_subq(const tlfloat_quad_ x, const tlfloat_quad_ y);
   /** This function performs subtraction of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_subo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+
+  float tlfloat_mulf(const float x, const float y);
+  double tlfloat_mul(const double x, const double y);
   /** This function performs multiplication of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad_ tlfloat_mulq(const tlfloat_quad_ x, const tlfloat_quad_ y);
   /** This function performs multiplication of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_mulo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+
+  float tlfloat_divf(const float x, const float y);
+  double tlfloat_div(const double x, const double y);
   /** This function performs division of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad_ tlfloat_divq(const tlfloat_quad_ x, const tlfloat_quad_ y);
   /** This function performs division of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_divo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
+  float tlfloat_negf(const float x);
+  double tlfloat_neg(const double x);
   tlfloat_quad_ tlfloat_negq(const tlfloat_quad_ x);
   tlfloat_octuple_ tlfloat_nego(const tlfloat_octuple_ x);
 
@@ -1975,6 +1988,11 @@ namespace tlfloat {
   static inline tlfloat_octuple OP ## _(const tlfloat_octuple &x, const tlfloat_octuple &y, const tlfloat_octuple &z) { return tlfloat_ ## OP ## o(x, y, z); } \
   static_assert(true, "")
 
+  TLFLOAT_POLYFUNC_f_f_f(add);
+  TLFLOAT_POLYFUNC_f_f_f(sub);
+  TLFLOAT_POLYFUNC_f_f_f(mul);
+  TLFLOAT_POLYFUNC_f_f_f(div);
+  TLFLOAT_POLYFUNC_f_f(neg);
   TLFLOAT_POLYFUNC_f_f_f_f(fma);
   TLFLOAT_POLYFUNC_f_f(sqrt);
   TLFLOAT_POLYFUNC_f_f(cbrt);
