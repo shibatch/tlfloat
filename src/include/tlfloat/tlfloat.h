@@ -1880,6 +1880,18 @@ static inline tlfloat_octuple tlfloat_remquoo(const tlfloat_octuple x, const tlf
 
 namespace tlfloat {
 #ifndef TLFLOAT_NO_LIBSTDCXX
+  static inline std::string to_string(const float a, int d=6) {
+    std::vector<char> buf(1000);
+    tlfloat_snprintf(buf.data(), buf.size(), "%.*g", d, (double)a);
+    return std::string(buf.data());
+  }
+
+  static inline std::string to_string(const double a, int d=6) {
+    std::vector<char> buf(1000);
+    tlfloat_snprintf(buf.data(), buf.size(), "%.*g", d, a);
+    return std::string(buf.data());
+  }
+
   static inline std::string to_string(const tlfloat_quad& a, int d=6) {
     std::vector<char> buf(1000);
     tlfloat_snprintf(buf.data(), buf.size(), "%.*Qg", d, a);
