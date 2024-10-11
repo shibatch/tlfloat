@@ -23,7 +23,7 @@
 #define TLFLOAT_VERSION_MINOR
 
 /** TLFLOAT_VERSION_MAJOR is the patch level of TLFloat library */
-#define TLFLOAT_VERSION_PATCHLEVEL
+#define TLFLOAT_VERSION_PATCH
 #endif
 
 /*! \cond NO_DOCUMENTATION_WITH_DOXYGEN */

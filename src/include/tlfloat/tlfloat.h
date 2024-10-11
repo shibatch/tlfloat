@@ -72,7 +72,7 @@ extern "C" {
 
   //
 
-  /** This function returns TLFLOAT_VERSION_MAJOR * 1000000ULL + TLFLOAT_VERSION_MINOR * 1000ULL + TLFLOAT_VERSION_PATCHLEVEL */
+  /** This function returns TLFLOAT_VERSION_MAJOR * 1000000ULL + TLFLOAT_VERSION_MINOR * 1000ULL + TLFLOAT_VERSION_PATCH */
   uint64_t tlfloat_version();
 
   /** The tlfloat_printf family of functions has the functionality to produce output of numbers of the types defined in TLFloat library, 
@@ -1904,7 +1904,130 @@ namespace tlfloat {
     return std::string(buf.data());
   }
 #endif
-}
+
+  //
+
+#define TLFLOAT_POLYFUNC_f_f(OP)					\
+  static inline float OP ## _(const float &x) { return tlfloat_ ## OP ## f(x); } \
+  static inline double OP ## _(const double &x) { return tlfloat_ ## OP(x); } \
+  static inline tlfloat_quad OP ## _(const tlfloat_quad &x) { return tlfloat_ ## OP ## q(x); } \
+  static inline tlfloat_octuple OP ## _(const tlfloat_octuple &x) { return tlfloat_ ## OP ## o(x); } \
+  static_assert(true, "")
+
+#define TLFLOAT_POLYFUNC_i_f(OP)					\
+  static inline int OP ## _(const float &x) { return tlfloat_ ## OP ## f(x); } \
+  static inline int OP ## _(const double &x) { return tlfloat_ ## OP(x); } \
+  static inline int OP ## _(const tlfloat_quad &x) { return tlfloat_ ## OP ## q(x); } \
+  static inline int OP ## _(const tlfloat_octuple &x) { return tlfloat_ ## OP ## o(x); } \
+  static_assert(true, "")
+
+#define TLFLOAT_POLYFUNC_f_f_f(OP)					\
+  static inline float OP ## _(const float &x, const float &y) { return tlfloat_ ## OP ## f(x, y); } \
+  static inline double OP ## _(const double &x, const double &y) { return tlfloat_ ## OP(x, y); } \
+  static inline tlfloat_quad OP ## _(const tlfloat_quad &x, const tlfloat_quad &y) { return tlfloat_ ## OP ## q(x, y); } \
+  static inline tlfloat_octuple OP ## _(const tlfloat_octuple &x, const tlfloat_octuple &y) { return tlfloat_ ## OP ## o(x, y); } \
+  static_assert(true, "")
+
+#define TLFLOAT_POLYFUNC_f_f_i(OP)					\
+  static inline float OP ## _(const float &x, const int &y) { return tlfloat_ ## OP ## f(x, y); } \
+  static inline double OP ## _(const double &x, const int &y) { return tlfloat_ ## OP(x, y); } \
+  static inline tlfloat_quad OP ## _(const tlfloat_quad &x, const int &y) { return tlfloat_ ## OP ## q(x, y); } \
+  static inline tlfloat_octuple OP ## _(const tlfloat_octuple &x, const int &y) { return tlfloat_ ## OP ## o(x, y); } \
+  static_assert(true, "")
+
+#define TLFLOAT_POLYFUNC_f_f_pf(OP)					\
+  static inline float OP ## _(const float &x, float *y) { return tlfloat_ ## OP ## f(x, y); } \
+  static inline double OP ## _(const double &x, double *y) { return tlfloat_ ## OP(x, y); } \
+  static inline tlfloat_quad OP ## _(const tlfloat_quad &x, tlfloat_quad *y) { return tlfloat_ ## OP ## q(x, y); } \
+  static inline tlfloat_octuple OP ## _(const tlfloat_octuple &x, tlfloat_octuple *y) { return tlfloat_ ## OP ## o(x, y); } \
+  static_assert(true, "")
+
+#define TLFLOAT_POLYFUNC_f_f_pi(OP)					\
+  static inline float OP ## _(const float &x, int *y) { return tlfloat_ ## OP ## f(x, y); } \
+  static inline double OP ## _(const double &x, int *y) { return tlfloat_ ## OP(x, y); } \
+  static inline tlfloat_quad OP ## _(const tlfloat_quad &x, int *y) { return tlfloat_ ## OP ## q(x, y); } \
+  static inline tlfloat_octuple OP ## _(const tlfloat_octuple &x, int *y) { return tlfloat_ ## OP ## o(x, y); } \
+  static_assert(true, "")
+
+#define TLFLOAT_POLYFUNC_f_f_f_pi(OP)					\
+  static inline float OP ## _(const float &x, const float &y, int *z) { return tlfloat_ ## OP ## f(x, y, z); } \
+  static inline double OP ## _(const double &x, const double &y, int *z) { return tlfloat_ ## OP(x, y, z); } \
+  static inline tlfloat_quad OP ## _(const tlfloat_quad &x, const tlfloat_quad &y, int *z) { return tlfloat_ ## OP ## q(x, y, z); } \
+  static inline tlfloat_octuple OP ## _(const tlfloat_octuple &x, const tlfloat_octuple &y, int *z) { return tlfloat_ ## OP ## o(x, y, z); } \
+  static_assert(true, "")
+
+#define TLFLOAT_POLYFUNC_f_f_f_f(OP)					\
+  static inline float OP ## _(const float &x, const float &y, const float &z) { return tlfloat_ ## OP ## f(x, y, z); } \
+  static inline double OP ## _(const double &x, const double &y, const double &z) { return tlfloat_ ## OP(x, y, z); } \
+  static inline tlfloat_quad OP ## _(const tlfloat_quad &x, const tlfloat_quad &y, const tlfloat_quad &z) { return tlfloat_ ## OP ## q(x, y, z); } \
+  static inline tlfloat_octuple OP ## _(const tlfloat_octuple &x, const tlfloat_octuple &y, const tlfloat_octuple &z) { return tlfloat_ ## OP ## o(x, y, z); } \
+  static_assert(true, "")
+
+  TLFLOAT_POLYFUNC_f_f_f_f(fma);
+  TLFLOAT_POLYFUNC_f_f(sqrt);
+  TLFLOAT_POLYFUNC_f_f(cbrt);
+  TLFLOAT_POLYFUNC_f_f(fabs);
+  TLFLOAT_POLYFUNC_f_f_f(copysign);
+  TLFLOAT_POLYFUNC_f_f_f(fmax);
+  TLFLOAT_POLYFUNC_f_f_f(fmin);
+  TLFLOAT_POLYFUNC_f_f_f(fdim);
+  TLFLOAT_POLYFUNC_f_f_i(ldexp);
+  TLFLOAT_POLYFUNC_f_f_pi(frexp);
+  TLFLOAT_POLYFUNC_f_f_pf(modf);
+  TLFLOAT_POLYFUNC_f_f_f(nextafter);
+  TLFLOAT_POLYFUNC_i_f(ilogb);
+  TLFLOAT_POLYFUNC_i_f(isnan);
+  TLFLOAT_POLYFUNC_i_f(isinf);
+  TLFLOAT_POLYFUNC_i_f(finite);
+  TLFLOAT_POLYFUNC_i_f(fpclassify);
+  TLFLOAT_POLYFUNC_i_f(signbit);
+  TLFLOAT_POLYFUNC_f_f_f(hypot);
+  TLFLOAT_POLYFUNC_f_f(trunc);
+  TLFLOAT_POLYFUNC_f_f(floor);
+  TLFLOAT_POLYFUNC_f_f(ceil);
+  TLFLOAT_POLYFUNC_f_f(round);
+  TLFLOAT_POLYFUNC_f_f(rint);
+  TLFLOAT_POLYFUNC_f_f(sin);
+  TLFLOAT_POLYFUNC_f_f(cos);
+  TLFLOAT_POLYFUNC_f_f(tan);
+  TLFLOAT_POLYFUNC_f_f(sinpi);
+  TLFLOAT_POLYFUNC_f_f(cospi);
+  TLFLOAT_POLYFUNC_f_f(tanpi);
+  TLFLOAT_POLYFUNC_f_f(asin);
+  TLFLOAT_POLYFUNC_f_f(acos);
+  TLFLOAT_POLYFUNC_f_f(atan);
+  TLFLOAT_POLYFUNC_f_f_f(atan2);
+  TLFLOAT_POLYFUNC_f_f(exp);
+  TLFLOAT_POLYFUNC_f_f(expm1);
+  TLFLOAT_POLYFUNC_f_f(exp2);
+  TLFLOAT_POLYFUNC_f_f(exp10);
+  TLFLOAT_POLYFUNC_f_f(log);
+  TLFLOAT_POLYFUNC_f_f(log1p);
+  TLFLOAT_POLYFUNC_f_f(log2);
+  TLFLOAT_POLYFUNC_f_f(log10);
+  TLFLOAT_POLYFUNC_f_f_f(pow);
+  TLFLOAT_POLYFUNC_f_f(sinh);
+  TLFLOAT_POLYFUNC_f_f(cosh);
+  TLFLOAT_POLYFUNC_f_f(tanh);
+  TLFLOAT_POLYFUNC_f_f(asinh);
+  TLFLOAT_POLYFUNC_f_f(acosh);
+  TLFLOAT_POLYFUNC_f_f(atanh);
+  TLFLOAT_POLYFUNC_f_f_f(fmod);
+  TLFLOAT_POLYFUNC_f_f_f(remainder);
+  TLFLOAT_POLYFUNC_f_f_f_pi(remquo);
+  TLFLOAT_POLYFUNC_f_f(erf);
+  TLFLOAT_POLYFUNC_f_f(erfc);
+  TLFLOAT_POLYFUNC_f_f(tgamma);
+  TLFLOAT_POLYFUNC_f_f(lgamma);
+
+#undef TLFLOAT_POLYFUNC_f_f_f_f
+#undef TLFLOAT_POLYFUNC_f_f_f_pi
+#undef TLFLOAT_POLYFUNC_f_f_pi
+#undef TLFLOAT_POLYFUNC_f_f_pf
+#undef TLFLOAT_POLYFUNC_f_f_f
+#undef TLFLOAT_POLYFUNC_i_f
+#undef TLFLOAT_POLYFUNC_f_f
+} // namespace tlfloat {
 
 static_assert(sizeof(tlfloat_quad) == 16, "sizeof(tlfloat_quad)");
 static_assert(sizeof(tlfloat_octuple) == 32, "sizeof(tlfloat_octuple)");

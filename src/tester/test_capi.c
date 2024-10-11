@@ -173,7 +173,7 @@ void doTestUInt128(const __uint128_t x, const __uint128_t y) {
 char buf0[1000], buf1[1000];
 
 int main(int argc, char **argv) {
-  if (tlfloat_version() != TLFLOAT_VERSION_MAJOR * 1000000ULL + TLFLOAT_VERSION_MINOR * 1000ULL + TLFLOAT_VERSION_PATCHLEVEL) {
+  if (tlfloat_version() != TLFLOAT_VERSION_MAJOR * 1000000ULL + TLFLOAT_VERSION_MINOR * 1000ULL + TLFLOAT_VERSION_PATCH) {
     printf("NG : tlfloat_version()\n");
     exit(-1);
   }

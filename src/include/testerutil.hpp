@@ -527,11 +527,11 @@ typedef long double quad;
 #endif
 
 #ifdef _MSC_VER
-#define finite_ _finite
+#define finite__ _finite
 #endif
 
-#ifndef finite_
-#define finite_ isfinite
+#ifndef finite__
+#define finite__ isfinite
 #endif
 
 #ifdef __TLFLOAT_HPP_INCLUDED__

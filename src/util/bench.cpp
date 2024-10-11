@@ -220,7 +220,7 @@ int main(int argc, char **argv) {
 
   time_t t = time(NULL);
   printf("Date                 : %s", ctime(&t));
-  printf("TLFloat version      : %d.%d.%d\n", TLFLOAT_VERSION_MAJOR, TLFLOAT_VERSION_MINOR, TLFLOAT_VERSION_PATCHLEVEL);
+  printf("TLFloat version      : %d.%d.%d\n", TLFLOAT_VERSION_MAJOR, TLFLOAT_VERSION_MINOR, TLFLOAT_VERSION_PATCH);
   printf("Config               : %s\n", CONFIG);
   printf("Measurement time     : %g sec\n", sec_us / 1000000.0);
 

@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     memcpy((void *)&x, (void *)&u, sizeof(x));
 
 #ifdef TEST_SQRT
-    if (x >= 0 && finite_(x)) {
+    if (x >= 0 && finite__(x)) {
       mpfr_set_default_prec(32);
       mpfr_t mx;
       mpfr_inits(mx, NULL);

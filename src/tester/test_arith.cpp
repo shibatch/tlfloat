@@ -295,7 +295,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    if ((bool)finite_(f1) != (bool)finite(Float(f1))) {
+    if ((bool)finite__(f1) != (bool)finite(Float(f1))) {
       printf("\nfinite f1 = %.10g\n", f1);
       exit(-1);
     }
@@ -661,7 +661,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    if ((bool)finite_(d1) != (bool)finite(Double(d1))) {
+    if ((bool)finite__(d1) != (bool)finite(Double(d1))) {
       printf("\nfinite d1 = %.10g\n", d1);
       exit(-1);
     }
