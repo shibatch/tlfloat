@@ -224,48 +224,48 @@ of the benchmarks.
 
 CPU: AMD Ryzen 9 7950X (running at 4.5GHz)
 
-Compiler: gcc version 12.3.0 (Ubuntu 12.3.0-1ubuntu1~22.04)
+Compiler: gcc version 12.3.0 (Ubuntu 12.3.0-17ubuntu1)
 
 TLFloat Quad
 
 ```
-TLFloat version      : 1.7.3
+TLFloat version      : 1.9.0
 Config               : tlfloat quad
 Measurement time     : 10 sec
-Addition             : 123.901 Mops/second
-Multiplication       : 101.025 Mops/second
-Division             : 50.477 Mops/second
-Cast to/from double  : 175.27 Mops/second
-Compare              : 298.318 Mops/second
-FMA                  : 66.8132 Mops/second
-Square root          : 15.8439 Mops/second
-Rint                 : 185.006 Mops/second
-Sin                  : 2.14886 Mops/second
-Atan                 : 1.31972 Mops/second
-Exp                  : 1.47797 Mops/second
-Log                  : 1.55354 Mops/second
-Pow                  : 0.887112 Mops/second
+Addition             : 122.609 Mops/second
+Multiplication       : 99.9647 Mops/second
+Division             : 50.3598 Mops/second
+Cast to/from double  : 175.782 Mops/second
+Compare              : 298.251 Mops/second
+FMA                  : 68.2209 Mops/second
+Square root          : 15.7386 Mops/second
+Rint                 : 184.978 Mops/second
+Sin                  : 2.14184 Mops/second
+Atan                 : 1.28613 Mops/second
+Exp                  : 1.51768 Mops/second
+Log                  : 1.55802 Mops/second
+Pow                  : 0.876133 Mops/second
 ```
 
 GNU libquadmath
 
 ```
-TLFloat version      : 1.7.3
+TLFloat version      : 1.9.0
 Config               : Libquadmath
 Measurement time     : 10 sec
-Addition             : 85.0442 Mops/second
-Multiplication       : 76.0058 Mops/second
-Division             : 70.2055 Mops/second
-Cast to/from double  : 64.655 Mops/second
-Compare              : 222.845 Mops/second
-FMA                  : 1.97487 Mops/second
-Square root          : 9.54312 Mops/second
-Rint                 : 40.05 Mops/second
-Sin                  : 1.71881 Mops/second
-Atan                 : 2.91806 Mops/second
-Exp                  : 1.76845 Mops/second
-Log                  : 1.7796 Mops/second
-Pow                  : 1.26523 Mops/second
+Addition             : 87.7302 Mops/second
+Multiplication       : 74.0596 Mops/second
+Division             : 71.0055 Mops/second
+Cast to/from double  : 64.6598 Mops/second
+Compare              : 222.738 Mops/second
+FMA                  : 1.92436 Mops/second
+Square root          : 9.58817 Mops/second
+Rint                 : 40.1031 Mops/second
+Sin                  : 1.72267 Mops/second
+Atan                 : 2.87712 Mops/second
+Exp                  : 1.78213 Mops/second
+Log                  : 1.78104 Mops/second
+Pow                  : 1.27078 Mops/second
 ```
 
 

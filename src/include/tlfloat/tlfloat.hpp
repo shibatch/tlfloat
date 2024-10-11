@@ -352,7 +352,7 @@ namespace tlfloat {
 	  rm = longmant_t(rhs.mant) << (sizeof(mant_t) * 8     );
 	}
 
-	int exp = ed > 0 ? lhs.exp : rhs.exp;
+	int64_t exp = ed > 0 ? lhs.exp : rhs.exp;
 
 	longmant_t am = 0;
 	bool resultsign = lhs.sign;
@@ -393,6 +393,10 @@ namespace tlfloat {
 
 	am >>= sizeof(mant_t) * 8;
 	if (am == 0) exp = 0;
+	if constexpr (nbexp == 0) {
+	  if (exp < INT32_MIN) return zero(resultsign);
+	  if (exp > INT32_MAX) return infinity(resultsign);
+	}
 	return UnpackedFloat(mant_t(am), exp, resultsign, am == 0, nbexp != 0 && exp == (1 << nbexp) - 2, false);
       }
 
@@ -410,7 +414,7 @@ namespace tlfloat {
 	const int x = (int)clz(am) - ((int)sizeof(mant_t)*8 - nbmant) * 2;
 	am = am << (x + sizeof(mant_t)*8 - nbmant + 1);
 
-	int exp = lhs.exp + rhs.exp - expoffset() - x;
+	int64_t exp = (int64_t)lhs.exp + rhs.exp - expoffset() - x;
 
 	int y = 0;
 	if constexpr (nbexp != 0) {
@@ -432,6 +436,10 @@ namespace tlfloat {
 	}
 	am >>= sizeof(mant_t) * 8;
 	if (am == 0) exp = 0;
+	if constexpr (nbexp == 0) {
+	  if (exp < INT32_MIN) return zero(lhs.sign != rhs.sign);
+	  if (exp > INT32_MAX) return infinity(lhs.sign != rhs.sign);
+	}
 	return UnpackedFloat(mant_t(am), exp, lhs.sign != rhs.sign, am == 0, nbexp != 0 && exp == (1 << nbexp) - 2, false);
       }
 
@@ -451,7 +459,7 @@ namespace tlfloat {
 	  if (lhs.isinf) return infinity(lhs.sign != rhs.sign);
 	}
 
-	int exp = lhs.exp - rhs.exp + expoffset() - 1;
+	int64_t exp = (int64_t)lhs.exp - rhs.exp + expoffset() - 1;
 	int sl = clz(lhs.mant);
 	int sr = clz(rhs.mant);
 	exp -= sl + 1 - sr;
@@ -487,6 +495,10 @@ namespace tlfloat {
 	}
 	am >>= sizeof(mant_t) * 8;
 	if (am == 0) exp = 0;
+	if constexpr (nbexp == 0) {
+	  if (exp < INT32_MIN) return zero(lhs.sign != rhs.sign);
+	  if (exp > INT32_MAX) return infinity(lhs.sign != rhs.sign);
+	}
 	return UnpackedFloat(mant_t(am), exp, lhs.sign != rhs.sign, am == 0, nbexp != 0 && exp == (1 << nbexp) - 2, false);
       }
 
@@ -504,7 +516,7 @@ namespace tlfloat {
 	  }
 	}
 
-	int exp = lhs.exp + rhs.exp - expoffset();
+	int64_t exp = (int64_t)lhs.exp + rhs.exp - expoffset();
 	longmant_t am = mul(lhs.mant, rhs.mant);
 	const int x = (int)clz(am) - ((int)sizeof(mant_t)*8 - nbmant) * 2;
 	am = am << (x + sizeof(mant_t)*8 - nbmant + 1);
@@ -574,6 +586,10 @@ namespace tlfloat {
 	}
 	am >>= sizeof(mant_t) * 8;
 	if (am == 0) exp = 0;
+	if constexpr (nbexp == 0) {
+	  if (exp < INT32_MIN) return zero(resultsign);
+	  if (exp > INT32_MAX) return infinity(resultsign);
+	}
 	return UnpackedFloat(mant_t(am), exp, resultsign, am == 0, nbexp != 0 && exp == (1 << nbexp) - 2, false);
       }
 
