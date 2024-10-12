@@ -93,12 +93,16 @@ find_package(OpenMP)
 include(CheckCXXSourceCompiles)
 
 if (SET_COMPILER_SUPPORTS_INT128 STREQUAL "auto")
+  if (CMAKE_CXX_COMPILER_TARGET)
+    set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
+  endif()
   CHECK_CXX_SOURCE_COMPILES("
 int main(int argc, char **argv) {
   __int128_t i = argc;
   __uint128_t u = argc;
   return (int)(i % 10) + (int)(u % 10);
 }" TLFLOAT_COMPILER_SUPPORTS_INT128)
+  set(CMAKE_REQUIRED_FLAGS)
 else()
   if (SET_COMPILER_SUPPORTS_INT128)
     set(TLFLOAT_COMPILER_SUPPORTS_INT128 ON)
@@ -109,11 +113,15 @@ else()
 endif()
 
 if (SET_COMPILER_SUPPORTS_FLOAT128 STREQUAL "auto")
+  if (CMAKE_CXX_COMPILER_TARGET)
+    set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
+  endif()
   CHECK_CXX_SOURCE_COMPILES("
 int main(int argc, char **argv) {
   __float128 i = argc;
   return (int)i;
 }" TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
+  set(CMAKE_REQUIRED_FLAGS)
 else()
   if (SET_COMPILER_SUPPORTS_FLOAT128)
     set(TLFLOAT_COMPILER_SUPPORTS_FLOAT128 ON)
@@ -124,10 +132,17 @@ else()
 endif()
 
 if (SET_LONGDOUBLE_IS_FLOAT128 STREQUAL "auto")
-CHECK_CXX_SOURCE_COMPILES("
+  if (CMAKE_CXX_COMPILER_TARGET)
+    set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
+  endif()
+  CHECK_CXX_SOURCE_COMPILES("
+#ifdef __LONG_DOUBLE_IBM128__
+#error long double is IBM128
+#endif
 int main() {
   static_assert((1 + (long double)0x1p-64) - 1 != 0.0, \"long double is not float128\");
 }" TLFLOAT_LONGDOUBLE_IS_FLOAT128)
+  set(CMAKE_REQUIRED_FLAGS)
 else()
   if (SET_LONGDOUBLE_IS_FLOAT128)
     set(TLFLOAT_LONGDOUBLE_IS_FLOAT128 ON)
@@ -150,6 +165,9 @@ int main(int argc, char **argv) {
   set(CMAKE_REQUIRED_FLAGS)
 endif()
 
+if (CMAKE_CXX_COMPILER_TARGET)
+  set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
+endif()
 CHECK_CXX_SOURCE_COMPILES("
 #include <cstdio>
 #include <features.h>
@@ -157,28 +175,35 @@ CHECK_CXX_SOURCE_COMPILES("
 #error GLIBC macro not defined
 #endif
 int main(int argc, char **argv) {}" BUILDING_WITH_GLIBC)
+set(CMAKE_REQUIRED_FLAGS)
 
 if (LIB_MPFR)
-set(CMAKE_REQUIRED_LIBRARIES ${LIB_MPFR})
-CHECK_CXX_SOURCE_COMPILES("
+  if (CMAKE_CXX_COMPILER_TARGET)
+    set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
+  endif()
+  set(CMAKE_REQUIRED_LIBRARIES ${LIB_MPFR})
+  CHECK_CXX_SOURCE_COMPILES("
 #define MPFR_WANT_FLOAT128
 #include <mpfr.h>
 int main() {}" TLFLOAT_ENABLE_MPFR_WANT_FLOAT128)
 
-CHECK_CXX_SOURCE_COMPILES("
+  CHECK_CXX_SOURCE_COMPILES("
 #include <mpfr.h>
 int main() {
 mpfr_t mx;
 mpfr_sinpi(mx, mx, GMP_RNDN);
 }"
-TLFLOAT_ENABLE_MPFR_SINPI)
-set(CMAKE_REQUIRED_LIBRARIES)
+    TLFLOAT_ENABLE_MPFR_SINPI)
+  set(CMAKE_REQUIRED_LIBRARIES)
+  set(CMAKE_REQUIRED_FLAGS)
 endif()
 
 if (TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
+  if (CMAKE_CXX_COMPILER_TARGET)
+    set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
+  endif()
   set(CMAKE_REQUIRED_LIBRARIES quadmath)
   CHECK_CXX_SOURCE_COMPILES("
-#define MPFR_WANT_FLOAT128
 #include <cstdio>
 #include <quadmath.h>
 int main(int argc, char **argv) {
@@ -186,6 +211,7 @@ __float128 f = atof(argv[1]);
 printf(\"%g\", (double)sinq(f));
 }" TLFLOAT_ENABLE_LIBQUADMATH)
   set(CMAKE_REQUIRED_LIBRARIES)
+  set(CMAKE_REQUIRED_FLAGS)
 endif()
 
 # Setting up memory-leak checks

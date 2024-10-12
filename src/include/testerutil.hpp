@@ -241,7 +241,9 @@ public:
     uint32_t g = state[6];
     uint32_t h = state[7];
 
-    uint32_t w[16];
+    uint32_t w[16] = {
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    };
 
     for(int i = 0;i < 64;i += 16) {
       update_w(w, i, buffer);

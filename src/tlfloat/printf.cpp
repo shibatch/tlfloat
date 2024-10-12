@@ -469,7 +469,7 @@ extern "C" {
   static int printf_Qmodifier = -1, printf_Pmodifier = -1;
 
   static void tlfloat_quad_va(void *ptr, va_list *ap) { 
-    *(tlfloat_quad *)ptr = va_arg(*ap, tlfloat_quad);
+    *(tlfloat_quad *)ptr = va_arg(*ap, tlfloat_quad_);
   }
 
   static int printf_arginfo(const struct printf_info *info, size_t n, int *argtypes, int *s) {
