@@ -11,6 +11,7 @@ option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
 option(ENABLE_DOXYGEN "Enable generating documents with Doxygen" OFF)
 option(ENABLE_COVERAGE "Enable generating coverage data" OFF)
 option(ENABLE_ARCH_OPTIMIZATION "Enable architecture-specific optimization upon building library" ON)
+option(BUILD_EXHAUSTIVE_TESTING "Build exhaustive testing for 16-bit and 32-bit arguments" OFF)
 option(ENABLE_EXHAUSTIVE_TESTING "Enable exhaustive testing for 16-bit and 32-bit arguments" OFF)
 set(SET_COMPILER_SUPPORTS_INT128 "auto" CACHE STRING "Set whether the compiler supports __int128 type")
 set(SET_COMPILER_SUPPORTS_FLOAT128 "auto" CACHE STRING "Set whether the compiler supports __float128 type")
@@ -19,7 +20,7 @@ set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is I
 #
 
 set(TLFLOAT_VERSION_MAJOR 1)
-set(TLFLOAT_VERSION_MINOR 9)
+set(TLFLOAT_VERSION_MINOR 10)
 set(TLFLOAT_VERSION_PATCH 0)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCH})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
@@ -161,13 +162,27 @@ int main(int argc, char **argv) {
   __fp16 hu = vaddh_f16(__fp16(atof(argv[1])), __fp16(0.2));
   bool b = vceqh_f16(__fp16(atof(argv[1])), __fp16(0.2));
   return (int)hu + (int)b;
-}" TLFLOAT_COMPILER_SUPPORTS_FP16)
+}" TLFLOAT_COMPILER_SUPPORTS_ARM_FP16)
   set(CMAKE_REQUIRED_FLAGS)
 endif()
 
 if (CMAKE_CXX_COMPILER_TARGET)
   set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
 endif()
+CHECK_CXX_SOURCE_COMPILES("
+#include <cstdlib>
+int main(int argc, char **argv) {
+__fp16 a = (__fp16)(float)atof(argv[1]);
+return (float)a; }
+" TLFLOAT_COMPILER_SUPPORTS_FP16)
+
+CHECK_CXX_SOURCE_COMPILES("
+#include <cstdlib>
+int main(int argc, char **argv) {
+__bf16 a = (__bf16)(float)atof(argv[1]);
+return (float)a; }
+" TLFLOAT_COMPILER_SUPPORTS_BF16)
+
 CHECK_CXX_SOURCE_COMPILES("
 #include <cstdio>
 #include <features.h>

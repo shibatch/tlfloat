@@ -58,7 +58,7 @@ set_tests_properties(test_hash_noopt PROPERTIES COST "2")
 if (BUILD_LIBS)
   add_executable(test_printf_hash test_printf_hash.cpp)
   target_link_libraries(test_printf_hash tlfloat)
-  add_test(NAME test_printf_hash COMMAND test_printf_hash 146049308de4fe3b025cbc775fda8dd4e81a602bf4ea04d3f860abee96a9ac5b)
+  add_test(NAME test_printf_hash COMMAND test_printf_hash 2398daffe3037ec51f353ed9da2221f53d4d86fc554e0f93873381f74e1d352c)
   set_tests_properties(test_printf_hash PROPERTIES COST "2")
 endif()
 
@@ -108,7 +108,7 @@ endif()
 
 #
 
-if (LIB_MPFR AND (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)"))
+if (LIB_MPFR AND (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_SYSTEM_PROCESSOR MATCHES "(arm64|aarch64)") AND BUILD_EXHAUSTIVE_TESTING)
   add_executable(test_exhaustive32 test_exhaustive32.cpp)
   target_link_libraries(test_exhaustive32 ${LIB_MPFR})
   if (TLFLOAT_ENABLE_LIBQUADMATH)
@@ -135,7 +135,7 @@ endif()
 
 #
 
-if (TLFLOAT_COMPILER_SUPPORTS_FP16 AND LIB_MPFR)
+if (TLFLOAT_COMPILER_SUPPORTS_ARM_FP16 AND LIB_MPFR AND BUILD_EXHAUSTIVE_TESTING)
   add_executable(test_exhaustive16 test_exhaustive16.cpp)
   target_link_libraries(test_exhaustive16 ${LIB_MPFR})
   target_compile_options(test_exhaustive16 PRIVATE "-march=armv8.2-a+fp16")
@@ -151,6 +151,26 @@ if (TLFLOAT_COMPILER_SUPPORTS_FP16 AND LIB_MPFR)
   if (INSTALL_CONTINUOUS_TESTERS)
     install(
       TARGETS test_exhaustive16
+      DESTINATION "${INSTALL_BINDIR}"
+      COMPONENT tester
+      )
+  endif()
+endif()
+
+if (TLFLOAT_COMPILER_SUPPORTS_BF16 AND BUILD_EXHAUSTIVE_TESTING)
+  add_executable(test_exhaustive_bf16 test_exhaustive_bf16.cpp)
+  if (OpenMP_CXX_FOUND)
+    target_compile_options(test_exhaustive_bf16 PRIVATE ${OpenMP_CXX_FLAGS})
+    target_link_options(test_exhaustive_bf16 PRIVATE ${OpenMP_CXX_FLAGS})
+    target_include_directories(test_exhaustive_bf16 PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
+  endif()
+  if (ENABLE_EXHAUSTIVE_TESTING)
+    add_test(NAME test_exhaustive_bf16 COMMAND test_exhaustive_bf16)
+  endif()
+
+  if (INSTALL_CONTINUOUS_TESTERS)
+    install(
+      TARGETS test_exhaustive_bf16
       DESTINATION "${INSTALL_BINDIR}"
       COMPONENT tester
       )

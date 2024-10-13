@@ -77,7 +77,11 @@ namespace tlfloat {
 
     template<typename mant_t, typename longmant_t, int nbexp, int nbmant>
     class UnpackedFloat {
+      template<typename, typename, int, int> friend class UnpackedFloat;
+
       static_assert(sizeof(longmant_t) == 2 * sizeof(mant_t));
+
+      static constexpr size_t sizeof_mant_t() { return sizeof(mant_t); }
 
       template<typename floattype>
       static constexpr TLFLOAT_INLINE mant_t mantBits(const floattype& fl) {
@@ -749,15 +753,21 @@ namespace tlfloat {
       template<typename dsttype>
       constexpr TLFLOAT_INLINE dsttype cast(const dsttype *ptr) const {
 	typedef decltype(dsttype::mant) dmant_t;
-	if constexpr (dsttype::nbmant_() > nbmant) {
+	typedef decltype(dsttype::longmant_t_()) dlongmant_t;
+	if (isnan) return dsttype::nan();
+	if constexpr (dsttype::nbmant_() > nbmant && (dsttype::sizeof_mant_t() > sizeof_mant_t() ||
+						      nbexp == 0 || dsttype::nbexp_() == 0)) {
 	  int64_t e = (int64_t)exp - expoffset() + dsttype::expoffset();
 	  const int x = clz(mant) - (sizeof(mant_t) * 8 - nbmant - 1);
 	  e -= x;
-	  dmant_t m = dmant_t(mant) << (dsttype::nbmant_() - nbmant + x);
+	  int s = dsttype::nbmant_() - nbmant + x;
+	  if constexpr (dsttype::nbexp_() != 0) { if (e < 0) { s += e; e = 0; } }
+	  dmant_t m = s < int(sizeof(dmant_t)*8) ? dmant_t(mant) << s : 0;
 	  if (isinf || isnan) e = (1 << dsttype::nbexp_()) - 2;
 	  if (iszero) e = 0;
 	  return dsttype(m, (int)e, sign, iszero, isinf, isnan);
-	} else if constexpr (dsttype::nbmant_() < nbmant) {
+	} else if constexpr (dsttype::nbmant_() < nbmant && (dsttype::sizeof_mant_t() < sizeof_mant_t() ||
+							     nbexp == 0 || dsttype::nbexp_() == 0)) {
 	  bool isinf_ = isinf, sb = false;
 	  int64_t e = (int64_t)exp - expoffset() + dsttype::expoffset();
 	  mant_t m = mant;
@@ -781,7 +791,46 @@ namespace tlfloat {
 	  if (dmant_t(m) == 0) iszero_ = true;
 	  if (iszero_) e = 0;
 	  return dsttype(dmant_t(m), (int)e, sign, iszero_, isinf_, isnan);
+	} else if constexpr (dsttype::nbmant_() < nbmant && dsttype::sizeof_mant_t() == sizeof_mant_t()) {
+	  // BFloat16 <- Half
+	  int64_t e = (int64_t)exp - expoffset() + dsttype::expoffset();
+	  const int x = clz(mant) - (sizeof(mant_t) * 8 - nbmant - 1);
+	  e -= x;
+	  dlongmant_t m = dlongmant_t(mant) << (dsttype::nbmant_() - nbmant + x + (sizeof(dlongmant_t)-sizeof(dmant_t))*8);
+	  if (isinf || isnan) e = (1 << dsttype::nbexp_()) - 2;
+	  if (iszero) e = 0;
+	  m += bitmask<dlongmant_t>(sizeof(dmant_t) * 8 - 1) + bit(m, sizeof(dmant_t) * 8);
+	  if (bit(m, (sizeof(dmant_t) * 8) + dsttype::nbmant_() + 1)) { m >>= 1; e++; }
+	  m >>= sizeof(dmant_t) * 8;
+	  return dsttype(dmant_t(m), m == 0 ? 0 : e, sign, m == 0, isinf, isnan);
+	} else if constexpr (dsttype::nbmant_() > nbmant && dsttype::sizeof_mant_t() == sizeof_mant_t()) {
+	  // Half <- BFloat16
+	  bool isinf_ = isinf, sb = false;
+	  int64_t e = (int64_t)exp - expoffset() + dsttype::expoffset();
+	  longmant_t m = longmant_t(mant) << (sizeof(mant_t) * 8);
+	  if constexpr (dsttype::nbexp_() != 0) {
+	    if (e >= (1 << dsttype::nbexp_()) - 2) isinf_ = true;
+	    if (e < 0) {
+	      sb = (m & bitmask<longmant_t>(-e)) != 0;
+	      if (unsigned(-e) >= sizeof(longmant_t)*8) { sb = m != 0; m = 0; }
+	      m >>= -e;
+	      e = 0;
+	    }
+	  }
+	  m += bit(m, (nbmant + sizeof(mant_t)*8) - dsttype::nbmant_()) || sb;
+	  m += (longmant_t(1) << ((nbmant + sizeof(mant_t)*8 - dsttype::nbmant_()) - 1)) - 1;
+	  if (bit(m, nbmant + sizeof(mant_t)*8 + 1)) { m >>= 1; e++; }
+	  m >>= nbmant + sizeof(mant_t)*8 - dsttype::nbmant_();
+	  if (isinf_ || isnan) e = (1 << dsttype::nbexp_()) - 2;
+	  if (isinf_) m = longmant_t(1) << dsttype::nbmant_();
+	  if (isnan) m = longmant_t(3) << (dsttype::nbmant_() - 1);
+	  bool iszero_ = iszero;
+	  if (dmant_t(m) == 0) iszero_ = true;
+	  if (iszero_) e = 0;
+	  return dsttype(dmant_t(m), (int)e, sign, iszero_, isinf_, isnan);
 	} else {
+	  static_assert(dsttype::nbmant_() == nbmant);
+	  static_assert(dsttype::sizeof_mant_t() == sizeof_mant_t());
 	  return dsttype(mant, exp, sign, iszero, isinf, isnan);
 	}
       }
@@ -1328,6 +1377,7 @@ namespace tlfloat {
     template<typename> friend class TLFloat;
 
     typedef detail::UnpackedFloat<uint16_t, uint32_t, 5, 10> uhalf;
+    typedef detail::UnpackedFloat<uint16_t, uint32_t, 8, 7> ubf16;
     typedef detail::UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
     typedef detail::UnpackedFloat<uint64_t, BigUInt<7>, 11, 52> udouble;
     typedef detail::UnpackedFloat<BigUInt<7>, BigUInt<8>, 15, 112> uquad;
@@ -1775,18 +1825,21 @@ namespace tlfloat {
 
   //
 
+  typedef TLFloat<detail::UnpackedFloat<uint16_t, uint32_t, 8, 7>> BFloat16; ///< This class represents a BFloat16 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
   typedef TLFloat<detail::UnpackedFloat<uint16_t, uint32_t, 5, 10>> Half; ///< This class represents a half-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
   typedef TLFloat<detail::UnpackedFloat<uint32_t, uint64_t, 8, 23>> Float; ///< This class represents a single-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
   typedef TLFloat<detail::UnpackedFloat<uint64_t, BigUInt<7>, 11, 52>> Double; ///< This class represents a double-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
   typedef TLFloat<detail::UnpackedFloat<BigUInt<7>, BigUInt<8>, 15, 112>> Quad; ///< This class represents a quadruple-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
   typedef TLFloat<detail::UnpackedFloat<BigUInt<8>, BigUInt<9>, 19, 236>> Octuple; ///< This class represents a octuple-precision IEEE 754 floating-point number. The data size and data structure of the objects are the same as the corresponding floating-point number.
 
+  static_assert(sizeof(BFloat16) == 2);
   static_assert(sizeof(Half) == 2);
   static_assert(sizeof(Float) == 4);
   static_assert(sizeof(Double) == 8);
   static_assert(sizeof(Quad) == 16);
   static_assert(sizeof(Octuple) == 32);
 
+  static_assert(std::is_trivially_copyable_v<BFloat16>);
   static_assert(std::is_trivially_copyable_v<Half>);
   static_assert(std::is_trivially_copyable_v<Float>);
   static_assert(std::is_trivially_copyable_v<Double>);

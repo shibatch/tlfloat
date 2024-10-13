@@ -23,7 +23,10 @@ using namespace tlfloat;
 using namespace tlfloat::detail;
 
 typedef UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
+typedef UnpackedFloat<uint16_t, uint32_t, 5, 10> uhalf;
+typedef UnpackedFloat<uint16_t, uint32_t, 8, 7> ubf16;
 
+#define TEST_CAST
 #define TEST_SQRT
 #define TEST_TRIG
 #define TEST_INVTRIG
@@ -35,10 +38,6 @@ typedef UnpackedFloat<uint32_t, uint64_t, 8, 23> ufloat;
 #define TEST_GAMMA
 
 int main(int argc, char **argv) {
-#ifdef TEST_PH
-  int p = argc > 1 ? atoi(argv[1]) : 1;
-  double maxulp_ph = 0;
-#endif
   double maxulp_sqrt_ = 0, maxulp_sqrt = 0.5;
   double maxulp_sin = 0.5, maxulp_cos = 0.5, maxulp_tan = 0.5;
   double maxulp_sinpi = 0.5, maxulp_cospi = 0.5, maxulp_tanpi = 0.5;
@@ -66,6 +65,47 @@ int main(int argc, char **argv) {
     uint32_t u = ((u64 << 16) | (u64 >> 16)) & 0xffffffff;
     float x;
     memcpy((void *)&x, (void *)&u, sizeof(x));
+
+#ifdef TEST_CAST
+    {
+      double cd = (double)x;
+      double td = (double)(Double)Float(x);
+
+      if (!(isnan((double)cd) && isnan((double)td)) && cd != td) {
+	printf("cast to double : u = %08x\n", (unsigned)u);
+	cout << "x: " << (double)x  << " : " << to_string_d(ufloat(x)) << endl;
+	cout << "c: " << (double)cd << " : " << to_string_d(udouble(cd)) << endl;
+	cout << "t: " << (double)td << " : " << to_string_d(udouble(td)) << endl;
+	exit(-1);
+      }
+
+#if defined(TLFLOAT_COMPILER_SUPPORTS_FP16)
+      __fp16 cf16 = (__fp16)x;
+      __fp16 tf16 = (__fp16)(Half)Float(x);
+
+      if (!(isnan((double)cf16) && isnan((double)tf16)) && cf16 != tf16) {
+	printf("cast to fp16 : u = %08x\n", (unsigned)u);
+	cout << "x: " << (double)x    << " : " << to_string_d(ufloat(x)) << endl;
+	cout << "c: " << (double)cf16 << " : " << to_string_d(uhalf(cf16)) << endl;
+	cout << "t: " << (double)tf16 << " : " << to_string_d(uhalf(tf16)) << endl;
+	exit(-1);
+      }
+#endif
+
+#if defined(TLFLOAT_COMPILER_SUPPORTS_BF16)
+      __bf16 cb16 = (__bf16)x;
+      __bf16 tb16 = (__bf16)(BFloat16)Float(x);
+
+      if (!(isnan((double)cb16) && isnan((double)tb16)) && cb16 != tb16) {
+	printf("cast to bfloat16 : u = %08x\n", (unsigned)u);
+	cout << "x: " << (double)x    << " : " << to_string_d(ufloat(x)) << endl;
+	cout << "c: " << (double)cb16 << " : " << to_string_d(ubf16(cb16)) << endl;
+	cout << "t: " << (double)tb16 << " : " << to_string_d(ubf16(tb16)) << endl;
+	exit(-1);
+      }
+#endif
+    }
+#endif
 
 #ifdef TEST_SQRT
     if (x >= 0 && finite__(x)) {
