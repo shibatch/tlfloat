@@ -230,6 +230,7 @@ pipeline {
 		     }
 		}
 
+		/*
                 stage('aarch64 macos gcc-13') {
             	     agent { label 'macos' }
                      options { skipDefaultCheckout() }
@@ -249,6 +250,7 @@ pipeline {
 			 '''
             	     }
                 }
+		*/
 
                 stage('aarch64 macos clang-17') {
             	     agent { label 'macos' }
