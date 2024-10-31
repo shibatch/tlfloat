@@ -17,7 +17,7 @@ pipeline {
 			 export CUDACXX=/opt/cuda-12.6/bin/nvcc
  			 mkdir build
 			 cd build
-			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_CUDA_TEST=True ..
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_CUDA_TEST=True -DENABLE_LTO=True ..
 			 cmake -E time ninja
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j `nproc`

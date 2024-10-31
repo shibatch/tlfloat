@@ -3,7 +3,7 @@
 
 Original distribution site : https://github.com/shibatch/tlfloat
 
-Doxygen-generated reference : https://shibatch.sourceforge.net/tlfloat-doxygen/
+Doxygen-generated reference : https://shibatch.github.io/tlfloat-doxygen/
 
 
 ### Introduction
@@ -277,7 +277,10 @@ Pow                  : 1.27151 Mops/second
     * Add more testers for I/O functions
   * Interoperability with SLEEF
   * Remaining math functions in math.h
-  * BF16 support
+  * BFloat16 support
+  * Better microcontroller support
+    * All-integer sqrt
+    * Selectable rpi table size
   * Further optimization
 
 

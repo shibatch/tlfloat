@@ -5,6 +5,7 @@ option(BUILD_TESTS "Build tests" ON)
 option(BUILD_UTILS "Build utilities" ON)
 option(BUILD_BENCH "Build benchmarking tools" OFF)
 option(ENABLE_INLINING "Enable extensive function inlining" OFF)
+option(ENABLE_LTO "Enable LTO" OFF)
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
 option(ENABLE_CUDA_TEST "Build CUDA tester" OFF)
 option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
@@ -21,7 +22,7 @@ set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is I
 
 set(TLFLOAT_VERSION_MAJOR 1)
 set(TLFLOAT_VERSION_MINOR 10)
-set(TLFLOAT_VERSION_PATCH 0)
+set(TLFLOAT_VERSION_PATCH 1)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCH})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
@@ -315,6 +316,10 @@ endif()
 
 if (NOT ENABLE_ARCH_OPTIMIZATION)
   add_definitions(-DTLFLOAT_DISABLE_ARCH_OPTIMIZATION)
+endif()
+
+if (ENABLE_LTO)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
 # Setting up for coverage report

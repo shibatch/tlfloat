@@ -570,7 +570,7 @@ std::string to_string(const mpfr_t& fr, int digits = 51) {
   mpfr_t t;
   mpfr_inits(t, NULL);
   int sign = mpfr_signbit(fr) ? -1 : 1;
-  char *s = (char *)malloc(digits + 20);
+  char *s = (char *)malloc(digits + 21);
   if (mpfr_inf_p(fr)) {
     sprintf(s, "%cinf", sign < 0 ? '-' : '+');
   } else if (mpfr_nan_p(fr)) {
