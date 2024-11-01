@@ -117,68 +117,70 @@ typedef double real;
 
 const int K = 256;
 
-real W[K], X[K], Y[K], Z[K], H[K];
-bool B[K];
+struct {
+  real W[K], X[K], Y[K], Z[K], H[K];
+  bool B[K];
+} D;
 
 static void funcAddSub() {
   for(int i=0;i<K;i+=2) {
-    W[i+0] = X[i+0] + Y[i+0];
-    W[i+1] = X[i+1] - Y[i+1];
+    D.W[i+0] = D.X[i+0] + D.Y[i+0];
+    D.W[i+1] = D.X[i+1] - D.Y[i+1];
   }
 }
 
 static void funcMul() {
-  for(int i=0;i<K;i++) W[i] = X[i] * Y[i];
+  for(int i=0;i<K;i++) D.W[i] = D.X[i] * D.Y[i];
 }
 
 static void funcDiv() {
-  for(int i=0;i<K;i++) W[i] = X[i] / Y[i];
+  for(int i=0;i<K;i++) D.W[i] = D.X[i] / D.Y[i];
 }
 
 static void funcCastDouble() {
-  for(int i=0;i<K;i++) W[i] = (double)H[i];
+  for(int i=0;i<K;i++) D.W[i] = (double)D.H[i];
 }
 
 static void funcCompare() {
   for(int i=0;i<K;i+=2) {
-    B[i+0] = X[i+0] == Y[i+0];
-    B[i+1] = X[i+1] >= Y[i+1];
+    D.B[i+0] = D.X[i+0] == D.Y[i+0];
+    D.B[i+1] = D.X[i+1] >= D.Y[i+1];
   }
 }
 
 static void funcFMA() {
-  for(int i=0;i<K;i++) W[i] = FMA(X[i], Y[i], Z[i]);
+  for(int i=0;i<K;i++) D.W[i] = FMA(D.X[i], D.Y[i], D.Z[i]);
 }
 
 static void funcSqrt() {
-  for(int i=0;i<K;i++) W[i] = SQRT(H[i]);
+  for(int i=0;i<K;i++) D.W[i] = SQRT(D.H[i]);
 }
 
 static void funcRint() {
-  for(int i=0;i<K;i++) W[i] = RINT(H[i]);
+  for(int i=0;i<K;i++) D.W[i] = RINT(D.H[i]);
 }
 
 static void funcSin() {
-  for(int i=0;i<K;i++) W[i] = SIN(X[i]);
+  for(int i=0;i<K;i++) D.W[i] = SIN(D.X[i]);
 }
 
 static void funcAtan() {
-  for(int i=0;i<K;i++) W[i] = ATAN(H[i]);
+  for(int i=0;i<K;i++) D.W[i] = ATAN(D.H[i]);
 }
 
 static void funcExp() {
-  for(int i=0;i<K;i++) W[i] = EXP(X[i]);
+  for(int i=0;i<K;i++) D.W[i] = EXP(D.X[i]);
 }
 
 static void funcLog() {
-  for(int i=0;i<K;i++) W[i] = LOG(H[i]);
+  for(int i=0;i<K;i++) D.W[i] = LOG(D.H[i]);
 }
 
 static void funcPow() {
-  for(int i=0;i<K;i++) W[i] = POW(X[i], Y[i]);
+  for(int i=0;i<K;i++) D.W[i] = POW(D.X[i], D.Y[i]);
 }
 
-void donothing();
+void donothing(void *);
 
 static inline int64_t timeus() {
   return chrono::duration_cast<chrono::microseconds>
@@ -190,7 +192,7 @@ void measure(const char* mes, void (*func)(void), int opPerCall, int64_t sec_us)
 
   for(;;) {
     t0 = timeus();
-    for(int64_t i=0;i<N;i++) { (*func)(); donothing(); }
+    for(int64_t i=0;i<N;i++) { (*func)(); donothing(&D); }
     t1 = timeus();
     if (t1 - t0 > 100000) break;
     N *= 2;
@@ -201,7 +203,7 @@ void measure(const char* mes, void (*func)(void), int opPerCall, int64_t sec_us)
   this_thread::sleep_for(chrono::microseconds(sec_us));
 
   t2 = timeus();
-  for(int64_t i=0;i<M;i++) { (*func)(); donothing(); }
+  for(int64_t i=0;i<M;i++) { (*func)(); donothing(&D); }
   t3 = timeus();
 
   printf("%s : %g Mops/second\n", mes, M * opPerCall / double(t3 - t2));
@@ -212,10 +214,10 @@ int main(int argc, char **argv) {
   if (argc >= 2) sec_us = int64_t(atof(argv[1]) * 1000000);
 
   for(int i=0;i<K;i++) {
-    X[i] = (33 + i * 0.001) * ((i & 4) ? -1 : 1) / real(10);
-    Y[i] = (22 + i * 0.001) * ((i & 2) ? -1 : 1) / real(10);
-    Z[i] = (11 + i * 0.001) * ((i & 1) ? -1 : 1) / real(10);
-    H[i] = (real(1.234567890123456e+10) + real(9.8765432109876543e+5) * i) / real(10);
+    D.X[i] = (33 + i * 0.001) * ((i & 4) ? -1 : 1) / real(10);
+    D.Y[i] = (22 + i * 0.001) * ((i & 2) ? -1 : 1) / real(10);
+    D.Z[i] = (11 + i * 0.001) * ((i & 1) ? -1 : 1) / real(10);
+    D.H[i] = (real(1.234567890123456e+10) + real(9.8765432109876543e+5) * i) / real(10);
   }
 
   time_t t = time(NULL);

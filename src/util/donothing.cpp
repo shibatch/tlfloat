@@ -1,1 +1,1 @@
-void donothing() {}
+void donothing(void *p) {}
