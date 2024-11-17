@@ -4,6 +4,7 @@ option(BUILD_LIBS "Build and install the library" ON)
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_UTILS "Build utilities" ON)
 option(BUILD_BENCH "Build benchmarking tools" OFF)
+option(ENABLE_INTSQRT "Enable fully integer sqrt" OFF)
 option(ENABLE_INLINING "Enable extensive function inlining" OFF)
 option(ENABLE_LTO "Enable LTO" OFF)
 option(ENABLE_ASAN "Enable address sanitizer" OFF)
@@ -21,8 +22,8 @@ set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is I
 #
 
 set(TLFLOAT_VERSION_MAJOR 1)
-set(TLFLOAT_VERSION_MINOR 10)
-set(TLFLOAT_VERSION_PATCH 1)
+set(TLFLOAT_VERSION_MINOR 11)
+set(TLFLOAT_VERSION_PATCH 0)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCH})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
@@ -358,6 +359,10 @@ if (ENABLE_DOXYGEN AND NOT WIN32)
 endif()
 
 #
+
+if (ENABLE_INTSQRT)
+  set(TLFLOAT_ENABLE_INTSQRT True)
+endif()
 
 configure_file("${PROJECT_SOURCE_DIR}/src/include/tlfloat/tlfloatconfig.hpp.in"
   "${PROJECT_BINARY_DIR}/include/tlfloat/tlfloatconfig.hpp" @ONLY)

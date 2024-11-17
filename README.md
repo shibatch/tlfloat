@@ -5,6 +5,8 @@ Original distribution site : https://github.com/shibatch/tlfloat
 
 Doxygen-generated reference : https://shibatch.github.io/tlfloat-doxygen/
 
+Some more documataion is available at : https://github.com/shibatch/tlfloat/wiki
+
 
 ### Introduction
 
@@ -278,9 +280,6 @@ Pow                  : 1.27151 Mops/second
   * Interoperability with SLEEF
   * Remaining math functions in math.h
   * BFloat16 support
-  * Better microcontroller support
-    * All-integer sqrt
-    * Selectable rpi table size
   * Further optimization
 
 
@@ -298,4 +297,4 @@ free. If you want this software to be maintained, you need to
 financially support the project. Please see
 [CODE_OF_CONDUCT.md](https://github.com/shibatch/nofreelunch?tab=coc-ov-file).
 
-Copyright Naoki Shibata 2024.
+Copyright [Naoki Shibata](https://shibatch.github.io/) 2024.

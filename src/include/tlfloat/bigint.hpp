@@ -326,7 +326,7 @@ namespace tlfloat {
 
     constexpr TLFLOAT_INLINE BigUInt(const BigUInt<N-1>& h, const BigUInt<N-1>& l) : low(l), high(h) {}
 
-  private:
+#if !defined(TLFLOAT_DOXYGEN)
     // Karatsuba algorithm
     template<int..., int K = N, std::enable_if_t<(K >= 10), int> = 0>
     static constexpr inline BigUInt mul(const BigUInt<N-1>& lhs, const BigUInt<N-1>& rhs) {
@@ -517,6 +517,7 @@ namespace tlfloat {
 	BigUInt(dm0q.low, dm1q.low), (BigUInt(n2.low, n.low.low) - dm1q * d) >> s
       };
     }
+#endif // #if !defined(TLFLOAT_DOXYGEN)
 
   public:
     template<int> friend class BigUInt;

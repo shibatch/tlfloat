@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
 #ifdef TEST_ARITH
       {
 	__bf16 fw = fu + fv;
-	__bf16 fx = __bf16(ubf16::addsub(ubf16(fu), ubf16(fv), false));
+	__bf16 fx = __bf16(ubf16::faddsub(ubf16(fu), ubf16(fv), false));
 	uint16_t w, x;
 	memcpy((void *)&w, (void *)&fw, sizeof(w));
 	memcpy((void *)&x, (void *)&fx, sizeof(x));
@@ -116,7 +116,7 @@ int main(int argc, char **argv) {
 
       {
 	__bf16 fw = fu - fv;
-	__bf16 fx = __bf16(ubf16::addsub(ubf16(fu), ubf16(fv), true));
+	__bf16 fx = __bf16(ubf16::faddsub(ubf16(fu), ubf16(fv), true));
 	uint16_t w, x;
 	memcpy((void *)&w, (void *)&fw, sizeof(w));
 	memcpy((void *)&x, (void *)&fx, sizeof(x));
@@ -133,7 +133,7 @@ int main(int argc, char **argv) {
 
       {
 	__bf16 fw = fu * fv;
-	__bf16 fx = __bf16(ubf16::mul(ubf16(fu), ubf16(fv)));
+	__bf16 fx = __bf16(ubf16::fmul(ubf16(fu), ubf16(fv)));
 	uint16_t w, x;
 	memcpy((void *)&w, (void *)&fw, sizeof(w));
 	memcpy((void *)&x, (void *)&fx, sizeof(x));
@@ -150,7 +150,7 @@ int main(int argc, char **argv) {
 
       {
 	__bf16 fw = fu / fv;
-	__bf16 fx = __bf16(ubf16::div(ubf16(fu), ubf16(fv)));
+	__bf16 fx = __bf16(ubf16::fdiv(ubf16(fu), ubf16(fv)));
 	uint16_t w, x;
 	memcpy((void *)&w, (void *)&fw, sizeof(w));
 	memcpy((void *)&x, (void *)&fx, sizeof(x));

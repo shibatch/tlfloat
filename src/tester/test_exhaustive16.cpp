@@ -730,7 +730,7 @@ int main(int argc, char **argv) {
 #ifdef TEST_ARITH
       {
 	__fp16 fw = vaddh_f16(fu, fv);
-	__fp16 fx = __fp16(uhalf::addsub(uhalf(fu), uhalf(fv), false));
+	__fp16 fx = __fp16(uhalf::faddsub(uhalf(fu), uhalf(fv), false));
 	uint16_t w, x;
 	memcpy((void *)&w, (void *)&fw, sizeof(w));
 	memcpy((void *)&x, (void *)&fx, sizeof(x));
@@ -747,7 +747,7 @@ int main(int argc, char **argv) {
 
       {
 	__fp16 fw = vsubh_f16(fu, fv);
-	__fp16 fx = __fp16(uhalf::addsub(uhalf(fu), uhalf(fv), true));
+	__fp16 fx = __fp16(uhalf::faddsub(uhalf(fu), uhalf(fv), true));
 	uint16_t w, x;
 	memcpy((void *)&w, (void *)&fw, sizeof(w));
 	memcpy((void *)&x, (void *)&fx, sizeof(x));
@@ -764,7 +764,7 @@ int main(int argc, char **argv) {
 
       {
 	__fp16 fw = vmulh_f16(fu, fv);
-	__fp16 fx = __fp16(uhalf::mul(uhalf(fu), uhalf(fv)));
+	__fp16 fx = __fp16(uhalf::fmul(uhalf(fu), uhalf(fv)));
 	uint16_t w, x;
 	memcpy((void *)&w, (void *)&fw, sizeof(w));
 	memcpy((void *)&x, (void *)&fx, sizeof(x));
@@ -781,7 +781,7 @@ int main(int argc, char **argv) {
 
       {
 	__fp16 fw = vdivh_f16(fu, fv);
-	__fp16 fx = __fp16(uhalf::div(uhalf(fu), uhalf(fv)));
+	__fp16 fx = __fp16(uhalf::fdiv(uhalf(fu), uhalf(fv)));
 	uint16_t w, x;
 	memcpy((void *)&w, (void *)&fw, sizeof(w));
 	memcpy((void *)&x, (void *)&fx, sizeof(x));

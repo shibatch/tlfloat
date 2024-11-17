@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 
     //
 
-    float f4t = float(ufloat::addsub(tlf1, tlf2, false));
+    float f4t = float(ufloat::faddsub(tlf1, tlf2, false));
     float f4c = f1 + f2;
 
     if (!cmpf(f4t, f4c)) {
@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    float f5t = float(ufloat::addsub(tlf1, tlf2, true));
+    float f5t = float(ufloat::faddsub(tlf1, tlf2, true));
     float f5c = f1 - f2;
 
     if (!cmpf(f5t, f5c)) {
@@ -110,7 +110,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    float f6t = float(ufloat::mul(tlf1, tlf2));
+    float f6t = float(ufloat::fmul(tlf1, tlf2));
     float f6c = f1 * f2;
 
     if (!cmpf(f6t, f6c)) {
@@ -122,7 +122,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    float f7t = float(ufloat::div(tlf1, tlf2));
+    float f7t = float(ufloat::fdiv(tlf1, tlf2));
     float f7c = f1 / f2;
 
     if (!cmpf(f7t, f7c)) {
@@ -396,7 +396,7 @@ int main(int argc, char **argv) {
 
     //
 
-    double d4t = double(udouble::addsub(tld1, tld2, false));
+    double d4t = double(udouble::faddsub(tld1, tld2, false));
     double d4c = d1 + d2;
 
     if (!cmpd(d4t, d4c)) {
@@ -408,7 +408,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    double d5t = double(udouble::addsub(tld1, tld2, true));
+    double d5t = double(udouble::faddsub(tld1, tld2, true));
     double d5c = d1 - d2;
 
     if (!cmpd(d5t, d5c)) {
@@ -420,7 +420,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    double d6t = double(udouble::mul(tld1, tld2));
+    double d6t = double(udouble::fmul(tld1, tld2));
     double d6c = d1 * d2;
 
     if (!cmpd(d6t, d6c)) {
@@ -432,7 +432,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    double d7t = double(udouble::div(tld1, tld2));
+    double d7t = double(udouble::fdiv(tld1, tld2));
     double d7c = d1 / d2;
 
     if (!cmpd(d7t, d7c)) {
@@ -780,7 +780,7 @@ int main(int argc, char **argv) {
 
     //
 
-    quad q4t = quad(uquad::addsub(tlq1, tlq2, false));
+    quad q4t = quad(uquad::faddsub(tlq1, tlq2, false));
     quad q4c = q1 + q2;
 
     if (!cmpq(d4t, d4c)) {
@@ -792,7 +792,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    quad q5t = quad(uquad::addsub(tlq1, tlq2, true));
+    quad q5t = quad(uquad::faddsub(tlq1, tlq2, true));
     quad q5c = q1 - q2;
 
     if (!cmpq(d5t, d5c)) {
@@ -804,7 +804,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    quad q6t = quad(uquad::mul(tlq1, tlq2));
+    quad q6t = quad(uquad::fmul(tlq1, tlq2));
     quad q6c = q1 * q2;
 
     if (!cmpq(d6t, d6c)) {
@@ -816,7 +816,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    quad q7t = quad(uquad::div(tlq1, tlq2));
+    quad q7t = quad(uquad::fdiv(tlq1, tlq2));
     quad q7c = q1 / q2;
 
     if (!cmpq(d7t, d7c)) {
@@ -1058,7 +1058,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    xfloat xf4 = xfloat::addsub(xf1, xf2, false);
+    xfloat xf4 = xfloat::faddsub(xf1, xf2, false);
     if (!cmpf((float)xf4.cast((const ufloat*)0), f1 + f2, 1)) {
       cout << "xfloat add" << endl;
       cout << "f1 : " << f1  << " : " << to_string_d(ufloat(f1)) << endl;
@@ -1071,7 +1071,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    xfloat xf5 = xfloat::addsub(xf1, xf2, true);
+    xfloat xf5 = xfloat::faddsub(xf1, xf2, true);
     if (!cmpf((float)xf5.cast((const ufloat*)0), f1 - f2, 1)) {
       cout << "xfloat sub" << endl;
       cout << "f1 : " << f1  << " : " << to_string_d(ufloat(f1)) << endl;
@@ -1084,7 +1084,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    xfloat xf6 = xfloat::mul(xf1, xf2);
+    xfloat xf6 = xfloat::fmul(xf1, xf2);
     if (!cmpf((float)xf6.cast((const ufloat*)0), f1 * f2, 1)) {
       cout << "xfloat mul" << endl;
       cout << "f1 : " << f1  << " : " << to_string_d(ufloat(f1)) << endl;
@@ -1097,7 +1097,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    xfloat xf7 = xfloat::div(xf1, xf2);
+    xfloat xf7 = xfloat::fdiv(xf1, xf2);
     if (!cmpf((float)xf7.cast((const ufloat*)0), f1 / f2, 1)) {
       cout << "xfloat div" << endl;
       cout << "f1 : " << f1  << " : " << to_string_d(ufloat(f1)) << endl;
@@ -1138,7 +1138,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    xdouble xd4 = xdouble::addsub(xd1, xd2, false);
+    xdouble xd4 = xdouble::faddsub(xd1, xd2, false);
     if (!cmpd((double)xd4.cast((const udouble*)0), d1 + d2, 1)) {
       cout << "xdouble add" << endl;
       cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
@@ -1151,7 +1151,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    xdouble xd5 = xdouble::addsub(xd1, xd2, true);
+    xdouble xd5 = xdouble::faddsub(xd1, xd2, true);
     if (!cmpd((double)xd5.cast((const udouble*)0), d1 - d2, 1)) {
       cout << "xdouble sub" << endl;
       cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
@@ -1164,7 +1164,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    xdouble xd6 = xdouble::mul(xd1, xd2);
+    xdouble xd6 = xdouble::fmul(xd1, xd2);
     if (!cmpd((double)xd6.cast((const udouble*)0), d1 * d2, 1)) {
       cout << "xdouble mul" << endl;
       cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;
@@ -1177,7 +1177,7 @@ int main(int argc, char **argv) {
       exit(-1);
     }
 
-    xdouble xd7 = xdouble::div(xd1, xd2);
+    xdouble xd7 = xdouble::fdiv(xd1, xd2);
     if (!cmpd((double)xd7.cast((const udouble*)0), d1 / d2, 1)) {
       cout << "xdouble div" << endl;
       cout << "d1 : " << d1  << " : " << to_string_d(udouble(d1)) << endl;

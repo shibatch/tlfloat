@@ -75,6 +75,182 @@ namespace tlfloat {
       return sqrt(d);
     }
 
+    //
+
+    static constexpr TLFLOAT_INLINE int icmp(uint16_t x, uint16_t y) {
+      return x > y ? 1 : (x < y ? -1 : 0);
+    }
+
+    static constexpr TLFLOAT_INLINE int icmp(uint32_t x, uint32_t y) {
+      return x > y ? 1 : (x < y ? -1 : 0);
+    }
+
+    static constexpr TLFLOAT_INLINE int icmp(uint64_t x, uint64_t y) {
+      return x > y ? 1 : (x < y ? -1 : 0);
+    }
+
+    template<int N>
+    static constexpr TLFLOAT_INLINE int icmp(const BigUInt<N>& x, const BigUInt<N>& y) {
+      return x.compare(y);
+    }
+
+    //
+
+    static constexpr TLFLOAT_INLINE uint32_t mul(uint16_t x, uint16_t y) {
+      return uint32_t(x) * uint32_t(y);
+    }
+
+    static constexpr TLFLOAT_INLINE uint64_t mul(uint32_t x, uint32_t y) {
+      return uint64_t(x) * uint64_t(y);
+    }
+
+    static constexpr TLFLOAT_INLINE BigUInt<7> mul(uint64_t x, uint64_t y) {
+      return BigUInt<7>::mul(BigUInt<6>(x), BigUInt<6>(y));
+    }
+
+    template<int N>
+    static constexpr TLFLOAT_INLINE BigUInt<N+1> mul(const BigUInt<N>& x, const BigUInt<N>& y) {
+      return BigUInt<N+1>::mul(x, y);
+    }
+
+    //
+
+    static constexpr TLFLOAT_INLINE xpair<uint16_t, uint16_t> divmod2(uint16_t x_, uint16_t y_) {
+      uint32_t x = uint32_t(x_) << 15, y = y_ | (uint32_t(1) << 15);
+      return xpair<uint16_t, uint16_t> { uint16_t(x / y), uint16_t(x % y) };
+    }
+
+    static constexpr TLFLOAT_INLINE xpair<uint32_t, uint32_t> divmod2(uint32_t x_, uint32_t y_) {
+      uint64_t x = uint64_t(x_) << 31, y = y_ | (uint64_t(1) << 31);
+      return xpair<uint32_t, uint32_t> { uint32_t(x / y), uint32_t(x % y) };
+    }
+
+    static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod2(uint64_t x, uint64_t y) {
+#if defined(_MSC_VER) && !defined(__clang__) // This is required to avoid ICE
+      auto a = BigUInt<6>(x).divmod2(y, BigUInt<6>(y).reciprocal2());
+#else
+      auto a = BigUInt<6>(x).divmod2(y);
+#endif
+      return xpair<uint64_t, uint64_t> { a.first.u64, a.second.u64 };
+    }
+
+    template<int N>
+    static constexpr TLFLOAT_INLINE xpair<BigUInt<N>, BigUInt<N>> divmod2(const BigUInt<N>& x, const BigUInt<N>& y) {
+#if defined(_MSC_VER) && !defined(__clang__) // This is required to avoid ICE
+      return x.divmod2(y, y.reciprocal2());
+#else
+      return x.divmod2(y);
+#endif
+    }
+
+    //
+
+#ifndef TLFLOAT_ENABLE_INTSQRT
+    static constexpr TLFLOAT_INLINE uint32_t isqrt(uint32_t s) {
+      uint64_t u = xsqrt(double(s) * (double)0x100000000ULL);
+      return u - (u >> 32);
+    }
+
+    static constexpr TLFLOAT_INLINE uint64_t isqrt(uint64_t s) {
+      double d = xsqrt((double)uint64_t(s) * double(1ULL << 32) * double(1ULL << 32));
+      return d > 0x1.fffffffffffffp+63 ? UINT64_MAX : uint64_t(d); // nextafter((double)UINT64_MAX, 0)
+    }
+
+    static constexpr TLFLOAT_INLINE uint64_t isqrt(BigUInt<6> s) {
+      double d = xsqrt((double)uint64_t(s) * double(1ULL << 32) * double(1ULL << 32));
+      return d > 0x1.fffffffffffffp+63 ? UINT64_MAX : uint64_t(d);
+    }
+
+    template<int N>
+    static constexpr TLFLOAT_INLINE BigUInt<N> isqrt(BigUInt<N> s) {
+      if (!std::is_constant_evaluated()) assert(s >= (BigUInt<N>(1) << (sizeof(BigUInt<N>) * 8 - 2)));
+      BigUInt<N> x = BigUInt<N>(isqrt(s.high) | 1, 0);
+      x = (x >> 1) + s.mulhiAprx(x.reciprocalAprx());
+      return x + ((~x >> (sizeof(x)*8 - 1)) & 1);
+    }
+#else // #ifndef TLFLOAT_ENABLE_INTSQRT
+    static constexpr uint8_t rsqrttab[256] = {
+      0x80, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+      0xff, 0xfe, 0xfc, 0xfa, 0xf8, 0xf7, 0xf5, 0xf3, 0xf1, 0xf0, 0xee, 0xec, 0xeb, 0xe9, 0xe8, 0xe6,
+      0xe5, 0xe4, 0xe2, 0xe1, 0xdf, 0xde, 0xdd, 0xdc, 0xda, 0xd9, 0xd8, 0xd7, 0xd6, 0xd4, 0xd3, 0xd2,
+      0xd1, 0xd0, 0xcf, 0xce, 0xcd, 0xcc, 0xcb, 0xca, 0xc9, 0xc8, 0xc7, 0xc6, 0xc5, 0xc4, 0xc3, 0xc2,
+      0xc2, 0xc1, 0xc0, 0xbf, 0xbe, 0xbd, 0xbd, 0xbc, 0xbb, 0xba, 0xb9, 0xb9, 0xb8, 0xb7, 0xb6, 0xb6,
+      0xb5, 0xb4, 0xb4, 0xb3, 0xb2, 0xb2, 0xb1, 0xb0, 0xb0, 0xaf, 0xae, 0xae, 0xad, 0xac, 0xac, 0xab,
+      0xab, 0xaa, 0xa9, 0xa9, 0xa8, 0xa8, 0xa7, 0xa7, 0xa6, 0xa6, 0xa5, 0xa4, 0xa4, 0xa3, 0xa3, 0xa2,
+      0xa2, 0xa1, 0xa1, 0xa0, 0xa0, 0x9f, 0x9f, 0x9e, 0x9e, 0x9e, 0x9d, 0x9d, 0x9c, 0x9c, 0x9b, 0x9b,
+      0x9a, 0x9a, 0x9a, 0x99, 0x99, 0x98, 0x98, 0x97, 0x97, 0x97, 0x96, 0x96, 0x95, 0x95, 0x95, 0x94,
+      0x94, 0x93, 0x93, 0x93, 0x92, 0x92, 0x92, 0x91, 0x91, 0x90, 0x90, 0x90, 0x8f, 0x8f, 0x8f, 0x8e,
+      0x8e, 0x8e, 0x8d, 0x8d, 0x8d, 0x8c, 0x8c, 0x8c, 0x8b, 0x8b, 0x8b, 0x8a, 0x8a, 0x8a, 0x89, 0x89,
+      0x89, 0x89, 0x88, 0x88, 0x88, 0x87, 0x87, 0x87, 0x86, 0x86, 0x86, 0x86, 0x85, 0x85, 0x85, 0x84,
+      0x84, 0x84, 0x84, 0x83, 0x83, 0x83, 0x83, 0x82, 0x82, 0x82, 0x82, 0x81, 0x81, 0x81, 0x81, 0x80,
+    };
+
+    static constexpr TLFLOAT_INLINE uint8_t irsqrt(uint8_t s) {
+      return rsqrttab[s];
+    }
+
+    static constexpr TLFLOAT_INLINE uint16_t irsqrt(uint16_t s) {
+      if (!std::is_constant_evaluated()) assert(s >= (1U << 14));
+      uint8_t t = (s + (1 << 7)) >> 8;
+      t = irsqrt(uint8_t(t));
+      uint32_t u = (t * (0xc000ULL - ((uint16_t(t) * t * uint32_t(s) + (1U << 15)) >> 16)) + (1U << 6)) >> 7;
+      return u > 0xffffU ? 0xffffU : u;
+    }
+
+    static constexpr TLFLOAT_INLINE uint32_t irsqrt(uint32_t s) {
+      if (!std::is_constant_evaluated()) assert(s >= (1ULL << 30));
+      uint16_t t = (s + (1 << 15)) >> 16;
+      t = irsqrt(uint16_t(t - (t == 0)));
+      uint64_t u = (t * (0xc0000000ULL - ((uint32_t(t) * t * uint64_t(s) + (1U << 31)) >> 32)) + (1U << 14)) >> 15;
+      return u > 0xffffffffU ? 0xffffffffU : u;
+    }
+
+    static constexpr TLFLOAT_INLINE uint64_t irsqrt(uint64_t s) {
+      if (!std::is_constant_evaluated()) assert(s >= (1ULL << 62));
+      uint32_t t = (s + (1U << 31)) >> 32;
+      t = irsqrt(uint32_t(t - (t == 0)));
+      BigUInt<7> u = (t * (0xc000000000000000ULL - ((uint64_t(t) * t * BigUInt<7>(s) + (1ULL << 63)) >> 64)) + (1U << 30)) >> 31;
+      return u > 0xffffffffffffffffULL ? 0xffffffffffffffffULL : u.low.u64;
+    }
+
+    template<int N>
+    static constexpr TLFLOAT_INLINE BigUInt<N> irsqrt(BigUInt<N> s) {
+      if (!std::is_constant_evaluated()) assert(s >= (BigUInt<N>(1) << ((1 << N)-2)));
+      BigUInt<N-1> t = (s + (BigUInt<N>(1) << ((1 << (N-1))-1))).high;
+      t = irsqrt(BigUInt<N-1>(t - (t == 0)));
+      BigUInt<N+1> u = (t * ((BigUInt<N>(0xc) << ((1 << N)-4)) - ((BigUInt<N+1>::mul(BigUInt<N>::mul(t, t), s) + (BigUInt<N>(1) << ((1 << N)-1))) >> (1 << N))) + (BigUInt<N>(1) << ((1 << (N-1))-2))) >> ((1 << (N-1))-1);
+      return u.high != 0 ? BigUInt<N>(0, ~BigUInt<N-1>((uint64_t)0)) : u.low;
+    }
+
+    template<> constexpr TLFLOAT_INLINE BigUInt<6> irsqrt(BigUInt<6> s) { return irsqrt(s.u64); }
+
+    static constexpr TLFLOAT_INLINE uint32_t isqrt(uint32_t s) {
+      if (s == 0) return 0;
+      if (!std::is_constant_evaluated()) assert(s >= (1U << 30));
+      uint64_t u = (uint64_t(s) * irsqrt(s)) >> 31;
+      return u > 0xffffffffU ? 0xffffffffU : u;
+    }
+
+    static constexpr TLFLOAT_INLINE uint64_t isqrt(uint64_t s) {
+      if (s == 0) return 0;
+      if (!std::is_constant_evaluated()) assert(s >= (1ULL << 62));
+      __uint128_t u = (__uint128_t(s) * irsqrt(s)) >> 63;
+      return u > 0xffffffffffffffffULL ? 0xffffffffffffffffULL : u;
+    }
+
+    static constexpr TLFLOAT_INLINE uint64_t isqrt(BigUInt<6> s) { return isqrt(s.u64); }
+
+    template<int N>
+    static constexpr TLFLOAT_INLINE BigUInt<N> isqrt(BigUInt<N> s) {
+      if (!std::is_constant_evaluated()) assert(s >= (BigUInt<N>(1) << (sizeof(BigUInt<N>) * 8 - 2)));
+      BigUInt<N+1> u = s.mulhiAprx(irsqrt(s)) << 1;
+      return u.high != 0 ? BigUInt<N>(0, ~BigUInt<N-1>((uint64_t)0)) : u.low;
+    }
+#endif // #ifndef TLFLOAT_ENABLE_INTSQRT
+
     template<typename mant_t, typename longmant_t, int nbexp, int nbmant>
     class UnpackedFloat {
       template<typename, typename, int, int> friend class UnpackedFloat;
@@ -103,99 +279,6 @@ namespace tlfloat {
       static constexpr TLFLOAT_INLINE floattype fromBits(const mant_t& u) {
 	static_assert(sizeof(floattype) == sizeof(mant_t));
 	return std::bit_cast<floattype>(u);
-      }
-
-      //
-
-      static constexpr TLFLOAT_INLINE int icmp(uint16_t x, uint16_t y) {
-	return x > y ? 1 : (x < y ? -1 : 0);
-      }
-
-      static constexpr TLFLOAT_INLINE int icmp(uint32_t x, uint32_t y) {
-	return x > y ? 1 : (x < y ? -1 : 0);
-      }
-
-      static constexpr TLFLOAT_INLINE int icmp(uint64_t x, uint64_t y) {
-	return x > y ? 1 : (x < y ? -1 : 0);
-      }
-
-      template<int N>
-      static constexpr TLFLOAT_INLINE int icmp(const BigUInt<N>& x, const BigUInt<N>& y) {
-	return x.compare(y);
-      }
-
-      //
-
-      static constexpr TLFLOAT_INLINE uint32_t mul(uint16_t x, uint16_t y) {
-	return uint32_t(x) * uint32_t(y);
-      }
-
-      static constexpr TLFLOAT_INLINE uint64_t mul(uint32_t x, uint32_t y) {
-	return uint64_t(x) * uint64_t(y);
-      }
-
-      static constexpr TLFLOAT_INLINE BigUInt<7> mul(uint64_t x, uint64_t y) {
-	return BigUInt<7>::mul(BigUInt<6>(x), BigUInt<6>(y));
-      }
-
-      template<int N>
-      static constexpr TLFLOAT_INLINE BigUInt<N+1> mul(const BigUInt<N>& x, const BigUInt<N>& y) {
-	return BigUInt<N+1>::mul(x, y);
-      }
-
-      //
-
-      static constexpr TLFLOAT_INLINE xpair<uint16_t, uint16_t> divmod2(uint16_t x_, uint16_t y_) {
-	uint32_t x = uint32_t(x_) << 15, y = y_ | (uint32_t(1) << 15);
-	return xpair<uint16_t, uint16_t> { uint16_t(x / y), uint16_t(x % y) };
-      }
-
-      static constexpr TLFLOAT_INLINE xpair<uint32_t, uint32_t> divmod2(uint32_t x_, uint32_t y_) {
-	uint64_t x = uint64_t(x_) << 31, y = y_ | (uint64_t(1) << 31);
-	return xpair<uint32_t, uint32_t> { uint32_t(x / y), uint32_t(x % y) };
-      }
-
-      static constexpr TLFLOAT_INLINE xpair<uint64_t, uint64_t> divmod2(uint64_t x, uint64_t y) {
-#if defined(_MSC_VER) && !defined(__clang__) // This is required to avoid ICE
-	auto a = BigUInt<6>(x).divmod2(y, BigUInt<6>(y).reciprocal2());
-#else
-	auto a = BigUInt<6>(x).divmod2(y);
-#endif
-	return xpair<uint64_t, uint64_t> { a.first.u64, a.second.u64 };
-      }
-
-      template<int N>
-      static constexpr TLFLOAT_INLINE xpair<BigUInt<N>, BigUInt<N>> divmod2(const BigUInt<N>& x, const BigUInt<N>& y) {
-#if defined(_MSC_VER) && !defined(__clang__) // This is required to avoid ICE
-	return x.divmod2(y, y.reciprocal2());
-#else
-	return x.divmod2(y);
-#endif
-      }
-
-      //
-
-      static constexpr TLFLOAT_INLINE uint32_t isqrt(uint32_t s) {
-	uint64_t u = xsqrt(double(s) * (double)0x100000000ULL);
-	return u - (u >> 32);
-      }
-
-      static constexpr TLFLOAT_INLINE unsigned long long isqrt(uint64_t s) {
-	double d = xsqrt((double)uint64_t(s) * double(1ULL << 32) * double(1ULL << 32));
-	return d > 0x1.fffffffffffffp+63 ? UINT64_MAX : uint64_t(d); // nextafter((double)UINT64_MAX, 0)
-      }
-
-      static constexpr TLFLOAT_INLINE unsigned long long isqrt(BigUInt<6> s) {
-	double d = xsqrt((double)uint64_t(s) * double(1ULL << 32) * double(1ULL << 32));
-	return d > 0x1.fffffffffffffp+63 ? UINT64_MAX : uint64_t(d);
-      }
-
-      template<int N>
-      static constexpr TLFLOAT_INLINE BigUInt<N> isqrt(BigUInt<N> s) {
-	if (!std::is_constant_evaluated()) assert(s >= (BigUInt<N>(1) << (sizeof(BigUInt<N>) * 8 - 2)));
-	BigUInt<N> x = BigUInt<N>(isqrt(s.high) | 1, 0);
-	x = (x >> 1) + s.mulhiAprx(x.reciprocalAprx());
-	return x + ((~x >> (sizeof(x)*8 - 1)) & 1);
       }
 
       //
@@ -321,7 +404,7 @@ namespace tlfloat {
 	return UnpackedFloat(0, 0, sign, true, false, false);
       }
 
-      static constexpr TLFLOAT_INLINE UnpackedFloat addsub(const UnpackedFloat &lhs, const UnpackedFloat &rhs, bool negateRhs) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat faddsub(const UnpackedFloat &lhs, const UnpackedFloat &rhs, bool negateRhs) {
 	const bool rhssign = rhs.sign != negateRhs;
 	const int ed = lhs.exp - rhs.exp;
 
@@ -404,7 +487,7 @@ namespace tlfloat {
 	return UnpackedFloat(mant_t(am), exp, resultsign, am == 0, nbexp != 0 && exp == (1 << nbexp) - 2, false);
       }
 
-      static constexpr TLFLOAT_INLINE UnpackedFloat mul(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat fmul(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
 	if (int(lhs.isnan) | int(rhs.isnan) | (int(lhs.iszero) & int(rhs.isinf)) |
 	    (int(lhs.isinf) & int(rhs.iszero)) | int(lhs.isinf) | int(rhs.isinf)) {
 	  if (lhs.isnan) return lhs;
@@ -447,7 +530,7 @@ namespace tlfloat {
 	return UnpackedFloat(mant_t(am), exp, lhs.sign != rhs.sign, am == 0, nbexp != 0 && exp == (1 << nbexp) - 2, false);
       }
 
-      static constexpr TLFLOAT_INLINE UnpackedFloat div(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
+      static constexpr TLFLOAT_INLINE UnpackedFloat fdiv(const UnpackedFloat &lhs, const UnpackedFloat &rhs) {
 	if (lhs.isnan | lhs.isinf | rhs.isnan | rhs.iszero | rhs.isinf) {
 	  if (lhs.isnan) return lhs;
 	  if (rhs.isnan) return rhs;
@@ -1064,10 +1147,10 @@ namespace tlfloat {
 
       constexpr TLFLOAT_INLINE UnpackedFloat operator+() const { return UnpackedFloat(*this); }
       constexpr TLFLOAT_INLINE UnpackedFloat operator-() const { return UnpackedFloat(mant, exp, !sign, iszero, isinf, isnan); }
-      constexpr UnpackedFloat operator+(const UnpackedFloat& rhs) const { return addsub(*this, rhs, false); }
-      constexpr UnpackedFloat operator-(const UnpackedFloat& rhs) const { return addsub(*this, rhs, true); }
-      constexpr UnpackedFloat operator*(const UnpackedFloat& rhs) const { return mul(*this, rhs); }
-      constexpr UnpackedFloat operator/(const UnpackedFloat& rhs) const { return div(*this, rhs); }
+      constexpr UnpackedFloat operator+(const UnpackedFloat& rhs) const { return faddsub(*this, rhs, false); }
+      constexpr UnpackedFloat operator-(const UnpackedFloat& rhs) const { return faddsub(*this, rhs, true); }
+      constexpr UnpackedFloat operator*(const UnpackedFloat& rhs) const { return fmul(*this, rhs); }
+      constexpr UnpackedFloat operator/(const UnpackedFloat& rhs) const { return fdiv(*this, rhs); }
 
       constexpr TLFLOAT_INLINE bool operator==(const UnpackedFloat& rhs) const {
 	if (isnan || rhs.isnan) return false;
