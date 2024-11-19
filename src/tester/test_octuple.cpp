@@ -50,7 +50,7 @@ T AGM(int N) {
 
 template<typename T>
 consteval T Machin() {
-  return 4*(T(4)*atan(T("0.2"))-atan(1/T(239)));
+  return 4*(T("0x0.000000000000000000000000000000004p+132")*atan(T("0.2"))-atan(1/T("0x1de00000000000000000000000000000000p-129")));
 }
 
 int main(int argc, char **argv) {
