@@ -114,19 +114,28 @@ if (LIB_MPFR AND (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_SYSTEM_PROCESSOR
   if (TLFLOAT_ENABLE_LIBQUADMATH)
     target_link_libraries(test_exhaustive32 quadmath)
   endif()
+
+  add_executable(test_exhaustive_bf16_mpfr test_exhaustive_bf16_mpfr.cpp)
+  target_link_libraries(test_exhaustive_bf16_mpfr ${LIB_MPFR})
+
   if (OpenMP_CXX_FOUND)
     target_compile_options(test_exhaustive32 PRIVATE ${OpenMP_CXX_FLAGS})
     target_link_options(test_exhaustive32 PRIVATE ${OpenMP_CXX_FLAGS})
     target_include_directories(test_exhaustive32 PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
+
+    target_compile_options(test_exhaustive_bf16_mpfr PRIVATE ${OpenMP_CXX_FLAGS})
+    target_link_options(test_exhaustive_bf16_mpfr PRIVATE ${OpenMP_CXX_FLAGS})
+    target_include_directories(test_exhaustive_bf16_mpfr PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
   endif()
 
   if (ENABLE_EXHAUSTIVE_TESTING)
     add_test(NAME test_exhaustive32 COMMAND test_exhaustive32)
+    add_test(NAME test_exhaustive_bf16_mpfr COMMAND test_exhaustive_bf16_mpfr)
   endif()
 
   if (INSTALL_CONTINUOUS_TESTERS)
     install(
-      TARGETS test_exhaustive32
+      TARGETS test_exhaustive32 test_exhaustive_bf16_mpfr
       DESTINATION "${INSTALL_BINDIR}"
       COMPONENT tester
       )

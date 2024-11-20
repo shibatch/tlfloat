@@ -222,7 +222,7 @@ namespace tlfloat {
       BigUInt<N-1> t = (s + (BigUInt<N>(1) << ((1 << (N-1))-1))).high;
       t = irsqrt(BigUInt<N-1>(t - (t == 0)));
       BigUInt<N+1> u = (t * ((BigUInt<N>(0xc) << ((1 << N)-4)) - ((BigUInt<N+1>::mul(BigUInt<N>::mul(t, t), s) + (BigUInt<N>(1) << ((1 << N)-1))) >> (1 << N))) + (BigUInt<N>(1) << ((1 << (N-1))-2))) >> ((1 << (N-1))-1);
-      return u.high != 0 ? ~BigUInt<N>(0U) : u.low;
+      return u.high.isZero() ? u.low : ~BigUInt<N>(0U);
     }
 
     template<> constexpr TLFLOAT_INLINE BigUInt<6> irsqrt(BigUInt<6> s) { return irsqrt(s.u64); }
@@ -247,7 +247,7 @@ namespace tlfloat {
     static constexpr TLFLOAT_INLINE BigUInt<N> isqrt(BigUInt<N> s) {
       if (!std::is_constant_evaluated()) assert(s >= (BigUInt<N>(1) << (sizeof(BigUInt<N>) * 8 - 2)));
       BigUInt<N+1> u = s.mulhiAprx(irsqrt(s)) << 1;
-      return u.high != 0 ? BigUInt<N>(0, ~BigUInt<N-1>((uint64_t)0)) : u.low;
+      return u.high.isZero() ? u.low : ~BigUInt<N>(0U);
     }
 #endif // #ifndef TLFLOAT_ENABLE_INTSQRT
 

@@ -648,33 +648,33 @@ namespace tlfloat {
 
     //
 
-    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M, int O=20>
     static constexpr tlfloat_t sinh(const tlfloat_t &a) {
       Unpacked_t x = a.getUnpacked().cast((const Unpacked_t *)nullptr), y = fabs(x);
       if (x.isnan || x.isinf) return a;
-      if (y > Unpacked_t::castFromInt(1ULL << 20)) return tlfloat_t::infinity(x.sign);
+      if (y > Unpacked_t::castFromInt(1ULL << O)) return tlfloat_t::infinity(x.sign);
       Unpacked_t d = expm1_<Unpacked_t, N, M>(fabs(x));
       d = ldexp_(d * (d + Unpacked_t(2)) / (d + Unpacked_t(1)), -1);
       if (x.sign) d.sign = !d.sign;
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
 
-    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M, int O=20>
     static constexpr tlfloat_t cosh(const tlfloat_t &a) {
       Unpacked_t x = a.getUnpacked().cast((const Unpacked_t *)nullptr), y = fabs(x);
       if (x.isnan) return a;
       if (x.iszero) return 1;
-      if (y > Unpacked_t::castFromInt(1ULL << 20)) return tlfloat_t::infinity();
+      if (y > Unpacked_t::castFromInt(1ULL << O)) return tlfloat_t::infinity();
       Unpacked_t d = exp_<Unpacked_t, N, M>(fabs(x));
       d = ldexp_(d + Unpacked_t(1) / d, -1);
       return tlfloat_t(d.cast((decltype(a.getUnpacked()) *)nullptr));
     }
 
-    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M>
+    template<typename tlfloat_t, typename Unpacked_t, unsigned N, unsigned M, int O=20>
     static constexpr tlfloat_t tanh(const tlfloat_t &a) {
       Unpacked_t x = a.getUnpacked().cast((const Unpacked_t *)nullptr), y = fabs(x);
       if (x.isnan) return a;
-      if (y.isinf || y > Unpacked_t::castFromInt(1ULL << 20)) return x.sign ? -1 : 1;
+      if (y.isinf || y > Unpacked_t::castFromInt(1ULL << O)) return x.sign ? -1 : 1;
       Unpacked_t d = expm1_<Unpacked_t, N, M>(ldexp_(y, 1));
       d = d / (d + Unpacked_t(2));
       if (x.sign) d.sign = !d.sign;
@@ -1006,6 +1006,8 @@ namespace tlfloat {
   //
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 sin(const BFloat16& a) { return detail::sin<BFloat16, detail::xhalf, 2>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half sin(const Half& a) { return detail::sin<Half, detail::xhalf, 2>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float sin(const Float& a) { return detail::sin<Float, detail::xfloat, 4>(a); }
@@ -1016,6 +1018,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple sin(const Octuple& a) { return detail::sin<Octuple, detail::xoctuple, 25>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 cos(const BFloat16& a) { return detail::cos<BFloat16, detail::xhalf, 2>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half cos(const Half& a) { return detail::cos<Half, detail::xhalf, 2>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1028,6 +1032,8 @@ namespace tlfloat {
   static inline constexpr Octuple cos(const Octuple& a) { return detail::cos<Octuple, detail::xoctuple, 25>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 tan(const BFloat16& a) { return detail::tan<BFloat16, detail::xhalf, 5, 0>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half tan(const Half& a) { return detail::tan<Half, detail::xhalf, 5, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float tan(const Float& a) { return detail::tan<Float, detail::xfloat, 9, 0>(a); }
@@ -1038,6 +1044,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple tan(const Octuple& a) { return detail::tan<Octuple, detail::xoctuple, 25, 3>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 atan2(const BFloat16& y, const BFloat16& x) { return detail::atan2<BFloat16, detail::xhalf, 4, 1>(y, x); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half atan2(const Half& y, const Half& x) { return detail::atan2<Half, detail::xhalf, 4, 1>(y, x); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1050,6 +1058,8 @@ namespace tlfloat {
   static inline constexpr Octuple atan2(const Octuple& y, const Octuple& x) { return detail::atan2<Octuple, detail::xoctuple, 21, 6>(y, x); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 asin(const BFloat16& a) { return detail::asin<BFloat16, detail::xhalf, 4, 1>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half asin(const Half& a) { return detail::asin<Half, detail::xhalf, 4, 1>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float asin(const Float& a) { return detail::asin<Float, detail::xfloat, 9, 1>(a); }
@@ -1060,6 +1070,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple asin(const Octuple& a) { return detail::asin<Octuple, detail::xoctuple, 21, 6>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 acos(const BFloat16& a) { return detail::acos<BFloat16, detail::xhalf, 4, 1>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half acos(const Half& a) { return detail::acos<Half, detail::xhalf, 4, 1>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1072,6 +1084,8 @@ namespace tlfloat {
   static inline constexpr Octuple acos(const Octuple& a) { return detail::acos<Octuple, detail::xoctuple, 21, 6>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 atan(const BFloat16& a) { return detail::atan<BFloat16, detail::xhalf, 4, 1>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half atan(const Half& a) { return detail::atan<Half, detail::xhalf, 4, 1>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float atan(const Float& a) { return detail::atan<Float, detail::xfloat, 9, 1>(a); }
@@ -1082,6 +1096,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple atan(const Octuple& a) { return detail::atan<Octuple, detail::xoctuple, 21, 6>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 exp(const BFloat16& a) { return detail::exp<BFloat16, detail::xhalf, 3, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half exp(const Half& a) { return detail::exp<Half, detail::xhalf, 3, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1094,6 +1110,8 @@ namespace tlfloat {
   static inline constexpr Octuple exp(const Octuple& a) { return detail::exp<Octuple, detail::xoctuple, 33, 2>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 expm1(const BFloat16& a) { return detail::expm1<BFloat16, detail::xhalf, 3, 1>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half expm1(const Half& a) { return detail::expm1<Half, detail::xhalf, 3, 1>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float expm1(const Float& a) { return detail::expm1<Float, detail::xfloat, 6, 1>(a); }
@@ -1104,6 +1122,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple expm1(const Octuple& a) { return detail::expm1<Octuple, detail::xoctuple, 33, 2>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 exp2(const BFloat16& a) { return detail::exp<BFloat16, detail::xfloat, 3, 0>(a, detail::constLN2<detail::xfloat>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half exp2(const Half& a) { return detail::exp<Half, detail::xfloat, 3, 0>(a, detail::constLN2<detail::xfloat>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1116,6 +1136,8 @@ namespace tlfloat {
   static inline constexpr Octuple exp2(const Octuple& a) { return detail::exp<Octuple, detail::xsedecuple, 33, 2>(a, detail::constLN2<detail::xsedecuple>()); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 exp10(const BFloat16& a) { return detail::exp<BFloat16, detail::xfloat, 3, 0>(a, detail::constLN10<detail::xfloat>()); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half exp10(const Half& a) { return detail::exp<Half, detail::xfloat, 3, 0>(a, detail::constLN10<detail::xfloat>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float exp10(const Float& a) { return detail::exp<Float, detail::xdouble, 7, 0>(a, detail::constLN10<detail::xdouble>()); }
@@ -1126,6 +1148,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple exp10(const Octuple& a) { return detail::exp<Octuple, detail::xsedecuple, 33, 2>(a, detail::constLN10<detail::xsedecuple>()); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 log(const BFloat16& a) { return detail::log<BFloat16, detail::xhalf, 3, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half log(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1138,6 +1162,8 @@ namespace tlfloat {
   static inline constexpr Octuple log(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -15>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 log1p(const BFloat16& a) { return detail::log1p<BFloat16, detail::xhalf, 3, 0>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half log1p(const Half& a) { return detail::log1p<Half, detail::xhalf, 3, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float log1p(const Float& a) { return detail::log1p<Float, detail::xfloat, 4, 0>(a); }
@@ -1148,6 +1174,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple log1p(const Octuple& a) { return detail::log1p<Octuple, detail::xoctuple, 25, 2>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 log2(const BFloat16& a) { return detail::log<BFloat16, detail::xhalf, 3, 0, 0>(a, detail::constRLN2<detail::xhalf>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half log2(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0, 0>(a, detail::constRLN2<detail::xhalf>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1160,6 +1188,8 @@ namespace tlfloat {
   static inline constexpr Octuple log2(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -15>(a, detail::constRLN2<detail::xoctuple>()); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 log10(const BFloat16& a) { return detail::log<BFloat16, detail::xhalf, 3, 0, 0>(a, detail::constRLN10<detail::xhalf>()); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half log10(const Half& a) { return detail::log<Half, detail::xhalf, 3, 0, 0>(a, detail::constRLN10<detail::xhalf>()); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float log10(const Float& a) { return detail::log<Float, detail::xfloat, 4, 0, 0>(a, detail::constRLN10<detail::xfloat>()); }
@@ -1170,6 +1200,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple log10(const Octuple& a) { return detail::log<Octuple, detail::xoctuple, 25, 2, -15>(a, detail::constRLN10<detail::xoctuple>()); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 pow(const BFloat16& x, const BFloat16& y) { return detail::pow<BFloat16, detail::xfloat, 3, 0, 0, 3, 0>(x, y); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half pow(const Half& x, const Half& y) { return detail::pow<Half, detail::xfloat, 3, 0, 0, 3, 0>(x, y); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1182,6 +1214,8 @@ namespace tlfloat {
   static inline constexpr Octuple pow(const Octuple& x, const Octuple& y) { return detail::pow<Octuple, detail::xsedecuple, 26, 2, -15, 33, 2>(x, y); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 cbrt(const BFloat16& a) { return detail::cbrt<BFloat16, detail::xhalf, 3, 0>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half cbrt(const Half& a) { return detail::cbrt<Half, detail::xhalf, 3, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float cbrt(const Float& a) { return detail::cbrt<Float, detail::xfloat, 4, 1>(a); }
@@ -1192,6 +1226,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple cbrt(const Octuple& a) { return detail::cbrt<Octuple, detail::xoctuple, 4, 4>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 sinh(const BFloat16& a) { return detail::sinh<BFloat16, detail::xhalf, 4, 0, 10>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half sinh(const Half& a) { return detail::sinh<Half, detail::xhalf, 4, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1204,6 +1240,8 @@ namespace tlfloat {
   static inline constexpr Octuple sinh(const Octuple& a) { return detail::sinh<Octuple, detail::xoctuple, 33, 2>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 cosh(const BFloat16& a) { return detail::cosh<BFloat16, detail::xhalf, 3, 0, 10>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half cosh(const Half& a) { return detail::cosh<Half, detail::xhalf, 3, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float cosh(const Float& a) { return detail::cosh<Float, detail::xfloat, 7, 0>(a); }
@@ -1214,6 +1252,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple cosh(const Octuple& a) { return detail::cosh<Octuple, detail::xoctuple, 33, 2>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 tanh(const BFloat16& a) { return detail::tanh<BFloat16, detail::xhalf, 3, 0, 10>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half tanh(const Half& a) { return detail::tanh<Half, detail::xhalf, 3, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1226,6 +1266,8 @@ namespace tlfloat {
   static inline constexpr Octuple tanh(const Octuple& a) { return detail::tanh<Octuple, detail::xoctuple, 33, 2>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 asinh(const BFloat16& a) { return detail::asinh<BFloat16, detail::xfloat, 3, 0, 0>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half asinh(const Half& a) { return detail::asinh<Half, detail::xfloat, 3, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float asinh(const Float& a) { return detail::asinh<Float, detail::xdouble, 7, 0, 0>(a); }
@@ -1236,6 +1278,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple asinh(const Octuple& a) { return detail::asinh<Octuple, detail::xsedecuple, 33, 2, -15>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 acosh(const BFloat16& a) { return detail::acosh<BFloat16, detail::xfloat, 3, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half acosh(const Half& a) { return detail::acosh<Half, detail::xfloat, 3, 0, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1248,6 +1292,8 @@ namespace tlfloat {
   static inline constexpr Octuple acosh(const Octuple& a) { return detail::acosh<Octuple, detail::xsedecuple, 33, 2, -15>(a); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 atanh(const BFloat16& a) { return detail::atanh<BFloat16, detail::xhalf, 3, 0>(a); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half atanh(const Half& a) { return detail::atanh<Half, detail::xhalf, 3, 0>(a); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float atanh(const Float& a) { return detail::atanh<Float, detail::xfloat, 4, 0>(a); }
@@ -1258,6 +1304,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple atanh(const Octuple& a) { return detail::atanh<Octuple, detail::xoctuple, 25, 2>(a); }
 
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr BFloat16 fmod(const BFloat16& y, const BFloat16& x) { return detail::fmod<BFloat16, detail::xhalf>(y, x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Half fmod(const Half& y, const Half& x) { return detail::fmod<Half, detail::xhalf>(y, x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
@@ -1270,6 +1318,8 @@ namespace tlfloat {
   static inline constexpr Octuple fmod(const Octuple& y, const Octuple& x) { return detail::fmod<Octuple, detail::xoctuple>(y, x); }
 
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr BFloat16 remainder(const BFloat16& y, const BFloat16& x) { return detail::remainder<BFloat16, detail::xhalf>(y, x); }
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Half remainder(const Half& y, const Half& x) { return detail::remainder<Half, detail::xhalf>(y, x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Float remainder(const Float& y, const Float& x) { return detail::remainder<Float, detail::xfloat>(y, x); }
@@ -1280,6 +1330,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr Octuple remainder(const Octuple& y, const Octuple& x) { return detail::remainder<Octuple, detail::xoctuple>(y, x); }
 
+  /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
+  static inline constexpr xpair<BFloat16, int64_t> remquo(const BFloat16& y, const BFloat16& x) { return detail::remquo<BFloat16, detail::xhalf>(y, x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
   static inline constexpr xpair<Half, int64_t> remquo(const Half& y, const Half& x) { return detail::remquo<Half, detail::xhalf>(y, x); }
   /** This function has the same functionality as the corresponding function in math.h. This function returns correctly rounded results. */
@@ -1292,6 +1344,8 @@ namespace tlfloat {
   static inline constexpr xpair<Octuple, int64_t> remquo(const Octuple& y, const Octuple& x) { return detail::remquo<Octuple, detail::xoctuple>(y, x); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 erf(const BFloat16& x) { return detail::erf<BFloat16, detail::xfloat, 16, 10, 5, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half erf(const Half& x) { return detail::erf<Half, detail::xfloat, 16, 10, 5, 0>(x); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float erf(const Float& x) { return detail::erf<Float, detail::xdouble, 20, 20, 8, 0>(x); }
@@ -1302,6 +1356,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple erf(const Octuple& x) { return detail::erf<Octuple, detail::xsedecuple, 36, 340, 36, 2>(x); }
 
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 erfc(const BFloat16& x) { return detail::erfc<BFloat16, detail::xfloat, 16, 10, 5, 0>(x); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half erfc(const Half& x) { return detail::erfc<Half, detail::xfloat, 16, 10, 5, 0>(x); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
@@ -1314,6 +1370,8 @@ namespace tlfloat {
   static inline constexpr Octuple erfc(const Octuple& x) { return detail::erfc<Octuple, detail::xsedecuple, 36, 340, 36, 2>(x); }
 
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 tgamma(const BFloat16& x) { return detail::tgamma<BFloat16, detail::xfloat, 5, 20, 3, 3, 0, 0, 3, 0>(x); }
+  /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Half tgamma(const Half& x) { return detail::tgamma<Half, detail::xfloat, 5, 20, 3, 3, 0, 0, 3, 0>(x); }
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Float tgamma(const Float& x) { return detail::tgamma<Float, detail::xdouble, 7, 15, 5, 5, 0, 0, 7, 0>(x); }
@@ -1324,6 +1382,8 @@ namespace tlfloat {
   /** This function has the same functionality as the corresponding function in math.h. The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple tgamma(const Octuple& x) { return detail::tgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -15, 33, 2>(x); }
 
+  /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
+  static inline constexpr BFloat16 lgamma(const BFloat16& x, bool *sign = 0) { return detail::lgamma<BFloat16, detail::xfloat, 5, 20, 3, 3, 0, 0, 3, 0>(x, sign); }
   /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
   static inline constexpr Half lgamma(const Half& x, bool *sign = 0) { return detail::lgamma<Half, detail::xfloat, 5, 20, 3, 3, 0, 0, 3, 0>(x, sign); }
   /** This function has the same functionality as the corresponding function in math.h. This implementation is experimental and has no error bound. */
@@ -1336,6 +1396,8 @@ namespace tlfloat {
   static inline constexpr Octuple lgamma(const Octuple& x, bool *sign = 0) { return detail::lgamma<Octuple, detail::xsedecuple, 50, 35, 26, 26, 2, -15, 33, 2>(x, sign); }
 
   /** This function returns sin(PI * x). The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 sinpi(const BFloat16& a) { return detail::sinpi<BFloat16, detail::xhalf, 2>(a); }
+  /** This function returns sin(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Half sinpi(const Half& a) { return detail::sinpi<Half, detail::xhalf, 2>(a); }
   /** This function returns sin(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Float sinpi(const Float& a) { return detail::sinpi<Float, detail::xfloat, 4>(a); }
@@ -1347,6 +1409,8 @@ namespace tlfloat {
   static inline constexpr Octuple sinpi(const Octuple& a) { return detail::sinpi<Octuple, detail::xoctuple, 25>(a); }
 
   /** This function returns cos(PI * x). The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 cospi(const BFloat16& a) { return detail::cospi<BFloat16, detail::xhalf, 2>(a); }
+  /** This function returns cos(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Half cospi(const Half& a) { return detail::cospi<Half, detail::xhalf, 2>(a); }
   /** This function returns cos(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Float cospi(const Float& a) { return detail::cospi<Float, detail::xfloat, 4>(a); }
@@ -1357,6 +1421,8 @@ namespace tlfloat {
   /** This function returns cos(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple cospi(const Octuple& a) { return detail::cospi<Octuple, detail::xoctuple, 25>(a); }
 
+  /** This function returns tan(PI * x). The accuracy of the return value is 1ULP. */
+  static inline constexpr BFloat16 tanpi(const BFloat16& a) { return detail::tanpi<BFloat16, detail::xhalf, 5, 0>(a); }
   /** This function returns tan(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Half tanpi(const Half& a) { return detail::tanpi<Half, detail::xhalf, 5, 0>(a); }
   /** This function returns tan(PI * x). The accuracy of the return value is 1ULP. */

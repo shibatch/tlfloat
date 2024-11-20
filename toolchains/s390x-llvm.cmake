@@ -4,9 +4,9 @@ SET (CMAKE_SYSTEM_PROCESSOR "s390x")
 
 SET(CMAKE_FIND_ROOT_PATH /usr/s390x-linux-gnu /usr/include/s390x-linux-gnu /usr/lib/s390x-linux-gnu)
 
-execute_process(COMMAND bash -c "compgen -c | egrep '^clang(-[0-9]+(\.[0-9]+\.[0-9]+)?)?$' | sort -nr | uniq" OUTPUT_VARIABLE CLANG_CANDIDATES)
+execute_process(COMMAND bash -c "compgen -c | egrep '^clang(-[0-9]+(\\.[0-9]+\\.[0-9]+)?)?$' | sort -nr | uniq" OUTPUT_VARIABLE CLANG_CANDIDATES)
 string(REPLACE "\n" ";" CLANG_CANDIDATES "${CLANG_CANDIDATES}")
-execute_process(COMMAND bash -c "compgen -c | egrep '^clang\\+\\+(-[0-9]+(\.[0-9]+\.[0-9]+)?)?$' | sort -nr | uniq" OUTPUT_VARIABLE CLANGXX_CANDIDATES)
+execute_process(COMMAND bash -c "compgen -c | egrep '^clang\\+\\+(-[0-9]+(\\.[0-9]+\\.[0-9]+)?)?$' | sort -nr | uniq" OUTPUT_VARIABLE CLANGXX_CANDIDATES)
 string(REPLACE "\n" ";" CLANGXX_CANDIDATES "${CLANGXX_CANDIDATES}")
 
 find_program(CMAKE_C_COMPILER NAMES ${CLANG_CANDIDATES})
