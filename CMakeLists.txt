@@ -173,15 +173,23 @@ if (CMAKE_CXX_COMPILER_TARGET)
 endif()
 CHECK_CXX_SOURCE_COMPILES("
 #include <cstdlib>
+#include <cstdint>
+#include <bit>
 int main(int argc, char **argv) {
 __fp16 a = (__fp16)(float)atof(argv[1]);
+__uint16_t u = std::bit_cast<__uint16_t>(a);
+a = std::bit_cast<__fp16>(u);
 return (float)a; }
 " TLFLOAT_COMPILER_SUPPORTS_FP16)
 
 CHECK_CXX_SOURCE_COMPILES("
 #include <cstdlib>
+#include <cstdint>
+#include <bit>
 int main(int argc, char **argv) {
 __bf16 a = (__bf16)(float)atof(argv[1]);
+__uint16_t u = std::bit_cast<__uint16_t>(a);
+a = std::bit_cast<__bf16>(u);
 return (float)a; }
 " TLFLOAT_COMPILER_SUPPORTS_BF16)
 
