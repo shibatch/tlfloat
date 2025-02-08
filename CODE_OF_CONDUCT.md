@@ -1,7 +1,7 @@
 
 # Community Guidelines for Sustainability of Open-Source Ecosystem
 
-Version 0.8, 2024-09-19
+Version 1.0.1, 2024-12-29
 
 Copyright Naoki Shibata 2024. https://github.com/shibatch/nofreelunch
 
@@ -390,14 +390,19 @@ and smooth discussions.
   free-riding and if everyone continues to free-ride, the project will
   not last long.
 
+* Project members strive to promote awareness of the existence,
+  philosophy, purpose, and content of these guidelines to those who
+  directly or indirectly use open source or free software.
+
 * Project members strive to promote the awareness that it is natural
   for organizations that make a profit from the commercial use of open
   source or free software to make contribution commensurate with the
   increased profits from the use of the software to relevant projects,
   where the contribution is made in order for the project to serve
   society as a whole. This contribution must not be biased to benefit
-  any specific organizations. On top of that, the contribution herein
-  refers to providing the following items.
+  any specific organizations beyond the purpose or original nature of
+  the project. On top of that, the contribution herein refers to
+  providing the following items.
 
   * Financial support
   * Contributing code or documentation
