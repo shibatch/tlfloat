@@ -311,15 +311,12 @@ met.
 
 * You are not paid for your participation in our project, or our
   project finds that your organization agrees to and is fully
-  complying with the following CoC.
+  complying with our [Code of Conduct](https://github.com/shibatch/nofreelunch?tab=coc-ov-file).
 * The total sales for your organization of products incorporating the
   deliverables of this project are less than $300,000 per year.
 * The amount of grant from an external organization for your project
   using the deliverables of this project is less than $100,000 per
   year.
 
-
-[CODE_OF_CONDUCT.md](https://github.com/shibatch/nofreelunch?tab=coc-ov-file).
-
-
-Copyright [Naoki Shibata](https://shibatch.github.io/) 2024.
+Copyright [Naoki Shibata](https://shibatch.github.io/) and
+contributors 2024-2025.
