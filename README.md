@@ -313,8 +313,9 @@ met.
   is for educational or research purposes, or our project finds that
   your organization agrees to and is fully complying with our [Code of
   Conduct](https://github.com/shibatch/nofreelunch?tab=coc-ov-file).
-* The total sales for your organization of products incorporating the
-  deliverables of this project are less than $300,000 per year.
+* The total sales of products and services incorporating the
+  deliverables of our project for your organization as a whole are
+  less than $300,000 per year.
 * The amount of grant from an external organization for your project
   using the deliverables of this project is less than $100,000 per
   year.
