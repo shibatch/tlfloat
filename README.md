@@ -294,6 +294,8 @@ http://www.boost.org/LICENSE_1_0.txt.
 Contributions to this project are accepted under the same license.
 
 
+### Conditions under which our project provides services free of charge
+
 Our project provides only the current and previous versions of
 software free of charge. No other materials and services are provided
 free of charge unless they are explicitly stated to be free of
@@ -303,25 +305,18 @@ requires expertise and is basically a fee-based service, even though
 it may be performed free of charge with good intentions. 
 
 We will make decisions to provide services free of charge on a
-case-by-case basis, but will generally depend on the following
-criteria.
+case-by-case basis. In principle, our project will provide you with
+the services free of charge if all of the following three criteria are
+met.
 
-* Our project finds that your organization has explicitly agreed to
-  and is fully complying with the following CoC.
+* You are not paid for your participation in our project, or our
+  project finds that your organization agrees to and is fully
+  complying with the following CoC.
 * The total sales for your organization of products incorporating the
   deliverables of this project are less than $300,000 per year.
 * The amount of grant from an external organization for your project
   using the deliverables of this project is less than $100,000 per
   year.
-
-Our project does not require you to provide proof that your
-organization meets these criteria, but if you do not provide a
-sufficient explanation in situations where our project suspects that
-your organization is likely to fail to meet the criteria, our project
-may stop providing services free of charge.
-
-If you are not being paid for your participation in our project, your
-organization is not required to meet these criteria.
 
 
 [CODE_OF_CONDUCT.md](https://github.com/shibatch/nofreelunch?tab=coc-ov-file).
