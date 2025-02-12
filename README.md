@@ -320,5 +320,10 @@ met.
   using the deliverables of this project is less than $100,000 per
   year.
 
+TL;DR If your company is making commercial use of the deliverables
+from this project, please sponsor this project. If your company
+ignores our request, we will not listen to you either.
+
+
 Copyright [Naoki Shibata](https://shibatch.github.io/) and
 contributors 2024-2025.
