@@ -320,9 +320,14 @@ met.
   using the deliverables of this project is less than $100,000 per
   year.
 
+It will be too late for you to offer sponsorship once we have declared
+a halt to our activities. By the time that happens, we will already be
+preparing to start the next project and there will be no turning back.  
+
+
 TL;DR If your company is making commercial use of the deliverables
 from this project, please sponsor this project. If your company
-ignores our request, we will not listen to you either.
+ignores our request, we will not listen to you either.  
 
 
 Copyright [Naoki Shibata](https://shibatch.github.io/) and
