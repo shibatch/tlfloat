@@ -325,8 +325,10 @@ have a sponsor for this project. Please realize the stupidity of
 saying that because your company uses our code, you need us to
 maintain the code, while not paying us to do so. If your company is
 using our code, your company deserves to pay us for maintenance. If
-your company is not interested in supporting our project, then your
-company should have not used our deliverables in the first place.
+all you care about is using FOSS for free, then you are no better than
+taking advantage of the goodwill of others. If your company is not
+interested in supporting our project, then your company should have
+not used our deliverables in the first place.
 
 Your company should understand the significance of the contribution
 that FOSS in general provides to society as a whole. We are not
