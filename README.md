@@ -320,15 +320,27 @@ met.
   using the deliverables of this project is less than $100,000 per
   year.
 
-It will be too late for you to offer sponsorship once we have declared
-a halt to our activities. By the time that happens, we will already be
-preparing to start the next project and there will be no turning back.  
+Please consider sponsoring this project right now. Currently we do not
+have a sponsor for this project. Please realize the stupidity of
+saying that because your company uses our code, you need us to
+maintain the code, while not paying us to do so. If your company is
+using our code, your company deserves to pay us for maintenance. If
+your company is not interested in financially supporting our project,
+then your company should have not used our deliverables in the first
+place.
+
+Your company should understand the significance of the contribution
+that FOSS in general provides to society as a whole. We are not
+developing FOSS to provide free help to your company do your business.
+If your company truly recognizes the value of FOSS, your company
+should also know that your company's contribution to the FOSS project
+should contribute to society as a whole, not just to your company's
+profits.
 
 
 TL;DR If your company is making commercial use of the deliverables
 from this project, please sponsor this project. If your company
 ignores our request, we will not listen to you either.  
-
 
 Copyright [Naoki Shibata](https://shibatch.github.io/) and
 contributors 2024-2025.
