@@ -325,20 +325,20 @@ have a sponsor for this project. Please realize the stupidity of
 saying that because your company uses our code, you need us to
 maintain the code, while not paying us to do so. If your company is
 using our code, your company deserves to pay us for maintenance. If
-all you care about is using FOSS for free, then you are no better than
-taking advantage of the goodwill of others. If your company is not
-interested in supporting our project, then your company should have
-not used our deliverables in the first place.
+your company's only interest in FOSS is commercial use without paying
+anything, then your company is taking advantage of the goodwill of
+others. If your company is not interested in supporting our project,
+your company should have not used our deliverables in the first place.
 
-Your company should understand the significance of the contribution
-that FOSS in general provides to society as a whole. We are not
-developing FOSS to provide free help to your company do your business.
-If your company truly recognizes the value of FOSS, your company
-should also know that your company's contribution to the FOSS project
-should contribute to society as a whole, not just to your company's
-profits. It is impossible for only companies that are only interested
-in the pursuit of their own company's profits to maintain FOSS that
-contributes to society as a whole.
+Your company should also understand the significance of the
+contribution that FOSS in general provides to society as a whole. We
+are not developing FOSS to provide free help to your company do your
+business. If your company truly recognizes the value of FOSS, your
+company should also know that your company's contribution to the FOSS
+project should contribute to society as a whole, not just to your
+company's profits. It is impossible for only companies that are only
+interested in the pursuit of their own company's profits to maintain
+FOSS that contributes to society as a whole.
 
 TL;DR If your company is making commercial use of the deliverables
 from this project, please sponsor this project. If your company
