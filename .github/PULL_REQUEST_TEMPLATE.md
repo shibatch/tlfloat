@@ -13,6 +13,9 @@ and does not include the cost of any future maintenance of your
 code. Your code added in this PR may be removed without notice if our
 project finds it necessary.
 
-If you have any concerns, please contact us before opening a PR.
+By becoming a sponsor of our project, no additional cost will be
+charged to review your PR.
+
+If you have any questions, please contact us before opening a PR.
 
 Simply remove this notice when you open a PR.

@@ -19,6 +19,9 @@ to provide the labor and expertise to process your issue. The specific
 amount you will pay will be determined by negotiation, depending on
 the nature of the issue and your project.
 
-If you have any concerns, please contact us before creating an issue.
+By becoming a sponsor of our project, you will receive a substantial
+discount on the cost of processing your issue.
+
+If you have any questions, please contact us before creating an issue.
 
 Simply remove this notice when you create an issue.
