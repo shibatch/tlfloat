@@ -328,7 +328,7 @@ using our code, your company deserves to pay us for maintenance. If
 your company's only interest in FOSS is commercial use without paying
 anything, then your company is taking advantage of the goodwill of
 others. If your company is not interested in supporting our project,
-your company should have not used our deliverables in the first place.
+your company has no right to complain about our deliverables.
 
 Your company should also understand the significance of the
 contribution that FOSS in general provides to society as a whole. We
