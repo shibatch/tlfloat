@@ -293,56 +293,5 @@ http://www.boost.org/LICENSE_1_0.txt.
 
 Contributions to this project are accepted under the same license.
 
-
-### Conditions under which our project provides services free of charge
-
-Our project provides only the current and previous versions of
-software free of charge. No other materials and services are provided
-free of charge unless they are explicitly stated to be free of
-charge. More specifically, software maintenance, i.e., fixing bugs,
-adding functionalities, and responding to inquiries, is a service that
-requires expertise and is basically a fee-based service, even though
-it may be performed free of charge with good intentions. 
-
-We will make decisions to provide services free of charge on a
-case-by-case basis. In principle, our project will provide you with
-the services free of charge if all of the following three criteria are
-met.
-
-* You are not paid for your participation in our project, your project
-  is for educational or research purposes, or our project finds that
-  your organization agrees to and is fully complying with our [Code of
-  Conduct](https://github.com/shibatch/nofreelunch?tab=coc-ov-file).
-* The total sales of products and services incorporating the
-  deliverables of our project for your organization as a whole are
-  less than $300,000 per year.
-* The amount of grant from an external organization for your project
-  using the deliverables of this project is less than $100,000 per
-  year.
-
-Please consider sponsoring this project right now. Currently we do not
-have a sponsor for this project. Please realize the stupidity of
-saying that because your company uses our code, you need us to
-maintain the code, while not paying us to do so. If your company is
-using our code, your company deserves to pay us for maintenance. If
-your company's only interest in FOSS is commercial use without paying
-anything, then your company is taking advantage of the goodwill of
-others. If your company is not interested in supporting our project,
-your company has no right to complain about our deliverables.
-
-Your company should also understand the significance of the
-contribution that FOSS in general provides to society as a whole. We
-are not developing FOSS to provide free help to your company do your
-business. If your company truly recognizes the value of FOSS, your
-company should also know that your company's contribution to the FOSS
-project should contribute to society as a whole, not just to your
-company's profits. It is impossible for only companies that are only
-interested in the pursuit of their own company's profits to maintain
-FOSS that contributes to society as a whole.
-
-TL;DR If your company is making commercial use of the deliverables
-from this project, please sponsor this project. If your company
-ignores our request, we will not listen to you either.  
-
 Copyright [Naoki Shibata](https://shibatch.github.io/) and
 contributors 2024-2025.
