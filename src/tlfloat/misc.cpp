@@ -57,18 +57,16 @@ extern "C" {
 
   //
 
-  //
-
-  tlfloat_int128_t_ tlfloat_cast_i128_i64(const int64_t x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>(x)); }
+  tlfloat_int128_t_ tlfloat_cast_i128_i64_(const int64_t x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>(x)); }
   int64_t tlfloat_cast_i64_i128(const tlfloat_int128_t_ x) { return (int64_t)std::bit_cast<BigInt<7>>(x); }
 
-  tlfloat_uint128_t_ tlfloat_cast_u128_u64(const uint64_t x) { return std::bit_cast<tlfloat_uint128_t_>(BigUInt<7>(x)); }
+  tlfloat_uint128_t_ tlfloat_cast_u128_u64_(const uint64_t x) { return std::bit_cast<tlfloat_uint128_t_>(BigUInt<7>(x)); }
   uint64_t tlfloat_cast_u64_u128(const tlfloat_uint128_t_ x) { return (uint64_t)std::bit_cast<BigUInt<7>>(x); }
 
-  tlfloat_int128_t_ tlfloat_cast_i128_d(const double x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>(x)); }
+  tlfloat_int128_t_ tlfloat_cast_i128_d_(const double x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>(x)); }
   double tlfloat_cast_d_i128(const tlfloat_int128_t_ x) { return (double)std::bit_cast<BigInt<7>>(x); }
 
-  tlfloat_uint128_t_ tlfloat_cast_u128_d(const double x) { return std::bit_cast<tlfloat_uint128_t_>(BigUInt<7>(x)); }
+  tlfloat_uint128_t_ tlfloat_cast_u128_d_(const double x) { return std::bit_cast<tlfloat_uint128_t_>(BigUInt<7>(x)); }
   double tlfloat_cast_d_u128(const tlfloat_uint128_t_ x) { return (double)std::bit_cast<BigUInt<7>>(x); }
 
   tlfloat_int128_t_ tlfloat_cast_i128_q(const tlfloat_quad_ x) { return std::bit_cast<tlfloat_int128_t_>(BigInt<7>((Quad)x)); }
