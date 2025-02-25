@@ -1197,17 +1197,17 @@ static inline tlfloat_quad tlfloat_divq(const tlfloat_quad x, const tlfloat_quad
 static inline tlfloat_quad tlfloat_negq(const tlfloat_quad x) { return tlfloat_negq(tlfloat_quad_(x)); }
 
 /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-static inline int tlfloat_eq_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y) { return tlfloat_eq_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
+static inline int tlfloat_eq_q_q(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_eq_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-static inline int tlfloat_ne_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y) { return tlfloat_ne_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
+static inline int tlfloat_ne_q_q(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_ne_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-static inline int tlfloat_lt_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y) { return tlfloat_lt_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
+static inline int tlfloat_lt_q_q(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_lt_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-static inline int tlfloat_le_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y) { return tlfloat_le_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
+static inline int tlfloat_le_q_q(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_le_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-static inline int tlfloat_gt_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y) { return tlfloat_gt_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
+static inline int tlfloat_gt_q_q(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_gt_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function performs ordered comparison of two quad-precision floating point numbers. Link with -ltlfloat. */
-static inline int tlfloat_ge_q_q(const tlfloat_quad_ x, const tlfloat_quad_ y) { return tlfloat_ge_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
+static inline int tlfloat_ge_q_q(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_ge_q_q(tlfloat_quad_(x), tlfloat_quad_(y)); }
 
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_fmaq(const tlfloat_quad x, const tlfloat_quad y, const tlfloat_quad z) { return tlfloat_fmaq(tlfloat_quad_(x), tlfloat_quad_(y), tlfloat_quad_(z)); }
