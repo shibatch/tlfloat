@@ -18,26 +18,26 @@ extern "C" {
 
   //
 
-  double tlfloat_cast_d_q(const tlfloat_quad_ x         ) { return (double)Double(Quad(x)); }
-  double tlfloat_cast_d_o(const tlfloat_octuple_ x      ) { return (double)Double(Octuple(x)); }
+  double tlfloat_cast_d_q(const tlfloat_quad_    x) { return (double)Double(Quad(x)); }
+  double tlfloat_cast_d_o(const tlfloat_octuple_ x) { return (double)Double(Octuple(x)); }
 
-  tlfloat_quad_ tlfloat_cast_q_d(const double x         ) { return (tlfloat_quad_)Quad(Double(x)); }
-  tlfloat_quad_ tlfloat_cast_q_o(const tlfloat_octuple_ x) { return (tlfloat_quad_)Quad(Octuple(x)); }
+  tlfloat_quad_ tlfloat_cast_q_d_(const double           x) { return (tlfloat_quad_)Quad(Double(x)); }
+  tlfloat_quad_ tlfloat_cast_q_o (const tlfloat_octuple_ x) { return (tlfloat_quad_)Quad(Octuple(x)); }
 
-  tlfloat_octuple_ tlfloat_cast_o_d(const double x      ) { return (tlfloat_octuple_)Octuple(Double(x)); }
-  tlfloat_octuple_ tlfloat_cast_o_q(const tlfloat_quad_ x) { return (tlfloat_octuple_)Octuple(Quad(x)); }
+  tlfloat_octuple_ tlfloat_cast_o_d_(const double        x) { return (tlfloat_octuple_)Octuple(Double(x)); }
+  tlfloat_octuple_ tlfloat_cast_o_q (const tlfloat_quad_ x) { return (tlfloat_octuple_)Octuple(Quad(x)); }
 
-  int64_t tlfloat_cast_i64_q(const tlfloat_quad_ x) { return (int64_t)Quad(x); }
-  tlfloat_quad_ tlfloat_cast_q_i64(const int64_t x) { return (tlfloat_quad_)Quad(x); }
+  int64_t tlfloat_cast_i64_q(const tlfloat_quad_  x) { return (int64_t)Quad(x); }
+  tlfloat_quad_ tlfloat_cast_q_i64_(const int64_t x) { return (tlfloat_quad_)Quad(x); }
 
-  int64_t tlfloat_cast_i64_o(const tlfloat_octuple_ x) { return (int64_t)Octuple(x); }
-  tlfloat_octuple_ tlfloat_cast_o_i64(const int64_t x) { return (tlfloat_octuple_)Octuple(x); }
+  int64_t tlfloat_cast_i64_o(const tlfloat_octuple_  x) { return (int64_t)Octuple(x); }
+  tlfloat_octuple_ tlfloat_cast_o_i64_(const int64_t x) { return (tlfloat_octuple_)Octuple(x); }
 
-  uint64_t tlfloat_cast_u64_q(const tlfloat_quad_ x) { return (uint64_t)Quad(x); }
-  tlfloat_quad_ tlfloat_cast_q_u64(const uint64_t x) { return (tlfloat_quad_)Quad(x); }
+  uint64_t tlfloat_cast_u64_q(const tlfloat_quad_  x) { return (uint64_t)Quad(x); }
+  tlfloat_quad_ tlfloat_cast_q_u64_(const uint64_t x) { return (tlfloat_quad_)Quad(x); }
 
-  uint64_t tlfloat_cast_u64_o(const tlfloat_octuple_ x) { return (uint64_t)Octuple(x); }
-  tlfloat_octuple_ tlfloat_cast_o_u64(const uint64_t x) { return (tlfloat_octuple_)Octuple(x); }
+  uint64_t tlfloat_cast_u64_o(const tlfloat_octuple_  x) { return (uint64_t)Octuple(x); }
+  tlfloat_octuple_ tlfloat_cast_o_u64_(const uint64_t x) { return (tlfloat_octuple_)Octuple(x); }
 
   //
 

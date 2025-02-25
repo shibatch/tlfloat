@@ -445,8 +445,8 @@ extern "C" {
 
   float tlfloat_strtof(const char *nptr, const char **endptr) { return (float)Float(nptr, endptr); }
   double tlfloat_strtod(const char *nptr, const char **endptr) { return (double)Double(nptr, endptr); }
-  tlfloat_quad_ tlfloat_strtoq(const char *nptr, const char **endptr) { return (tlfloat_quad_)Quad(nptr, endptr); }
-  tlfloat_octuple_ tlfloat_strtoo(const char *nptr, const char **endptr) { return (tlfloat_octuple_)Octuple(nptr, endptr); }
+  tlfloat_quad_ tlfloat_strtoq_(const char *nptr, const char **endptr) { return (tlfloat_quad_)Quad(nptr, endptr); }
+  tlfloat_octuple_ tlfloat_strtoo_(const char *nptr, const char **endptr) { return (tlfloat_octuple_)Octuple(nptr, endptr); }
 
   //
 

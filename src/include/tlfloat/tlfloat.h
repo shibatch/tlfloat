@@ -15,6 +15,15 @@
 #define TLFLOAT_FP_NORMAL 4
 #define TLFLOAT_FP_ILOGB0 ((int)0x80000000)
 #define TLFLOAT_FP_ILOGBNAN ((int)2147483647)
+
+#define TLFLOAT_FLT128_MANT_DIG 113
+#define TLFLOAT_FLT128_MIN_EXP (-16381)
+#define TLFLOAT_FLT128_MAX_EXP 16384
+#define TLFLOAT_FLT128_DIG 33
+#define TLFLOAT_FLT128_MIN_10_EXP (-4931)
+#define TLFLOAT_FLT128_MAX_10_EXP 4932
+
+#define TLFLOAT_FLT256_MANT_DIG 237
 #endif
 
 #if defined(TLFLOAT_DOXYGEN)
@@ -112,8 +121,8 @@ extern "C" {
    * but corresponds to the types defined in the TLFloat library. */
   double tlfloat_strtod(const char *, const char **);
   float tlfloat_strtof(const char *, const char **);
-  tlfloat_quad_ tlfloat_strtoq(const char *, const char **);
-  tlfloat_octuple_ tlfloat_strtoo(const char *, const char **);
+  tlfloat_quad_ tlfloat_strtoq_(const char *, const char **);
+  tlfloat_octuple_ tlfloat_strtoo_(const char *, const char **);
 
   tlfloat_int128_t_ tlfloat_strtoi128(const char *, const char **, const int);
   tlfloat_uint128_t_ tlfloat_strtou128(const char *, const char **, const int);
@@ -125,35 +134,29 @@ extern "C" {
   /** This function casts a octuple-precision FP number to a double-precision FP number. Link with -ltlfloat. */
   double tlfloat_cast_d_o(const tlfloat_octuple_ x      );
 
-  /** This function casts a double-precision FP number to a quadruple-precision FP number. Link with -ltlfloat. */
-  tlfloat_quad_ tlfloat_cast_q_d(const double x         );
+  tlfloat_quad_ tlfloat_cast_q_d_(const double x         );
   /** This function casts a octuple-precision FP number to a quadruple-precision FP number. Link with -ltlfloat. */
-  tlfloat_quad_ tlfloat_cast_q_o(const tlfloat_octuple_ x);
+  tlfloat_quad_ tlfloat_cast_q_o (const tlfloat_octuple_ x);
 
-  /** This function casts a double-precision FP number to a octuple-precision FP number. Link with -ltlfloat. */
-  tlfloat_octuple_ tlfloat_cast_o_d(const double x      );
+  tlfloat_octuple_ tlfloat_cast_o_d_(const double x      );
   /** This function casts a quadruple-precision FP number to a octuple-precision FP number. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_cast_o_q(const tlfloat_quad_ x);
 
   /** This function casts a quadruple-precision FP number to a 64-bit signed integer. Link with -ltlfloat. */
   int64_t tlfloat_cast_i64_q(const tlfloat_quad_ x);
-  /** This function casts a 64-bit signed integer to a quadruple-precision FP number. Link with -ltlfloat. */
-  tlfloat_quad_ tlfloat_cast_q_i64(const int64_t x);
+  tlfloat_quad_ tlfloat_cast_q_i64_(const int64_t x);
 
   /** This function casts a octuple-precision FP number to a 64-bit signed integer. Link with -ltlfloat. */
   int64_t tlfloat_cast_i64_o(const tlfloat_octuple_ x);
-  /** This function casts a 64-bit signed integer to a octuple-precision FP number. Link with -ltlfloat. */
-  tlfloat_octuple_ tlfloat_cast_o_i64(const int64_t x);
+  tlfloat_octuple_ tlfloat_cast_o_i64_(const int64_t x);
 
   /** This function casts a quadruple-precision FP number to a 64-bit unsigned integer. Link with -ltlfloat. */
   uint64_t tlfloat_cast_u64_q(const tlfloat_quad_ x);
-  /** This function casts a 64-bit unsigned integer to a quadruple-precision FP number. Link with -ltlfloat. */
-  tlfloat_quad_ tlfloat_cast_q_u64(const uint64_t x);
+  tlfloat_quad_ tlfloat_cast_q_u64_(const uint64_t x);
 
   /** This function casts a octuple-precision FP number to a 64-bit unsigned integer. Link with -ltlfloat. */
   uint64_t tlfloat_cast_u64_o(const tlfloat_octuple_ x);
-  /** This function casts a 64-bit unsigned integer to a octuple-precision FP number. Link with -ltlfloat. */
-  tlfloat_octuple_ tlfloat_cast_o_u64(const uint64_t x);
+  tlfloat_octuple_ tlfloat_cast_o_u64_(const uint64_t x);
 
   //
 
@@ -701,21 +704,21 @@ struct tlfloat_quad {
   tlfloat_quad() { value.e[0] = value.e[1] = 0; }
 
   // Conversion to/from the corresponding C type
-  tlfloat_quad(const tlfloat_quad_& v) : value(v) {}
-  operator tlfloat_quad_() const { return value; }
+  constexpr tlfloat_quad(const tlfloat_quad_& v) : value(v) {}
+  constexpr operator tlfloat_quad_() const { return value; }
 
   // Upcast / downcast
   explicit tlfloat_quad(const struct tlfloat_octuple& v);
 
   // Conversion to/from double
-  tlfloat_quad(const double& d) : value(tlfloat_cast_q_d(d)) {}
+  tlfloat_quad(const double& d) : value(tlfloat_cast_q_d_(d)) {}
   explicit operator double() const { return tlfloat_cast_d_q(value); }
 
   // Conversion to/from integral types
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && (sizeof(T) < 8 || !std::is_unsigned<T>::value)), int>::type = 0>
-  tlfloat_quad(const T& i) : value(tlfloat_cast_q_i64(i)) {}
+  tlfloat_quad(const T& i) : value(tlfloat_cast_q_i64_(i)) {}
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && std::is_unsigned<T>::value && sizeof(T) == 8), int>::type = 0>
-  tlfloat_quad(const T& u) : value(tlfloat_cast_q_u64(u)) {}
+  tlfloat_quad(const T& u) : value(tlfloat_cast_q_u64_(u)) {}
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && (sizeof(T) < 8 || !std::is_unsigned<T>::value)), int>::type = 0>
   explicit operator T() const { return tlfloat_cast_i64_q(value); }
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && std::is_unsigned<T>::value && sizeof(T) == 8), int>::type = 0>
@@ -748,10 +751,10 @@ struct tlfloat_quad {
   bool operator> (const tlfloat_quad& rhs) const { return tlfloat_gt_q_q(value, rhs.value); }
   bool operator>=(const tlfloat_quad& rhs) const { return tlfloat_ge_q_q(value, rhs.value); }
 
-  tlfloat_quad& operator++()    { *this = tlfloat_addq(value, tlfloat_cast_q_i64(1)); return *this; }
-  tlfloat_quad& operator--()    { *this = tlfloat_subq(value, tlfloat_cast_q_i64(1)); return *this; }
-  tlfloat_quad  operator++(int) { tlfloat_quad t = *this; *this = tlfloat_addq(value, tlfloat_cast_q_i64(1)); return t; }
-  tlfloat_quad  operator--(int) { tlfloat_quad t = *this; *this = tlfloat_subq(value, tlfloat_cast_q_i64(1)); return t; }
+  tlfloat_quad& operator++()    { *this = tlfloat_addq(value, tlfloat_cast_q_i64_(1)); return *this; }
+  tlfloat_quad& operator--()    { *this = tlfloat_subq(value, tlfloat_cast_q_i64_(1)); return *this; }
+  tlfloat_quad  operator++(int) { tlfloat_quad t = *this; *this = tlfloat_addq(value, tlfloat_cast_q_i64_(1)); return t; }
+  tlfloat_quad  operator--(int) { tlfloat_quad t = *this; *this = tlfloat_subq(value, tlfloat_cast_q_i64_(1)); return t; }
 };
 
 /** This macro is defined iff tlfloat_quad is not an alias of
@@ -775,22 +778,22 @@ struct tlfloat_octuple {
   tlfloat_octuple() { value.e[0] = value.e[1] = value.e[2] = value.e[3] = 0; }
 
   // Conversion to/from the corresponding C type
-  tlfloat_octuple(const tlfloat_octuple_& v) : value(v) {}
-  operator tlfloat_octuple_() const { return value; }
+  constexpr tlfloat_octuple(const tlfloat_octuple_& v) : value(v) {}
+  constexpr operator tlfloat_octuple_() const { return value; }
 
   // Upcast / downcast
   tlfloat_octuple(const tlfloat_quad& v) : value(tlfloat_cast_o_q(v)) {}
   explicit operator tlfloat_quad() const { return tlfloat_cast_q_o(value); }
 
   // Conversion to/from double
-  tlfloat_octuple(const double& d) : value(tlfloat_cast_o_d(d)) {}
+  tlfloat_octuple(const double& d) : value(tlfloat_cast_o_d_(d)) {}
   explicit operator double() const { return tlfloat_cast_d_o(value); }
 
   // Conversion to/from integral types
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && (sizeof(T) < 8 || !std::is_unsigned<T>::value)), int>::type = 0>
-  tlfloat_octuple(const T& i) : value(tlfloat_cast_o_i64(i)) {}
+  tlfloat_octuple(const T& i) : value(tlfloat_cast_o_i64_(i)) {}
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && std::is_unsigned<T>::value && sizeof(T) == 8), int>::type = 0>
-  tlfloat_octuple(const T& u) : value(tlfloat_cast_o_u64(u)) {}
+  tlfloat_octuple(const T& u) : value(tlfloat_cast_o_u64_(u)) {}
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && (sizeof(T) < 8 || !std::is_unsigned<T>::value)), int>::type = 0>
   explicit operator T() const { return tlfloat_cast_i64_o(value); }
   template<typename T, typename std::enable_if<(std::is_integral<T>::value && std::is_unsigned<T>::value && sizeof(T) == 8), int>::type = 0>
@@ -823,10 +826,10 @@ struct tlfloat_octuple {
   bool operator> (const tlfloat_octuple& rhs) const { return tlfloat_gt_o_o(value, rhs.value); }
   bool operator>=(const tlfloat_octuple& rhs) const { return tlfloat_ge_o_o(value, rhs.value); }
 
-  tlfloat_octuple& operator++()    { *this = tlfloat_addo(value, tlfloat_cast_o_i64(1)); return *this; }
-  tlfloat_octuple& operator--()    { *this = tlfloat_subo(value, tlfloat_cast_o_i64(1)); return *this; }
-  tlfloat_octuple  operator++(int) { tlfloat_octuple t = *this; *this = tlfloat_addo(value, tlfloat_cast_o_i64(1)); return t; }
-  tlfloat_octuple  operator--(int) { tlfloat_octuple t = *this; *this = tlfloat_subo(value, tlfloat_cast_o_i64(1)); return t; }
+  tlfloat_octuple& operator++()    { *this = tlfloat_addo(value, tlfloat_cast_o_i64_(1)); return *this; }
+  tlfloat_octuple& operator--()    { *this = tlfloat_subo(value, tlfloat_cast_o_i64_(1)); return *this; }
+  tlfloat_octuple  operator++(int) { tlfloat_octuple t = *this; *this = tlfloat_addo(value, tlfloat_cast_o_i64_(1)); return t; }
+  tlfloat_octuple  operator--(int) { tlfloat_octuple t = *this; *this = tlfloat_subo(value, tlfloat_cast_o_i64_(1)); return t; }
 };
 #else // #if defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
 typedef tlfloat_octuple_ tlfloat_octuple;
@@ -1053,9 +1056,9 @@ inline tlfloat_octuple::tlfloat_octuple(const struct tlfloat_uint128_t& u) : val
 #define TLFLOAT_FLT128_EPSILON 0x1p-112L
 #elif defined(__cplusplus)
 #if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
-static inline constexpr tlfloat_quad_ tlfloat_constq(uint64_t h, uint64_t l) { return tlfloat_quad_ { l, h }; }
+static inline constexpr tlfloat_quad tlfloat_constq(uint64_t h, uint64_t l) { return tlfloat_quad_ { l, h }; }
 #else
-static inline constexpr tlfloat_quad_ tlfloat_constq(uint64_t h, uint64_t l) { return tlfloat_quad_ { h, l }; }
+static inline constexpr tlfloat_quad tlfloat_constq(uint64_t h, uint64_t l) { return tlfloat_quad_ { h, l }; }
 #endif
 
 #define TLFLOAT_M_Eq tlfloat_constq( 0x40005bf0a8b14576, 0x95355fb8ac404e7a )
@@ -1122,9 +1125,9 @@ static inline constexpr tlfloat_quad_ tlfloat_constq(uint64_t h, uint64_t l) { r
 
 #if defined(__cplusplus)
 #if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
-static inline constexpr tlfloat_octuple_ tlfloat_consto(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3) { return tlfloat_octuple_ { w3, w2, w1, w0 }; }
+static inline constexpr tlfloat_octuple tlfloat_consto(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3) { return tlfloat_octuple_ { w3, w2, w1, w0 }; }
 #else
-static inline constexpr tlfloat_octuple_ tlfloat_consto(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3) { return tlfloat_octuple_ { w0, w1, w2, w3 }; }
+static inline constexpr tlfloat_octuple tlfloat_consto(uint64_t w0, uint64_t w1, uint64_t w2, uint64_t w3) { return tlfloat_octuple_ { w0, w1, w2, w3 }; }
 #endif
 
 #define TLFLOAT_M_Eo tlfloat_consto(0x400005bf0a8b1457LL, 0x695355fb8ac404e7LL, 0xa79e3b1738b079c5LL, 0xa6d2b53c26c8228dLL)
@@ -1312,7 +1315,17 @@ static inline tlfloat_quad tlfloat_fmodq(const tlfloat_quad x, const tlfloat_qua
 static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_remainderq(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_remquoq(const tlfloat_quad x, const tlfloat_quad y, int *quo) { return tlfloat_remquoq(tlfloat_quad_(x), tlfloat_quad_(y), quo); }
+
 #endif // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
+
+/** This function casts a double-precision FP number to a quadruple-precision FP number. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_cast_q_d(const double x) { return tlfloat_cast_q_d_(x); }
+/** This function casts a 64-bit signed integer to a quadruple-precision FP number. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_cast_q_i64(const int64_t x) { return tlfloat_cast_q_i64_(x); }
+/** This function casts a 64-bit unsigned integer to a quadruple-precision FP number. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_cast_q_u64(const uint64_t x) { return tlfloat_cast_q_u64_(x); }
+/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_strtoq(const char *nptr, const char **endptr) { return tlfloat_strtoq_(nptr, endptr); }
 
 #ifdef TLFLOAT_LIBQUADMATH_EMULATION
 
@@ -1354,23 +1367,23 @@ static inline tlfloat_quad tlfloat_remquoq(const tlfloat_quad x, const tlfloat_q
 #endif
 
 /** This macro is defined only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined. */
-#define FLT128_MANT_DIG 113
+#define FLT128_MANT_DIG TLFLOAT_FLT128_MANT_DIG
 /** This macro is defined only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined. */
-#define FLT128_MIN_EXP (-16381)
+#define FLT128_MIN_EXP TLFLOAT_FLT128_MIN_EXP
 /** This macro is defined only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined. */
-#define FLT128_MAX_EXP 16384
+#define FLT128_MAX_EXP TLFLOAT_FLT128_MAX_EXP
 /** This macro is defined only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined. */
-#define FLT128_DIG 33
+#define FLT128_DIG TLFLOAT_FLT128_DIG
 /** This macro is defined only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined. */
-#define FLT128_MIN_10_EXP (-4931)
+#define FLT128_MIN_10_EXP TLFLOAT_FLT128_MIN_10_EXP
 /** This macro is defined only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined. */
-#define FLT128_MAX_10_EXP 4932
+#define FLT128_MAX_10_EXP TLFLOAT_FLT128_MAX_10_EXP
 
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
   static inline tlfloat_quad strtoflt128(const char *s, const char **sp) {
-    return tlfloat_strtoq(s, sp);
+    return tlfloat_strtoq_(s, sp);
   }
 
   /** This function is designed to be used as a replacement for the function of the same name in quadmath.h,
@@ -2062,6 +2075,15 @@ namespace tlfloat {
 static_assert(sizeof(tlfloat_quad) == 16, "sizeof(tlfloat_quad)");
 static_assert(sizeof(tlfloat_octuple) == 32, "sizeof(tlfloat_octuple)");
 #endif // #if defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
+
+/** This function casts a double-precision FP number to a octuple-precision FP number. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_cast_o_d(const double x) { return tlfloat_cast_o_d_(x); }
+  /** This function casts a 64-bit signed integer to a octuple-precision FP number. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_cast_o_i64(const int64_t x) { return tlfloat_cast_o_i64_(x); }
+  /** This function casts a 64-bit unsigned integer to a octuple-precision FP number. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_cast_o_u64(const uint64_t x) { return tlfloat_cast_o_u64_(x); }
+/** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_strtoo(const char *nptr, const char **endptr) { return tlfloat_strtoo_(nptr, endptr); }
 
 //
 
