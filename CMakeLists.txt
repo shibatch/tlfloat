@@ -120,10 +120,13 @@ if (SET_COMPILER_SUPPORTS_FLOAT128 STREQUAL "auto")
     set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
   endif()
   CHECK_CXX_SOURCE_COMPILES("
-int main(int argc, char **argv) {
-  __float128 i = argc;
-  return (int)i;
-}" TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
+#include <bit>
+struct s { long long x, y; };
+int main(void) {
+  constexpr s a = std::bit_cast<s>(__float128(0.1234)*__float128(56.789));
+  static_assert((a.x ^ a.y) == 0xc7d695c93a4e2b71LL);
+}
+" TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
   set(CMAKE_REQUIRED_FLAGS)
 else()
   if (SET_COMPILER_SUPPORTS_FLOAT128)
@@ -139,12 +142,13 @@ if (SET_LONGDOUBLE_IS_FLOAT128 STREQUAL "auto")
     set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
   endif()
   CHECK_CXX_SOURCE_COMPILES("
-#ifdef __LONG_DOUBLE_IBM128__
-#error long double is IBM128
-#endif
-int main() {
-  static_assert((1 + (long double)0x1p-64) - 1 != 0.0, \"long double is not float128\");
-}" TLFLOAT_LONGDOUBLE_IS_FLOAT128)
+#include <bit>
+struct s { long long x, y; };
+int main(void) {
+  constexpr s a = std::bit_cast<s>((long double)0.1234*(long double)56.789);
+  static_assert((a.x ^ a.y) == 0xc7d695c93a4e2b71LL);
+}
+" TLFLOAT_LONGDOUBLE_IS_FLOAT128)
   set(CMAKE_REQUIRED_FLAGS)
 else()
   if (SET_LONGDOUBLE_IS_FLOAT128)
