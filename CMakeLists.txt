@@ -122,9 +122,11 @@ if (SET_COMPILER_SUPPORTS_FLOAT128 STREQUAL "auto")
   CHECK_CXX_SOURCE_COMPILES("
 #include <bit>
 struct s { long long x, y; };
-int main(void) {
+int main(int argc, char **argv) {
   constexpr s a = std::bit_cast<s>(__float128(0.1234)*__float128(56.789));
   static_assert((a.x ^ a.y) == 0xc7d695c93a4e2b71LL);
+  __float128 i = argc;
+  return (int)i;
 }
 " TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
   set(CMAKE_REQUIRED_FLAGS)
