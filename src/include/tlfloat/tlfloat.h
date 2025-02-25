@@ -260,30 +260,22 @@ extern "C" {
 
   float tlfloat_addf(const float x, const float y);
   double tlfloat_add(const double x, const double y);
-  /** This function performs addition of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad_ tlfloat_addq(const tlfloat_quad_ x, const tlfloat_quad_ y);
-  /** This function performs addition of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_addo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
   float tlfloat_subf(const float x, const float y);
   double tlfloat_sub(const double x, const double y);
-  /** This function performs subtraction of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad_ tlfloat_subq(const tlfloat_quad_ x, const tlfloat_quad_ y);
-  /** This function performs subtraction of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_subo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
   float tlfloat_mulf(const float x, const float y);
   double tlfloat_mul(const double x, const double y);
-  /** This function performs multiplication of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad_ tlfloat_mulq(const tlfloat_quad_ x, const tlfloat_quad_ y);
-  /** This function performs multiplication of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_mulo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
   float tlfloat_divf(const float x, const float y);
   double tlfloat_div(const double x, const double y);
-  /** This function performs division of two quadruple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_quad_ tlfloat_divq(const tlfloat_quad_ x, const tlfloat_quad_ y);
-  /** This function performs division of two octuple-precision floating point numbers. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_divo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
   float tlfloat_negf(const float x);
@@ -1206,6 +1198,15 @@ inline tlfloat_quad::tlfloat_quad(const struct tlfloat_int128_t& i) : value(tlfl
 inline tlfloat_quad::tlfloat_quad(const struct tlfloat_uint128_t& u) : value(tlfloat_cast_q_u128(u)) {}
 #endif
 
+/** This function performs addition of two quadruple-precision floating point numbers. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_addq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_addq(tlfloat_quad_(x), tlfloat_quad_(y)); }
+/** This function performs subtraction of two quadruple-precision floating point numbers. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_subq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_subq(tlfloat_quad_(x), tlfloat_quad_(y)); }
+/** This function performs multiplication of two quadruple-precision floating point numbers. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_mulq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_mulq(tlfloat_quad_(x), tlfloat_quad_(y)); }
+/** This function performs division of two quadruple-precision floating point numbers. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_divq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_divq(tlfloat_quad_(x), tlfloat_quad_(y)); }
+static inline tlfloat_quad tlfloat_negq(const tlfloat_quad x) { return tlfloat_negq(tlfloat_quad_(x)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_fmaq(const tlfloat_quad x, const tlfloat_quad y, const tlfloat_quad z) { return tlfloat_fmaq(tlfloat_quad_(x), tlfloat_quad_(y), tlfloat_quad_(z)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
@@ -1795,6 +1796,16 @@ TLFLOAT_OVERLOAD_CMPI(>=);
 #undef TLFLOAT_OVERLOAD_CMP
 #undef TLFLOAT_OVERLOAD_CMPQ
 #undef TLFLOAT_OVERLOAD_CMPI
+
+/** This function performs addition of two octuple-precision floating point numbers. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_addo(const tlfloat_octuple x, const tlfloat_octuple y) { return tlfloat_addo(tlfloat_octuple_(x), tlfloat_octuple_(y)); }
+/** This function performs subtraction of two octuple-precision floating point numbers. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_subo(const tlfloat_octuple x, const tlfloat_octuple y) { return tlfloat_subo(tlfloat_octuple_(x), tlfloat_octuple_(y)); }
+/** This function performs multiplication of two octuple-precision floating point numbers. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_mulo(const tlfloat_octuple x, const tlfloat_octuple y) { return tlfloat_mulo(tlfloat_octuple_(x), tlfloat_octuple_(y)); }
+/** This function performs division of two octuple-precision floating point numbers. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_divo(const tlfloat_octuple x, const tlfloat_octuple y) { return tlfloat_divo(tlfloat_octuple_(x), tlfloat_octuple_(y)); }
+static inline tlfloat_octuple tlfloat_nego(const tlfloat_octuple x) { return tlfloat_nego(tlfloat_octuple_(x)); }
 
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_octuple tlfloat_fmao(const tlfloat_octuple x, const tlfloat_octuple y, const tlfloat_octuple z) { return tlfloat_fmao(tlfloat_octuple_(x), tlfloat_octuple_(y), tlfloat_octuple_(z)); }
