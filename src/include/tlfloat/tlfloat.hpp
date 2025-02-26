@@ -1559,15 +1559,16 @@ namespace tlfloat {
 
     /** Any non-integer object is bitcast to a TLFloat type of the same size with this constructor */
     template<typename fptype,
-      std::enable_if_t<(sizeof(fptype)==sizeof(mant_t) && (std::is_floating_point_v<fptype> || (!std::is_pointer_v<fptype> && !std::is_integral_v<fptype>))), int> = 0>
+      std::enable_if_t<(sizeof(fptype) == sizeof(mant_t) && std::is_trivially_copyable_v<fptype> &&
+			(std::is_floating_point_v<fptype> || (!std::is_pointer_v<fptype> && !std::is_integral_v<fptype>))), int> = 0>
     constexpr TLFLOAT_INLINE TLFloat(const fptype& s) {
       m = std::bit_cast<mant_t>(s);
     }
 
     template<typename fptype,
-      std::enable_if_t<(sizeof(fptype)==sizeof(mant_t) && (std::is_floating_point_v<fptype> || (!std::is_pointer_v<fptype> && !std::is_integral_v<fptype>))), int> = 0>
+      std::enable_if_t<(sizeof(fptype) == sizeof(mant_t) && std::is_trivially_copyable_v<fptype> &&
+			(std::is_floating_point_v<fptype> || (!std::is_pointer_v<fptype> && !std::is_integral_v<fptype>))), int> = 0>
     explicit constexpr TLFLOAT_INLINE operator fptype() const {
-      static_assert(sizeof(mant_t) == sizeof(fptype));
       return std::bit_cast<fptype>(m);
     }
 

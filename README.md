@@ -281,7 +281,6 @@ Pow                  : 1.29873 Mops/second
     * Complex functions
   * More testing
     * Add more testers for I/O functions
-  * Interoperability with SLEEF
   * Further optimization
 
 

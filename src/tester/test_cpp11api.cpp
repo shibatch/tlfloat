@@ -125,7 +125,7 @@ void doTest(const string &s1, const string &s2) {
   tlfloat_quad q2 = strtoflt128(s2.c_str(), NULL);
 
   double d0;
-  double d1 = atof(s1.c_str());
+  double d1 = (double)(tlfloat_quad)atof(s1.c_str());
   double d2 = atof(s2.c_str());
 
   float f1 = d1, f2 = d2;
