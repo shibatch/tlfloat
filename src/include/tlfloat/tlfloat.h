@@ -716,11 +716,21 @@ struct tlfloat_quad {
 
   /** Any non-integer object is memcpy-ed */
   template<typename fptype,
-	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_quad_) && std::is_trivially_copyable<fptype>::value && (std::is_floating_point<fptype>::value || (!std::is_pointer<fptype>::value && !std::is_integral<fptype>::value))), int>::type = 0>
+	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_quad_) && std::is_trivially_copyable<fptype>::value &&
+				    !std::is_same<fptype, tlfloat_int128_t_>::value && !std::is_same<fptype, tlfloat_uint128_t_>::value &&
+#if !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
+				    !std::is_same<fptype, tlfloat_int128_t>::value && !std::is_same<fptype, tlfloat_uint128_t>::value &&
+#endif
+				    !std::is_floating_point<fptype>::value && !std::is_pointer<fptype>::value && !std::is_integral<fptype>::value), int>::type = 0>
   tlfloat_quad(const fptype& s) { memcpy(&value, &s, sizeof(tlfloat_quad_)); }
 
   template<typename fptype,
-	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_quad_) && std::is_trivially_copyable<fptype>::value && (std::is_floating_point<fptype>::value || (!std::is_pointer<fptype>::value && !std::is_integral<fptype>::value))), int>::type = 0>
+	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_quad_) && std::is_trivially_copyable<fptype>::value &&
+				    !std::is_same<fptype, tlfloat_int128_t_>::value && !std::is_same<fptype, tlfloat_uint128_t_>::value &&
+#if !defined(TLFLOAT_COMPILER_SUPPORTS_INT128)
+				    !std::is_same<fptype, tlfloat_int128_t>::value && !std::is_same<fptype, tlfloat_uint128_t>::value &&
+#endif
+				    !std::is_floating_point<fptype>::value && !std::is_pointer<fptype>::value && !std::is_integral<fptype>::value), int>::type = 0>
   explicit operator fptype() const {
     fptype ret;
     memcpy(&ret, &value, sizeof(tlfloat_quad_));
@@ -804,11 +814,13 @@ struct tlfloat_octuple {
 
   /** Any non-integer object is memcpy-ed */
   template<typename fptype,
-	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_octuple_) && std::is_trivially_copyable<fptype>::value && (std::is_floating_point<fptype>::value || (!std::is_pointer<fptype>::value && !std::is_integral<fptype>::value))), int>::type = 0>
+	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_octuple_) && std::is_trivially_copyable<fptype>::value &&
+				    !std::is_floating_point<fptype>::value && !std::is_pointer<fptype>::value && !std::is_integral<fptype>::value), int>::type = 0>
   tlfloat_octuple(const fptype& s) { memcpy(&value, &s, sizeof(tlfloat_octuple_)); }
 
   template<typename fptype,
-	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_octuple_) && std::is_trivially_copyable<fptype>::value && (std::is_floating_point<fptype>::value || (!std::is_pointer<fptype>::value && !std::is_integral<fptype>::value))), int>::type = 0>
+	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_octuple_) && std::is_trivially_copyable<fptype>::value &&
+				    !std::is_floating_point<fptype>::value && !std::is_pointer<fptype>::value && !std::is_integral<fptype>::value), int>::type = 0>
   explicit operator fptype() const {
     fptype ret;
     memcpy(&ret, &value, sizeof(tlfloat_octuple_));
