@@ -759,6 +759,26 @@ int main(int argc, char **argv) {
     }
   }
 
+#ifdef TLFLOAT_QUAD_IS_STRUCT
+  {
+    struct teststruct_quad { char a[sizeof(tlfloat_quad)]; };
+    tlfloat_quad q = 1.234;
+    teststruct_quad obj = (teststruct_quad)q;
+    tlfloat_quad r = obj;
+    check("quad object copy conversion", r == q, true);
+  }
+#endif
+
+#ifdef TLFLOAT_OCTUPLE_IS_STRUCT
+  {
+    struct teststruct_octuple { char a[sizeof(tlfloat_octuple)]; };
+    tlfloat_octuple q = 1.234;
+    teststruct_octuple obj = (teststruct_octuple)q;
+    tlfloat_octuple r = obj;
+    check("octuple object copy conversion", r == q, true);
+  }
+#endif
+
   char str[1000];
 
   tlfloat_snprintf(str, sizeof(str), "%.70_256g\n", AGMo(3));

@@ -714,6 +714,19 @@ struct tlfloat_quad {
   explicit tlfloat_quad(const struct tlfloat_uint128_t& u);
 #endif
 
+  /** Any non-integer object is memcpy-ed */
+  template<typename fptype,
+	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_quad_) && std::is_trivially_copyable<fptype>::value && (std::is_floating_point<fptype>::value || (!std::is_pointer<fptype>::value && !std::is_integral<fptype>::value))), int>::type = 0>
+  tlfloat_quad(const fptype& s) { memcpy(&value, &s, sizeof(tlfloat_quad_)); }
+
+  template<typename fptype,
+	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_quad_) && std::is_trivially_copyable<fptype>::value && (std::is_floating_point<fptype>::value || (!std::is_pointer<fptype>::value && !std::is_integral<fptype>::value))), int>::type = 0>
+  explicit operator fptype() const {
+    fptype ret;
+    memcpy(&ret, &value, sizeof(tlfloat_quad_));
+    return ret;
+  }
+
   //
 
   tlfloat_quad operator+(const tlfloat_quad& rhs) const { return tlfloat_addq(value, rhs.value); }
@@ -789,6 +802,19 @@ struct tlfloat_octuple {
   tlfloat_octuple(const struct tlfloat_uint128_t& u);
 #endif
 
+  /** Any non-integer object is memcpy-ed */
+  template<typename fptype,
+	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_octuple_) && std::is_trivially_copyable<fptype>::value && (std::is_floating_point<fptype>::value || (!std::is_pointer<fptype>::value && !std::is_integral<fptype>::value))), int>::type = 0>
+  tlfloat_octuple(const fptype& s) { memcpy(&value, &s, sizeof(tlfloat_octuple_)); }
+
+  template<typename fptype,
+	   typename std::enable_if<(sizeof(fptype)==sizeof(tlfloat_octuple_) && std::is_trivially_copyable<fptype>::value && (std::is_floating_point<fptype>::value || (!std::is_pointer<fptype>::value && !std::is_integral<fptype>::value))), int>::type = 0>
+  explicit operator fptype() const {
+    fptype ret;
+    memcpy(&ret, &value, sizeof(tlfloat_octuple_));
+    return ret;
+  }
+
   //
 
   tlfloat_octuple operator+(const tlfloat_octuple& rhs) const { return tlfloat_addo(value, rhs.value); }
@@ -811,6 +837,8 @@ struct tlfloat_octuple {
   tlfloat_octuple  operator++(int) { tlfloat_octuple t = *this; *this = tlfloat_addo(value, tlfloat_cast_o_i64_(1)); return t; }
   tlfloat_octuple  operator--(int) { tlfloat_octuple t = *this; *this = tlfloat_subo(value, tlfloat_cast_o_i64_(1)); return t; }
 };
+
+#define TLFLOAT_OCTUPLE_IS_STRUCT
 #else // #if defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
 typedef tlfloat_octuple_ tlfloat_octuple;
 #endif
