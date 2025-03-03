@@ -121,6 +121,8 @@ extern "C" {
    * but corresponds to the types defined in the TLFloat library. */
   double tlfloat_strtod(const char *, const char **);
   float tlfloat_strtof(const char *, const char **);
+
+#if !defined(TLFLOAT_DOXYGEN)
   tlfloat_quad_ tlfloat_strtoq_(const char *, const char **);
   tlfloat_octuple_ tlfloat_strtoo_(const char *, const char **);
 
@@ -129,32 +131,24 @@ extern "C" {
 
   //
 
-  /** This function casts a quadruple-precision FP number to a double-precision FP number. Link with -ltlfloat. */
   double tlfloat_cast_d_q(const tlfloat_quad_    x);
-  /** This function casts a octuple-precision FP number to a double-precision FP number. Link with -ltlfloat. */
   double tlfloat_cast_d_o(const tlfloat_octuple_ x);
 
   tlfloat_quad_ tlfloat_cast_q_d_(const double           x);
-  /** This function casts a octuple-precision FP number to a quadruple-precision FP number. Link with -ltlfloat. */
   tlfloat_quad_ tlfloat_cast_q_o (const tlfloat_octuple_ x);
 
   tlfloat_octuple_ tlfloat_cast_o_d_(const double       x);
-  /** This function casts a quadruple-precision FP number to a octuple-precision FP number. Link with -ltlfloat. */
   tlfloat_octuple_ tlfloat_cast_o_q(const tlfloat_quad_ x);
 
-  /** This function casts a quadruple-precision FP number to a 64-bit signed integer. Link with -ltlfloat. */
   int64_t tlfloat_cast_i64_q(const tlfloat_quad_  x);
   tlfloat_quad_ tlfloat_cast_q_i64_(const int64_t x);
 
-  /** This function casts a octuple-precision FP number to a 64-bit signed integer. Link with -ltlfloat. */
   int64_t tlfloat_cast_i64_o(const tlfloat_octuple_  x);
   tlfloat_octuple_ tlfloat_cast_o_i64_(const int64_t x);
 
-  /** This function casts a quadruple-precision FP number to a 64-bit unsigned integer. Link with -ltlfloat. */
   uint64_t tlfloat_cast_u64_q(const tlfloat_quad_  x);
   tlfloat_quad_ tlfloat_cast_q_u64_(const uint64_t x);
 
-  /** This function casts a octuple-precision FP number to a 64-bit unsigned integer. Link with -ltlfloat. */
   uint64_t tlfloat_cast_u64_o(const tlfloat_octuple_  x);
   tlfloat_octuple_ tlfloat_cast_o_u64_(const uint64_t x);
 
@@ -243,47 +237,34 @@ extern "C" {
   int tlfloat_le_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
   int tlfloat_gt_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
   int tlfloat_ge_o_o(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+#endif // #if !defined(TLFLOAT_DOXYGEN)
 
   //
 
   float tlfloat_addf(const float x, const float y);
   double tlfloat_add(const double x, const double y);
-  tlfloat_quad_ tlfloat_addq(const tlfloat_quad_ x, const tlfloat_quad_ y);
-  tlfloat_octuple_ tlfloat_addo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
   float tlfloat_subf(const float x, const float y);
   double tlfloat_sub(const double x, const double y);
-  tlfloat_quad_ tlfloat_subq(const tlfloat_quad_ x, const tlfloat_quad_ y);
-  tlfloat_octuple_ tlfloat_subo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
   float tlfloat_mulf(const float x, const float y);
   double tlfloat_mul(const double x, const double y);
-  tlfloat_quad_ tlfloat_mulq(const tlfloat_quad_ x, const tlfloat_quad_ y);
-  tlfloat_octuple_ tlfloat_mulo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
   float tlfloat_divf(const float x, const float y);
   double tlfloat_div(const double x, const double y);
-  tlfloat_quad_ tlfloat_divq(const tlfloat_quad_ x, const tlfloat_quad_ y);
-  tlfloat_octuple_ tlfloat_divo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
 
   float tlfloat_negf(const float x);
   double tlfloat_neg(const double x);
-  tlfloat_quad_ tlfloat_negq(const tlfloat_quad_ x);
-  tlfloat_octuple_ tlfloat_nego(const tlfloat_octuple_ x);
 
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   float tlfloat_fmaf(const float x, const float y, const float z);
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   double tlfloat_fma(const double x, const double y, const double z);
-  tlfloat_quad_ tlfloat_fmaq(const tlfloat_quad_ x, const tlfloat_quad_ y, const tlfloat_quad_ z);
-  tlfloat_octuple_ tlfloat_fmao(const tlfloat_octuple_ x, const tlfloat_octuple_ y, const tlfloat_octuple_ z);
 
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   float tlfloat_sqrtf(const float x);
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   double tlfloat_sqrt(const double x);
-  tlfloat_quad_ tlfloat_sqrtq(const tlfloat_quad_ x);
-  tlfloat_octuple_ tlfloat_sqrto(const tlfloat_octuple_ x);
 
   //
 
@@ -556,6 +537,21 @@ extern "C" {
   double tlfloat_lgamma(const double x);
 
 #if !defined(TLFLOAT_DOXYGEN)
+  tlfloat_quad_ tlfloat_addq(const tlfloat_quad_ x, const tlfloat_quad_ y);
+  tlfloat_octuple_ tlfloat_addo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  tlfloat_quad_ tlfloat_subq(const tlfloat_quad_ x, const tlfloat_quad_ y);
+  tlfloat_octuple_ tlfloat_subo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  tlfloat_quad_ tlfloat_mulq(const tlfloat_quad_ x, const tlfloat_quad_ y);
+  tlfloat_octuple_ tlfloat_mulo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  tlfloat_quad_ tlfloat_divq(const tlfloat_quad_ x, const tlfloat_quad_ y);
+  tlfloat_octuple_ tlfloat_divo(const tlfloat_octuple_ x, const tlfloat_octuple_ y);
+  tlfloat_quad_ tlfloat_negq(const tlfloat_quad_ x);
+  tlfloat_octuple_ tlfloat_nego(const tlfloat_octuple_ x);
+  tlfloat_quad_ tlfloat_fmaq(const tlfloat_quad_ x, const tlfloat_quad_ y, const tlfloat_quad_ z);
+  tlfloat_octuple_ tlfloat_fmao(const tlfloat_octuple_ x, const tlfloat_octuple_ y, const tlfloat_octuple_ z);
+  tlfloat_quad_ tlfloat_sqrtq(const tlfloat_quad_ x);
+  tlfloat_octuple_ tlfloat_sqrto(const tlfloat_octuple_ x);
+
   tlfloat_quad_ tlfloat_fabsq(const tlfloat_quad_ x);
   tlfloat_octuple_ tlfloat_fabso(const tlfloat_octuple_ x);
   tlfloat_quad_ tlfloat_copysignq(const tlfloat_quad_ x, const tlfloat_quad_ y);
@@ -1226,6 +1222,15 @@ inline tlfloat_quad::tlfloat_quad(const struct tlfloat_int128_t& i) : value(tlfl
 inline tlfloat_quad::tlfloat_quad(const struct tlfloat_uint128_t& u) : value(tlfloat_cast_q_u128(u)) {}
 #endif
 
+/** This function casts a octuple-precision FP number to a double-precision FP number. Link with -ltlfloat. */
+static inline double tlfloat_cast_d_q(const tlfloat_quad x) { return tlfloat_cast_d_q(tlfloat_quad_(x)); }
+/** This function casts a quadruple-precision FP number to a octuple-precision FP number. Link with -ltlfloat. */
+static inline tlfloat_octuple tlfloat_cast_o_q(const tlfloat_quad x) { return tlfloat_cast_o_q(tlfloat_quad_(x)); }
+  /** This function casts a quadruple-precision FP number to a 64-bit signed integer. Link with -ltlfloat. */
+static inline int64_t tlfloat_cast_i64_q(const tlfloat_quad x) { return tlfloat_cast_i64_q(tlfloat_quad_(x)); }
+  /** This function casts a quadruple-precision FP number to a 64-bit unsigned integer. Link with -ltlfloat. */
+static inline uint64_t tlfloat_cast_u64_q(const tlfloat_quad x){ return tlfloat_cast_u64_q(tlfloat_quad_(x); }
+
 /** This function performs addition of two quadruple-precision floating point numbers. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_addq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_addq(tlfloat_quad_(x), tlfloat_quad_(y)); }
 /** This function performs subtraction of two quadruple-precision floating point numbers. Link with -ltlfloat. */
@@ -1717,6 +1722,7 @@ static inline tlfloat_quad tlfloat_strtoq(const char *nptr, const char **endptr)
 //
 
 #if defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
+#if !defined(TLFLOAT_DOXYGEN)
 #define TLFLOAT_OVERLOAD_OP2(OP, OPA)					\
   template<typename T, typename std::enable_if<((std::is_floating_point<T>::value && sizeof(T) <= 8) || (std::is_integral<T>::value && sizeof(T) <= 8)), int>::type = 0> \
   static inline tlfloat_octuple operator OP(const T& lhs, const tlfloat_octuple& rhs) { return tlfloat_octuple(lhs) OP rhs; } \
@@ -1838,6 +1844,16 @@ TLFLOAT_OVERLOAD_CMPI(>=);
 #undef TLFLOAT_OVERLOAD_CMP
 #undef TLFLOAT_OVERLOAD_CMPQ
 #undef TLFLOAT_OVERLOAD_CMPI
+#endif // #if !defined(TLFLOAT_DOXYGEN)
+
+/** This function casts a octuple-precision FP number to a double-precision FP number. Link with -ltlfloat. */
+static inline double tlfloat_cast_d_o(const tlfloat_octuple x) { return tlfloat_cast_d_o(tlfloat_octuple_(x)); }
+/** This function casts a octuple-precision FP number to a quadruple-precision FP number. Link with -ltlfloat. */
+static inline tlfloat_quad tlfloat_cast_q_o(const tlfloat_octuple x) { return tlfloat_cast_q_o(tlfloat_octuple_(x)); }
+ /** This function casts a octuple-precision FP number to a 64-bit signed integer. Link with -ltlfloat. */
+static inline int64_t tlfloat_cast_i64_o(const tlfloat_octuple x) { return tlfloat_cast_i64_o(tlfloat_octuple_(x)); }
+ /** This function casts a octuple-precision FP number to a 64-bit unsigned integer. Link with -ltlfloat. */
+static inline uint64_t tlfloat_cast_u64_o(const tlfloat_octuple x) { return tlfloat_cast_u64_o(tlfloat_octuple_(x)); }
 
 /** This function performs addition of two octuple-precision floating point numbers. Link with -ltlfloat. */
 static inline tlfloat_octuple tlfloat_addo(const tlfloat_octuple x, const tlfloat_octuple y) { return tlfloat_addo(tlfloat_octuple_(x), tlfloat_octuple_(y)); }
@@ -2011,6 +2027,7 @@ namespace tlfloat {
 
   //
 
+#if !defined(TLFLOAT_DOXYGEN)
 #define TLFLOAT_POLYFUNC_f_f(OP)					\
   static inline float OP ## _(const float &x) { return tlfloat_ ## OP ## f(x); } \
   static inline double OP ## _(const double &x) { return tlfloat_ ## OP(x); } \
@@ -2136,6 +2153,7 @@ namespace tlfloat {
 #undef TLFLOAT_POLYFUNC_f_f_f
 #undef TLFLOAT_POLYFUNC_i_f
 #undef TLFLOAT_POLYFUNC_f_f
+#endif // #if !defined(TLFLOAT_DOXYGEN)
 } // namespace tlfloat {
 
 static_assert(sizeof(tlfloat_quad) == 16, "sizeof(tlfloat_quad)");

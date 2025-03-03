@@ -131,7 +131,11 @@ void doTestInt128(const __int128_t x, const __int128_t y) {
   checkInt(tlfloat_le_i128_i128(x_, y_), x <= y, "int128 <=");
 
   checkDouble(tlfloat_cast_d_i128(x_), (double)x, "cast double <= int128");
+  checkDouble(tlfloat_cast_d_q(tlfloat_cast_q_i128(x_)), (double)x, "cast double <= quad <= int128");
+  checkDouble(tlfloat_cast_d_o(tlfloat_cast_o_i128(x_)), (double)x, "cast double <= octuple <= int128");
   checkInt128(tlfloat_cast_i128_d((double)x), (__int128)(double)x, "cast int128 <= double");
+  checkInt128(tlfloat_cast_i128_q(tlfloat_cast_q_d((double)x)), (__int128)(double)x, "cast int128 <= quad <= double");
+  checkInt128(tlfloat_cast_i128_o(tlfloat_cast_o_d((double)x)), (__int128)(double)x, "cast int128 <= octuple <= double");
 }
 
 void doTestUInt128(const __uint128_t x, const __uint128_t y) {
@@ -166,7 +170,11 @@ void doTestUInt128(const __uint128_t x, const __uint128_t y) {
   checkInt(tlfloat_le_u128_u128(x_, y_), x <= y, "uint128 <=");
 
   checkDouble(tlfloat_cast_d_u128(x_), (double)x, "cast double <= uint128");
+  checkDouble(tlfloat_cast_d_q(tlfloat_cast_q_u128(x_)), (double)x, "cast double <= quad <= uint128");
+  checkDouble(tlfloat_cast_d_o(tlfloat_cast_o_u128(x_)), (double)x, "cast double <= octuple <= uint128");
   checkUInt128(tlfloat_cast_u128_d((double)x), (__uint128_t)(double)x, "cast uint128 <= double");
+  checkUInt128(tlfloat_cast_u128_q(tlfloat_cast_q_d((double)x)), (__uint128_t)(double)x, "cast unt128 <= quad <= double");
+  checkUInt128(tlfloat_cast_u128_o(tlfloat_cast_o_d((double)x)), (__uint128_t)(double)x, "cast unt128 <= octuple <= double");
 }
 #endif
 
@@ -238,6 +246,16 @@ int main(int argc, char **argv) {
   checkStr(buf0, "0.099833417", "sino");
 
   //
+
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.24Qg", tlfloat_cast_q_o(tlfloat_strtoo("0.123", NULL)));
+  checkStr("0.123", buf1, "tlfloat_cast_q_o");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.12Qg", tlfloat_cast_q_d(tlfloat_strtod("0.123", NULL)));
+  checkStr("0.123", buf1, "tlfloat_cast_q_d");
+
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.24Og", tlfloat_cast_o_q(tlfloat_strtoq("0.123", NULL)));
+  checkStr("0.123", buf1, "tlfloat_cast_o_q");
+  tlfloat_snprintf(buf1, sizeof(buf1), "%.12Og", tlfloat_cast_o_d(tlfloat_strtod("0.123", NULL)));
+  checkStr("0.123", buf1, "tlfloat_cast_o_d");
 
   tlfloat_quad q0 = strtoflt128("0.123", NULL), q1 = strtoflt128("1.234", NULL), q2 = strtoflt128("-0.345", NULL);
   tlfloat_octuple o0 = tlfloat_strtoo("0.123", NULL), o1 = tlfloat_strtoo("1.234", NULL), o2 = tlfloat_strtoo("-0.345", NULL);
