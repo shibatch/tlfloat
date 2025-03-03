@@ -1,14 +1,14 @@
-
-## TLFloat - C++ template library for floating point operations
+== TLFloat - C++ template library for floating point operations
 
 Original distribution site : https://github.com/shibatch/tlfloat
 
-Doxygen-generated reference : https://shibatch.github.io/tlfloat-doxygen/
+Doxygen-generated reference :
+https://shibatch.github.io/tlfloat-doxygen/
 
-Some more documataion is available at : https://github.com/shibatch/tlfloat/wiki
+Some more documataion is available at :
+https://github.com/shibatch/tlfloat/wiki
 
-
-### Introduction
+=== Introduction
 
 This library implements C++ classes with which half, single, double,
 quadruple and octuple precision IEEE 754 floating point numbers can be
@@ -21,86 +21,78 @@ changing the template parameters, rather than implementing each
 floating-point operation for each precision. The arbitrary-precision
 integer class templates are also included in this library.
 
-
-### Features
+=== Features
 
 * Truly constexpr functions
-  * Compilable with C++20 standard
-  * Most of the functions are implemented as templates
-    * Completely inlinable functions
-    * The functions can be evaluated at compile time
-  * No malloc required
-  * Works without libstdc++
-
+** Compilable with C++20 standard
+** Most of the functions are implemented as templates
+*** Completely inlinable functions
+*** The functions can be evaluated at compile time
+** No malloc required
+** Works without libstdc++
 * IEEE 754 compliant
-  * Supports subnormal numbers, NaN, infinity, and signed zero
-
+** Supports subnormal numbers, NaN, infinity, and signed zero
 * Supports a wide range of precisions
-  * Half, float, double, quad, and octuple precisions
-  * Returns correctly rounded results for arithmetic oprations, fma and sqrt
-  * Returns 1-ulp accuracy results for other math.h functions
-    * All functions, including trigonometric functions, return 1ulp-accuracy results for all input range
-
+** Half, float, double, quad, and octuple precisions
+** Returns correctly rounded results for arithmetic oprations, fma and
+sqrt
+** Returns 1-ulp accuracy results for other math.h functions
+*** All functions, including trigonometric functions, return
+1ulp-accuracy results for all input range
 * Portable
-  * Compatible with Linux, Windows, microcontrollers, wasm, CUDA (version 12 or later)
-  * Constexpr functions can be called from CUDA devices with --expt-relaxed-constexpr compiler option
-
+** Compatible with Linux, Windows, microcontrollers, wasm, CUDA (version
+12 or later)
+** Constexpr functions can be called from CUDA devices with
+–expt-relaxed-constexpr compiler option
 * C/C++11 API with libquadmath emulation
-  * Most of libquadmath functions can be used on x86_64 clang and MSVC
-  * 128-bit integer types can be used on MSVC
-  * C++11 FP and int classes with overloaded operators are provided
-    * C++11 functions in TLFloat are not constexpr
-
+** Most of libquadmath functions can be used on x86_64 clang and MSVC
+** 128-bit integer types can be used on MSVC
+** C++11 FP and int classes with overloaded operators are provided
+*** C++11 functions in TLFloat are not constexpr
 * Moderately optimized
-  * Optimized for each architecture using intrinsics, etc.
-  * Library design allows compilers to fully inline operations
-  * All functions are thread-safe and reentrant
-
+** Optimized for each architecture using intrinsics, etc.
+** Library design allows compilers to fully inline operations
+** All functions are thread-safe and reentrant
 * Implements most of the math.h functions
-  * Arithmetic operations, comparison, cast operations
-  * fma, sqrt, hypot, cbrt, fmod, remainder, remquo
-  * sin, cos, tan, sinpi, cospi, tanpi
-  * asin, acos, atan, atan2
-  * log, log2, log10, log1p
-  * exp, exp2, exp10, expm1, pow
-  * sinh, cosh, tanh, asinh, acosh, atanh
-  * erf, erfc, tgamma
-  * trunc, floor, ceil, round, rint
-  * fabs, copysign, fmax, fmin, fdim
-  * ldexp, frexp, modf, nextafter
-  * isnan, isinf, finite, fpclassify, signbit
-
+** Arithmetic operations, comparison, cast operations
+** fma, sqrt, hypot, cbrt, fmod, remainder, remquo
+** sin, cos, tan, sinpi, cospi, tanpi
+** asin, acos, atan, atan2
+** log, log2, log10, log1p
+** exp, exp2, exp10, expm1, pow
+** sinh, cosh, tanh, asinh, acosh, atanh
+** erf, erfc, tgamma
+** trunc, floor, ceil, round, rint
+** fabs, copysign, fmax, fmin, fdim
+** ldexp, frexp, modf, nextafter
+** isnan, isinf, finite, fpclassify, signbit
 * Implements I/O functions
-  * Conversion to/from C strings
-  * printf-family functions
-
+** Conversion to/from C strings
+** printf-family functions
 * Provides BigInt template classes in addition to the FP classes
-  * It provides operations for integers of artibrary length (2^N bits)
-  * They can be used in the similar way to the ordinary int/uint types
-  * Data formats are the same as ordinary int/uint
-  * These classes are internally used to implement the FP classes in TLFloat
+** It provides operations for integers of artibrary length (2^N bits)
+** They can be used in the similar way to the ordinary int/uint types
+** Data formats are the same as ordinary int/uint
+** These classes are internally used to implement the FP classes in
+TLFloat
 
+=== How to build
 
-### How to build
+[arabic]
+. Check out the source code from our GitHub repository :
+`++git clone https://github.com/shibatch/tlfloat++`
+. Make a separate directory to create an out-of-source build :
+`++cd tlfloat && mkdir build && cd build++`
+. Run cmake to configure the project :
+`++cmake .. -DCMAKE_INSTALL_PREFIX=../../install++`
+. Run make to build and install the project : `make && make install`
 
-1. Check out the source code from our GitHub repository :
-`git clone https://github.com/shibatch/tlfloat`
-
-2. Make a separate directory to create an out-of-source build :
-`cd tlfloat && mkdir build && cd build`
-
-3. Run cmake to configure the project :
-`cmake .. -DCMAKE_INSTALL_PREFIX=../../install`
-
-4. Run make to build and install the project :
-`make && make install`
-
-
-### Compiling hello world example
+=== Compiling hello world example
 
 Below is a simple C++ source code utilizing TLFloat.
 
-```
+[source,c++]
+----
 #include <iostream>
 #include <iomanip>
 #include <tlfloat/tlmath.hpp>
@@ -114,33 +106,37 @@ Octuple machin() {
 int main(int argc, char **argv) {
   std::cout << std::setprecision(70) << machin() << std::endl;
 }
-```
+----
 
 To compile this source code, use the following command.
 
-`g++ -std=c++20 -I./install/include hello.cpp`
+[source,console]
+----
+g++ -std=c++20 -I./install/include hello.cpp
+----
 
 You have to specify C++20 standard. Note that you do not need to link
 any library in this example. This program computes PI in octuple
 precision and shows it.
 
-```
+[source,console]
+----
 $ ./a.out
 3.141592653589793238462643383279502884197169399375105820974944592307816
-```
+----
 
-
-### Libquadmath emulation
+=== Libquadmath emulation
 
 In gcc/g++ on x86_64 architecture, libquadmath provides math functions
-for quadruple precision floating point numbers.  However, libquadmath
-is not available with clang or Visual Studio.  By using the
-libquadmath emulation feature of TLFloat library, it is possible to
-use most of the features of libquadmath with clang and Visual Studio.
+for quadruple precision floating point numbers. However, libquadmath is
+not available with clang or Visual Studio. By using the libquadmath
+emulation feature of TLFloat library, it is possible to use most of the
+features of libquadmath with clang and Visual Studio.
 
 Below is a simple C source code utilizing this feature.
 
-```
+[source,c++]
+----
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -157,33 +153,37 @@ int main(int argc, char **argv) {
   quadmath_snprintf(str, sizeof(str), "%.30Qg", powq(q1, q2));
   puts(str);
 }
-```
+----
 
 To compile this source code, use the following command.
 
-`clang quad.c -I./install/include -L./install/lib -ltlfloat -lm`
+[source,console]
+----
+clang quad.c -I./install/include -L./install/lib -ltlfloat -lm
+----
 
 Below is an example of executing this program.
 
-```
+[source,console]
+----
 $ ./a.out 1.234 2.345
 1.63732181977903314975233575019
-```
+----
 
 In order to use the libquadmath emulation feature, define
 TLFLOAT_LIBQUADMATH_EMULATION macro, include tlfloat/tlfloat.h instead
 of quadmath.h, and link with -ltlfloat -lm. If you need portability,
 replace __float128 with tlfloat_quad.
 
-
-### C++11 API
+=== C++11 API
 
 Besides the C++20 API, TLFloat provides classes that can be used with
 C++11 standard.
 
 Below is a simple C++ source code utilizing this feature.
 
-```
+[source,c++]
+----
 #include <iostream>
 #include <tlfloat/tlfloat.h>
 
@@ -205,24 +205,28 @@ tlfloat_octuple AGM(int N) {
 int main(int argc, char **argv) {
   std::cout << tlfloat::to_string(AGM(3), 70) << std::endl;
 }
-```
+----
 
 To compile this source code, use the following command.
 
-`g++ cpp11.cpp -std=c++11 -I./install/include -L./install/lib -ltlfloat`
+[source,console]
+----
+g++ cpp11.cpp -std=c++11 -I./install/include -L./install/lib -ltlfloat
+----
 
 Below is an example of executing this program.
 
-```
+[source,console]
+----
 $ ./a.out
 3.141592653589793238462643383279502884197169399375105820974944592307818
-```
+----
 
-### Benchmark results
+=== Benchmark results
 
 This software package includes a benchmark tool. This can be built by
-specifying `-DBUILD_BENCH=True` cmake option. Below are some results
-of the benchmarks.
+specifying `-DBUILD_BENCH=True` cmake option. Below are some results of
+the benchmarks.
 
 CPU: AMD Ryzen 9 7950X (running at 4.5GHz)
 
@@ -230,7 +234,7 @@ Compiler: gcc version 12.3.0 (Ubuntu 12.3.0-17ubuntu1)
 
 TLFloat Quad
 
-```
+....
 TLFloat version      : 1.11.0
 Config               : tlfloat quad
 Measurement time     : 10 sec
@@ -247,11 +251,11 @@ Atan                 : 1.30394 Mops/second
 Exp                  : 1.49075 Mops/second
 Log                  : 1.58123 Mops/second
 Pow                  : 0.88467 Mops/second
-```
+....
 
 GNU libquadmath
 
-```
+....
 TLFloat version      : 1.11.0
 Config               : Libquadmath
 Measurement time     : 10 sec
@@ -268,29 +272,27 @@ Atan                 : 3.02089 Mops/second
 Exp                  : 1.78973 Mops/second
 Log                  : 1.8479 Mops/second
 Pow                  : 1.29873 Mops/second
-```
+....
 
-
-### Development plan
+=== Development plan
 
 * The following features will be added in future releases
-  * Further documentation
-  * Add C/CPP11 API for float16/bfloat16
-  * Add support for conversion between string and float16/bfloat16
-  * Remaining math functions in math.h
-    * Complex functions
-  * More testing
-    * Add more testers for I/O functions
-  * Further optimization
+** Further documentation
+** Add C/CPP11 API for float16/bfloat16
+** Add support for conversion between string and float16/bfloat16
+** Remaining math functions in math.h
+*** Complex functions
+** More testing
+*** Add more testers for I/O functions
+** Further optimization
 
+=== License
 
-### License
-
-The software is distributed under the Boost Software License, Version 1.0.
-See accompanying file LICENSE.txt or copy at :
+The software is distributed under the Boost Software License, Version
+1.0. See accompanying file LICENSE.txt or copy at :
 http://www.boost.org/LICENSE_1_0.txt.
 
 Contributions to this project are accepted under the same license.
 
-Copyright [Naoki Shibata](https://shibatch.github.io/) and
-contributors 2024-2025.
+Copyright https://shibatch.github.io/[Naoki Shibata] and contributors
+2024-2025.
