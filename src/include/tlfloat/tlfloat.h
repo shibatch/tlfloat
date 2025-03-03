@@ -1229,7 +1229,7 @@ static inline tlfloat_octuple tlfloat_cast_o_q(const tlfloat_quad x) { return tl
   /** This function casts a quadruple-precision FP number to a 64-bit signed integer. Link with -ltlfloat. */
 static inline int64_t tlfloat_cast_i64_q(const tlfloat_quad x) { return tlfloat_cast_i64_q(tlfloat_quad_(x)); }
   /** This function casts a quadruple-precision FP number to a 64-bit unsigned integer. Link with -ltlfloat. */
-static inline uint64_t tlfloat_cast_u64_q(const tlfloat_quad x){ return tlfloat_cast_u64_q(tlfloat_quad_(x); }
+static inline uint64_t tlfloat_cast_u64_q(const tlfloat_quad x){ return tlfloat_cast_u64_q(tlfloat_quad_(x)); }
 
 /** This function performs addition of two quadruple-precision floating point numbers. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_addq(const tlfloat_quad x, const tlfloat_quad y) { return tlfloat_addq(tlfloat_quad_(x), tlfloat_quad_(y)); }
