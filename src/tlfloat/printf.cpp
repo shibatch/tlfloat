@@ -1,5 +1,6 @@
 #include <cstring>
 #include <cctype>
+#include <cstddef>
 #include <cstdarg>
 
 #if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 14)
