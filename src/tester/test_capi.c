@@ -586,6 +586,46 @@ int main(int argc, char **argv) {
   checkStr("0x1p-236", buf1, "TLFLOAT_FLT256_EPSILON");
 #endif
 
+  {
+    float a = tlfloat_strtof("0.1", NULL), s, c;
+    tlfloat_sincosf(a, &s, &c);
+    checkInt(s == tlfloat_sinf(a), 1, "sin in tlfloat_sincosf");
+    checkInt(c == tlfloat_cosf(a), 1, "cos in tlfloat_sincosf");
+    tlfloat_sincospif(a, &s, &c);
+    checkInt(s == tlfloat_sinpif(a), 1, "sin in tlfloat_sincosf");
+    checkInt(c == tlfloat_cospif(a), 1, "cos in tlfloat_sincosf");
+  }
+
+  {
+    double a = tlfloat_strtod("0.1", NULL), s, c;
+    tlfloat_sincos(a, &s, &c);
+    checkInt(s == tlfloat_sin(a), 1, "sin in tlfloat_sincos");
+    checkInt(c == tlfloat_cos(a), 1, "cos in tlfloat_sincos");
+    tlfloat_sincospi(a, &s, &c);
+    checkInt(s == tlfloat_sinpi(a), 1, "sin in tlfloat_sincos");
+    checkInt(c == tlfloat_cospi(a), 1, "cos in tlfloat_sincos");
+  }
+
+  {
+    tlfloat_quad a = tlfloat_strtoq("0.1", NULL), s, c;
+    tlfloat_sincosq(a, &s, &c);
+    checkInt(tlfloat_eq_q_q(s, tlfloat_sinq(a)), 1, "sin in tlfloat_sincosq");
+    checkInt(tlfloat_eq_q_q(c, tlfloat_cosq(a)), 1, "cos in tlfloat_sincosq");
+    tlfloat_sincospiq(a, &s, &c);
+    checkInt(tlfloat_eq_q_q(s, tlfloat_sinpiq(a)), 1, "sin in tlfloat_sincosq");
+    checkInt(tlfloat_eq_q_q(c, tlfloat_cospiq(a)), 1, "cos in tlfloat_sincosq");
+  }
+
+  {
+    tlfloat_octuple a = tlfloat_strtoo("0.1", NULL), s, c;
+    tlfloat_sincoso(a, &s, &c);
+    checkInt(tlfloat_eq_o_o(s, tlfloat_sino(a)), 1, "sin in tlfloat_sincoso");
+    checkInt(tlfloat_eq_o_o(c, tlfloat_coso(a)), 1, "cos in tlfloat_sincoso");
+    tlfloat_sincospio(a, &s, &c);
+    checkInt(tlfloat_eq_o_o(s, tlfloat_sinpio(a)), 1, "sin in tlfloat_sincoso");
+    checkInt(tlfloat_eq_o_o(c, tlfloat_cospio(a)), 1, "cos in tlfloat_sincoso");
+  }
+
   //
 
 #ifdef TLFLOAT_COMPILER_SUPPORTS_INT128

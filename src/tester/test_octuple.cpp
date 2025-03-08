@@ -224,6 +224,56 @@ int main(int argc, char **argv) {
     return -1;
   }
 
+  if (sin(BFloat16("0.1")) != sincos(BFloat16("0.1")).first || cos(BFloat16("0.1")) != sincos(BFloat16("0.1")).second) {
+    printf("NG : sincos(BFloat16)\n");
+    return -1;
+  }
+  if (sin(Half("0.1")) != sincos(Half("0.1")).first || cos(Half("0.1")) != sincos(Half("0.1")).second) {
+    printf("NG : sincos(Half)\n");
+    return -1;
+  }
+  if (sin(Float("0.1")) != sincos(Float("0.1")).first || cos(Float("0.1")) != sincos(Float("0.1")).second) {
+    printf("NG : sincos(Float)\n");
+    return -1;
+  }
+  if (sin(Double("0.1")) != sincos(Double("0.1")).first || cos(Double("0.1")) != sincos(Double("0.1")).second) {
+    printf("NG : sincos(Double)\n");
+    return -1;
+  }
+  if (sin(Quad("0.1")) != sincos(Quad("0.1")).first || cos(Quad("0.1")) != sincos(Quad("0.1")).second) {
+    printf("NG : sincos(Quad)\n");
+    return -1;
+  }
+  if (sin(Octuple("0.1")) != sincos(Octuple("0.1")).first || cos(Octuple("0.1")) != sincos(Octuple("0.1")).second) {
+    printf("NG : sincos(Octuple)\n");
+    return -1;
+  }
+
+  if (sinpi(BFloat16("0.1")) != sincospi(BFloat16("0.1")).first || cospi(BFloat16("0.1")) != sincospi(BFloat16("0.1")).second) {
+    printf("NG : sincospi(BFloat16)\n");
+    return -1;
+  }
+  if (sinpi(Half("0.1")) != sincospi(Half("0.1")).first || cospi(Half("0.1")) != sincospi(Half("0.1")).second) {
+    printf("NG : sincospi(Half)\n");
+    return -1;
+  }
+  if (sinpi(Float("0.1")) != sincospi(Float("0.1")).first || cospi(Float("0.1")) != sincospi(Float("0.1")).second) {
+    printf("NG : sincospi(Float)\n");
+    return -1;
+  }
+  if (sinpi(Double("0.1")) != sincospi(Double("0.1")).first || cospi(Double("0.1")) != sincospi(Double("0.1")).second) {
+    printf("NG : sincospi(Double)\n");
+    return -1;
+  }
+  if (sinpi(Quad("0.1")) != sincospi(Quad("0.1")).first || cospi(Quad("0.1")) != sincospi(Quad("0.1")).second) {
+    printf("NG : sincospi(Quad)\n");
+    return -1;
+  }
+  if (sinpi(Octuple("0.1")) != sincospi(Octuple("0.1")).first || cospi(Octuple("0.1")) != sincospi(Octuple("0.1")).second) {
+    printf("NG : sincospi(Octuple)\n");
+    return -1;
+  }
+
   //
 
   printf("OK\n");

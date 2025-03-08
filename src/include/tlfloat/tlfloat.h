@@ -401,6 +401,12 @@ extern "C" {
   float tlfloat_tanpif(const float x);
   double tlfloat_tanpi(const double x);
 
+  void tlfloat_sincosf(const float x, float *s, float *c);
+  void tlfloat_sincos(const double x, double *s, double *c);
+
+  void tlfloat_sincospif(const float x, float *s, float *c);
+  void tlfloat_sincospi(const double x, double *s, double *c);
+
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
   float tlfloat_asinf(const float x);
   /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
@@ -606,6 +612,10 @@ extern "C" {
   tlfloat_octuple_ tlfloat_cospio(const tlfloat_octuple_ x);
   tlfloat_quad_ tlfloat_tanpiq(const tlfloat_quad_ x);
   tlfloat_octuple_ tlfloat_tanpio(const tlfloat_octuple_ x);
+  void tlfloat_sincosq(const tlfloat_quad_ x, tlfloat_quad_ *s, tlfloat_quad_ *c);
+  void tlfloat_sincoso(const tlfloat_octuple_ x, tlfloat_octuple_ *s, tlfloat_octuple_ *c);
+  void tlfloat_sincospiq(const tlfloat_quad_ x, tlfloat_quad_ *s, tlfloat_quad_ *c);
+  void tlfloat_sincospio(const tlfloat_octuple_ x, tlfloat_octuple_ *s, tlfloat_octuple_ *c);
   tlfloat_quad_ tlfloat_asinq(const tlfloat_quad_ x);
   tlfloat_octuple_ tlfloat_asino(const tlfloat_octuple_ x);
   tlfloat_quad_ tlfloat_acosq(const tlfloat_quad_ x);
@@ -1309,6 +1319,16 @@ static inline tlfloat_quad tlfloat_tanq(const tlfloat_quad x) { return tlfloat_t
 static inline tlfloat_quad tlfloat_sinpiq(const tlfloat_quad x) { return tlfloat_sinpiq(tlfloat_quad_(x)); }
 static inline tlfloat_quad tlfloat_cospiq(const tlfloat_quad x) { return tlfloat_cospiq(tlfloat_quad_(x)); }
 static inline tlfloat_quad tlfloat_tanpiq(const tlfloat_quad x) { return tlfloat_tanpiq(tlfloat_quad_(x)); }
+static inline void tlfloat_sincosq(const tlfloat_quad x, tlfloat_quad *s, tlfloat_quad *c) {
+  tlfloat_quad_ s_, c_;
+  tlfloat_sincosq(tlfloat_quad_(x), &s_, &c_);
+  *s = tlfloat_quad(s_); *c = tlfloat_quad(c_);
+}
+static inline void tlfloat_sincospiq(const tlfloat_quad x, tlfloat_quad *s, tlfloat_quad *c) {
+  tlfloat_quad_ s_, c_;
+  tlfloat_sincospiq(tlfloat_quad_(x), &s_, &c_);
+  *s = tlfloat_quad(s_); *c = tlfloat_quad(c_);
+}
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_asinq(const tlfloat_quad x) { return tlfloat_asinq(tlfloat_quad_(x)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
@@ -1574,9 +1594,7 @@ static inline tlfloat_quad tlfloat_strtoq(const char *nptr, const char **endptr)
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
    * Link with -ltlfloat. */
-  static inline void sincosq(const tlfloat_quad x, tlfloat_quad *s, tlfloat_quad *c) {
-    *s = tlfloat_sinq(x); *c = tlfloat_cosq(x);
-  }
+  static inline void sincosq(const tlfloat_quad x, tlfloat_quad *s, tlfloat_quad *c) { tlfloat_sincosq(x, s, c); }
 
   /** This function has the same functionality as the corresponding function in quadmath.h.
    * This function is available only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined.
@@ -1931,6 +1949,16 @@ static inline tlfloat_octuple tlfloat_tano(const tlfloat_octuple x) { return tlf
 static inline tlfloat_octuple tlfloat_sinpio(const tlfloat_octuple x) { return tlfloat_sinpio(tlfloat_octuple_(x)); }
 static inline tlfloat_octuple tlfloat_cospio(const tlfloat_octuple x) { return tlfloat_cospio(tlfloat_octuple_(x)); }
 static inline tlfloat_octuple tlfloat_tanpio(const tlfloat_octuple x) { return tlfloat_tanpio(tlfloat_octuple_(x)); }
+static inline void tlfloat_sincoso(const tlfloat_octuple x, tlfloat_octuple *s, tlfloat_octuple *c) {
+  tlfloat_octuple_ s_, c_;
+  tlfloat_sincoso(tlfloat_octuple_(x), &s_, &c_);
+  *s = tlfloat_octuple(s_); *c = tlfloat_octuple(c_);
+}
+static inline void tlfloat_sincospio(const tlfloat_octuple x, tlfloat_octuple *s, tlfloat_octuple *c) {
+  tlfloat_octuple_ s_, c_;
+  tlfloat_sincospio(tlfloat_octuple_(x), &s_, &c_);
+  *s = tlfloat_octuple(s_); *c = tlfloat_octuple(c_);
+}
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_octuple tlfloat_asino(const tlfloat_octuple x) { return tlfloat_asino(tlfloat_octuple_(x)); }
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */

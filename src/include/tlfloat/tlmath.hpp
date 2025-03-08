@@ -1433,5 +1433,43 @@ namespace tlfloat {
   static inline constexpr Quad tanpi(const Quad& a) { return detail::tanpi<Quad, detail::xquad, 16, 2>(a); }
   /** This function returns tan(PI * x). The accuracy of the return value is 1ULP. */
   static inline constexpr Octuple tanpi(const Octuple& a) { return detail::tanpi<Octuple, detail::xoctuple, 25, 3>(a); }
+
+  static inline constexpr xpair<BFloat16, BFloat16> sincos(const BFloat16& a) {
+    return { detail::sin<BFloat16, detail::xhalf, 2>(a), detail::cos<BFloat16, detail::xhalf, 2>(a) };
+  }
+  static inline constexpr xpair<Half, Half> sincos(const Half& a) {
+    return { detail::sin<Half, detail::xhalf, 2>(a), detail::cos<Half, detail::xhalf, 2>(a) };
+  }
+  static inline constexpr xpair<Float, Float> sincos(const Float& a) {
+    return { detail::sin<Float, detail::xfloat, 4>(a), detail::cos<Float, detail::xfloat, 4>(a) };
+  }
+  static inline constexpr xpair<Double, Double> sincos(const Double& a) {
+    return { detail::sin<Double, detail::xdouble, 9>(a), detail::cos<Double, detail::xdouble, 9>(a) };
+  }
+  static inline constexpr xpair<Quad, Quad> sincos(const Quad& a) {
+    return { detail::sin<Quad, detail::xquad, 14>(a), detail::cos<Quad, detail::xquad, 14>(a) };
+  }
+  static inline constexpr xpair<Octuple, Octuple> sincos(const Octuple& a) {
+    return { detail::sin<Octuple, detail::xoctuple, 25>(a), detail::cos<Octuple, detail::xoctuple, 25>(a) };
+  }
+
+  static inline constexpr xpair<BFloat16, BFloat16> sincospi(const BFloat16& a) {
+    return { detail::sinpi<BFloat16, detail::xhalf, 2>(a), detail::cospi<BFloat16, detail::xhalf, 2>(a) };
+  }
+  static inline constexpr xpair<Half, Half> sincospi(const Half& a) {
+    return { detail::sinpi<Half, detail::xhalf, 2>(a), detail::cospi<Half, detail::xhalf, 2>(a) };
+  }
+  static inline constexpr xpair<Float, Float> sincospi(const Float& a) {
+    return { detail::sinpi<Float, detail::xfloat, 4>(a), detail::cospi<Float, detail::xfloat, 4>(a) };
+  }
+  static inline constexpr xpair<Double, Double> sincospi(const Double& a) {
+    return { detail::sinpi<Double, detail::xdouble, 9>(a), detail::cospi<Double, detail::xdouble, 9>(a) };
+  }
+  static inline constexpr xpair<Quad, Quad> sincospi(const Quad& a) {
+    return { detail::sinpi<Quad, detail::xquad, 14>(a), detail::cospi<Quad, detail::xquad, 14>(a) };
+  }
+  static inline constexpr xpair<Octuple, Octuple> sincospi(const Octuple& a) {
+    return { detail::sinpi<Octuple, detail::xoctuple, 25>(a), detail::cospi<Octuple, detail::xoctuple, 25>(a) };
+  }
 }
 #endif // #ifndef __TLMATH_HPP_INCLUDED__
