@@ -177,7 +177,7 @@ replace __float128 with tlfloat_quad.
 
 === C++11 API
 
-Besides the C\+\+20 API, TLFloat provides classes that can be used with
+Besides the C\++20 API, TLFloat provides classes that can be used with
 C++11 standard.
 
 Below is a simple C++ source code utilizing this feature.

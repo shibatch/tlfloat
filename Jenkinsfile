@@ -153,7 +153,7 @@ pipeline {
 			 export CXX=clang++-19
  			 mkdir build
 			 cd build
-			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_ASAN=True ..
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DCMAKE_EXE_LINKER_FLAGS="-fuse-ld=lld-19" -DENABLE_ASAN=True ..
 			 cmake -E time oomstaller ninja -j `nproc`
 		         export CTEST_OUTPUT_ON_FAILURE=TRUE
 		         ctest -j `nproc`
