@@ -141,16 +141,16 @@ pipeline {
             	     }
                 }
 
-                stage('aarch64 linux clang-18') {
+                stage('aarch64 linux clang-19') {
             	     agent { label 'aarch64 && ubuntu24' }
                      options { skipDefaultCheckout() }
             	     steps {
                          cleanWs()
                          checkout scm
 	    	     	 sh '''
-                	 echo "aarch64 clang-18 on" `hostname`
-			 export CC=clang-18
-			 export CXX=clang++-18
+                	 echo "aarch64 clang-19 on" `hostname`
+			 export CC=clang-19
+			 export CXX=clang++-19
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install -DENABLE_ASAN=True ..
