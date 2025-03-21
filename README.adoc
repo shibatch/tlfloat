@@ -10,7 +10,7 @@ https://github.com/shibatch/tlfloat/wiki
 
 === Introduction
 
-This library implements C++ classes with which half, single, double,
+This library implements C&#43;&#43; classes with which half, single, double,
 quadruple and octuple precision IEEE 754 floating point numbers can be
 operated.
 
@@ -24,12 +24,12 @@ integer class templates are also included in this library.
 === Features
 
 * Truly constexpr functions
-** Compilable with C++20 standard
+** Compilable with C&#43;&#43;20 standard
 ** Most of the functions are implemented as templates
 *** Completely inlinable functions
 *** The functions can be evaluated at compile time
 ** No malloc required
-** Works without libstdc++
+** Works without libstdc&#43;&#43;
 * IEEE 754 compliant
 ** Supports subnormal numbers, NaN, infinity, and signed zero
 * Supports a wide range of precisions
@@ -44,11 +44,11 @@ sqrt
 12 or later)
 ** Constexpr functions can be called from CUDA devices with
 –expt-relaxed-constexpr compiler option
-* C/C++11 API with libquadmath emulation
+* C/C&#43;&#43;11 API with libquadmath emulation
 ** Most of libquadmath functions can be used on x86_64 clang and MSVC
 ** 128-bit integer types can be used on MSVC
-** C++11 FP and int classes with overloaded operators are provided
-*** C++11 functions in TLFloat are not constexpr
+** C&#43;&#43;11 FP and int classes with overloaded operators are provided
+*** C&#43;&#43;11 functions in TLFloat are not constexpr
 * Moderately optimized
 ** Optimized for each architecture using intrinsics, etc.
 ** Library design allows compilers to fully inline operations
@@ -89,7 +89,7 @@ TLFloat
 
 === Compiling hello world example
 
-Below is a simple C++ source code utilizing TLFloat.
+Below is a simple C&#43;&#43; source code utilizing TLFloat.
 
 [source,c++]
 ----
@@ -115,7 +115,7 @@ To compile this source code, use the following command.
 g++ -std=c++20 -I./install/include hello.cpp
 ----
 
-You have to specify C++20 standard. Note that you do not need to link
+You have to specify C&#43;&#43;20 standard. Note that you do not need to link
 any library in this example. This program computes PI in octuple
 precision and shows it.
 
@@ -127,7 +127,7 @@ $ ./a.out
 
 === Libquadmath emulation
 
-In gcc/g++ on x86_64 architecture, libquadmath provides math functions
+In gcc/g&#43;&#43; on x86_64 architecture, libquadmath provides math functions
 for quadruple precision floating point numbers. However, libquadmath is
 not available with clang or Visual Studio. By using the libquadmath
 emulation feature of TLFloat library, it is possible to use most of the
@@ -177,10 +177,10 @@ replace __float128 with tlfloat_quad.
 
 === C++11 API
 
-Besides the C\++20 API, TLFloat provides classes that can be used with
-C++11 standard.
+Besides the C&#43;&#43;20 API, TLFloat provides classes that can be used with
+C&#43;&#43;11 standard.
 
-Below is a simple C++ source code utilizing this feature.
+Below is a simple C&#43;&#43; source code utilizing this feature.
 
 [source,c++]
 ----
@@ -278,7 +278,7 @@ Pow                  : 1.29873 Mops/second
 
 * The following features will be added in future releases
 ** Further documentation
-** Add C/C++11 API for float16/bfloat16
+** Add C/C&#43;&#43;11 API for float16/bfloat16
 ** Add support for conversion between string and float16/bfloat16
 ** Remaining math functions in math.h
 *** Complex functions
