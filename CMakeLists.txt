@@ -16,13 +16,14 @@ option(ENABLE_ARCH_OPTIMIZATION "Enable architecture-specific optimization upon 
 option(BUILD_EXHAUSTIVE_TESTING "Build exhaustive testing for 16-bit and 32-bit arguments" OFF)
 option(ENABLE_EXHAUSTIVE_TESTING "Enable exhaustive testing for 16-bit and 32-bit arguments" OFF)
 set(SET_COMPILER_SUPPORTS_INT128 "auto" CACHE STRING "Set whether the compiler supports __int128 type")
+set(SET_COMPILER_SUPPORTS_ISOFLOAT128 "auto" CACHE STRING "Set whether the compiler supports _Float128 type")
 set(SET_COMPILER_SUPPORTS_FLOAT128 "auto" CACHE STRING "Set whether the compiler supports __float128 type")
 set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is IEEE binary128")
 
 #
 
 set(TLFLOAT_VERSION_MAJOR 1)
-set(TLFLOAT_VERSION_MINOR 14)
+set(TLFLOAT_VERSION_MINOR 15)
 set(TLFLOAT_VERSION_PATCH 0)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCH})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
@@ -105,6 +106,30 @@ else()
     set(TLFLOAT_COMPILER_SUPPORTS_INT128 OFF)
   endif()
   message(STATUS "Manually setting TLFLOAT_COMPILER_SUPPORTS_INT128 : " ${TLFLOAT_COMPILER_SUPPORTS_INT128})
+endif()
+
+if (SET_COMPILER_SUPPORTS_ISOFLOAT128 STREQUAL "auto")
+  if (CMAKE_CXX_COMPILER_TARGET)
+    set(CMAKE_REQUIRED_FLAGS "--target=${CMAKE_CXX_COMPILER_TARGET}")
+  endif()
+  CHECK_CXX_SOURCE_COMPILES("
+#include <bit>
+struct s { long long x, y; };
+int main(int argc, char **argv) {
+  constexpr s a = std::bit_cast<s>(_Float128(0.1234)*_Float128(56.789));
+  static_assert((a.x ^ a.y) == 0xc7d695c93a4e2b71LL);
+  _Float128 i = argc;
+  return (int)i;
+}
+" TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128)
+  set(CMAKE_REQUIRED_FLAGS)
+else()
+  if (SET_COMPILER_SUPPORTS_ISOFLOAT128)
+    set(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128 ON)
+  else()
+    set(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128 OFF)
+  endif()
+  message(STATUS "Manually setting TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128 : " ${TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128})
 endif()
 
 if (SET_COMPILER_SUPPORTS_FLOAT128 STREQUAL "auto")

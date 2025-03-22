@@ -62,6 +62,8 @@ extern "C" {
   typedef __float128 tlfloat_quad_;
 #elif defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)
   typedef long double tlfloat_quad_;
+#elif defined(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128)
+  typedef _Float128 tlfloat_quad_;
 #else
 /** This type is for handling quadruple-precision IEEE floating-point
  * numbers in C. The data size and data structure of this type are the
@@ -676,7 +678,7 @@ extern "C" {
 } // extern "C" {
 #endif
 
-#if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
+#if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128) && !defined(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128)) || defined(TLFLOAT_DOXYGEN)
 /** tlfloat_quad is a trivially copyable type for handling
  * quadruple-precision IEEE floating-point numbers in C and C++11. The
  * data size and data structure of this type are the same as a
@@ -769,7 +771,7 @@ struct tlfloat_quad {
 /** This macro is defined iff tlfloat_quad is not an alias of
     __float128, but a struct defined in tlfloat.h. */
 #define TLFLOAT_QUAD_IS_STRUCT
-#else // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
+#else // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) && !defined(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128)) || defined(TLFLOAT_DOXYGEN)
 typedef tlfloat_quad_ tlfloat_quad;
 #endif
 
@@ -1080,6 +1082,25 @@ inline tlfloat_octuple::tlfloat_octuple(const struct tlfloat_uint128_t& u) : val
 #define TLFLOAT_FLT128_DENORM_MIN 0x0.0000000000000000000000000001p-16382L
 #define TLFLOAT_FLT128_TRUE_MIN 0x0.0000000000000000000000000001p-16382L
 #define TLFLOAT_FLT128_EPSILON 0x1p-112L
+#elif defined(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128)
+#define TLFLOAT_M_Eq 0x1.5bf0a8b1457695355fb8ac404e7ap+1F128
+#define TLFLOAT_M_LOG2Eq 0x1.71547652b82fe1777d0ffda0d23ap+0F128
+#define TLFLOAT_M_LOG10Eq 0x1.bcb7b1526e50e32a6ab7555f5a68p-2F128
+#define TLFLOAT_M_LN2q 0x1.62e42fefa39ef35793c7673007e6p-1F128
+#define TLFLOAT_M_LN10q 0x1.26bb1bbb5551582dd4adac5705a6p+1F128
+#define TLFLOAT_M_PIq 0x1.921fb54442d18469898cc51701b8p+1F128
+#define TLFLOAT_M_PI_2q 0x1.921fb54442d18469898cc51701b8p+0F128
+#define TLFLOAT_M_PI_4q 0x1.921fb54442d18469898cc51701b8p-1F128
+#define TLFLOAT_M_1_PIq 0x1.45f306dc9c882a53f84eafa3ea6ap-2F128
+#define TLFLOAT_M_2_PIq 0x1.45f306dc9c882a53f84eafa3ea6ap-1F128
+#define TLFLOAT_M_2_SQRTPIq 0x1.20dd750429b6d11ae3a914fed7fep+0F128
+#define TLFLOAT_M_SQRT2q 0x1.6a09e667f3bcc908b2fb1366ea95p+0F128
+#define TLFLOAT_M_SQRT1_2q 0x1.6a09e667f3bcc908b2fb1366ea95p-1F128
+#define TLFLOAT_FLT128_MAX 0x1.ffffffffffffffffffffffffffffp+16383F128
+#define TLFLOAT_FLT128_MIN 0x1p-16382F128
+#define TLFLOAT_FLT128_DENORM_MIN 0x0.0000000000000000000000000001p-16382F128
+#define TLFLOAT_FLT128_TRUE_MIN 0x0.0000000000000000000000000001p-16382F128
+#define TLFLOAT_FLT128_EPSILON 0x1p-112F128
 #elif defined(__cplusplus)
 #if !defined(__BYTE_ORDER__) || (__BYTE_ORDER__ != __ORDER_BIG_ENDIAN__)
 static inline constexpr tlfloat_quad tlfloat_constq(uint64_t h, uint64_t l) { return tlfloat_quad_ { l, h }; }
@@ -1219,7 +1240,7 @@ static inline constexpr tlfloat_octuple tlfloat_consto(uint64_t w0, uint64_t w1,
 
 #endif
 
-#if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
+#if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128) && !defined(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128)) || defined(TLFLOAT_DOXYGEN)
 
 inline tlfloat_quad::tlfloat_quad(const struct tlfloat_octuple& v) : value(tlfloat_cast_q_o(v)) {}
 inline tlfloat_quad::tlfloat_quad(const tlfloat_int128_t_& i) : value(tlfloat_cast_q_i128(i)) {}
@@ -1384,7 +1405,7 @@ static inline tlfloat_quad tlfloat_remainderq(const tlfloat_quad x, const tlfloa
 /** This function is for calling the corresponding function defined in tlfloat namespace from C language. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_remquoq(const tlfloat_quad x, const tlfloat_quad y, int *quo) { return tlfloat_remquoq(tlfloat_quad_(x), tlfloat_quad_(y), quo); }
 
-#endif // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128)) || defined(TLFLOAT_DOXYGEN)
+#endif // #if (defined(__cplusplus) && !defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) && !defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128) && !defined(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128)) || defined(TLFLOAT_DOXYGEN)
 
 /** This function casts a double-precision FP number to a quadruple-precision FP number. Link with -ltlfloat. */
 static inline tlfloat_quad tlfloat_cast_q_d(const double x) { return tlfloat_cast_q_d_(x); }
@@ -1397,7 +1418,7 @@ static inline tlfloat_quad tlfloat_strtoq(const char *nptr, const char **endptr)
 
 #ifdef TLFLOAT_LIBQUADMATH_EMULATION
 
-#if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) || defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128) || defined(__STDC_VERSION__) || defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
+#if defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128) || defined(TLFLOAT_LONGDOUBLE_IS_FLOAT128) || defined(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128) || defined(__STDC_VERSION__) || defined(__cplusplus) || defined(TLFLOAT_DOXYGEN)
 /** This macro is defined only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined. */
 #define M_Eq TLFLOAT_M_Eq
 /** This macro is defined only if TLFLOAT_LIBQUADMATH_EMULATION macro is defined. */

@@ -759,6 +759,19 @@ int main(int argc, char **argv) {
     }
   }
 
+#if defined(TLFLOAT_COMPILER_SUPPORTS_ISOFLOAT128) && defined(TLFLOAT_COMPILER_SUPPORTS_FLOAT128)
+  {
+    _Float128 iso = 0.123F128;
+    __float128 gnu = 0.234Q;
+    tlfloat_quad q0 = iso;
+    tlfloat_quad q1 = gnu;
+    gnu = q0;
+    iso = q1;
+    check("_Float128 and __float128, 0.123Q", gnu == 0.123Q, true);
+    check("_Float128 and __float128, 0.234F128", iso == 0.234F128, true);
+  }
+#endif
+
 #ifdef TLFLOAT_QUAD_IS_STRUCT
   {
     struct teststruct_quad { char a[sizeof(tlfloat_quad)]; };
