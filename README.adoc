@@ -290,9 +290,15 @@ Pow                  : 1.29873 Mops/second
 
 The software is distributed under the Boost Software License, Version
 1.0. See accompanying file LICENSE.txt or copy at :
-http://www.boost.org/LICENSE_1_0.txt.
+http://www.boost.org/LICENSE_1_0.txt. Contributions to this project
+are accepted under the same license.
 
-Contributions to this project are accepted under the same license.
+The fact that our software is released under an open source license
+only means that you can use the current and older versions of the
+software for free. If you want us to continue maintaining our
+software, you need to financially support our project. Please see
+https://github.com/shibatch/nofreelunch?tab=coc-ov-file[CODE_OF_CONDUCT.md].
+
 
 Copyright https://shibatch.github.io/[Naoki Shibata] and contributors
 2024-2025.

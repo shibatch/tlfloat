@@ -1,6 +1,7 @@
 #ifndef __TLFLOAT_H_INCLUDED__
 #define __TLFLOAT_H_INCLUDED__
 
+#include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdarg.h>
