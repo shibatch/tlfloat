@@ -209,7 +209,7 @@ int main(int argc, char **argv) {
   //
 
   tlfloat_snprintf(buf, sizeof(buf), "%.72_256g", const_M_E<Octuple>());
-  printf("Octuple (const_M_E<Ocutple>())  : %s\n", buf);
+  printf("Octuple (const_M_E<Octuple>())  : %s\n", buf);
 
   if (strncmp(buf, "2.71828182845904523536028747135266249775724709369995957496696762772407", 70) != 0) {
     printf("NG\n");
