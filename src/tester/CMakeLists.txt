@@ -166,6 +166,27 @@ if (TLFLOAT_COMPILER_SUPPORTS_ARM_FP16 AND LIB_MPFR AND BUILD_EXHAUSTIVE_TESTING
   endif()
 endif()
 
+if (TLFLOAT_COMPILER_SUPPORTS_FP16 AND BUILD_EXHAUSTIVE_TESTING)
+  add_executable(test_exhaustive16fma test_exhaustive16fma.cpp)
+  target_compile_definitions(test_exhaustive16fma PRIVATE TLFLOAT_ENABLE_INLINING=1)
+  if (OpenMP_CXX_FOUND)
+    target_compile_options(test_exhaustive16fma PRIVATE ${OpenMP_CXX_FLAGS})
+    target_link_options(test_exhaustive16fma PRIVATE ${OpenMP_CXX_FLAGS})
+    target_include_directories(test_exhaustive16fma PRIVATE ${OpenMP_CXX_INCLUDE_DIRS})
+  endif()
+  if (ENABLE_EXHAUSTIVE_TESTING)
+    add_test(NAME test_exhaustive16fma COMMAND test_exhaustive16fma)
+  endif()
+
+  if (INSTALL_CONTINUOUS_TESTERS)
+    install(
+      TARGETS test_exhaustive16fma
+      DESTINATION "${INSTALL_BINDIR}"
+      COMPONENT tester
+      )
+  endif()
+endif()
+
 if (TLFLOAT_COMPILER_SUPPORTS_BF16 AND BUILD_EXHAUSTIVE_TESTING)
   add_executable(test_exhaustive_bf16 test_exhaustive_bf16.cpp)
   if (OpenMP_CXX_FOUND)
