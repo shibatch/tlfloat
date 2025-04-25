@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.16)
-
 option(BUILD_LIBS "Build and install the library" ON)
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_UTILS "Build utilities" ON)
@@ -13,22 +11,35 @@ option(INSTALL_CONTINUOUS_TESTERS "Install continuous testers" OFF)
 option(ENABLE_DOXYGEN "Enable generating documents with Doxygen" OFF)
 option(ENABLE_COVERAGE "Enable generating coverage data" OFF)
 option(ENABLE_ARCH_OPTIMIZATION "Enable architecture-specific optimization upon building library" ON)
-option(BUILD_EXHAUSTIVE_TESTING "Build exhaustive testing for 16-bit and 32-bit arguments" OFF)
-option(ENABLE_EXHAUSTIVE_TESTING "Enable exhaustive testing for 16-bit and 32-bit arguments" OFF)
+option(BUILD_EXHAUSTIVE_TESTING "Build exhaustive testing with 16-bit and 32-bit arguments" OFF)
+option(ENABLE_EXHAUSTIVE_TESTING "Enable exhaustive testing with 16-bit and 32-bit arguments" OFF)
 set(SET_COMPILER_SUPPORTS_INT128 "auto" CACHE STRING "Set whether the compiler supports __int128 type")
 set(SET_COMPILER_SUPPORTS_ISOFLOAT128 "auto" CACHE STRING "Set whether the compiler supports _Float128 type")
 set(SET_COMPILER_SUPPORTS_FLOAT128 "auto" CACHE STRING "Set whether the compiler supports __float128 type")
 set(SET_LONGDOUBLE_IS_FLOAT128 "auto" CACHE STRING "Set whether long double is IEEE binary128")
 
-#
+# To build with "-march=native" option
+# CC=gcc-12 CXX=g++-12 CFLAGS="-march=native" CXXFLAGS="-march=native" cmake ..
+
+# To use clang-19 to Build with LTO enabled
+# CXX=clang++-19 CC=clang-19 cmake .. -DENABLE_INLINING=True -DENABLE_LTO=True -DCMAKE_CXX_COMPILER_AR=/usr/bin/llvm-ar-19 -DCMAKE_CXX_COMPILER_RANLIB=/usr/bin/llvm-ranlib-19
+
+# To build shared library
+# cmake .. -DBUILD_SHARED_LIBS=True -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+
+
+##
+
 
 set(TLFLOAT_VERSION_MAJOR 1)
 set(TLFLOAT_VERSION_MINOR 17)
-set(TLFLOAT_VERSION_PATCH 0)
+set(TLFLOAT_VERSION_PATCH 1)
 set(TLFLOAT_VERSION ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCH})
 set(TLFLOAT_SOVERSION ${TLFLOAT_VERSION_MAJOR})
 
 message(STATUS "Configuring TLFloat ${TLFLOAT_VERSION_MAJOR}.${TLFLOAT_VERSION_MINOR}.${TLFLOAT_VERSION_PATCH}")
+
+cmake_minimum_required(VERSION 3.16)
 
 project(tlfloat)
 
