@@ -299,16 +299,36 @@ pipeline {
             	     }
                 }
 
-                stage('riscv linux gcc-13') {
-            	     agent { label 'riscv && ubuntu23' }
+                stage('riscv linux gcc-14') {
+            	     agent { label 'riscv && ubuntu24' }
                      options { skipDefaultCheckout() }
             	     steps {
                          cleanWs()
                          checkout scm
 	    	     	 sh '''
-                	 echo "riscv gcc-13 on" `hostname`
-			 export CC=gcc-13
-			 export CXX=g++-13
+                	 echo "riscv gcc-14 on" `hostname`
+			 export CC=gcc-14
+			 export CXX=g++-14
+ 			 mkdir build
+			 cd build
+			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
+			 cmake -E time oomstaller ninja -j `nproc`
+		         export CTEST_OUTPUT_ON_FAILURE=TRUE
+		         ctest -j `nproc`
+			 '''
+            	     }
+                }
+
+                stage('riscv linux clang-20') {
+            	     agent { label 'riscv && ubuntu24' }
+                     options { skipDefaultCheckout() }
+            	     steps {
+                         cleanWs()
+                         checkout scm
+	    	     	 sh '''
+                	 echo "riscv clang-20 on" `hostname`
+			 export CC=clang-20
+			 export CXX=clang++-20
  			 mkdir build
 			 cd build
 			 cmake -GNinja -DCMAKE_INSTALL_PREFIX=../../install ..
