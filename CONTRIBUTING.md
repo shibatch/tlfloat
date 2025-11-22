@@ -1,6 +1,6 @@
-# Contributing to SLEEF
+# Contributing to this project
 
-Thank you for your interest in contributing to SLEEF. We welcome contributions from the community to help improve this project.
+Thank you for your interest in contributing to this project. We welcome contributions from the community to help improve this project.
 
 However, to ensure the sustainability of the project and fairness among stakeholders, we have established specific policies for corporate contributors.
 
