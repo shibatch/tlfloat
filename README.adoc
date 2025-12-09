@@ -5,6 +5,9 @@ Original distribution site : https://github.com/shibatch/tlfloat
 Doxygen-generated reference :
 https://shibatch.github.io/tlfloat-doxygen/
 
+Introduction video :
+https://youtu.be/gKjgknQRuiA
+
 Some more documataion is available at :
 https://github.com/shibatch/tlfloat/wiki
 
