@@ -1,5 +1,8 @@
 if (BUILD_LIBS)
   add_library(tlfloat_inline OBJECT arith.cpp misc.cpp trig.cpp logexp.cpp invtrig.cpp hyp.cpp erfgamma.cpp)
+  set_target_properties(tlfloat_inline PROPERTIES
+    POSITION_INDEPENDENT_CODE ON
+  )
   target_compile_options(tlfloat_inline PRIVATE ${NOEXCEPT_CXX_FLAGS})
   if (ENABLE_INLINING AND "${LC_CMAKE_BUILD_TYPE}" STREQUAL "release")
     target_compile_options(tlfloat_inline PRIVATE ${INLINE_CXX_FLAGS})
