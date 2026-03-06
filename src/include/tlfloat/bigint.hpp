@@ -68,12 +68,17 @@
 #ifdef _MSC_VER
 #if !defined(__CUDA_ARCH__)
 
-#if defined(_M_X64)
+#if defined(_M_X64) || defined(_M_ARM64)
 #include <intrin.h>
-#define TLFLOAT_ENABLE_X86INTRIN
-#endif // #if defined(_M_X64)
+#endif
 
+#if defined(_M_X64)
+#define TLFLOAT_ENABLE_X86INTRIN
 #define TLFLOAT_ENABLE_VCUMUL128
+#elif defined(_M_ARM64)
+#define TLFLOAT_ENABLE_VCUMULH
+#endif
+
 #define TLFLOAT_ENABLE_VCBITSCANREVERSE
 
 #ifdef TLFLOAT_ENABLE_INLINING
@@ -169,6 +174,8 @@ namespace tlfloat {
       xpair<uint64_t, uint64_t> ret(0, 0);
       ret.second = _umul128(lhs, rhs, &ret.first);
       return ret;
+#elif defined(TLFLOAT_ENABLE_VCUMULH)
+      return xpair<uint64_t, uint64_t>(__umulh(lhs, rhs), lhs * rhs);
 #elif defined(TLFLOAT_ENABLE_INT128_OPT)
       __uint128_t m = lhs * __uint128_t(rhs);
       return xpair<uint64_t, uint64_t>(uint64_t(m >> 64), uint64_t(m));
