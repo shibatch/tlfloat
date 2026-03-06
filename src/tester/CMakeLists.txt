@@ -213,7 +213,6 @@ if (BUILD_LIBS)
   add_library(test_octuple_obj OBJECT test_octuple.cpp)
   target_compile_definitions(test_octuple_obj PRIVATE TLFLOAT_NO_LIBSTDCXX=1)
   target_compile_options(test_octuple_obj PRIVATE ${NOEXCEPT_CXX_FLAGS})
-  set_target_properties(test_octuple_obj PROPERTIES LINKER_LANGUAGE C)
 
   add_executable(test_octuple test_octuple_dummy.c)
   target_link_libraries(test_octuple test_octuple_obj tlfloat ${LIBM})
