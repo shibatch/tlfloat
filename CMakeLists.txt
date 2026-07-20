@@ -286,7 +286,7 @@ endif()
 # Compiler options
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fcompare-debug-second -fconstexpr-ops-limit=1000000000 -fno-math-errno")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fconstexpr-ops-limit=1000000000 -fno-math-errno")
   set(INLINE_CXX_FLAGS "--inline-limit=1000000")
   set(NOEXCEPT_CXX_FLAGS "-fno-exceptions;-fno-rtti")
   if(CMAKE_SYSTEM_PROCESSOR MATCHES "i[3-6]86")
