@@ -182,7 +182,7 @@ namespace {
 	  } else {
 	    switch(nbits) {
 	    case 16: {
-	      typedef struct { uint16_t e; } arg_t;
+	      typedef struct arg_t { uint16_t e; } arg_t;
 	      Half value = std::bit_cast<Half>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
@@ -193,7 +193,7 @@ namespace {
 	      break;
 	    }
 	    case 32: {
-	      typedef struct { uint32_t e; } arg_t;
+	      typedef struct arg_t { uint32_t e; } arg_t;
 	      Float value = std::bit_cast<Float>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
@@ -204,7 +204,7 @@ namespace {
 	      break;
 	    }
 	    case 64: {
-	      typedef struct { uint64_t e[1]; } arg_t;
+	      typedef struct arg_t { uint64_t e[1]; } arg_t;
 	      Double value = std::bit_cast<Double>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
@@ -215,7 +215,7 @@ namespace {
 	      break;
 	    }
 	    case 128: {
-	      typedef struct { uint64_t e[2]; } arg_t;
+	      typedef struct arg_t { uint64_t e[2]; } arg_t;
 	      Quad value = std::bit_cast<Quad>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
@@ -226,7 +226,7 @@ namespace {
 	      break;
 	    }
 	    case 256: {
-	      typedef struct { uint64_t e[4]; } arg_t;
+	      typedef struct arg_t { uint64_t e[4]; } arg_t;
 	      Octuple value = std::bit_cast<Octuple>(va_arg(ap, arg_t));
 	      typedef decltype(decltype(value.getUnpacked())::xUnpackedFloat()) xUnpacked_t;
 	      int ret = snprint(xbuf, xbufsize, value.getUnpacked().cast((xUnpacked_t *)0), *fmt, width, precision, 
@@ -288,7 +288,7 @@ namespace {
 	      break;
 	    }
 	    case 128: {
-	      typedef struct { uint64_t e[2]; } arg_t;
+	      typedef struct arg_t { uint64_t e[2]; } arg_t;
 	      BigInt<7> value = std::bit_cast<BigInt<7>>(va_arg(ap, arg_t));
 	      int ret = BigInt<7>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
@@ -298,7 +298,7 @@ namespace {
 	      break;
 	    }
 	    case 256: {
-	      typedef struct { uint64_t e[4]; } arg_t;
+	      typedef struct arg_t { uint64_t e[4]; } arg_t;
 	      BigInt<8> value = std::bit_cast<BigInt<8>>(va_arg(ap, arg_t));
 	      int ret = BigInt<8>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
@@ -308,7 +308,7 @@ namespace {
 	      break;
 	    }
 	    case 512: {
-	      typedef struct { uint64_t e[8]; } arg_t;
+	      typedef struct arg_t { uint64_t e[8]; } arg_t;
 	      BigInt<9> value = std::bit_cast<BigInt<9>>(va_arg(ap, arg_t));
 	      int ret = BigInt<9>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					   flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
@@ -318,7 +318,7 @@ namespace {
 	      break;
 	    }
 	    case 1024: {
-	      typedef struct { uint64_t e[16]; } arg_t;
+	      typedef struct arg_t { uint64_t e[16]; } arg_t;
 	      BigInt<10> value = std::bit_cast<BigInt<10>>(va_arg(ap, arg_t));
 	      int ret = BigInt<10>::snprint(xbuf, xbufsize, value, tolower(*fmt), width, precision, base, nbits,
 					    flag_sign, flag_blank, flag_alt, flag_left, flag_zero, flag_upper, flag_unsigned, flag_ptr, prefix);
