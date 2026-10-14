@@ -8,6 +8,7 @@
 #define __TLFLOAT_HPP_INCLUDED__
 
 #include <cstdio>
+#include <type_traits>
 
 #include <tlfloat/bigint.hpp>
 
